@@ -5,7 +5,6 @@
     <div class="right-menu">
       <Screenfull v-if="showScreenfull" class="right-menu-item" />
       <ThemeSwitch v-if="showThemeSwitch" class="right-menu-item" />
-      <Notify v-if="showNotify" class="right-menu-item" />
       <el-dropdown class="right-menu-item">
         <div class="right-menu-avatar">
           <el-avatar :icon="UserFilled" :size="30" />
@@ -13,14 +12,8 @@
         </div>
         <template #dropdown>
           <el-dropdown-menu>
-            <a target="_blank" href="https://juejin.cn/post/7089377403717287972">
-              <el-dropdown-item>中文文档</el-dropdown-item>
-            </a>
-            <a target="_blank" href="https://github.com/un-pany/v3-admin-vite">
+            <a target="_blank" href="https://github.com/pddzl/td27-admin">
               <el-dropdown-item>GitHub</el-dropdown-item>
-            </a>
-            <a target="_blank" href="https://gitee.com/un-pany/v3-admin-vite">
-              <el-dropdown-item>Gitee</el-dropdown-item>
             </a>
             <el-dropdown-item divided @click="logout">
               <span style="display: block">退出登录</span>
@@ -43,7 +36,6 @@ import Breadcrumb from "../Breadcrumb/index.vue"
 import Hamburger from "../Hamburger/index.vue"
 import ThemeSwitch from "@/components/ThemeSwitch/index.vue"
 import Screenfull from "@/components/Screenfull/index.vue"
-import Notify from "@/components/Notify/index.vue"
 
 const router = useRouter()
 const appStore = useAppStore()
@@ -53,12 +45,11 @@ const userStore = useUserStore()
 const sidebar = computed(() => {
   return appStore.sidebar
 })
-const showNotify = computed(() => {
-  return settingsStore.showNotify
-})
+
 const showThemeSwitch = computed(() => {
   return settingsStore.showThemeSwitch
 })
+
 const showScreenfull = computed(() => {
   return settingsStore.showScreenfull
 })
@@ -66,6 +57,7 @@ const showScreenfull = computed(() => {
 const toggleSidebar = () => {
   appStore.toggleSidebar(false)
 }
+
 const logout = () => {
   userStore.logout()
   router.push("/login")
