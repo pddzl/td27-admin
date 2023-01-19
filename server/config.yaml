@@ -1,0 +1,74 @@
+# jwt configuration
+jwt:
+  signing-key: pddZl
+  expires-time: 86400
+  buffer-time: 43200
+  issuer: pddZl
+
+# zap logger configuration
+zap:
+  level: info
+  format: console
+  prefix: '[TD27] '
+  director: log
+  show-line: true
+  encode-level: LowercaseColorLevelEncoder
+  stacktrace-key: stacktrace
+  log-in-console: true
+
+# 日志割接
+rotateLogs:
+  max-size: 10
+  max-backups: 5
+  max-age: 7
+  compress: false
+
+# system configuration
+system:
+  env: 'production' # Change to "develop" to skip authentication for development mode
+  host: '0.0.0.0'
+  port: '8888'
+  stack: false
+  use-multipoint: true
+
+# mysql configuration
+mysql:
+  host: 'mysql'
+  port: 3306
+  config: 'charset=utf8&parseTime=true'
+  db-name: 'td27'
+  username: 'root'
+  password: 'huayun2021'
+  max-idle-conns: 10
+  max-open-conns: 100
+  log-mode: false
+  log-zap: false
+
+# redis configuration
+redis:
+  db: 0
+  host: 'redis'
+  port: 6379
+  password: ''
+
+# captcha configuration
+captcha:
+  key-long: 6
+  img-width: 240
+  img-height: 80
+
+# 跨域配置
+# 需要配合 server/initialize/router.go#L32 使用
+cors:
+  mode: whitelist # 放行模式: allow-all, 放行全部; whitelist, 白名单模式, 来自白名单内域名的请求添加 cors 头; strict-whitelist 严格白名单模式, 白名单外的请求一律拒绝
+  whitelist:
+    - allow-origin: example1.com
+      allow-headers: content-type
+      allow-methods: GET, POST
+      expose-headers: Content-Length, Access-Control-Allow-Origin, Access-Control-Allow-Headers, Content-Type
+      allow-credentials: true # 布尔值
+    - allow-origin: example2.com
+      allow-headers: content-type
+      allow-methods: GET, POST
+      expose-headers: Content-Length, Access-Control-Allow-Origin, Access-Control-Allow-Headers, Content-Type
+      allow-credentials: true # 布尔值
