@@ -1,48 +1,10 @@
-<script lang="ts" setup>
-import { computed } from "vue"
-import { useRouter } from "vue-router"
-import { useAppStore } from "@/store/modules/app"
-import { useSettingsStore } from "@/store/modules/settings"
-import { useUserStore } from "@/store/modules/user"
-import { UserFilled } from "@element-plus/icons-vue"
-import Breadcrumb from "../Breadcrumb/index.vue"
-import Hamburger from "../Hamburger/index.vue"
-import ThemeSwitch from "@/components/ThemeSwitch/index.vue"
-import Screenfull from "@/components/Screenfull/index.vue"
-
-const router = useRouter()
-const appStore = useAppStore()
-const settingsStore = useSettingsStore()
-const userStore = useUserStore()
-
-const sidebar = computed(() => {
-  return appStore.sidebar
-})
-
-const showThemeSwitch = computed(() => {
-  return settingsStore.showThemeSwitch
-})
-
-const showScreenfull = computed(() => {
-  return settingsStore.showScreenfull
-})
-
-const toggleSidebar = () => {
-  appStore.toggleSidebar(false)
-}
-const logout = () => {
-  userStore.logout()
-  router.push("/login")
-}
-</script>
-
 <template>
   <div class="navigation-bar">
     <Hamburger :is-active="sidebar.opened" class="hamburger" @toggle-click="toggleSidebar" />
     <Breadcrumb class="breadcrumb" />
     <div class="right-menu">
-      <Screenfull v-if="showScreenfull" class="right-menu-item" />
-      <ThemeSwitch v-if="showThemeSwitch" class="right-menu-item" />
+      <Screenfull class="right-menu-item" />
+      <ThemeSwitch class="right-menu-item" />
       <el-dropdown class="right-menu-item">
         <div class="right-menu-avatar">
           <el-avatar :icon="UserFilled" :size="30" />
@@ -62,6 +24,34 @@ const logout = () => {
     </div>
   </div>
 </template>
+
+<script lang="ts" setup>
+import { computed } from "vue"
+import { useRouter } from "vue-router"
+import { useAppStore } from "@/store/modules/app"
+import { useUserStore } from "@/store/modules/user"
+import { UserFilled } from "@element-plus/icons-vue"
+import Breadcrumb from "../Breadcrumb/index.vue"
+import Hamburger from "../Hamburger/index.vue"
+import ThemeSwitch from "@/components/ThemeSwitch/index.vue"
+import Screenfull from "@/components/Screenfull/index.vue"
+
+const router = useRouter()
+const appStore = useAppStore()
+const userStore = useUserStore()
+
+const sidebar = computed(() => {
+  return appStore.sidebar
+})
+
+const toggleSidebar = () => {
+  appStore.toggleSidebar(false)
+}
+const logout = () => {
+  userStore.logout()
+  router.push("/login")
+}
+</script>
 
 <style lang="scss" scoped>
 .navigation-bar {

@@ -1,3 +1,20 @@
+<template>
+  <div :class="classObj" class="app-wrapper">
+    <div v-if="classObj.mobile && classObj.openSidebar" class="drawer-bg" @click="handleClickOutside" />
+    <Sidebar class="sidebar-container" />
+    <div :class="{ hasTagsView: showTagsView }" class="main-container">
+      <div :class="{ 'fixed-header': fixedHeader }">
+        <NavigationBar />
+        <TagsView v-if="showTagsView" />
+      </div>
+      <AppMain />
+      <RightPanel v-if="showSettings">
+        <Settings />
+      </RightPanel>
+    </div>
+  </div>
+</template>
+
 <script lang="ts" setup>
 import { computed } from "vue"
 import { useAppStore, DeviceType } from "@/store/modules/app"
@@ -16,48 +33,26 @@ const classObj = computed(() => {
     hideSidebar: !appStore.sidebar.opened,
     openSidebar: appStore.sidebar.opened,
     withoutAnimation: appStore.sidebar.withoutAnimation,
-    mobile: appStore.device === DeviceType.Mobile,
-    showGreyMode: showGreyMode.value,
-    showColorWeakness: showColorWeakness.value
+    mobile: appStore.device === DeviceType.Mobile
   }
 })
 
 const showSettings = computed(() => {
   return settingsStore.showSettings
 })
+
 const showTagsView = computed(() => {
   return settingsStore.showTagsView
 })
+
 const fixedHeader = computed(() => {
   return settingsStore.fixedHeader
 })
-const showGreyMode = computed(() => {
-  return settingsStore.showGreyMode
-})
-const showColorWeakness = computed(() => {
-  return settingsStore.showColorWeakness
-})
+
 const handleClickOutside = () => {
   appStore.closeSidebar(false)
 }
 </script>
-
-<template>
-  <div :class="classObj" class="app-wrapper">
-    <div v-if="classObj.mobile && classObj.openSidebar" class="drawer-bg" @click="handleClickOutside" />
-    <Sidebar class="sidebar-container" />
-    <div :class="{ hasTagsView: showTagsView }" class="main-container">
-      <div :class="{ 'fixed-header': fixedHeader }">
-        <NavigationBar />
-        <TagsView v-if="showTagsView" />
-      </div>
-      <AppMain />
-      <RightPanel v-if="showSettings">
-        <Settings />
-      </RightPanel>
-    </div>
-  </div>
-</template>
 
 <style lang="scss" scoped>
 @import "@/styles/mixins.scss";
@@ -66,14 +61,6 @@ const handleClickOutside = () => {
   @include clearfix;
   position: relative;
   width: 100%;
-}
-
-.showGreyMode {
-  filter: grayscale(1);
-}
-
-.showColorWeakness {
-  filter: invert(0.8);
 }
 
 .drawer-bg {
