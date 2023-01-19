@@ -1,16 +1,3 @@
-<template>
-  <el-breadcrumb class="app-breadcrumb">
-    <el-breadcrumb-item v-for="(item, index) in breadcrumbs" :key="item.path">
-      <span v-if="item.redirect === 'noRedirect' || index === breadcrumbs.length - 1" class="no-redirect">
-        {{ item.meta.title }}
-      </span>
-      <a v-else @click.prevent="handleLink(item)">
-        {{ item.meta.title }}
-      </a>
-    </el-breadcrumb-item>
-  </el-breadcrumb>
-</template>
-
 <script lang="ts" setup>
 import { ref, watch } from "vue"
 import { type RouteLocationMatched, useRoute, useRouter } from "vue-router"
@@ -54,6 +41,19 @@ watch(
 
 getBreadcrumb()
 </script>
+
+<template>
+  <el-breadcrumb class="app-breadcrumb">
+    <el-breadcrumb-item v-for="(item, index) in breadcrumbs" :key="item.path">
+      <span v-if="item.redirect === 'noRedirect' || index === breadcrumbs.length - 1" class="no-redirect">
+        {{ item.meta.title }}
+      </span>
+      <a v-else @click.prevent="handleLink(item)">
+        {{ item.meta.title }}
+      </a>
+    </el-breadcrumb-item>
+  </el-breadcrumb>
+</template>
 
 <style lang="scss" scoped>
 .el-breadcrumb__inner,

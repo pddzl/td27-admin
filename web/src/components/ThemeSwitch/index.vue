@@ -1,3 +1,14 @@
+<script lang="ts" setup>
+import { type ThemeName, useTheme } from "@/hooks/useTheme"
+import { MagicStick } from "@element-plus/icons-vue"
+
+const { themeList, activeThemeName, setTheme } = useTheme()
+
+const handleSetTheme = (name: ThemeName) => {
+  setTheme(name)
+}
+</script>
+
 <template>
   <el-dropdown trigger="click" @command="handleSetTheme">
     <div>
@@ -21,15 +32,3 @@
     </template>
   </el-dropdown>
 </template>
-
-<script lang="ts" setup>
-import { type ThemeName, useTheme } from "@/hooks/useTheme"
-import { MagicStick } from "@element-plus/icons-vue"
-
-const { themeList, activeThemeName, setTheme } = useTheme()
-
-const handleSetTheme = (name: ThemeName) => {
-  setTheme(name)
-}
-</script>
-

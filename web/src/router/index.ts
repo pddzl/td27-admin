@@ -1,9 +1,37 @@
-import { type RouteRecordRaw, createRouter, createWebHashHistory } from 'vue-router'
+import { type RouteRecordRaw, createRouter, createWebHashHistory, createWebHistory } from "vue-router"
 
 const Layout = () => import("@/layout/index.vue")
 
-// 常驻路由
+/** 常驻路由 */
 export const constantRoutes: RouteRecordRaw[] = [
+  {
+    path: "/redirect",
+    component: Layout,
+    meta: {
+      hidden: true
+    },
+    children: [
+      {
+        path: "/redirect/:path(.*)",
+        component: () => import("@/views/redirect/index.vue")
+      }
+    ]
+  },
+  {
+    path: "/403",
+    component: () => import("@/views/error-page/403.vue"),
+    meta: {
+      hidden: true
+    }
+  },
+  {
+    path: "/404",
+    component: () => import("@/views/error-page/404.vue"),
+    meta: {
+      hidden: true
+    },
+    alias: "/:pathMatch(.*)*"
+  },
   {
     path: "/login",
     component: () => import("@/views/login/index.vue"),
@@ -29,12 +57,106 @@ export const constantRoutes: RouteRecordRaw[] = [
     ]
   },
   {
-    path: "/404",
-    component: () => import("@/views/error-page/404.vue"),
+    path: "/table",
+    component: Layout,
+    redirect: "/table/host",
+    name: "Table",
     meta: {
-      hidden: true
+      title: "表格",
+      elIcon: "Grid"
     },
-    alias: "/:pathMatch(.*)*"
+    children: [
+      {
+        path: "host",
+        component: () => import("@/views/table/host/index.vue"),
+        name: "Host",
+        meta: {
+          title: "主机"
+        }
+      },
+      {
+        path: "container",
+        component: () => import("@/views/table/container/index.vue"),
+        name: "Container",
+        meta: {
+          title: "容器"
+        }
+      }
+    ]
+  },
+  {
+    path: "/menu",
+    component: Layout,
+    redirect: "/menu/menu1",
+    name: "Menu",
+    meta: {
+      title: "多级菜单",
+      svgIcon: "menu"
+    },
+    children: [
+      {
+        path: "menu1",
+        component: () => import("@/views/menu/menu1/index.vue"),
+        redirect: "/menu/menu1/menu1-1",
+        name: "Menu1",
+        meta: {
+          title: "menu1"
+        },
+        children: [
+          {
+            path: "menu1-1",
+            component: () => import("@/views/menu/menu1/menu1-1/index.vue"),
+            name: "Menu1-1",
+            meta: {
+              title: "menu1-1"
+            }
+          },
+          {
+            path: "menu1-2",
+            component: () => import("@/views/menu/menu1/menu1-2/index.vue"),
+            redirect: "/menu/menu1/menu1-2/menu1-2-1",
+            name: "Menu1-2",
+            meta: {
+              title: "menu1-2"
+            },
+            children: [
+              {
+                path: "menu1-2-1",
+                component: () => import("@/views/menu/menu1/menu1-2/menu1-2-1/index.vue"),
+                name: "Menu1-2-1",
+                meta: {
+                  title: "menu1-2-1"
+                }
+              },
+              {
+                path: "menu1-2-2",
+                component: () => import("@/views/menu/menu1/menu1-2/menu1-2-2/index.vue"),
+                name: "Menu1-2-2",
+                meta: {
+                  title: "menu1-2-2"
+                }
+              }
+            ]
+          },
+          {
+            path: "menu1-3",
+            component: () => import("@/views/menu/menu1/menu1-3/index.vue"),
+            name: "Menu1-3",
+            meta: {
+              title: "menu1-3"
+            }
+          }
+        ]
+      },
+      {
+        path: "menu2",
+        component: () => import("@/views/menu/menu2/index.vue"),
+        name: "Menu2",
+        meta: {
+          title: "menu2"
+        }
+      }
+    ]
   }
 ]
 
@@ -86,7 +208,10 @@ export const asyncRoutes: RouteRecordRaw[] = [
 ]
 
 const router = createRouter({
-  history: createWebHashHistory(),
+  history:
+    import.meta.env.VITE_ROUTER_HISTORY === "hash"
+      ? createWebHashHistory(import.meta.env.VITE_PUBLIC_PATH)
+      : createWebHistory(import.meta.env.VITE_PUBLIC_PATH),
   routes: constantRoutes
 })
 

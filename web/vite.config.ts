@@ -1,8 +1,9 @@
 import { type ConfigEnv, type UserConfigExport, loadEnv } from "vite"
 import path, { resolve } from "path"
 import vue from "@vitejs/plugin-vue"
-// import { createSvgIconsPlugin } from "vite-plugin-svg-icons"
-// import svgLoader from "vite-svg-loader"
+import vueJsx from "@vitejs/plugin-vue-jsx"
+import { createSvgIconsPlugin } from "vite-plugin-svg-icons"
+import svgLoader from "vite-svg-loader"
 
 /** 配置项文档：https://cn.vitejs.dev/config */
 export default (configEnv: ConfigEnv): UserConfigExport => {
@@ -23,9 +24,9 @@ export default (configEnv: ConfigEnv): UserConfigExport => {
       /** 设置 host: true 才可以使用 Network 的形式，以 IP 访问项目 */
       host: true, // host: "0.0.0.0"
       /** 端口号 */
-      port: 3333,
+      port: 8080,
       /** 是否自动打开浏览器 */
-      open: false,
+      open: true,
       /** 跨域设置允许 */
       cors: true,
       /** 端口被占用时，是否直接退出 */
@@ -64,14 +65,14 @@ export default (configEnv: ConfigEnv): UserConfigExport => {
     /** Vite 插件 */
     plugins: [
       vue(),
+      vueJsx(),
       /** 将 SVG 静态图转化为 Vue 组件 */
-      // svgLoader(),
+      svgLoader(),
       /** SVG */
-      // createSvgIconsPlugin({
-      //   iconDirs: [path.resolve(process.cwd(), "src/icons/svg")],
-      //   symbolId: "icon-[dir]-[name]"
-      // }),
+      createSvgIconsPlugin({
+        iconDirs: [path.resolve(process.cwd(), "src/icons/svg")],
+        symbolId: "icon-[dir]-[name]"
+      })
     ]
   }
 }
-

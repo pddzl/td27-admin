@@ -14,7 +14,7 @@ const props = defineProps({
         <img src="@/assets/layout/logo.png" class="sidebar-logo" />
       </router-link>
       <router-link v-else key="expand" to="/">
-        <img src="@/assets/layout/logo-text.png" class="sidebar-logo-text" />
+        <img src="@/assets/layout/logo-text-1.png" class="sidebar-logo-text" />
       </router-link>
     </transition>
   </div>
@@ -24,9 +24,9 @@ const props = defineProps({
 .sidebar-logo-container {
   position: relative;
   width: 100%;
-  height: var(--td27-header-height);
-  line-height: var(--td27-header-height);
-  background-color: var(--td27-sidebarlogo-bg-color);
+  height: var(--v3-header-height);
+  line-height: var(--v3-header-height);
+  background-color: var(--v3-sidebarlogo-bg-color);
   text-align: center;
   overflow: hidden;
   .sidebar-logo {

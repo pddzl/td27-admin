@@ -1,30 +1,3 @@
-<template>
-  <div class="navigation-bar">
-    <Hamburger :is-active="sidebar.opened" class="hamburger" @toggle-click="toggleSidebar" />
-    <Breadcrumb class="breadcrumb" />
-    <div class="right-menu">
-      <Screenfull v-if="showScreenfull" class="right-menu-item" />
-      <ThemeSwitch v-if="showThemeSwitch" class="right-menu-item" />
-      <el-dropdown class="right-menu-item">
-        <div class="right-menu-avatar">
-          <el-avatar :icon="UserFilled" :size="30" />
-          <span>{{ userStore.username }}</span>
-        </div>
-        <template #dropdown>
-          <el-dropdown-menu>
-            <a target="_blank" href="https://github.com/pddzl/td27-admin">
-              <el-dropdown-item>GitHub</el-dropdown-item>
-            </a>
-            <el-dropdown-item divided @click="logout">
-              <span style="display: block">退出登录</span>
-            </el-dropdown-item>
-          </el-dropdown-menu>
-        </template>
-      </el-dropdown>
-    </div>
-  </div>
-</template>
-
 <script lang="ts" setup>
 import { computed } from "vue"
 import { useRouter } from "vue-router"
@@ -57,12 +30,38 @@ const showScreenfull = computed(() => {
 const toggleSidebar = () => {
   appStore.toggleSidebar(false)
 }
-
 const logout = () => {
   userStore.logout()
   router.push("/login")
 }
 </script>
+
+<template>
+  <div class="navigation-bar">
+    <Hamburger :is-active="sidebar.opened" class="hamburger" @toggle-click="toggleSidebar" />
+    <Breadcrumb class="breadcrumb" />
+    <div class="right-menu">
+      <Screenfull v-if="showScreenfull" class="right-menu-item" />
+      <ThemeSwitch v-if="showThemeSwitch" class="right-menu-item" />
+      <el-dropdown class="right-menu-item">
+        <div class="right-menu-avatar">
+          <el-avatar :icon="UserFilled" :size="30" />
+          <span>{{ userStore.username }}</span>
+        </div>
+        <template #dropdown>
+          <el-dropdown-menu>
+            <a target="_blank" href="https://github.com/pddzl">
+              <el-dropdown-item>GitHub</el-dropdown-item>
+            </a>
+            <el-dropdown-item divided @click="logout">
+              <span style="display: block">退出登录</span>
+            </el-dropdown-item>
+          </el-dropdown-menu>
+        </template>
+      </el-dropdown>
+    </div>
+  </div>
+</template>
 
 <style lang="scss" scoped>
 .navigation-bar {

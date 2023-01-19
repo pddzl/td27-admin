@@ -1,7 +1,7 @@
 /** 布局配置 */
 interface ILayoutSettings {
   /** 是否显示 Settings Panel */
-  // showSettings: boolean
+  showSettings: boolean
   /** 是否显示标签栏 */
   showTagsView: boolean
   /** 是否显示侧边栏 Logo */
@@ -9,27 +9,27 @@ interface ILayoutSettings {
   /** 是否固定 Header */
   fixedHeader: boolean
   /** 是否显示消息通知 */
-  // showNotify: boolean
+  showNotify: boolean
   /** 是否显示切换主题按钮 */
-  // showThemeSwitch: boolean
+  showThemeSwitch: boolean
   /** 是否显示全屏按钮 */
-  // showScreenfull: boolean
+  showScreenfull: boolean
   /** 是否显示灰色模式 */
-  // showGreyMode: boolean
+  showGreyMode: boolean
   /** 是否显示色弱模式 */
-  // showColorWeakness: boolean
+  showColorWeakness: boolean
 }
 
 const layoutSettings: ILayoutSettings = {
-  // showSettings: true,
+  showSettings: true,
   showTagsView: true,
   fixedHeader: true,
   showSidebarLogo: true,
-  // showNotify: true,
-  // showThemeSwitch: true,
-  // showScreenfull: true,
-  // showGreyMode: false,
-  // showColorWeakness: false
+  showNotify: true,
+  showThemeSwitch: true,
+  showScreenfull: true,
+  showGreyMode: false,
+  showColorWeakness: false
 }
 
 export default layoutSettings

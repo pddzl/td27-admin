@@ -28,11 +28,6 @@ const themeList: IThemeList[] = [
 /** 正在应用的主题名称 */
 const activeThemeName = ref<ThemeName>(getActiveThemeName() || "normal")
 
-/** 在 html 根元素上挂载 class */
-const setHtmlClassName = (value: ThemeName) => {
-  document.documentElement.className = value
-}
-
 const initTheme = () => {
   setHtmlClassName(activeThemeName.value)
 }
@@ -41,6 +36,11 @@ const setTheme = (value: ThemeName) => {
   activeThemeName.value = value
   setHtmlClassName(activeThemeName.value)
   setActiveThemeName(activeThemeName.value)
+}
+
+/** 在 html 根元素上挂载 class */
+const setHtmlClassName = (value: ThemeName) => {
+  document.documentElement.className = value
 }
 
 /** 主题 hook */
