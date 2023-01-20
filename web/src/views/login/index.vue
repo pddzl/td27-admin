@@ -1,75 +1,3 @@
-<script lang="ts" setup>
-import { reactive, ref } from "vue"
-import { useRouter } from "vue-router"
-import { useUserStore } from "@/store/modules/user"
-import { User, Lock, Key, Picture, Loading } from "@element-plus/icons-vue"
-import ThemeSwitch from "@/components/ThemeSwitch/index.vue"
-import { type FormInstance, FormRules } from "element-plus"
-import { type ILoginData, getLoginCodeApi } from "@/api/login"
-
-const router = useRouter()
-const loginFormRef = ref<FormInstance | null>(null)
-
-/** 登录按钮 Loading */
-const loading = ref(false)
-/** 验证码图片 URL */
-const codeUrl = ref("")
-/** 登录表单数据 */
-const loginForm: ILoginData = reactive({
-  username: "admin",
-  password: "12345678",
-  code: ""
-})
-/** 登录表单校验规则 */
-const loginFormRules: FormRules = {
-  username: [{ required: true, message: "请输入用户名", trigger: "blur" }],
-  password: [
-    { required: true, message: "请输入密码", trigger: "blur" },
-    { min: 8, max: 16, message: "长度在 8 到 16 个字符", trigger: "blur" }
-  ],
-  code: [{ required: true, message: "请输入验证码", trigger: "blur" }]
-}
-/** 登录逻辑 */
-const handleLogin = () => {
-  loginFormRef.value?.validate((valid: boolean) => {
-    if (valid) {
-      loading.value = true
-      useUserStore()
-        .login({
-          username: loginForm.username,
-          password: loginForm.password,
-          code: loginForm.code
-        })
-        .then(() => {
-          router.push({ path: "/" })
-        })
-        .catch(() => {
-          createCode()
-          loginForm.password = ""
-        })
-        .finally(() => {
-          loading.value = false
-        })
-    } else {
-      return false
-    }
-  })
-}
-/** 创建验证码 */
-const createCode = () => {
-  // 先清空验证码的输入
-  loginForm.code = ""
-  // 获取验证码
-  codeUrl.value = ""
-  getLoginCodeApi().then((res: any) => {
-    codeUrl.value = res.data
-  })
-}
-
-/** 初始化验证码 */
-createCode()
-</script>
-
 <template>
   <div class="login-container">
     <ThemeSwitch class="theme-switch" />
@@ -128,6 +56,79 @@ createCode()
     </div>
   </div>
 </template>
+
+<script lang="ts" setup>
+import { reactive, ref } from "vue"
+import { useRouter } from "vue-router"
+import { useUserStore } from "@/store/modules/user"
+import { User, Lock, Key, Picture, Loading } from "@element-plus/icons-vue"
+import ThemeSwitch from "@/components/ThemeSwitch/index.vue"
+import { type FormInstance, FormRules } from "element-plus"
+import { type ILoginData, getLoginCodeApi } from "@/api/login"
+import { captcha } from "@/api/system/base"
+
+const router = useRouter()
+const loginFormRef = ref<FormInstance | null>(null)
+
+/** 登录按钮 Loading */
+const loading = ref(false)
+/** 验证码图片 URL */
+const codeUrl = ref("")
+/** 登录表单数据 */
+const loginForm: ILoginData = reactive({
+  username: "admin",
+  password: "12345678",
+  code: ""
+})
+/** 登录表单校验规则 */
+const loginFormRules: FormRules = {
+  username: [{ required: true, message: "请输入用户名", trigger: "blur" }],
+  password: [
+    { required: true, message: "请输入密码", trigger: "blur" },
+    { min: 8, max: 16, message: "长度在 8 到 16 个字符", trigger: "blur" }
+  ],
+  code: [{ required: true, message: "请输入验证码", trigger: "blur" }]
+}
+/** 登录逻辑 */
+const handleLogin = () => {
+  loginFormRef.value?.validate((valid: boolean) => {
+    if (valid) {
+      loading.value = true
+      useUserStore()
+        .login({
+          username: loginForm.username,
+          password: loginForm.password,
+          code: loginForm.code
+        })
+        .then(() => {
+          router.push({ path: "/" })
+        })
+        .catch(() => {
+          createCode()
+          loginForm.password = ""
+        })
+        .finally(() => {
+          loading.value = false
+        })
+    } else {
+      return false
+    }
+  })
+}
+/** 创建验证码 */
+const createCode = () => {
+  // 先清空验证码的输入
+  loginForm.code = ""
+  // 获取验证码
+  codeUrl.value = ""
+  captcha().then((res: any) => {
+    codeUrl.value = res.data.picPath
+  })
+}
+
+/** 初始化验证码 */
+createCode()
+</script>
 
 <style lang="scss" scoped>
 .login-container {
