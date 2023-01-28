@@ -35,7 +35,7 @@
               type="text"
               tabindex="3"
               :prefix-icon="Key"
-              maxlength="7"
+              maxlength="6"
               size="large"
             >
               <template #append>
@@ -64,7 +64,7 @@ import { useUserStore } from "@/store/modules/user"
 import { User, Lock, Key, Picture, Loading } from "@element-plus/icons-vue"
 import ThemeSwitch from "@/components/ThemeSwitch/index.vue"
 import { type FormInstance, FormRules } from "element-plus"
-import { type ILoginData, getLoginCodeApi } from "@/api/login"
+import { type ILoginData } from "@/api/login"
 import { captcha } from "@/api/system/base"
 
 const router = useRouter()
