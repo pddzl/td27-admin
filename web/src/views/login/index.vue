@@ -28,9 +28,9 @@
               show-password
             />
           </el-form-item>
-          <el-form-item prop="code">
+          <el-form-item prop="captcha">
             <el-input
-              v-model.trim="loginForm.code"
+              v-model.trim="loginForm.captcha"
               placeholder="验证码"
               type="text"
               tabindex="3"
@@ -64,8 +64,8 @@ import { useUserStore } from "@/store/modules/user"
 import { User, Lock, Key, Picture, Loading } from "@element-plus/icons-vue"
 import ThemeSwitch from "@/components/ThemeSwitch/index.vue"
 import { type FormInstance, FormRules } from "element-plus"
-import { type ILoginData } from "@/api/login"
-import { captcha } from "@/api/system/base"
+// import { type ILoginData } from "@/api/login"
+import { captcha, type ILoginData } from "@/api/system/base"
 
 const router = useRouter()
 const loginFormRef = ref<FormInstance | null>(null)
@@ -76,9 +76,10 @@ const loading = ref(false)
 const codeUrl = ref("")
 /** 登录表单数据 */
 const loginForm: ILoginData = reactive({
-  username: "admin",
-  password: "12345678",
-  code: ""
+  username: "",
+  password: "",
+  captcha: "",
+  captchaId: ""
 })
 /** 登录表单校验规则 */
 const loginFormRules: FormRules = {
@@ -98,7 +99,8 @@ const handleLogin = () => {
         .login({
           username: loginForm.username,
           password: loginForm.password,
-          code: loginForm.code
+          captcha: loginForm.captcha,
+          captchaId: loginForm.captchaId
         })
         .then(() => {
           router.push({ path: "/" })
@@ -118,11 +120,13 @@ const handleLogin = () => {
 /** 创建验证码 */
 const createCode = () => {
   // 先清空验证码的输入
-  loginForm.code = ""
+  // loginForm.code = ""
   // 获取验证码
-  codeUrl.value = ""
+  // codeUrl.value = ""
   captcha().then((res: any) => {
     codeUrl.value = res.data.picPath
+    loginForm.captcha = res.data.captcha
+    loginForm.captchaId = res.data.captchaId
   })
 }
 

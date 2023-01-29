@@ -4,7 +4,8 @@ import { defineStore } from "pinia"
 import { usePermissionStore } from "./permission"
 import { getToken, removeToken, setToken } from "@/utils/cache/cookies"
 import router, { resetRouter } from "@/router"
-import { type ILoginData, loginApi, getUserInfoApi } from "@/api/login"
+import { getUserInfoApi } from "@/api/system/user"
+import { type ILoginData, loginApi } from "@/api/system/base"
 import { type RouteRecordRaw } from "vue-router"
 
 export const useUserStore = defineStore("user", () => {
@@ -22,7 +23,8 @@ export const useUserStore = defineStore("user", () => {
       loginApi({
         username: loginData.username,
         password: loginData.password,
-        code: loginData.code
+        captcha: loginData.captcha,
+        captchaId: loginData.captchaId
       })
         .then((res: any) => {
           setToken(res.data.token)
@@ -39,7 +41,8 @@ export const useUserStore = defineStore("user", () => {
     return new Promise((resolve, reject) => {
       getUserInfoApi()
         .then((res: any) => {
-          roles.value = res.data.roles
+          // roles.value = res.data.roles
+          roles.value = res.data.username
           username.value = res.data.username
           resolve(res)
         })
