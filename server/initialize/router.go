@@ -41,6 +41,9 @@ func Routers() *gin.Engine {
 	// 需要认证的路由
 	PrivateGroup := Router.Group("")
 	PrivateGroup.Use(middleware.JWTAuth())
+	{
+		systemRouter.InitUserRouter(PrivateGroup)
+	}
 
 	global.TD27_LOG.Info("router register success")
 	return Router
