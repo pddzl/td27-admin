@@ -1,12 +1,9 @@
 import { ref, watch } from "vue"
 import store from "@/store"
 import { defineStore } from "pinia"
-import { usePermissionStore } from "./permission"
-import { setToken } from "@/utils/cache/cookies"
-import router, { resetRouter } from "@/router"
+import { resetRouter } from "@/router"
 import { getUserInfoApi } from "@/api/system/user"
 import { type ILoginData, loginApi } from "@/api/system/base"
-import { type RouteRecordRaw } from "vue-router"
 
 export const useUserStore = defineStore("user", () => {
   const token = ref<string>(window.localStorage.getItem("token") || "")
@@ -49,19 +46,6 @@ export const useUserStore = defineStore("user", () => {
         })
     })
   }
-  /** 切换角色 */
-  const changeRoles = async (role: string) => {
-    const newToken = "token-" + role
-    token.value = newToken
-    setToken(newToken)
-    await getInfo()
-    const permissionStore = usePermissionStore()
-    permissionStore.setRoutes(roles.value)
-    resetRouter()
-    permissionStore.dynamicRoutes.forEach((item: RouteRecordRaw) => {
-      router.addRoute(item)
-    })
-  }
   /** 登出 */
   const logout = () => {
     token.value = ""
@@ -81,7 +65,7 @@ export const useUserStore = defineStore("user", () => {
     }
   )
 
-  return { token, roles, username, setRoles, login, getInfo, changeRoles, logout, resetToken }
+  return { token, roles, username, setRoles, login, getInfo, logout, resetToken }
 })
 
 /** 在 setup 外使用 */
