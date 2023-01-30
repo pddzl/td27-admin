@@ -1,15 +1,15 @@
-import { ref } from "vue"
+import { ref, watch } from "vue"
 import store from "@/store"
 import { defineStore } from "pinia"
 import { usePermissionStore } from "./permission"
-import { getToken, removeToken, setToken } from "@/utils/cache/cookies"
+import { removeToken, setToken } from "@/utils/cache/cookies"
 import router, { resetRouter } from "@/router"
 import { getUserInfoApi } from "@/api/system/user"
 import { type ILoginData, loginApi } from "@/api/system/base"
 import { type RouteRecordRaw } from "vue-router"
 
 export const useUserStore = defineStore("user", () => {
-  const token = ref<string>(getToken() || "")
+  const token = ref<string>(window.localStorage.getItem("token") || "")
   const roles = ref<string[]>([])
   const username = ref<string>("")
 
@@ -27,7 +27,7 @@ export const useUserStore = defineStore("user", () => {
         captchaId: loginData.captchaId
       })
         .then((res: any) => {
-          setToken(res.data.token)
+          // setToken(res.data.token)
           token.value = res.data.token
           resolve(true)
         })
@@ -41,8 +41,7 @@ export const useUserStore = defineStore("user", () => {
     return new Promise((resolve, reject) => {
       getUserInfoApi()
         .then((res: any) => {
-          // roles.value = res.data.roles
-          roles.value = res.data.username
+          roles.value = res.data.roles
           username.value = res.data.username
           resolve(res)
         })
@@ -77,6 +76,13 @@ export const useUserStore = defineStore("user", () => {
     token.value = ""
     roles.value = []
   }
+
+  watch(
+    () => token.value,
+    () => {
+      window.localStorage.setItem("token", token.value)
+    }
+  )
 
   return { token, roles, username, setRoles, login, getInfo, changeRoles, logout, resetToken }
 })

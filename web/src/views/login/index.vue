@@ -88,7 +88,7 @@ const loginFormRules: FormRules = {
     { required: true, message: "请输入密码", trigger: "blur" },
     { min: 8, max: 16, message: "长度在 8 到 16 个字符", trigger: "blur" }
   ],
-  code: [{ required: true, message: "请输入验证码", trigger: "blur" }]
+  captcha: [{ required: true, message: "请输入验证码", trigger: "blur" }]
 }
 /** 登录逻辑 */
 const handleLogin = () => {
@@ -107,7 +107,7 @@ const handleLogin = () => {
         })
         .catch(() => {
           createCode()
-          loginForm.password = ""
+          // loginForm.password = ""
         })
         .finally(() => {
           loading.value = false

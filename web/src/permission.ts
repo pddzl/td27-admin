@@ -3,7 +3,7 @@ import { useUserStoreHook } from "@/store/modules/user"
 import { usePermissionStoreHook } from "@/store/modules/permission"
 import { ElMessage } from "element-plus"
 import { whiteList } from "@/config/white-list"
-import { getToken } from "@/utils/cache/cookies"
+// import { getToken } from "@/utils/cache/cookies"
 import asyncRouteSettings from "@/config/async-route"
 import NProgress from "nprogress"
 import "nprogress/nprogress.css"
@@ -15,7 +15,7 @@ router.beforeEach(async (to, _from, next) => {
   const userStore = useUserStoreHook()
   const permissionStore = usePermissionStoreHook()
   // 判断该用户是否登录
-  if (getToken()) {
+  if (userStore.token) {
     if (to.path === "/login") {
       // 如果已经登录，并准备进入 Login 页面，则重定向到主页
       next({ path: "/" })
