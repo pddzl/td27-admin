@@ -2,7 +2,7 @@ import { ref, watch } from "vue"
 import store from "@/store"
 import { defineStore } from "pinia"
 import { usePermissionStore } from "./permission"
-import { removeToken, setToken } from "@/utils/cache/cookies"
+import { setToken } from "@/utils/cache/cookies"
 import router, { resetRouter } from "@/router"
 import { getUserInfoApi } from "@/api/system/user"
 import { type ILoginData, loginApi } from "@/api/system/base"
@@ -27,7 +27,6 @@ export const useUserStore = defineStore("user", () => {
         captchaId: loginData.captchaId
       })
         .then((res: any) => {
-          // setToken(res.data.token)
           token.value = res.data.token
           resolve(true)
         })
@@ -65,14 +64,12 @@ export const useUserStore = defineStore("user", () => {
   }
   /** 登出 */
   const logout = () => {
-    removeToken()
     token.value = ""
     roles.value = []
     resetRouter()
   }
   /** 重置 Token */
   const resetToken = () => {
-    removeToken()
     token.value = ""
     roles.value = []
   }

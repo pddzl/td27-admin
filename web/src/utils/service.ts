@@ -2,7 +2,6 @@ import axios, { type AxiosInstance, type AxiosRequestConfig } from "axios"
 import { useUserStoreHook } from "@/store/modules/user"
 import { ElMessage } from "element-plus"
 import { get } from "lodash-es"
-// import { getToken } from "./cache/cookies"
 
 // const userStore = useUserStoreHook()
 
@@ -94,7 +93,6 @@ function createRequestFunction(service: AxiosInstance) {
     const configDefault = {
       headers: {
         // 携带 Token
-        // Authorization: "Bearer " + getToken(),
         "Content-Type": get(config, "headers.Content-Type", "application/json"),
         "x-token": useUserStoreHook().token
       },
