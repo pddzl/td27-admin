@@ -7,9 +7,14 @@ import (
 
 // CustomClaims Custom claims structure
 type CustomClaims struct {
-	UUID       uuid.UUID
-	ID         uint
-	Username   string
-	BufferTime int64
+	UUID       uuid.UUID `json:"UUID"`
+	ID         uint      `json:"ID"`
+	Username   string    `json:"username"`
+	BufferTime int64     `json:"bufferTime"`
 	jwt.RegisteredClaims
+}
+
+type CustomClaimsRole struct {
+	*CustomClaims
+	Roles []string `json:"roles,omitempty"`
 }

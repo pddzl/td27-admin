@@ -15,6 +15,6 @@ func (u *UserApi) GetUserInfo(c *gin.Context) {
 		response.FailWithMessage("获取失败", c)
 		global.TD27_LOG.Error("获取失败!", zap.Error(err))
 	} else {
-		response.OkWithDetailed(gin.H{"userInfo": userInfo}, "获取成功", c)
+		response.OkWithDetailed(userInfo, "获取成功", c)
 	}
 }
