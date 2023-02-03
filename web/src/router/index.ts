@@ -1,6 +1,6 @@
 import { type RouteRecordRaw, createRouter, createWebHashHistory, createWebHistory } from "vue-router"
 
-const Layout = () => import("@/layout/index.vue")
+const Layout = () => import("@/views/layout/index.vue")
 
 /** 常驻路由 */
 export const constantRoutes: RouteRecordRaw[] = [
@@ -55,35 +55,35 @@ export const constantRoutes: RouteRecordRaw[] = [
         }
       }
     ]
-  },
-  {
-    path: "/table",
-    component: Layout,
-    redirect: "/table/host",
-    name: "Table",
-    meta: {
-      title: "表格",
-      elIcon: "Grid"
-    },
-    children: [
-      {
-        path: "host",
-        component: () => import("@/views/table/host/index.vue"),
-        name: "Host",
-        meta: {
-          title: "主机"
-        }
-      },
-      {
-        path: "container",
-        component: () => import("@/views/table/container/index.vue"),
-        name: "Container",
-        meta: {
-          title: "容器"
-        }
-      }
-    ]
   }
+  // {
+  //   path: "/table",
+  //   component: Layout,
+  //   redirect: "/table/host",
+  //   name: "Table",
+  //   meta: {
+  //     title: "表格",
+  //     elIcon: "Grid"
+  //   },
+  //   children: [
+  //     {
+  //       path: "host",
+  //       component: () => import("@/views/table/host/index.vue"),
+  //       name: "Host",
+  //       meta: {
+  //         title: "主机"
+  //       }
+  //     },
+  //     {
+  //       path: "container",
+  //       component: () => import("@/views/table/container/index.vue"),
+  //       name: "Container",
+  //       meta: {
+  //         title: "容器"
+  //       }
+  //     }
+  //   ]
+  // }
 ]
 
 /**
