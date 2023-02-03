@@ -3,7 +3,7 @@ import { useUserStoreHook } from "@/store/modules/user"
 import { usePermissionStoreHook } from "@/store/modules/permission"
 import { ElMessage } from "element-plus"
 import { whiteList } from "@/config/white-list"
-import asyncRouteSettings from "@/config/async-route"
+// import asyncRouteSettings from "@/config/async-route"
 import NProgress from "nprogress"
 import "nprogress/nprogress.css"
 
