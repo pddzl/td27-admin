@@ -3,7 +3,7 @@ import store from "@/store"
 import { defineStore } from "pinia"
 import { resetRouter } from "@/router"
 import { getUserInfoApi } from "@/api/system/user"
-import { type ILoginData, loginApi } from "@/api/system/base"
+import { type ILoginRequestData, loginApi } from "@/api/system/base"
 
 export const useUserStore = defineStore("user", () => {
   const token = ref<string>(window.localStorage.getItem("token") || "")
@@ -15,7 +15,7 @@ export const useUserStore = defineStore("user", () => {
     roles.value = value
   }
   /** 登录 */
-  const login = (loginData: ILoginData) => {
+  const login = (loginData: ILoginRequestData) => {
     return new Promise((resolve, reject) => {
       loginApi({
         username: loginData.username,
@@ -23,7 +23,7 @@ export const useUserStore = defineStore("user", () => {
         captcha: loginData.captcha,
         captchaId: loginData.captchaId
       })
-        .then((res: any) => {
+        .then((res) => {
           token.value = res.data.token
           resolve(true)
         })

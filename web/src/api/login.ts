@@ -1,6 +1,6 @@
 import { request } from "@/utils/service"
 
-export interface ILoginData {
+export interface ILoginRequestData {
   /** admin 或 editor */
   username: "admin" | "editor"
   /** 密码 */
@@ -17,7 +17,7 @@ export function getLoginCodeApi() {
   })
 }
 /** 登录并返回 Token */
-export function loginApi(data: ILoginData) {
+export function loginApi(data: ILoginRequestData) {
   return request({
     url: "users/login",
     method: "post",

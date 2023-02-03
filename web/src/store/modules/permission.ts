@@ -11,37 +11,37 @@ export const usePermissionStore = defineStore("permission", () => {
   const dynamicRoutes = ref<RouteRecordRaw[]>([])
 
   const setRoutes = async () => {
-    const asyncRouterRes = await getMenuList()
-    const asyncRouterList: any[] = asyncRouterRes.data.list
-    // const asyncRouterList: any[] = [
-    //   {
-    //     id: 1,
-    //     pid: 0,
-    //     path: "/table",
-    //     name: "Table",
-    //     component: "layout/index.vue",
-    //     redirect: "/table/host",
-    //     meta: { title: "表格", elIcon: "Grid" }
-    //   },
-    //   {
-    //     id: 2,
-    //     pid: 1,
-    //     path: "host",
-    //     name: "Host",
-    //     component: "table/host/index.vue",
-    //     redirect: "",
-    //     meta: { title: "主机" }
-    //   },
-    //   {
-    //     id: 3,
-    //     pid: 1,
-    //     path: "container",
-    //     name: "Container",
-    //     component: "table/container/index.vue",
-    //     redirect: "",
-    //     meta: { title: "容器" }
-    //   }
-    // ]
+    // const asyncRouterRes = await getMenuList()
+    // const asyncRouterList: any[] = asyncRouterRes.data.list
+    const asyncRouterList: any[] = [
+      {
+        id: 1,
+        pid: 0,
+        path: "/table",
+        name: "Table",
+        component: "layout/index.vue",
+        redirect: "/table/host",
+        meta: { title: "表格", elIcon: "Grid" }
+      },
+      {
+        id: 2,
+        pid: 1,
+        path: "host",
+        name: "Host",
+        component: "table/host/index.vue",
+        redirect: "",
+        meta: { title: "主机" }
+      },
+      {
+        id: 3,
+        pid: 1,
+        path: "container",
+        name: "Container",
+        component: "table/container/index.vue",
+        redirect: "",
+        meta: { title: "容器" }
+      }
+    ]
 
     // 初始化路由信息对象
     const menusMap: any = {}
