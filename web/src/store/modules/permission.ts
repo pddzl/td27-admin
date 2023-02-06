@@ -13,7 +13,6 @@ export const usePermissionStore = defineStore("permission", () => {
   const setRoutes = async () => {
     const asyncRouterRes: any = await getMenus()
     const asyncRouterList: any[] = asyncRouterRes.data
-    console.log("asyncRouterList", asyncRouterList)
     // const asyncRouterList: any[] = [
     //   {
     //     id: 1,
@@ -71,7 +70,6 @@ export const usePermissionStore = defineStore("permission", () => {
     })
 
     dynamicRoutes.value = Object.values(menusMap)
-    console.log("dynamicRoutes", dynamicRoutes.value)
 
     routes.value = constantRoutes.concat(dynamicRoutes.value)
   }

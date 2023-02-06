@@ -38,7 +38,7 @@ router.beforeEach(async (to, _from, next) => {
           await userStore.getInfo()
           // const roles = userStore.roles
           // 根据角色生成可访问的 Routes（可访问路由 = 常驻路由 + 有访问权限的动态路由）
-          permissionStore.setRoutes()
+          await permissionStore.setRoutes()
           // 将'有访问权限的动态路由' 添加到 Router 中
           permissionStore.dynamicRoutes.forEach((route) => {
             router.addRoute(route)
