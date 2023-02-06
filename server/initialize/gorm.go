@@ -46,6 +46,7 @@ func RegisterTables(db *gorm.DB) {
 	err := db.AutoMigrate(
 		system.RoleModel{},
 		system.UserModel{},
+		system.MenuModel{},
 		system.JwtBlacklist{},
 	)
 

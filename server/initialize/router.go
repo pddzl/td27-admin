@@ -43,6 +43,7 @@ func Routers() *gin.Engine {
 	PrivateGroup.Use(middleware.JWTAuth())
 	{
 		systemRouter.InitUserRouter(PrivateGroup)
+		systemRouter.InitMenuRouter(PrivateGroup)
 	}
 
 	global.TD27_LOG.Info("router register success")

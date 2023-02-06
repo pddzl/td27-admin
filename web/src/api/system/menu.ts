@@ -1,9 +1,9 @@
 import { request } from "@/utils/service"
 
 // 获取动态路由
-export function getMenuList() {
+export function getMenus() {
   return request({
-    url: "/menu/getMenuList",
+    url: "/menu/getMenus",
     method: "get"
   })
 }

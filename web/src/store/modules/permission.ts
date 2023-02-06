@@ -4,44 +4,45 @@ import { defineStore } from "pinia"
 import { type RouteRecordRaw } from "vue-router"
 import { constantRoutes } from "@/router"
 import { dynamicImport } from "@/utils/asyncRouter"
-import { getMenuList } from "@/api/system/menu"
+import { getMenus } from "@/api/system/menu"
 
 export const usePermissionStore = defineStore("permission", () => {
   const routes = ref<RouteRecordRaw[]>([])
   const dynamicRoutes = ref<RouteRecordRaw[]>([])
 
   const setRoutes = async () => {
-    // const asyncRouterRes = await getMenuList()
-    // const asyncRouterList: any[] = asyncRouterRes.data.list
-    const asyncRouterList: any[] = [
-      {
-        id: 1,
-        pid: 0,
-        path: "/table",
-        name: "Table",
-        component: "layout/index.vue",
-        redirect: "/table/host",
-        meta: { title: "表格", elIcon: "Grid" }
-      },
-      {
-        id: 2,
-        pid: 1,
-        path: "host",
-        name: "Host",
-        component: "table/host/index.vue",
-        redirect: "",
-        meta: { title: "主机" }
-      },
-      {
-        id: 3,
-        pid: 1,
-        path: "container",
-        name: "Container",
-        component: "table/container/index.vue",
-        redirect: "",
-        meta: { title: "容器" }
-      }
-    ]
+    const asyncRouterRes: any = await getMenus()
+    const asyncRouterList: any[] = asyncRouterRes.data
+    console.log("asyncRouterList", asyncRouterList)
+    // const asyncRouterList: any[] = [
+    //   {
+    //     id: 1,
+    //     pid: 0,
+    //     path: "/table",
+    //     name: "Table",
+    //     component: "layout/index.vue",
+    //     redirect: "/table/host",
+    //     meta: { title: "表格", elIcon: "Grid" }
+    //   },
+    //   {
+    //     id: 2,
+    //     pid: 1,
+    //     path: "host",
+    //     name: "Host",
+    //     component: "table/host/index.vue",
+    //     redirect: "",
+    //     meta: { title: "主机" }
+    //   },
+    //   {
+    //     id: 3,
+    //     pid: 1,
+    //     path: "container",
+    //     name: "Container",
+    //     component: "table/container/index.vue",
+    //     redirect: "",
+    //     meta: { title: "容器" }
+    //   }
+    // ]
 
     // 初始化路由信息对象
     const menusMap: any = {}
@@ -52,10 +53,12 @@ export const usePermissionStore = defineStore("permission", () => {
       const item: RouteRecordRaw = {
         path,
         name,
-        // component: () => modules[`../views/${component}`],
         component: () => dynamicImport(component),
-        redirect,
         meta
+      }
+
+      if (redirect) {
+        item.redirect = redirect
       }
 
       // 判断是否为根节点
@@ -68,6 +71,7 @@ export const usePermissionStore = defineStore("permission", () => {
     })
 
     dynamicRoutes.value = Object.values(menusMap)
+    console.log("dynamicRoutes", dynamicRoutes.value)
 
     routes.value = constantRoutes.concat(dynamicRoutes.value)
   }
