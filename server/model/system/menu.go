@@ -13,19 +13,20 @@ type MenuModel struct {
 	UpdatedAt time.Time      `json:"-"`                     // 更新时间
 	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`        // 删除时间
 	Pid       uint           `json:"pid"`                   // 父菜单ID
-	Name      string         `json:"name"`                  // 路由名称
+	Name      string         `json:"name,omitempty"`        // 路由名称
 	Path      string         `json:"path"`                  // 路由路径
 	Redirect  string         `json:"redirect,omitempty"`    // 重定向
-	Component string         `json:"component"`             // 对端组件
+	Component string         `json:"component"`             // 前端组件
 	Meta      Meta           `json:"meta" gorm:"type:json"` // 元数据
 	Roles     []*RoleModel   `json:"-" gorm:"many2many:role_menus;"`
 }
 
 type Meta struct {
-	Hidden  bool   `json:"hidden"`  // 菜单是否隐藏
-	Title   string `json:"title"`   // 菜单名
-	SvgIcon string `json:"svgIcon"` // 图标
-	Affix   bool   `json:"affix"`   // 是否固定
+	Hidden  bool   `json:"hidden,omitempty"`  // 菜单是否隐藏
+	Title   string `json:"title,omitempty"`   // 菜单名
+	ElIcon  string `json:"elIcon,omitempty"`  // element图标
+	SvgIcon string `json:"svgIcon,omitempty"` // svg图标
+	Affix   bool   `json:"affix,omitempty"`   // 是否固定
 }
 
 func (m Meta) Value() (driver.Value, error) {

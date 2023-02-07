@@ -51,13 +51,19 @@ export const usePermissionStore = defineStore("permission", () => {
       // 重新构建路由对象
       const item: RouteRecordRaw = {
         path,
-        name,
-        component: () => dynamicImport(component),
-        meta
+        component: () => dynamicImport(component)
+      }
+
+      if (name) {
+        item.name = name
       }
 
       if (redirect) {
         item.redirect = redirect
+      }
+
+      if (JSON.stringify(meta) !== "{}") {
+        item.meta = meta
       }
 
       // 判断是否为根节点

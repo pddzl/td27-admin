@@ -38,24 +38,24 @@ export const constantRoutes: RouteRecordRaw[] = [
     meta: {
       hidden: true
     }
-  },
-  {
-    path: "/",
-    component: Layout,
-    redirect: "/dashboard",
-    children: [
-      {
-        path: "dashboard",
-        component: () => import("@/views/dashboard/index.vue"),
-        name: "Dashboard",
-        meta: {
-          title: "首页",
-          svgIcon: "dashboard",
-          affix: true
-        }
-      }
-    ]
   }
+  // {
+  //   path: "/",
+  //   component: Layout,
+  //   redirect: "/dashboard",
+  //   children: [
+  //     {
+  //       path: "dashboard",
+  //       component: () => import("@/views/dashboard/index.vue"),
+  //       name: "Dashboard",
+  //       meta: {
+  //         title: "首页",
+  //         svgIcon: "dashboard",
+  //         affix: true
+  //       }
+  //     }
+  //   ]
+  // }
   // {
   //   path: "/table",
   //   component: Layout,
