@@ -36,7 +36,7 @@ export const useUserStore = defineStore("user", () => {
   const getInfo = () => {
     return new Promise((resolve, reject) => {
       getUserInfoApi()
-        .then((res: any) => {
+        .then((res) => {
           roles.value = res.data.roles
           username.value = res.data.username
           resolve(res)

@@ -4,15 +4,21 @@ import { defineStore } from "pinia"
 import { type RouteRecordRaw } from "vue-router"
 import { constantRoutes } from "@/router"
 import { dynamicImport } from "@/utils/asyncRouter"
-import { getMenus } from "@/api/system/menu"
+import { type MenusData, getMenus } from "@/api/system/menu"
 
 export const usePermissionStore = defineStore("permission", () => {
   const routes = ref<RouteRecordRaw[]>([])
   const dynamicRoutes = ref<RouteRecordRaw[]>([])
+  /** 左侧栏菜单管理的数据 */
+  interface MenusDataFormat extends MenusData {
+    children: MenusData[]
+  }
+  const menusDataFormatList = ref<MenusDataFormat[]>([])
+  const asyncRouterList = ref<MenusData[]>([])
 
   const setRoutes = async () => {
-    const asyncRouterRes: any = await getMenus()
-    const asyncRouterList: any[] = asyncRouterRes.data
+    const asyncRouterRes = await getMenus()
+    asyncRouterList.value = asyncRouterRes.data
     // const asyncRouterList: any[] = [
     //   {
     //     id: 1,
@@ -45,42 +51,39 @@ export const usePermissionStore = defineStore("permission", () => {
 
     // 初始化路由信息对象
     const menusMap: any = {}
-    asyncRouterList.map((v) => {
+    const menusMapRaw: any = {}
+    asyncRouterList.value.map((v) => {
       const { path, name, component, redirect, meta } = v
 
       // 重新构建路由对象
-      const item: RouteRecordRaw = {
+      const item = {
+        name,
         path,
-        component: () => dynamicImport(component)
-      }
-
-      if (name) {
-        item.name = name
-      }
-
-      if (redirect) {
-        item.redirect = redirect
-      }
-
-      if (JSON.stringify(meta) !== "{}") {
-        item.meta = meta
+        component: () => dynamicImport(component),
+        redirect,
+        meta
       }
 
       // 判断是否为根节点
       if (v.pid === 0) {
         menusMap[v.id] = item
+        menusMapRaw[v.id] = v
       } else {
         !menusMap[v.pid].children && (menusMap[v.pid].children = [])
         menusMap[v.pid].children.push(item)
+
+        !menusMapRaw[v.pid].children && (menusMapRaw[v.pid].children = [])
+        menusMapRaw[v.pid].children.push(v)
       }
     })
 
     dynamicRoutes.value = Object.values(menusMap)
+    menusDataFormatList.value = Object.values(menusMapRaw)
 
     routes.value = constantRoutes.concat(dynamicRoutes.value)
   }
 
-  return { routes, dynamicRoutes, setRoutes }
+  return { routes, dynamicRoutes, menusDataFormatList, setRoutes }
 })
 
 /** 在 setup 外使用 */
