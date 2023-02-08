@@ -16,6 +16,11 @@ export interface MenusData {
   }
 }
 
+/** 左侧栏菜单管理的数据 */
+export interface MenusDataFormat extends MenusData {
+  children: MenusData[]
+}
+
 type MenusResponseData = IApiResponseData<MenusData[]>
 
 // 获取动态路由
