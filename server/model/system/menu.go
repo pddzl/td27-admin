@@ -24,6 +24,7 @@ type MenuModel struct {
 type Meta struct {
 	Hidden  bool   `json:"hidden,omitempty"`  // 菜单是否隐藏
 	Title   string `json:"title,omitempty"`   // 菜单名
+	Icon    string `json:"icon,omitempty"`    // 图标
 	ElIcon  string `json:"elIcon,omitempty"`  // element图标
 	SvgIcon string `json:"svgIcon,omitempty"` // svg图标
 	Affix   bool   `json:"affix,omitempty"`   // 是否固定
