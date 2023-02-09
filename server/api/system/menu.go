@@ -31,7 +31,7 @@ func (ma *MenuApi) GetMenus(c *gin.Context) {
 func (ma *MenuApi) AddMenu(c *gin.Context) {
 	var menuReq systemReq.Menu
 	_ = c.ShouldBindJSON(&menuReq)
-	
+
 	// 参数校验
 	validate := validator.New()
 	if err := validate.Struct(&menuReq); err != nil {

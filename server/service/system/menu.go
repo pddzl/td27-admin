@@ -10,10 +10,26 @@ import (
 
 type MenuService struct{}
 
-func (ms *MenuService) GetMenus(roles []string) (menuList []systemModel.MenuModel, err error) {
-	var menuModels []systemModel.MenuModel
-	err = global.TD27_DB.Preload("Roles").Find(&menuModels).Error
+func getTreeMap(menuListFormat []systemModel.MenuModel, menuList []systemModel.MenuModel) {
+	for index, menuF := range menuListFormat {
+		for _, menu := range menuList {
+			if menuF.ID == menu.Pid {
+				// menuF 只是个复制值
+				//menuF.Children = append(menuF.Children, menu)
+				menuListFormat[index].Children = append(menuListFormat[index].Children, menu)
+			}
+		}
+		if len(menuF.Children) > 0 {
+			getTreeMap(menuF.Children, menuList)
+		}
+	}
+}
 
+func (ms *MenuService) GetMenus(roles []string) ([]systemModel.MenuModel, error) {
+	var menuModels []systemModel.MenuModel
+	err := global.TD27_DB.Preload("Roles").Find(&menuModels).Error
+
+	menuList := make([]systemModel.MenuModel, 0)
 	for _, menu := range menuModels {
 		for _, menuRole := range menu.Roles {
 			if utils.IsContain(roles, menuRole.RoleName) {
@@ -23,7 +39,16 @@ func (ms *MenuService) GetMenus(roles []string) (menuList []systemModel.MenuMode
 		}
 	}
 
-	return menuList, err
+	menuListFormat := make([]systemModel.MenuModel, 0)
+	for _, menu := range menuList {
+		if menu.Pid == 0 {
+			menuListFormat = append(menuListFormat, menu)
+		}
+	}
+
+	getTreeMap(menuListFormat, menuList)
+
+	return menuListFormat, err
 }
 
 func (ms *MenuService) AddMenu(menuRaw systemReq.Menu) bool {

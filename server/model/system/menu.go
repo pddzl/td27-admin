@@ -18,6 +18,7 @@ type MenuModel struct {
 	Redirect  string         `json:"redirect,omitempty"`    // 重定向
 	Component string         `json:"component"`             // 前端组件
 	Meta      Meta           `json:"meta" gorm:"type:json"` // 元数据
+	Children  []MenuModel    `json:"children,omitempty" gorm:"-"`
 	Roles     []*RoleModel   `json:"-" gorm:"many2many:role_menus;"`
 }
 
