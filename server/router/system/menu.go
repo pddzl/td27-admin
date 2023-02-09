@@ -12,6 +12,7 @@ func (u *MenuRouter) InitMenuRouter(Router *gin.RouterGroup) (R gin.IRoutes) {
 	menuApi := api.ApiGroupApp.SystemApiGroup.MenuApi
 	{
 		menuRouter.GET("getMenus", menuApi.GetMenus)
+		menuRouter.POST("addMenu", menuApi.AddMenu)
 	}
 	return menuRouter
 }

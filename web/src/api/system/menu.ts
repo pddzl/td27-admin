@@ -30,3 +30,23 @@ export function getMenus() {
     method: "get"
   })
 }
+
+export interface addMenuData {
+  pid: number
+  name: string
+  path: string
+  redirect: string
+  component: string
+  hidden: boolean
+  title: string
+  icon: string
+  affix: boolean
+}
+
+export function addMenuApi(data: addMenuData) {
+  return request<IApiResponseData<null>>({
+    url: "menu/addMenu",
+    method: "post",
+    data
+  })
+}
