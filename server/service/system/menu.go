@@ -19,8 +19,8 @@ func getTreeMap(menuListFormat []systemModel.MenuModel, menuList []systemModel.M
 				menuListFormat[index].Children = append(menuListFormat[index].Children, menu)
 			}
 		}
-		if len(menuF.Children) > 0 {
-			getTreeMap(menuF.Children, menuList)
+		if len(menuListFormat[index].Children) > 0 {
+			getTreeMap(menuListFormat[index].Children, menuList)
 		}
 	}
 }
@@ -29,6 +29,7 @@ func (ms *MenuService) GetMenus(roles []string) ([]systemModel.MenuModel, error)
 	var menuModels []systemModel.MenuModel
 	err := global.TD27_DB.Preload("Roles").Find(&menuModels).Error
 
+	// 过滤角色拥有的路由
 	menuList := make([]systemModel.MenuModel, 0)
 	for _, menu := range menuModels {
 		for _, menuRole := range menu.Roles {

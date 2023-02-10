@@ -10,14 +10,11 @@ export interface MenusData {
   meta: {
     hidden: boolean
     title: string
+    icon: string
     elIcon: string
     svgIcon: string
-    affix: string
+    affix: boolean
   }
-}
-
-/** 左侧栏菜单管理的数据 */
-export interface MenusDataFormat extends MenusData {
   children: MenusData[]
 }
 

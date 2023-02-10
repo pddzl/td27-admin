@@ -92,14 +92,14 @@
 import { ref, reactive } from "vue"
 import { ElMessage, type FormInstance, type FormRules, type CascaderOption } from "element-plus"
 import { usePermissionStoreHook } from "@/store/modules/permission"
-import { type MenusDataFormat, type addMenuData, addMenuApi } from "@/api/system/menu"
+import { type MenusData, type addMenuData, addMenuApi } from "@/api/system/menu"
 import WarningBar from "@/components/warningBar/warningBar.vue"
 
 const loading = ref<boolean>(false)
 const dialogVisible = ref<boolean>(false)
-const tableData = ref<MenusDataFormat[]>([])
+const tableData = ref<MenusData[]>([])
 const permissionStore = usePermissionStoreHook()
-tableData.value = permissionStore.menusDataFormatList
+tableData.value = permissionStore.asyncRouterList
 
 const dialogTitle = ref<string>("")
 
