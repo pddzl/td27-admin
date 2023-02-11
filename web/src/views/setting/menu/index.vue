@@ -93,15 +93,21 @@
 <script lang="ts" setup>
 import { ref, reactive } from "vue"
 import { ElMessage, type FormInstance, type FormRules, type CascaderOption } from "element-plus"
-import { usePermissionStoreHook } from "@/store/modules/permission"
-import { type MenusData, type addMenuData, addMenuApi } from "@/api/system/menu"
+// import { usePermissionStoreHook } from "@/store/modules/permission"
+import { type MenusData, type reqMenu, getMenus, addMenuApi, editMenuApi } from "@/api/system/menu"
 import WarningBar from "@/components/warningBar/warningBar.vue"
 
 const loading = ref<boolean>(false)
 const dialogVisible = ref<boolean>(false)
+
 const tableData = ref<MenusData[]>([])
-const permissionStore = usePermissionStoreHook()
-tableData.value = permissionStore.asyncRouterList
+const getTableData = async () => {
+  const asyncRouterRes = await getMenus()
+  tableData.value = asyncRouterRes.data
+}
+getTableData()
+// const permissionStore = usePermissionStoreHook()
+// tableData.value = permissionStore.asyncRouterList
 
 const dialogTitle = ref<string>("")
 
@@ -139,15 +145,20 @@ const setMenuOptions = (menuData: any, optionsData: CascaderOption[]) => {
   }
 }
 
+let kind: string
+
 const addMenuDialog = () => {
   dialogTitle.value = "新增菜单"
   setOptions()
+  kind = "Add"
   dialogVisible.value = true
 }
 
 const editMenuDialog = (row: MenusData) => {
   dialogTitle.value = "编辑菜单"
   setOptions()
+  kind = "Edit"
+  formData.id = row.id
   formData.pid = row.pid
   formData.name = row.name
   formData.path = row.path
@@ -200,7 +211,8 @@ const handleClose = (done: Function) => {
   done()
 }
 
-const formData = reactive<addMenuData>({
+const formData = reactive<reqMenu>({
+  id: 0,
   name: "",
   path: "",
   component: "",
@@ -216,9 +228,18 @@ const operateAction = (formEl: FormInstance | undefined) => {
   if (!formEl) return
   formEl.validate(async (valid) => {
     if (valid) {
-      const res = await addMenuApi(formData)
-      if (res.code === 0) {
-        ElMessage({ type: "success", message: res.msg })
+      if (kind === "Add") {
+        const res = await addMenuApi(formData)
+        if (res.code === 0) {
+          ElMessage({ type: "success", message: res.msg })
+          getTableData()
+        }
+      } else if (kind === "Edit") {
+        const res = await editMenuApi(formData)
+        if (res.code === 0) {
+          ElMessage({ type: "success", message: res.msg })
+          getTableData()
+        }
       }
       initForm()
       dialogVisible.value = false

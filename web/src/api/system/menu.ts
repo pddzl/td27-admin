@@ -28,7 +28,8 @@ export function getMenus() {
   })
 }
 
-export interface addMenuData {
+export interface reqMenu {
+  id: number
   pid: number
   name: string
   path: string
@@ -40,9 +41,17 @@ export interface addMenuData {
   affix: boolean
 }
 
-export function addMenuApi(data: addMenuData) {
+export function addMenuApi(data: reqMenu) {
   return request<IApiResponseData<null>>({
     url: "menu/addMenu",
+    method: "post",
+    data
+  })
+}
+
+export function editMenuApi(data: reqMenu) {
+  return request<IApiResponseData<null>>({
+    url: "menu/editMenu",
     method: "post",
     data
   })

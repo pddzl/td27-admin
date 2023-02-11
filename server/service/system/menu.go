@@ -74,10 +74,26 @@ func (ms *MenuService) AddMenu(menuRaw systemReq.Menu) bool {
 	return true
 }
 
-func (ms *MenuService) UpdateMenu(menuRaw systemReq.Menu) error {
+func (ms *MenuService) UpdateMenu(menuRaw systemReq.EditMenuReq) (err error) {
 	var menuModel systemModel.MenuModel
+	var metaData systemModel.Meta
 
-	if errors.Is(global.TD27_DB.Where("name = ?", menuRaw.Name).First(&menuModel).Error, gorm.ErrRecordNotFound) {
-
+	if errors.Is(global.TD27_DB.Where("id = ?", menuRaw.Id).First(&menuModel).Error, gorm.ErrRecordNotFound) {
+		return errors.New("菜单不存在")
 	}
+
+	metaData.Icon = menuRaw.Icon
+	metaData.Title = menuRaw.Title
+	metaData.Hidden = menuRaw.Hidden
+	metaData.Affix = menuRaw.Affix
+
+	err = global.TD27_DB.Model(&menuModel).Updates(map[string]interface{}{"pid": menuRaw.Pid,
+		"name":      menuRaw.Name,
+		"path":      menuRaw.Path,
+		"component": menuRaw.Component,
+		"redirect":  menuRaw.Redirect,
+		"meta":      metaData,
+	}).Error
+
+	return
 }

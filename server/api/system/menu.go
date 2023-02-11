@@ -48,14 +48,21 @@ func (ma *MenuApi) AddMenu(c *gin.Context) {
 }
 
 func (ma *MenuApi) UpdateMenu(c *gin.Context) {
-	var menuReq systemReq.Menu
-	_ = c.ShouldBindJSON(&menuReq)
+	var editMenuReq systemReq.EditMenuReq
+	_ = c.ShouldBindJSON(&editMenuReq)
 
 	// 参数校验
 	validate := validator.New()
-	if err := validate.Struct(&menuReq); err != nil {
+	if err := validate.Struct(&editMenuReq); err != nil {
 		response.FailWithMessage("请求参数错误", c)
 		global.TD27_LOG.Error("请求参数错误", zap.Error(err))
 		return
+	}
+
+	if err := menuService.UpdateMenu(editMenuReq); err != nil {
+		response.FailWithMessage("编辑失败", c)
+		global.TD27_LOG.Error("编辑失败", zap.Error(err))
+	} else {
+		response.OkWithMessage("编辑成功", c)
 	}
 }
