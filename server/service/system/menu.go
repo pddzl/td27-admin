@@ -1,7 +1,9 @@
 package system
 
 import (
+	"errors"
 	"go.uber.org/zap"
+	"gorm.io/gorm"
 	"server/global"
 	systemModel "server/model/system"
 	systemReq "server/model/system/request"
@@ -70,4 +72,12 @@ func (ms *MenuService) AddMenu(menuRaw systemReq.Menu) bool {
 	}
 
 	return true
+}
+
+func (ms *MenuService) UpdateMenu(menuRaw systemReq.Menu) error {
+	var menuModel systemModel.MenuModel
+
+	if errors.Is(global.TD27_DB.Where("name = ?", menuRaw.Name).First(&menuModel).Error, gorm.ErrRecordNotFound) {
+
+	}
 }

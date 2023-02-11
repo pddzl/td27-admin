@@ -20,7 +20,9 @@
           <el-table-column prop="component" label="组件路径" min-width="180" align="center" />
           <el-table-column fixed="right" label="操作" width="180" align="center">
             <template #default="scope">
-              <el-button type="primary" text icon="Edit" size="small" @click="editMenuAction()">编辑</el-button>
+              <el-button type="primary" text icon="Edit" size="small" @click="editMenuDialog(scope.row)"
+                >编辑</el-button
+              >
               <el-button type="danger" text icon="Delete" size="small" @click="deleteMenuAction()">删除</el-button>
             </template>
           </el-table-column>
@@ -143,7 +145,29 @@ const addMenuDialog = () => {
   dialogVisible.value = true
 }
 
-const editMenuAction = () => {}
+const editMenuDialog = (row: MenusData) => {
+  dialogTitle.value = "编辑菜单"
+  setOptions()
+  formData.pid = row.pid
+  formData.name = row.name
+  formData.path = row.path
+  formData.component = row.component
+  formData.redirect = row.redirect
+  formData.title = row.meta.title
+  formData.icon = row.meta.icon
+  if (!row.meta.hidden) {
+    formData.hidden = false
+  } else {
+    formData.hidden = true
+  }
+  if (!row.meta.affix) {
+    formData.affix = false
+  } else {
+    formData.affix = true
+  }
+  dialogVisible.value = true
+}
+
 const deleteMenuAction = () => {}
 
 // 表单

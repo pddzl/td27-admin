@@ -46,3 +46,16 @@ func (ma *MenuApi) AddMenu(c *gin.Context) {
 		response.OkWithMessage("添加成功", c)
 	}
 }
+
+func (ma *MenuApi) UpdateMenu(c *gin.Context) {
+	var menuReq systemReq.Menu
+	_ = c.ShouldBindJSON(&menuReq)
+
+	// 参数校验
+	validate := validator.New()
+	if err := validate.Struct(&menuReq); err != nil {
+		response.FailWithMessage("请求参数错误", c)
+		global.TD27_LOG.Error("请求参数错误", zap.Error(err))
+		return
+	}
+}
