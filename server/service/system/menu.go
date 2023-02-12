@@ -99,5 +99,11 @@ func (ms *MenuService) UpdateMenu(menuRaw systemReq.EditMenuReq) (err error) {
 }
 
 func (ms *MenuService) DeleteMenu(id uint) (err error) {
-	return global.TD27_DB.Unscoped().Delete(&systemModel.MenuModel{}, id).Error
+	var menuModel systemModel.MenuModel
+	if errors.Is(global.TD27_DB.Where("id = ?", id).First(&menuModel).Error, gorm.ErrRecordNotFound) {
+		return errors.New("菜单不存在")
+	}
+	err = global.TD27_DB.Unscoped().Select("Roles").Delete(&menuModel).Error
+
+	return err
 }
