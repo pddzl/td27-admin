@@ -97,3 +97,7 @@ func (ms *MenuService) UpdateMenu(menuRaw systemReq.EditMenuReq) (err error) {
 
 	return
 }
+
+func (ms *MenuService) DeleteMenu(id uint) (err error) {
+	return global.TD27_DB.Delete(&systemModel.MenuModel{}, id).Error
+}

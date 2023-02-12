@@ -5,6 +5,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	"go.uber.org/zap"
 	"server/global"
+	"server/model/common/request"
 	"server/model/common/response"
 	systemReq "server/model/system/request"
 	"server/utils"
@@ -64,5 +65,25 @@ func (ma *MenuApi) UpdateMenu(c *gin.Context) {
 		global.TD27_LOG.Error("编辑失败", zap.Error(err))
 	} else {
 		response.OkWithMessage("编辑成功", c)
+	}
+}
+
+func (ma *MenuApi) DeleteMenu(c *gin.Context) {
+	var cId request.CId
+	_ = c.ShouldBindJSON(&cId)
+
+	// 参数校验
+	validate := validator.New()
+	if err := validate.Struct(&cId); err != nil {
+		response.FailWithMessage("请求参数错误", c)
+		global.TD27_LOG.Error("请求参数错误", zap.Error(err))
+		return
+	}
+
+	if err := menuService.DeleteMenu(cId.ID); err != nil {
+		response.FailWithMessage("删除失败", c)
+		global.TD27_LOG.Error("删除失败", zap.Error(err))
+	} else {
+		response.OkWithMessage("删除成功", c)
 	}
 }
