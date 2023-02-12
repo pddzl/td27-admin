@@ -23,7 +23,9 @@
               <el-button type="primary" text icon="Edit" size="small" @click="editMenuDialog(scope.row)"
                 >编辑</el-button
               >
-              <el-button type="danger" text icon="Delete" size="small" @click="deleteMenuAction()">删除</el-button>
+              <el-button type="danger" text icon="Delete" size="small" @click="deleteMenuAction(scope.row)"
+                >删除</el-button
+              >
             </template>
           </el-table-column>
         </el-table>
@@ -92,9 +94,8 @@
 
 <script lang="ts" setup>
 import { ref, reactive } from "vue"
-import { ElMessage, type FormInstance, type FormRules, type CascaderOption } from "element-plus"
-// import { usePermissionStoreHook } from "@/store/modules/permission"
-import { type MenusData, type reqMenu, getMenus, addMenuApi, editMenuApi } from "@/api/system/menu"
+import { ElMessage, ElMessageBox, type FormInstance, type FormRules, type CascaderOption } from "element-plus"
+import { type MenusData, type reqMenu, getMenus, addMenuApi, editMenuApi, deleteMenuApi } from "@/api/system/menu"
 import WarningBar from "@/components/warningBar/warningBar.vue"
 
 const loading = ref<boolean>(false)
@@ -106,8 +107,6 @@ const getTableData = async () => {
   tableData.value = asyncRouterRes.data
 }
 getTableData()
-// const permissionStore = usePermissionStoreHook()
-// tableData.value = permissionStore.asyncRouterList
 
 const dialogTitle = ref<string>("")
 
@@ -179,7 +178,21 @@ const editMenuDialog = (row: MenusData) => {
   dialogVisible.value = true
 }
 
-const deleteMenuAction = () => {}
+const deleteMenuAction = (row: MenusData) => {
+  ElMessageBox.confirm("此操作将永久删除所有角色下该菜单, 是否继续?", "提示", {
+    confirmButtonText: "确定",
+    cancelButtonText: "取消",
+    type: "warning"
+  }).then(() => {
+    const index = tableData.value.indexOf(row)
+    deleteMenuApi({ id: row.id }).then((res) => {
+      if (res.code === 0) {
+        ElMessage({ type: "success", message: res.msg })
+        tableData.value.splice(index, 1)
+      }
+    })
+  })
+}
 
 // 表单
 const formRef = ref<FormInstance>()
