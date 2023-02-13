@@ -7,13 +7,9 @@ declare module "vue-router" {
      */
     title?: string
     /**
-     * 设置该路由的图标，记得将 svg 导入 @/icons/svg
+     * 设置该路由的图标
      */
-    svgIcon?: string
-    /**
-     * 设置该路由的图标，直接使用 Element Plus 的 Icon（与 svgIcon 同时设置时，svgIcon 将优先生效）
-     */
-    elIcon?: string
+    icon?: string
     /**
      * 默认 false，设置 true 的时候该路由不会在侧边栏出现
      */

@@ -11,8 +11,6 @@ export interface MenusData {
     hidden: boolean
     title: string
     icon: string
-    elIcon: string
-    svgIcon: string
     affix: boolean
   }
   children: MenusData[]
