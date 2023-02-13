@@ -70,8 +70,8 @@ const resolvePath = (routePath: string) => {
     <template v-if="!alwaysShowRootMenu && theOnlyOneChild && !theOnlyOneChild.children">
       <SidebarItemLink v-if="theOnlyOneChild.meta" :to="resolvePath(theOnlyOneChild.path)">
         <el-menu-item :index="resolvePath(theOnlyOneChild.path)">
-          <!-- <svg-icon v-if="theOnlyOneChild.meta.svgIcon" :name="theOnlyOneChild.meta.svgIcon" /> -->
-          <component :is="theOnlyOneChild.meta.icon" class="el-icon" />
+          <svg-icon v-if="theOnlyOneChild.meta.svgIcon" :name="theOnlyOneChild.meta.svgIcon" />
+          <component v-else-if="theOnlyOneChild.meta.elIcon" :is="theOnlyOneChild.meta.elIcon" class="el-icon" />
           <template v-if="theOnlyOneChild.meta.title" #title>
             {{ theOnlyOneChild.meta.title }}
           </template>
@@ -80,8 +80,8 @@ const resolvePath = (routePath: string) => {
     </template>
     <el-sub-menu v-else :index="resolvePath(props.item.path)" popper-append-to-body>
       <template #title>
-        <!-- <svg-icon v-if="props.item.meta && props.item.meta.svgIcon" :name="props.item.meta.svgIcon" /> -->
-        <component v-if="props.item.meta && props.item.meta.icon" :is="props.item.meta.icon" class="el-icon" />
+        <svg-icon v-if="props.item.meta && props.item.meta.svgIcon" :name="props.item.meta.svgIcon" />
+        <component v-else-if="props.item.meta && props.item.meta.elIcon" :is="props.item.meta.elIcon" class="el-icon" />
         <span v-if="props.item.meta && props.item.meta.title">{{ props.item.meta.title }}</span>
       </template>
       <template v-if="props.item.children">
