@@ -11,9 +11,9 @@
           <el-table-column prop="meta.title" label="展示名称" align="center" />
           <el-table-column prop="name" label="路由名称" align="center" />
           <el-table-column prop="path" label="路由路径" width="130" align="center" />
-          <el-table-column prop="meta.title" label="是否隐藏" align="center">
+          <el-table-column prop="meta.hidden" label="是否隐藏" align="center">
             <template #default="scope">
-              <el-tag v-if="scope.row.meta.title" type="success" effect="plain">显示</el-tag>
+              <el-tag v-if="!scope.row.meta.hidden" type="success" effect="plain">显示</el-tag>
               <el-tag v-else type="warning" effect="plain">隐藏</el-tag>
             </template>
           </el-table-column>
@@ -63,20 +63,20 @@
         <el-form-item label="重定向" prop="redirect" style="width: 30%">
           <el-input v-model="formData.redirect" />
         </el-form-item>
-        <el-form-item label="展示名称" prop="title" style="width: 30%">
-          <el-input v-model="formData.title" />
+        <el-form-item label="展示名称" prop="meta.title" style="width: 30%">
+          <el-input v-model="formData.meta.title" />
         </el-form-item>
-        <el-form-item label="是否隐藏" prop="hidden" style="width: 30%">
-          <el-select v-model="formData.hidden">
+        <el-form-item label="是否隐藏" prop="meta.hidden" style="width: 30%">
+          <el-select v-model="formData.meta.hidden">
             <el-option :value="false" label="否" />
             <el-option :value="true" label="是" />
           </el-select>
         </el-form-item>
-        <el-form-item label="图标" prop="icon" style="width: 30%">
-          <el-select v-model="formData.icon" />
+        <el-form-item label="图标" prop="meta.icon" style="width: 30%">
+          <icon :meta="formData.meta" style="width: 100%" />
         </el-form-item>
-        <el-form-item label="是否固定" prop="affix" style="width: 30%">
-          <el-select v-model="formData.affix">
+        <el-form-item label="是否固定" prop="meta.affix" style="width: 30%">
+          <el-select v-model="formData.meta.affix">
             <el-option :value="false" label="否" />
             <el-option :value="true" label="是" />
           </el-select>
@@ -97,6 +97,7 @@ import { ref, reactive } from "vue"
 import { ElMessage, ElMessageBox, type FormInstance, type FormRules, type CascaderOption } from "element-plus"
 import { type MenusData, type reqMenu, getMenus, addMenuApi, editMenuApi, deleteMenuApi } from "@/api/system/menu"
 import WarningBar from "@/components/warningBar/warningBar.vue"
+import icon from "./icon.vue"
 
 const loading = ref<boolean>(false)
 const dialogVisible = ref<boolean>(false)
@@ -123,7 +124,7 @@ const setOptions = () => {
 
 const setMenuOptions = (menuData: any, optionsData: CascaderOption[]) => {
   for (const item of menuData) {
-    if (item.name === "ErrorPage" || item.path === "/") {
+    if (item.name === "ErrorPage") {
       continue
     }
     if (item.children && item.children.length) {
@@ -159,22 +160,24 @@ const editMenuDialog = (row: MenusData) => {
   kind = "Edit"
   formData.id = row.id
   formData.pid = row.pid
-  formData.name = row.name
+  if (row.name) {
+    formData.name = row.name
+  }
   formData.path = row.path
-  formData.component = row.component
-  formData.redirect = row.redirect
-  formData.title = row.meta.title
-  formData.icon = row.meta.icon
-  if (!row.meta.hidden) {
-    formData.hidden = false
-  } else {
-    formData.hidden = true
+  if (row.component) {
+    formData.component = row.component
   }
-  if (!row.meta.affix) {
-    formData.affix = false
-  } else {
-    formData.affix = true
+  if (row.redirect) {
+    formData.redirect = row.redirect
   }
+  if (row.meta?.title) {
+    formData.meta.title = row.meta?.title
+  }
+  if (row.meta?.svgIcon) {
+    formData.meta.icon = row.meta?.svgIcon
+  }
+  formData.meta.hidden = !!row.meta?.hidden
+  formData.meta.affix = Boolean(row.meta?.affix)
   dialogVisible.value = true
 }
 
@@ -208,10 +211,10 @@ const initForm = () => {
   formData.path = ""
   formData.component = ""
   formData.redirect = ""
-  formData.title = ""
-  formData.icon = ""
-  formData.hidden = false
-  formData.affix = false
+  formData.meta.title = ""
+  formData.meta.icon = ""
+  formData.meta.hidden = false
+  formData.meta.affix = false
 }
 
 const closeDialog = () => {
@@ -231,10 +234,12 @@ const formData = reactive<reqMenu>({
   component: "",
   redirect: "",
   pid: 0,
-  title: "",
-  icon: "",
-  hidden: false,
-  affix: false
+  meta: {
+    title: "",
+    icon: "",
+    hidden: false,
+    affix: false
+  }
 })
 
 const operateAction = (formEl: FormInstance | undefined) => {

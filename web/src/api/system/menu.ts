@@ -34,10 +34,12 @@ export interface reqMenu {
   path: string
   redirect: string
   component: string
-  hidden: boolean
-  title: string
-  icon: string
-  affix: boolean
+  meta: {
+    hidden: boolean
+    title: string
+    icon: string
+    affix: boolean
+  }
 }
 
 export function addMenuApi(data: reqMenu) {

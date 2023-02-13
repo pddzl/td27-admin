@@ -61,10 +61,10 @@ func (ms *MenuService) AddMenu(menuRaw systemReq.Menu) bool {
 	menuModel.Component = menuRaw.Component
 	menuModel.Redirect = menuRaw.Redirect
 	menuModel.Pid = menuRaw.Pid
-	menuModel.Meta.Title = menuRaw.Title
-	menuModel.Meta.SvgIcon = menuRaw.Icon
-	menuModel.Meta.Hidden = menuRaw.Hidden
-	menuModel.Meta.Affix = menuRaw.Affix
+	menuModel.Meta.Title = menuRaw.Meta.Title
+	menuModel.Meta.SvgIcon = menuRaw.Meta.Icon
+	menuModel.Meta.Hidden = menuRaw.Meta.Hidden
+	menuModel.Meta.Affix = menuRaw.Meta.Affix
 
 	if err := global.TD27_DB.Create(&menuModel).Error; err != nil {
 		global.TD27_LOG.Error("创建menu失败", zap.Error(err))
@@ -82,12 +82,13 @@ func (ms *MenuService) UpdateMenu(menuRaw systemReq.EditMenuReq) (err error) {
 		return errors.New("菜单不存在")
 	}
 
-	metaData.SvgIcon = menuRaw.Icon
-	metaData.Title = menuRaw.Title
-	metaData.Hidden = menuRaw.Hidden
-	metaData.Affix = menuRaw.Affix
+	metaData.SvgIcon = menuRaw.Meta.Icon
+	metaData.Title = menuRaw.Meta.Title
+	metaData.Hidden = menuRaw.Meta.Hidden
+	metaData.Affix = menuRaw.Meta.Affix
 
-	err = global.TD27_DB.Model(&menuModel).Updates(map[string]interface{}{"pid": menuRaw.Pid,
+	err = global.TD27_DB.Debug().Model(&menuModel).Updates(map[string]interface{}{
+		"pid":       menuRaw.Pid,
 		"name":      menuRaw.Name,
 		"path":      menuRaw.Path,
 		"component": menuRaw.Component,

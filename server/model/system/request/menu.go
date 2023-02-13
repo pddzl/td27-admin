@@ -6,10 +6,14 @@ type Menu struct {
 	Path      string `json:"path" validate:"required"`
 	Redirect  string `json:"redirect"`
 	Component string `json:"component"`
-	Hidden    bool   `json:"hidden"` // 菜单是否隐藏
-	Title     string `json:"title"`  // 菜单名
-	Icon      string `json:"icon"`   // element图标
-	Affix     bool   `json:"affix"`  // 是否固定
+	Meta      meta   `json:"meta"`
+}
+
+type meta struct {
+	Hidden bool   `json:"hidden"` // 菜单是否隐藏
+	Title  string `json:"title"`  // 菜单名
+	Icon   string `json:"icon"`   // element图标
+	Affix  bool   `json:"affix"`  // 是否固定
 }
 
 type EditMenuReq struct {
