@@ -5,6 +5,7 @@ import store from "@/store"
 import router from "@/router"
 import "@/permission"
 // load
+import { loadSvg } from "@/icons"
 import { loadPlugins } from "@/plugins"
 // css
 import "normalize.css"
@@ -16,5 +17,7 @@ const app = createApp(App)
 
 /** 加载插件 */
 loadPlugins(app)
+/** 加载全局 SVG */
+loadSvg(app)
 
 app.use(store).use(router).mount("#app")

@@ -10,7 +10,8 @@ export interface MenusData {
   meta: {
     hidden: boolean
     title: string
-    icon: string
+    elIcon: string
+    svgIcon: string
     affix: boolean
   }
   children: MenusData[]

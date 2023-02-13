@@ -62,7 +62,7 @@ func (ms *MenuService) AddMenu(menuRaw systemReq.Menu) bool {
 	menuModel.Redirect = menuRaw.Redirect
 	menuModel.Pid = menuRaw.Pid
 	menuModel.Meta.Title = menuRaw.Title
-	menuModel.Meta.Icon = menuRaw.Icon
+	menuModel.Meta.SvgIcon = menuRaw.Icon
 	menuModel.Meta.Hidden = menuRaw.Hidden
 	menuModel.Meta.Affix = menuRaw.Affix
 
@@ -82,7 +82,7 @@ func (ms *MenuService) UpdateMenu(menuRaw systemReq.EditMenuReq) (err error) {
 		return errors.New("菜单不存在")
 	}
 
-	metaData.Icon = menuRaw.Icon
+	metaData.SvgIcon = menuRaw.Icon
 	metaData.Title = menuRaw.Title
 	metaData.Hidden = menuRaw.Hidden
 	metaData.Affix = menuRaw.Affix
