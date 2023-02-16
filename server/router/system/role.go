@@ -1,0 +1,17 @@
+package system
+
+import (
+	"github.com/gin-gonic/gin"
+	"server/api"
+)
+
+type RoleRouter struct{}
+
+func (r *RoleRouter) InitRoleRouter(Router *gin.RouterGroup) (R gin.IRoutes) {
+	roleRouter := Router.Group("role")
+	roleApi := api.ApiGroupApp.SystemApiGroup.RoleApi
+	{
+		roleRouter.POST("getRoles", roleApi.GetRoles)
+	}
+	return roleRouter
+}

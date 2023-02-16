@@ -266,7 +266,7 @@ const operateAction = (formEl: FormInstance | undefined) => {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .toolbar-wrapper {
   margin-bottom: 20px;
 }
