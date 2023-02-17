@@ -2,7 +2,14 @@
   <div class="app-container">
     <el-card v-loading="loading" shadow="never">
       <div class="toolbar-wrapper">
-        <el-button type="primary" icon="CirclePlus" @click="addDialog">新增</el-button>
+        <div>
+          <el-button type="primary" icon="CirclePlus" @click="addDialog">新增</el-button>
+        </div>
+        <div>
+          <el-tooltip content="刷新" effect="light">
+            <el-button type="primary" icon="RefreshRight" circle plain @click="getTableData" />
+          </el-tooltip>
+        </div>
       </div>
       <div class="table-wrapper">
         <el-table :data="tableData">
@@ -110,6 +117,8 @@ const operateAction = (formEl: FormInstance | undefined) => {
 
 <style lang="scss" scoped>
 .toolbar-wrapper {
+  display: flex;
+  justify-content: space-between;
   margin-bottom: 20px;
 }
 .table-wrapper {
