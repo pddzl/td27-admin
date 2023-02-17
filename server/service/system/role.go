@@ -2,6 +2,7 @@ package system
 
 import (
 	"errors"
+	"fmt"
 	"server/global"
 	systemModel "server/model/system"
 	"server/utils"
@@ -44,7 +45,25 @@ func (rs *RoleService) AddRole(username string, roleName string) (*systemModel.R
 
 func (rs *RoleService) DeleteRole(id uint, username string) (err error) {
 	if IsRole(username, "root") {
-		return global.TD27_DB.Delete(&systemModel.RoleModel{}, id).Error
+		var roleModel systemModel.RoleModel
+
+		err = global.TD27_DB.Where("id = ?", id).First(&roleModel).Error
+		if err != nil {
+			return fmt.Errorf("查询role -> %v", err)
+		}
+
+		err = global.TD27_DB.Unscoped().Delete(&roleModel).Error
+		if err != nil {
+			return fmt.Errorf("删除role -> %v", err)
+		}
+
+		// 清空关联
+		err = global.TD27_DB.Model(&roleModel).Association("Menus").Clear()
+		if err != nil {
+			return fmt.Errorf("删除role关联menus -> %v", err)
+		}
+
+		return
 	}
 
 	return errors.New("没有权限")
