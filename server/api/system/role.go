@@ -5,6 +5,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	"go.uber.org/zap"
 	"server/global"
+	"server/model/common/request"
 	"server/model/common/response"
 	systemReq "server/model/system/request"
 	"server/utils"
@@ -12,6 +13,7 @@ import (
 
 type RoleApi struct{}
 
+// GetRoles 获取所有角色
 func (ra *RoleApi) GetRoles(c *gin.Context) {
 	userInfo, err := utils.GetUserInfo(c)
 	if err != nil {
@@ -26,6 +28,7 @@ func (ra *RoleApi) GetRoles(c *gin.Context) {
 	}
 }
 
+// AddRole 添加角色
 func (ra *RoleApi) AddRole(c *gin.Context) {
 	var roleReq systemReq.Role
 	_ = c.ShouldBindJSON(&roleReq)
@@ -49,5 +52,32 @@ func (ra *RoleApi) AddRole(c *gin.Context) {
 		global.TD27_LOG.Error("添加角色失败", zap.Error(err))
 	} else {
 		response.OkWithDetailed(role, "添加成功", c)
+	}
+}
+
+// DeleteRole 删除角色
+func (ra *RoleApi) DeleteRole(c *gin.Context) {
+	var cId request.CId
+	_ = c.ShouldBindJSON(&cId)
+
+	// 参数校验
+	validate := validator.New()
+	if err := validate.Struct(&cId); err != nil {
+		response.FailWithMessage("请求参数错误", c)
+		global.TD27_LOG.Error("请求参数错误", zap.Error(err))
+		return
+	}
+
+	userInfo, err := utils.GetUserInfo(c)
+	if err != nil {
+		response.FailWithMessage("获取失败", c)
+		global.TD27_LOG.Error("获取失败!", zap.Error(err))
+	}
+
+	if err = roleService.DeleteRole(cId.ID, userInfo.Username); err != nil {
+		response.FailWithMessage("删除失败", c)
+		global.TD27_LOG.Error("删除角色失败", zap.Error(err))
+	} else {
+		response.OkWithMessage("删除成功", c)
 	}
 }

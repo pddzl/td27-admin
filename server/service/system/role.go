@@ -41,3 +41,11 @@ func (rs *RoleService) AddRole(username string, roleName string) (*systemModel.R
 
 	return &systemModel.RoleModel{}, errors.New("没有权限")
 }
+
+func (rs *RoleService) DeleteRole(id uint, username string) (err error) {
+	if IsRole(username, "root") {
+		return global.TD27_DB.Delete(&systemModel.RoleModel{}, id).Error
+	}
+
+	return errors.New("没有权限")
+}

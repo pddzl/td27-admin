@@ -19,7 +19,13 @@
             <template #default="scope">
               <el-button type="primary" text icon="Setting" size="small">设置权限</el-button>
               <el-button type="primary" text icon="Edit" size="small">编辑</el-button>
-              <el-button type="danger" text icon="Delete" size="small" :disabled="scope.row.roleName === 'root'"
+              <el-button
+                type="danger"
+                text
+                icon="Delete"
+                size="small"
+                @click="deleteRoleAction(scope.row)"
+                :disabled="scope.row.roleName === 'root'"
                 >删除</el-button
               >
             </template>
@@ -50,15 +56,15 @@
 
 <script lang="ts" setup>
 import { ref, reactive } from "vue"
-import { type FormInstance, type FormRules, ElMessage } from "element-plus"
-import { type roleData, type reqRole, getRoles, addRole } from "@/api/system/role"
+import { type FormInstance, type FormRules, ElMessage, ElMessageBox } from "element-plus"
+import { type roleData, type reqRole, getRolesApi, addRoleApi, deleteRoleApi } from "@/api/system/role"
 
 const loading = ref<boolean>(false)
 const tableData = ref<roleData[]>([])
 
 const getTableData = async () => {
   loading.value = true
-  const res = await getRoles()
+  const res = await getRolesApi()
   if (res.code === 0) {
     tableData.value = res.data
   }
@@ -98,7 +104,7 @@ const operateAction = (formEl: FormInstance | undefined) => {
       const tempRole: reqRole = {
         roleName: formData.roleName
       }
-      const res = await addRole(tempRole)
+      const res = await addRoleApi(tempRole)
       if (res.code === 0) {
         ElMessage({ type: "success", message: res.msg })
         const tempData: roleData = {
@@ -111,6 +117,22 @@ const operateAction = (formEl: FormInstance | undefined) => {
       initForm()
       dialogVisible.value = false
     }
+  })
+}
+
+const deleteRoleAction = (row: roleData) => {
+  ElMessageBox.confirm("此操作将永久删除该角色, 是否继续?", "提示", {
+    confirmButtonText: "确定",
+    cancelButtonText: "取消",
+    type: "warning"
+  }).then(() => {
+    const index = tableData.value.indexOf(row)
+    deleteRoleApi({ id: row.ID }).then((res) => {
+      if (res.code === 0) {
+        ElMessage({ type: "success", message: res.msg })
+        tableData.value.splice(index, 1)
+      }
+    })
   })
 }
 </script>

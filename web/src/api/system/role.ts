@@ -10,7 +10,7 @@ export interface roleData {
 type RoleResponseData = IApiResponseData<roleData[]>
 
 /** 获取用户详情 */
-export function getRoles() {
+export function getRolesApi() {
   return request<RoleResponseData>({
     url: "/role/getRoles",
     method: "post",
@@ -22,10 +22,18 @@ export interface reqRole {
   roleName: string
 }
 
-export function addRole(data: reqRole) {
+export function addRoleApi(data: reqRole) {
   return request<IApiResponseData<roleData>>({
     url: "/role/addRole",
     method: "post",
     data: data
+  })
+}
+
+export function deleteRoleApi(data: reqId) {
+  return request<IApiResponseData<null>>({
+    url: "/role/deleteRole",
+    method: "delete",
+    data
   })
 }

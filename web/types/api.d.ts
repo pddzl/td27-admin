@@ -4,3 +4,7 @@ interface IApiResponseData<T> {
   data: T
   msg: string
 }
+
+interface reqId {
+  id: number
+}

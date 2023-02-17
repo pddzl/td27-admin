@@ -58,10 +58,6 @@ export function editMenuApi(data: reqMenu) {
   })
 }
 
-interface reqId {
-  id: number
-}
-
 export function deleteMenuApi(data: reqId) {
   return request<IApiResponseData<null>>({
     url: "menu/deleteMenu",
