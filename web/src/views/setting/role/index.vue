@@ -38,7 +38,9 @@
         ref="formRef"
         :model="formData"
         :rules="formRules"
-        style="display: flex; justify-content: center; align-items: center; margin-top: 20px"
+        label-width="100px"
+        label-position="left"
+        style="width: 95%; margin-top: 15px"
       >
         <el-form-item label="角色名称" prop="roleName">
           <el-input v-model="formData.roleName" autocomplete="off" />
