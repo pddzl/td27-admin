@@ -32,12 +32,12 @@ func (rs *RoleService) GetRoles(username string) ([]systemModel.RoleModel, error
 	return nil, errors.New("没有权限")
 }
 
-func (rs *RoleService) AddRole(username string, roleName string) (err error) {
+func (rs *RoleService) AddRole(username string, roleName string) (*systemModel.RoleModel, error) {
 	if IsRole(username, "root") {
 		var roleModel systemModel.RoleModel
 		roleModel.RoleName = roleName
-		return global.TD27_DB.Create(&roleModel).Error
+		return &roleModel, global.TD27_DB.Create(&roleModel).Error
 	}
 
-	return errors.New("没有权限")
+	return &systemModel.RoleModel{}, errors.New("没有权限")
 }

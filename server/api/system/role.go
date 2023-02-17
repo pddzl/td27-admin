@@ -44,9 +44,10 @@ func (ra *RoleApi) AddRole(c *gin.Context) {
 		global.TD27_LOG.Error("获取失败!", zap.Error(err))
 	}
 
-	if err := roleService.AddRole(userInfo.Username, roleReq.RoleName); err != nil {
-		response.OkWithMessage("添加成功", c)
+	if role, err := roleService.AddRole(userInfo.Username, roleReq.RoleName); err != nil {
+		response.FailWithMessage("添加失败", c)
+		global.TD27_LOG.Error("添加角色失败", zap.Error(err))
 	} else {
-		response.FailWithMessage(err.Error(), c)
+		response.OkWithDetailed(role, "添加成功", c)
 	}
 }

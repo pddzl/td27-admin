@@ -104,8 +104,12 @@ const dialogVisible = ref<boolean>(false)
 
 const tableData = ref<MenusData[]>([])
 const getTableData = async () => {
-  const asyncRouterRes = await getMenus()
-  tableData.value = asyncRouterRes.data
+  loading.value = false
+  const res = await getMenus()
+  if (res.code === 0) {
+    tableData.value = res.data
+  }
+  loading.value = true
 }
 getTableData()
 

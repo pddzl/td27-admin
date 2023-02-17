@@ -17,3 +17,15 @@ export function getRoles() {
     data: {}
   })
 }
+
+export interface reqRole {
+  roleName: string
+}
+
+export function addRole(data: reqRole) {
+  return request<IApiResponseData<roleData>>({
+    url: "/role/addRole",
+    method: "post",
+    data: data
+  })
+}
