@@ -2,7 +2,12 @@
   <div class="app-container">
     <el-card v-loading="loading" shadow="never">
       <div class="toolbar-wrapper">
-        <el-button type="primary" icon="CirclePlus" @click="addMenuDialog">新增</el-button>
+        <div><el-button type="primary" icon="CirclePlus" @click="addMenuDialog">新增</el-button></div>
+        <div>
+          <el-tooltip content="刷新" effect="light">
+            <el-button type="primary" icon="RefreshRight" circle plain @click="getTableData" />
+          </el-tooltip>
+        </div>
       </div>
       <div class="table-wrapper">
         <el-table :data="tableData" row-key="id">
@@ -104,12 +109,12 @@ const dialogVisible = ref<boolean>(false)
 
 const tableData = ref<MenusData[]>([])
 const getTableData = async () => {
-  loading.value = false
+  loading.value = true
   const res = await getMenus()
   if (res.code === 0) {
     tableData.value = res.data
   }
-  loading.value = true
+  loading.value = false
 }
 getTableData()
 
@@ -272,6 +277,8 @@ const operateAction = (formEl: FormInstance | undefined) => {
 
 <style lang="scss" scoped>
 .toolbar-wrapper {
+  display: flex;
+  justify-content: space-between;
   margin-bottom: 20px;
 }
 
