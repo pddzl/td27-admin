@@ -5,6 +5,13 @@ interface IApiResponseData<T> {
   msg: string
 }
 
+/** 请求ID */ 
 interface reqId {
   id: number
+}
+
+/** 分页 */
+interface PageInfo {
+  page: number
+  pageSize: number
 }

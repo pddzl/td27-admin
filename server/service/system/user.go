@@ -33,7 +33,7 @@ func (us *UserService) GetUsers(pageInfo request.PageInfo) ([]systemModel.UserMo
 		limit := pageInfo.PageSize
 		offset := pageInfo.PageSize * (pageInfo.Page - 1)
 		db = db.Limit(limit).Offset(offset)
-		err = db.Find(&list).Error
+		err = db.Preload("Roles").Find(&list).Error
 	}
 
 	return list, total, err

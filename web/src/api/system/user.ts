@@ -10,3 +10,31 @@ export function getUserInfoApi() {
     data: {}
   })
 }
+
+export interface UsersResponse {
+  id: number
+  uuid: string
+  username: string
+  phone: number
+  email: string
+  active: boolean
+  roles: [roleName: string]
+}
+
+export interface UsersResponsePageInfo {
+  list: UsersResponse[]
+  total: number
+  page: number
+  pageSize: number
+}
+
+type UsersResponseData = IApiResponseData<UsersResponsePageInfo>
+
+/** 获取所有用户 */
+export function getUsersApi(data: PageInfo) {
+  return request<UsersResponseData>({
+    url: "/user/getUsers",
+    method: "post",
+    data: data
+  })
+}
