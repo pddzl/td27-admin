@@ -53,7 +53,7 @@
         />
       </div>
     </el-card>
-    <el-dialog v-model="dialogVisible" title="新增角色" :before-close="handleClose" width="30%">
+    <el-dialog v-model="dialogVisible" title="新增用户" :before-close="handleClose" width="30%">
       <el-form
         ref="formRef"
         :model="formData"
@@ -77,7 +77,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive } from "vue"
+import { ref, reactive, watch } from "vue"
 import { type FormInstance, type FormRules, ElMessage, ElMessageBox } from "element-plus"
 import { type UsersResponse, getUsersApi } from "@/api/system/user"
 import { usePagination } from "@/hooks/usePagination"
@@ -161,6 +161,9 @@ const deleteRoleAction = (row: UsersResponse) => {
   //   })
   // })
 }
+
+// 监听分页参数的变化
+watch([() => paginationData.currentPage, () => paginationData.pageSize], getTableData, { immediate: true })
 </script>
 
 <style lang="scss" scoped>
