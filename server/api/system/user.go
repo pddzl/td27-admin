@@ -39,6 +39,7 @@ func (ua *UserApi) GetUsers(c *gin.Context) {
 	}
 }
 
+// DeleteUser 删除用户
 func (ua *UserApi) DeleteUser(c *gin.Context) {
 	var cId request.CId
 	_ = c.ShouldBindJSON(&cId)

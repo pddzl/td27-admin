@@ -43,8 +43,8 @@
                 text
                 icon="Delete"
                 size="small"
-                @click="deleteRoleAction(scope.row)"
-                :disabled="scope.row.roleName === 'root'"
+                @click="deleteUserAction(scope.row)"
+                :disabled="scope.row.username === 'admin'"
                 >删除</el-button
               >
             </template>
@@ -189,7 +189,7 @@ const operateAction = (formEl: FormInstance | undefined) => {
   })
 }
 
-const deleteRoleAction = (row: UsersResponse) => {
+const deleteUserAction = (row: UsersResponse) => {
   ElMessageBox.confirm("此操作将永久删除该用户, 是否继续?", "提示", {
     confirmButtonText: "确定",
     cancelButtonText: "取消",
