@@ -6,12 +6,12 @@ import (
 
 type UserModel struct {
 	global.TD27_MODEL
-	Username    string `json:"username" gorm:"index;unique;comment:用户登录名" validate:"required"` // 用户登录名
-	Password    string `json:"-"  gorm:"comment:用户登录密码" validate:"required"`
-	Phone       string `json:"phone"  gorm:"comment:用户手机号" validate:"required"` // 用户手机号
-	Email       string `json:"email"  gorm:"comment:用户邮箱" validate:"required"`  // 用户邮箱
-	Active      bool   `json:"active" validate:"required"`                      // 是否活跃
-	RoleModelID uint   `json:"roleID" validate:"required"`                      // 用户角色
+	Username    string `json:"username" gorm:"index;unique;comment:用户名"` // 用户名
+	Password    string `json:"-"  gorm:"comment:密码"`
+	Phone       string `json:"phone"  gorm:"comment:手机号"` // 手机号
+	Email       string `json:"email"  gorm:"comment:邮箱"`  // 邮箱
+	Active      bool   `json:"active"`                    // 是否活跃
+	RoleModelID uint   `json:"roleID"`                    // 角色ID
 }
 
 func (UserModel) TableName() string {
@@ -20,10 +20,20 @@ func (UserModel) TableName() string {
 
 type UserResult struct {
 	ID          uint
-	Username    string `json:"username"` // 用户登录名
-	Phone       string `json:"phone"`    // 用户手机号
-	Email       string `json:"email"`    // 用户邮箱
+	Username    string `json:"username"` // 用户名
+	Phone       string `json:"phone"`    // 手机号
+	Email       string `json:"email"`    // 邮箱
 	Active      bool   `json:"active"`   // 是否活跃
-	RoleModelID uint   `json:"roleID"`   // 用户角色
-	RoleName    string `json:"role"`
+	RoleModelID uint   `json:"roleID"`   // 角色ID
+	RoleName    string `json:"role"`     // 角色名
+}
+
+type AddUser struct {
+	Username string `json:"username" validate:"required"` // 用户名
+	Password string `json:"password" validate:"required"` // 密码
+	//Phone       string `json:"phone" validate:"required,regexp=^[1][0-9]{10}$"` // 手机号
+	Phone       string `json:"phone" validate:"required"`       // 手机号
+	Email       string `json:"email" validate:"required,email"` // 邮箱
+	Active      bool   `json:"active"`                          // 是否活跃
+	RoleModelID uint   `json:"roleID" validate:"required"`      // 角色ID
 }

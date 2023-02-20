@@ -61,17 +61,18 @@ func (ua *UserApi) DeleteUser(c *gin.Context) {
 
 // AddUser 添加用户
 func (ua *UserApi) AddUser(c *gin.Context) {
-	var userModel systemModel.UserModel
+	var addUser systemModel.AddUser
+	_ = c.ShouldBindJSON(&addUser)
 
 	// 参数校验
 	validate := validator.New()
-	if err := validate.Struct(&userModel); err != nil {
+	if err := validate.Struct(&addUser); err != nil {
 		response.FailWithMessage("请求参数错误", c)
 		global.TD27_LOG.Error("请求参数错误", zap.Error(err))
 		return
 	}
 
-	if err := userService.AddUser(userModel); err != nil {
+	if err := userService.AddUser(addUser); err != nil {
 		response.FailWithMessage("添加失败", c)
 		global.TD27_LOG.Error("添加失败", zap.Error(err))
 	} else {

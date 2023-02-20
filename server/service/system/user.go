@@ -48,11 +48,20 @@ func (us *UserService) DeleteUser(id uint) (err error) {
 }
 
 // AddUser 添加用户
-func (us *UserService) AddUser(user systemModel.UserModel) (err error) {
+func (us *UserService) AddUser(user systemModel.AddUser) (err error) {
 	err = global.TD27_DB.Where("id = ?", user.RoleModelID).First(&systemModel.RoleModel{}).Error
 	if err != nil {
 		global.TD27_LOG.Error("添加用户 -> 查询role", zap.Error(err))
+		return err
 	}
 
-	return global.TD27_DB.Create(&user).Error
+	var userModel systemModel.UserModel
+	userModel.Username = user.Username
+	userModel.Password = utils.MD5V([]byte(user.Password))
+	userModel.Phone = user.Phone
+	userModel.Email = user.Email
+	userModel.Active = user.Active
+	userModel.RoleModelID = user.RoleModelID
+
+	return global.TD27_DB.Create(&userModel).Error
 }
