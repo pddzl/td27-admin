@@ -91,26 +91,22 @@ const loginFormRules: FormRules = {
 }
 /** 登录逻辑 */
 const handleLogin = () => {
-  loginFormRef.value?.validate((valid: boolean) => {
+  loginFormRef.value?.validate(async (valid: boolean) => {
     if (valid) {
       loading.value = true
-      useUserStore()
-        .login({
-          username: loginForm.username,
-          password: loginForm.password,
-          captcha: loginForm.captcha,
-          captchaId: loginForm.captchaId
-        })
-        .then(() => {
-          router.push({ path: "/" })
-        })
-        .catch(() => {
-          createCode()
-          // loginForm.password = ""
-        })
-        .finally(() => {
-          loading.value = false
-        })
+      const res = await useUserStore().login({
+        username: loginForm.username,
+        password: loginForm.password,
+        captcha: loginForm.captcha,
+        captchaId: loginForm.captchaId
+      })
+
+      if (res) {
+        router.push({ path: "/" })
+      } else {
+        createCode()
+      }
+      loading.value = false
     } else {
       return false
     }
