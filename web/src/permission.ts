@@ -21,23 +21,9 @@ router.beforeEach(async (to, _from, next) => {
       NProgress.done()
     } else {
       // 检查用户是否已获得其权限角色
-      if (userStore.roles.length === 0) {
+      if (userStore.username === "") {
         try {
-          // if (asyncRouteSettings.open) {
-          //   // 注意：角色必须是一个数组！ 例如: ['admin'] 或 ['developer', 'editor']
-          //   await userStore.getInfo()
-          //   const roles = userStore.roles
-          //   // 根据角色生成可访问的 Routes（可访问路由 = 常驻路由 + 有访问权限的动态路由）
-          //   permissionStore.setRoutes(roles)
-          // } else {
-          //   // 没有开启动态路由功能，则启用默认角色
-          //   userStore.setRoles(asyncRouteSettings.defaultRoles)
-          //   permissionStore.setRoutes(asyncRouteSettings.defaultRoles)
-          // }
-          // 注意：角色必须是一个数组！ 例如: ['admin'] 或 ['developer', 'editor']
           await userStore.getInfo()
-          // const roles = userStore.roles
-          // 根据角色生成可访问的 Routes（可访问路由 = 常驻路由 + 有访问权限的动态路由）
           await permissionStore.setRoutes()
           // 将'有访问权限的动态路由' 添加到 Router 中
           permissionStore.dynamicRoutes.forEach((route) => {

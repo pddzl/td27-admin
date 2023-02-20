@@ -18,7 +18,7 @@ export interface UsersResponse {
   phone: number
   email: string
   active: boolean
-  roles: [roleName: string]
+  role: string
 }
 
 export interface UsersResponsePageInfo {

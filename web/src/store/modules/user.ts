@@ -7,13 +7,8 @@ import { type ILoginRequestData, loginApi } from "@/api/system/base"
 
 export const useUserStore = defineStore("user", () => {
   const token = ref<string>(window.localStorage.getItem("token") || "")
-  const roles = ref<string[]>([])
   const username = ref<string>("")
 
-  /** 设置角色数组 */
-  const setRoles = (value: string[]) => {
-    roles.value = value
-  }
   /** 登录 */
   const login = (loginData: ILoginRequestData) => {
     return new Promise((resolve, reject) => {
@@ -37,7 +32,7 @@ export const useUserStore = defineStore("user", () => {
     return new Promise((resolve, reject) => {
       getUserInfoApi()
         .then((res) => {
-          roles.value = res.data.roles
+          // roles.value = res.data.roles
           username.value = res.data.username
           resolve(res)
         })
@@ -49,13 +44,11 @@ export const useUserStore = defineStore("user", () => {
   /** 登出 */
   const logout = () => {
     token.value = ""
-    roles.value = []
     resetRouter()
   }
   /** 重置 Token */
   const resetToken = () => {
     token.value = ""
-    roles.value = []
   }
 
   watch(
@@ -65,7 +58,7 @@ export const useUserStore = defineStore("user", () => {
     }
   )
 
-  return { token, roles, username, setRoles, login, getInfo, logout, resetToken }
+  return { token, username, login, getInfo, logout, resetToken }
 })
 
 /** 在 setup 外使用 */
