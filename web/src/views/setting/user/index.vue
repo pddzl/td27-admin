@@ -18,6 +18,11 @@
           <el-table-column prop="username" label="用户名" align="center" />
           <el-table-column prop="phone" label="手机号" align="center" />
           <el-table-column prop="email" label="邮箱" align="center" />
+          <el-table-column prop="role" label="角色" align="center">
+            <template #default="scope">
+              <el-tag>{{ scope.row.role }}</el-tag>
+            </template>
+          </el-table-column>
           <el-table-column prop="active" label="状态" align="center">
             <template #default="scope">
               <el-switch v-model="scope.row.active" inline-prompt :active-value="true" :inactive-value="false" />
@@ -90,6 +95,7 @@ const tableData = ref<UsersResponse[]>([])
 const getTableData = async () => {
   loading.value = true
   const res = await getUsersApi({ page: paginationData.currentPage, pageSize: paginationData.pageSize })
+  console.log("res", res)
   if (res.code === 0) {
     tableData.value = res.data.list
     paginationData.total = res.data.total
@@ -163,7 +169,7 @@ const deleteRoleAction = (row: UsersResponse) => {
 }
 
 // 监听分页参数的变化
-watch([() => paginationData.currentPage, () => paginationData.pageSize], getTableData, { immediate: true })
+// watch([() => paginationData.currentPage, () => paginationData.pageSize], getTableData, { immediate: true })
 </script>
 
 <style lang="scss" scoped>

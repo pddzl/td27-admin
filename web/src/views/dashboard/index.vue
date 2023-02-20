@@ -1,18 +1,14 @@
 <template>
-  <component :is="currentRole === 'admin' ? AdminDashboard : EditorDashboard" />
+  <div class="app-container center">
+    <el-empty description="Admin 权限可见" />
+  </div>
 </template>
 
-<script lang="ts" setup>
-import { ref } from "vue"
-import { useUserStore } from "@/store/modules/user"
-import AdminDashboard from "./admin/index.vue"
-import EditorDashboard from "./editor/index.vue"
-
-type CurrentRoleType = "admin" | "editor"
-
-const userStore = useUserStore()
-const currentRole = ref<CurrentRoleType>("admin")
-if (!userStore.roles.includes("admin")) {
-  currentRole.value = "editor"
+<style lang="scss" scoped>
+.center {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
-</script>
+</style>
