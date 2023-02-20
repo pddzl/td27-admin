@@ -40,3 +40,8 @@ func (us *UserService) GetUsers(pageInfo request.PageInfo) ([]systemModel.UserRe
 
 	return userResults, total, err
 }
+
+// DeleteUser 删除用户
+func (us *UserService) DeleteUser(id uint) (err error) {
+	return global.TD27_DB.Where("id = ?", id).Unscoped().Delete(&systemModel.UserModel{}).Error
+}

@@ -13,6 +13,7 @@ func (u *UserRouter) InitUserRouter(Router *gin.RouterGroup) (R gin.IRoutes) {
 	{
 		userRouter.POST("getUserInfo", userApi.GetUserInfo)
 		userRouter.POST("getUsers", userApi.GetUsers)
+		userRouter.POST("deleteUser", userApi.DeleteUser)
 	}
 	return userRouter
 }
