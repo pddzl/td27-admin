@@ -14,18 +14,24 @@
       <div class="table-wrapper">
         <el-table :data="tableData">
           <el-table-column prop="ID" label="ID" width="80" />
-          <!-- <el-table-column prop="uuid" label="UUID" /> -->
           <el-table-column prop="username" label="用户名" align="center" />
           <el-table-column prop="phone" label="手机号" align="center" />
           <el-table-column prop="email" label="邮箱" align="center" />
           <el-table-column prop="role" label="角色" align="center">
             <template #default="scope">
-              <el-tag>{{ scope.row.role }}</el-tag>
+              <el-tag type="success">{{ scope.row.role }}</el-tag>
             </template>
           </el-table-column>
           <el-table-column prop="active" label="状态" align="center">
             <template #default="scope">
-              <el-switch v-model="scope.row.active" inline-prompt :active-value="true" :inactive-value="false" />
+              <el-switch
+                v-model="scope.row.active"
+                inline-prompt
+                :active-value="true"
+                :inactive-value="false"
+                active-text="启用"
+                inactive-text="禁用"
+              />
             </template>
           </el-table-column>
           <el-table-column fixed="right" label="操作" align="center" min-width="180px">
@@ -53,8 +59,8 @@
           :total="paginationData.total"
           :page-size="paginationData.pageSize"
           :currentPage="paginationData.currentPage"
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
+          @size-change="handleSizeChangeAction"
+          @current-change="handleCurrentChangeAction"
         />
       </div>
     </el-card>
@@ -67,8 +73,25 @@
         label-position="left"
         style="width: 95%; margin-top: 15px"
       >
-        <el-form-item label="角色名称" prop="roleName">
-          <el-input v-model="formData.roleName" autocomplete="off" />
+        <el-form-item label="用户名" prop="username">
+          <el-input v-model="formData.username" autocomplete="off" />
+        </el-form-item>
+        <el-form-item label="密码" prop="password">
+          <el-input v-model="formData.password" autocomplete="off" type="password" show-password />
+        </el-form-item>
+        <el-form-item label="手机号码" prop="phone" required>
+          <el-input v-model="formData.phone" autocomplete="off" />
+        </el-form-item>
+        <el-form-item label="邮箱" prop="email" required>
+          <el-input v-model="formData.email" autocomplete="off" />
+        </el-form-item>
+        <el-form-item label="状态" prop="active">
+          <el-switch v-model="formData.active" active-text="启用" inactive-text="禁用" />
+        </el-form-item>
+        <el-form-item label="角色" prop="roleID" required>
+          <el-select v-model="formData.roleID">
+            <el-option v-for="role in roleOptions" :key="role.ID" :label="role.roleName" :value="role.ID" />
+          </el-select>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -82,10 +105,12 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive, watch } from "vue"
+import { ref, reactive } from "vue"
 import { type FormInstance, type FormRules, ElMessage, ElMessageBox } from "element-plus"
-import { type UsersResponse, getUsersApi } from "@/api/system/user"
+import { type UsersResponse, getUsersApi, deleteUserApi, addUserApi } from "@/api/system/user"
+import { getRolesApi } from "@/api/system/role"
 import { usePagination } from "@/hooks/usePagination"
+import { useValidatePhone, useValidateEmail } from "./hooks/validate"
 
 const loading = ref<boolean>(false)
 const { paginationData, handleCurrentChange, handleSizeChange } = usePagination()
@@ -95,7 +120,6 @@ const tableData = ref<UsersResponse[]>([])
 const getTableData = async () => {
   loading.value = true
   const res = await getUsersApi({ page: paginationData.currentPage, pageSize: paginationData.pageSize })
-  console.log("res", res)
   if (res.code === 0) {
     tableData.value = res.data.list
     paginationData.total = res.data.total
@@ -105,7 +129,13 @@ const getTableData = async () => {
 getTableData()
 
 const initForm = () => {
-  formData.roleName = ""
+  formRef.value?.resetFields()
+  formData.username = ""
+  formData.password = ""
+  formData.phone = ""
+  formData.email = ""
+  formData.active = false
+  formData.roleID = ""
 }
 
 const dialogVisible = ref<boolean>(false)
@@ -116,10 +146,19 @@ const handleClose = (done: Function) => {
 
 const formRef = ref<FormInstance>()
 const formData = reactive({
-  roleName: ""
+  username: "",
+  password: "",
+  phone: "",
+  email: "",
+  active: false,
+  roleID: ""
 })
 const formRules: FormRules = reactive({
-  roleName: [{ required: true, trigger: "blur", message: "请填写角色名称" }]
+  username: [{ required: true, trigger: "blur", message: "请填写用户名" }],
+  password: [{ required: true, trigger: "blur", message: "请填写密码" }],
+  phone: [{ validator: useValidatePhone, trigger: "blur" }],
+  email: [{ validator: useValidateEmail, trigger: "blur" }],
+  roleID: [{ required: true, trigger: "change", message: "请选择角色" }]
 })
 const addDialog = () => {
   dialogVisible.value = true
@@ -130,46 +169,67 @@ const closeDialog = () => {
 }
 
 const operateAction = (formEl: FormInstance | undefined) => {
-  // if (!formEl) return
-  // formEl.validate(async (valid) => {
-  //   if (valid) {
-  //     const tempRole: reqRole = {
-  //       roleName: formData.roleName
-  //     }
-  //     const res = await addRoleApi(tempRole)
-  //     if (res.code === 0) {
-  //       ElMessage({ type: "success", message: res.msg })
-  //       const tempData: roleData = {
-  //         ID: res.data.ID,
-  //         roleName: res.data.roleName,
-  //         menus: []
-  //       }
-  //       tableData.value.push(tempData)
-  //     }
-  //     initForm()
-  //     dialogVisible.value = false
-  //   }
-  // })
+  if (!formEl) return
+  formEl.validate(async (valid) => {
+    if (valid) {
+      const res = await addUserApi({
+        username: formData.username,
+        password: formData.password,
+        phone: formData.phone,
+        email: formData.email,
+        active: formData.active,
+        roleID: Number(formData.roleID)
+      })
+      if (res.code === 0) {
+        ElMessage({ type: "success", message: res.msg })
+        getTableData()
+      }
+      closeDialog()
+    }
+  })
 }
 
 const deleteRoleAction = (row: UsersResponse) => {
-  // ElMessageBox.confirm("此操作将永久删除该角色, 是否继续?", "提示", {
-  //   confirmButtonText: "确定",
-  //   cancelButtonText: "取消",
-  //   type: "warning"
-  // }).then(() => {
-  //   const index = tableData.value.indexOf(row)
-  //   deleteRoleApi({ id: row.ID }).then((res) => {
-  //     if (res.code === 0) {
-  //       ElMessage({ type: "success", message: res.msg })
-  //       tableData.value.splice(index, 1)
-  //     }
-  //   })
-  // })
+  ElMessageBox.confirm("此操作将永久删除该用户, 是否继续?", "提示", {
+    confirmButtonText: "确定",
+    cancelButtonText: "取消",
+    type: "warning"
+  }).then(() => {
+    const index = tableData.value.indexOf(row)
+    deleteUserApi({ id: row.ID }).then((res) => {
+      if (res.code === 0) {
+        ElMessage({ type: "success", message: res.msg })
+        tableData.value.splice(index, 1)
+      }
+    })
+  })
 }
 
-// 监听分页参数的变化
-// watch([() => paginationData.currentPage, () => paginationData.pageSize], getTableData, { immediate: true })
+// 分页
+const handleSizeChangeAction = (value: number) => {
+  handleSizeChange(value)
+  getTableData()
+}
+
+const handleCurrentChangeAction = (value: number) => {
+  handleCurrentChange(value)
+  getTableData()
+}
+
+interface option {
+  ID: number
+  roleName: string
+}
+const roleOptions: option[] = []
+const getRoleOption = async () => {
+  const res = await getRolesApi()
+  if (res.code === 0) {
+    res.data.forEach((element) => {
+      roleOptions.push({ ID: element.ID, roleName: element.roleName })
+    })
+  }
+}
+getRoleOption()
 </script>
 
 <style lang="scss" scoped>

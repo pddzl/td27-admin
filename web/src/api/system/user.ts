@@ -12,10 +12,9 @@ export function getUserInfoApi() {
 }
 
 export interface UsersResponse {
-  id: number
-  uuid: string
+  ID: number
   username: string
-  phone: number
+  phone: string
   email: string
   active: boolean
   role: string
@@ -36,5 +35,32 @@ export function getUsersApi(data: PageInfo) {
     url: "/user/getUsers",
     method: "post",
     data: data
+  })
+}
+
+// 删除用户
+export function deleteUserApi(data: reqId) {
+  return request<IApiResponseData<null>>({
+    url: "/user/deleteUser",
+    method: "delete",
+    data
+  })
+}
+
+export interface reqUser {
+  username: string
+  password: string
+  phone: string
+  email: string
+  active: boolean
+  roleID: number
+}
+
+// 添加用户
+export function addUserApi(data: reqUser) {
+  return request<IApiResponseData<null>>({
+    url: "/user/addUser",
+    method: "post",
+    data
   })
 }
