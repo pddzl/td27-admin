@@ -87,7 +87,6 @@ func tokenNext(c *gin.Context, user *system.UserModel) {
 	j := &utils.JWT{SigningKey: []byte(global.TD27_CONFIG.JWT.SigningKey)} // 唯一签名
 
 	claims := systemReq.CustomClaims{
-		UUID:       user.UUID,
 		ID:         user.ID,
 		Username:   user.Username,
 		BufferTime: global.TD27_CONFIG.JWT.BufferTime,

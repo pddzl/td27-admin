@@ -2,6 +2,7 @@ package system
 
 import (
 	"fmt"
+	"go.uber.org/zap"
 	"server/global"
 	"server/model/common/request"
 	systemModel "server/model/system"
@@ -35,7 +36,7 @@ func (us *UserService) GetUsers(pageInfo request.PageInfo) ([]systemModel.UserRe
 		db = db.Limit(limit).Offset(offset)
 		//err = db.Find(&list).Error
 		// 左连接 查询出role_name
-		db.Debug().Select("sys_user.id,sys_user.username,sys_user.phone,sys_user.email,sys_user.active,sys_user.role_model_id,sys_role.role_name").Joins("left join sys_role on sys_user.role_model_id = sys_role.id").Scan(&userResults)
+		db.Select("sys_user.id,sys_user.username,sys_user.phone,sys_user.email,sys_user.active,sys_user.role_model_id,sys_role.role_name").Joins("left join sys_role on sys_user.role_model_id = sys_role.id").Scan(&userResults)
 	}
 
 	return userResults, total, err
@@ -44,4 +45,14 @@ func (us *UserService) GetUsers(pageInfo request.PageInfo) ([]systemModel.UserRe
 // DeleteUser 删除用户
 func (us *UserService) DeleteUser(id uint) (err error) {
 	return global.TD27_DB.Where("id = ?", id).Unscoped().Delete(&systemModel.UserModel{}).Error
+}
+
+// AddUser 添加用户
+func (us *UserService) AddUser(user systemModel.UserModel) (err error) {
+	err = global.TD27_DB.Where("id = ?", user.RoleModelID).First(&systemModel.RoleModel{}).Error
+	if err != nil {
+		global.TD27_LOG.Error("添加用户 -> 查询role", zap.Error(err))
+	}
+
+	return global.TD27_DB.Create(&user).Error
 }
