@@ -1,6 +1,7 @@
 package system
 
 import (
+	"errors"
 	"fmt"
 	"go.uber.org/zap"
 	"server/global"
@@ -16,6 +17,12 @@ func (us *UserService) Login(u *systemModel.UserModel) (userInter *systemModel.U
 	var userModel systemModel.UserModel
 	u.Password = utils.MD5V([]byte(u.Password))
 	err = global.TD27_DB.Where("username = ? AND password = ?", u.Username, u.Password).First(&userModel).Error
+	if err != nil {
+		return nil, errors.New("用户不存在")
+	}
+	if userModel.Active == false {
+		return nil, errors.New("用户为禁用状态")
+	}
 	return &userModel, err
 }
 
