@@ -2,12 +2,12 @@ package system
 
 import (
 	"errors"
+	"fmt"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 	"server/global"
 	systemModel "server/model/system"
 	systemReq "server/model/system/request"
-	"server/utils"
 )
 
 type MenuService struct{}
@@ -27,15 +27,32 @@ func getTreeMap(menuListFormat []systemModel.MenuModel, menuList []systemModel.M
 	}
 }
 
-func (ms *MenuService) GetMenus(roles []string) ([]systemModel.MenuModel, error) {
+func (ms *MenuService) GetMenus(username string) ([]systemModel.MenuModel, error) {
+	// 查找用户
+	var userModel systemModel.UserModel
+	err := global.TD27_DB.Where("username = ?", username).First(&userModel).Error
+	if err != nil {
+		return nil, fmt.Errorf("GetMenus 用户查询 -> %v", err)
+	}
+
+	// 查找用户对应角色
+	var roleModel systemModel.RoleModel
+	err = global.TD27_DB.Where("id = ?", userModel.RoleModelID).First(&roleModel).Error
+	if err != nil {
+		return nil, fmt.Errorf("GetMenus 角色查询 -> %v", err)
+	}
+
 	var menuModels []systemModel.MenuModel
-	err := global.TD27_DB.Preload("Roles").Find(&menuModels).Error
+	err = global.TD27_DB.Preload("Roles").Find(&menuModels).Error
+	if err != nil {
+		return nil, fmt.Errorf("GetMenus 菜单查询 -> %v", err)
+	}
 
 	// 过滤角色拥有的路由
 	menuList := make([]systemModel.MenuModel, 0)
 	for _, menu := range menuModels {
 		for _, menuRole := range menu.Roles {
-			if utils.IsContain(roles, menuRole.RoleName) {
+			if roleModel.RoleName == menuRole.RoleName {
 				menuList = append(menuList, menu)
 				continue
 			}
@@ -51,7 +68,7 @@ func (ms *MenuService) GetMenus(roles []string) ([]systemModel.MenuModel, error)
 
 	getTreeMap(menuListFormat, menuList)
 
-	return menuListFormat, err
+	return menuListFormat, nil
 }
 
 func (ms *MenuService) AddMenu(menuRaw systemReq.Menu) bool {

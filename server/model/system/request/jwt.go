@@ -14,7 +14,7 @@ type CustomClaims struct {
 	jwt.RegisteredClaims
 }
 
-type CustomClaimsRole struct {
-	*CustomClaims
-	Roles []string `json:"roles,omitempty"`
-}
+//type CustomClaimsRole struct {
+//	*CustomClaims
+//	Roles []string `json:"roles,omitempty"`
+//}

@@ -8,20 +8,13 @@ import (
 	"server/model/common/request"
 	"server/model/common/response"
 	systemReq "server/model/system/request"
-	"server/utils"
 )
 
 type RoleApi struct{}
 
 // GetRoles 获取所有角色
 func (ra *RoleApi) GetRoles(c *gin.Context) {
-	userInfo, err := utils.GetUserInfo(c)
-	if err != nil {
-		response.FailWithMessage("获取失败", c)
-		global.TD27_LOG.Error("获取失败!", zap.Error(err))
-	}
-
-	if list, err := roleService.GetRoles(userInfo.Username); err != nil {
+	if list, err := roleService.GetRoles(); err != nil {
 		response.FailWithMessage(err.Error(), c)
 	} else {
 		response.OkWithDetailed(list, "获取成功", c)
@@ -41,13 +34,7 @@ func (ra *RoleApi) AddRole(c *gin.Context) {
 		return
 	}
 
-	userInfo, err := utils.GetUserInfo(c)
-	if err != nil {
-		response.FailWithMessage("获取失败", c)
-		global.TD27_LOG.Error("获取失败!", zap.Error(err))
-	}
-
-	if role, err := roleService.AddRole(userInfo.Username, roleReq.RoleName); err != nil {
+	if role, err := roleService.AddRole(roleReq.RoleName); err != nil {
 		response.FailWithMessage("添加失败", c)
 		global.TD27_LOG.Error("添加角色失败", zap.Error(err))
 	} else {
@@ -68,13 +55,7 @@ func (ra *RoleApi) DeleteRole(c *gin.Context) {
 		return
 	}
 
-	userInfo, err := utils.GetUserInfo(c)
-	if err != nil {
-		response.FailWithMessage("获取失败", c)
-		global.TD27_LOG.Error("获取失败!", zap.Error(err))
-	}
-
-	if err = roleService.DeleteRole(cId.ID, userInfo.Username); err != nil {
+	if err := roleService.DeleteRole(cId.ID); err != nil {
 		response.FailWithMessage("删除失败", c)
 		global.TD27_LOG.Error("删除角色失败", zap.Error(err))
 	} else {
