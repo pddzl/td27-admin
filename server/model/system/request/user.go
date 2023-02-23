@@ -15,7 +15,7 @@ type AddUser struct {
 	Phone       string `json:"phone"`                      // 手机号
 	Email       string `json:"email" validate:"email"`     // 邮箱
 	Active      bool   `json:"active"`                     // 是否活跃
-	RoleModelID uint   `json:"roleID" validate:"required"` // 角色ID
+	RoleModelID uint   `json:"roleId" validate:"required"` // 角色ID
 }
 
 type EditUser struct {

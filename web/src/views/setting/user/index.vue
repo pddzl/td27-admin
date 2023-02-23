@@ -36,8 +36,7 @@
           </el-table-column>
           <el-table-column fixed="right" label="操作" align="center" min-width="180px">
             <template #default="scope">
-              <el-button type="primary" text icon="Setting" size="small">设置权限</el-button>
-              <el-button type="primary" text icon="Edit" size="small">编辑</el-button>
+              <el-button type="primary" text icon="Edit" size="small" @click="editDialog(scope.row)">编辑</el-button>
               <el-button
                 type="danger"
                 text
@@ -64,7 +63,7 @@
         />
       </div>
     </el-card>
-    <el-dialog v-model="dialogVisible" title="新增用户" :before-close="handleClose" width="30%">
+    <el-dialog v-model="dialogVisible" :title="title" :before-close="handleClose" width="30%">
       <el-form
         ref="formRef"
         :model="formData"
@@ -76,20 +75,20 @@
         <el-form-item label="用户名" prop="username">
           <el-input v-model="formData.username" autocomplete="off" />
         </el-form-item>
-        <el-form-item label="密码" prop="password">
+        <el-form-item label="密码" prop="password" v-if="kind === 'Add'">
           <el-input v-model="formData.password" autocomplete="off" type="password" show-password />
         </el-form-item>
-        <el-form-item label="手机号码" prop="phone" required>
+        <el-form-item label="手机号码" prop="phone">
           <el-input v-model="formData.phone" autocomplete="off" />
         </el-form-item>
-        <el-form-item label="邮箱" prop="email" required>
+        <el-form-item label="邮箱" prop="email">
           <el-input v-model="formData.email" autocomplete="off" />
         </el-form-item>
         <el-form-item label="状态" prop="active">
           <el-switch v-model="formData.active" active-text="启用" inactive-text="禁用" />
         </el-form-item>
-        <el-form-item label="角色" prop="roleID" required>
-          <el-select v-model="formData.roleID">
+        <el-form-item label="角色" prop="roleId" required>
+          <el-select v-model="formData.roleId">
             <el-option v-for="role in roleOptions" :key="role.ID" :label="role.roleName" :value="role.ID" />
           </el-select>
         </el-form-item>
@@ -107,7 +106,7 @@
 <script lang="ts" setup>
 import { ref, reactive } from "vue"
 import { type FormInstance, type FormRules, ElMessage, ElMessageBox } from "element-plus"
-import { type UsersResponse, getUsersApi, deleteUserApi, addUserApi } from "@/api/system/user"
+import { type UsersResponse, getUsersApi, deleteUserApi, addUserApi, editUserApi } from "@/api/system/user"
 import { getRolesApi } from "@/api/system/role"
 import { usePagination } from "@/hooks/usePagination"
 import { useValidatePhone, useValidateEmail } from "./hooks/validate"
@@ -119,10 +118,14 @@ const tableData = ref<UsersResponse[]>([])
 
 const getTableData = async () => {
   loading.value = true
-  const res = await getUsersApi({ page: paginationData.currentPage, pageSize: paginationData.pageSize })
-  if (res.code === 0) {
-    tableData.value = res.data.list
-    paginationData.total = res.data.total
+  try {
+    const res = await getUsersApi({ page: paginationData.currentPage, pageSize: paginationData.pageSize })
+    if (res.code === 0) {
+      tableData.value = res.data.list
+      paginationData.total = res.data.total
+    }
+  } catch (error) {
+    //
   }
   loading.value = false
 }
@@ -135,7 +138,7 @@ const initForm = () => {
   formData.phone = ""
   formData.email = ""
   formData.active = false
-  formData.roleID = ""
+  formData.roleId = 0
 }
 
 const dialogVisible = ref<boolean>(false)
@@ -151,19 +154,25 @@ const formData = reactive({
   phone: "",
   email: "",
   active: false,
-  roleID: ""
+  roleId: 0
 })
 const formRules: FormRules = reactive({
   username: [{ required: true, trigger: "blur", message: "请填写用户名" }],
   password: [{ required: true, trigger: "blur", message: "请填写密码" }],
   phone: [{ validator: useValidatePhone, trigger: "blur" }],
   email: [{ validator: useValidateEmail, trigger: "blur" }],
-  roleID: [{ required: true, trigger: "change", message: "请选择角色" }]
+  roleId: [{ required: true, trigger: "change", message: "请选择角色" }]
 })
+const kind = ref("")
+const title = ref("")
 const addDialog = () => {
+  kind.value = "Add"
+  title.value = "新增用户"
   dialogVisible.value = true
 }
+
 const closeDialog = () => {
+  formRef.value?.resetFields
   initForm()
   dialogVisible.value = false
 }
@@ -172,17 +181,34 @@ const operateAction = (formEl: FormInstance | undefined) => {
   if (!formEl) return
   formEl.validate(async (valid) => {
     if (valid) {
-      const res = await addUserApi({
-        username: formData.username,
-        password: formData.password,
-        phone: formData.phone,
-        email: formData.email,
-        active: formData.active,
-        roleID: Number(formData.roleID)
-      })
-      if (res.code === 0) {
-        ElMessage({ type: "success", message: res.msg })
-        getTableData()
+      if (kind.value === "Add") {
+        const res = await addUserApi({
+          username: formData.username,
+          password: formData.password,
+          phone: formData.phone,
+          email: formData.email,
+          active: formData.active,
+          roleId: Number(formData.roleId)
+        })
+        if (res.code === 0) {
+          ElMessage({ type: "success", message: res.msg })
+          getTableData()
+        }
+      } else if (kind.value === "Edit") {
+        const res = await editUserApi({
+          id: activeRow.ID,
+          username: formData.username,
+          phone: formData.phone,
+          email: formData.email,
+          active: formData.active,
+          roleId: Number(formData.roleId)
+        })
+        if (res.code === 0) {
+          ElMessage({ type: "success", message: res.msg })
+          // 替换数据
+          const index = tableData.value.indexOf(activeRow)
+          tableData.value.splice(index, 1, res.data)
+        }
       }
       closeDialog()
     }
@@ -230,6 +256,19 @@ const getRoleOption = async () => {
   }
 }
 getRoleOption()
+
+let activeRow: UsersResponse
+const editDialog = (row: UsersResponse) => {
+  activeRow = row
+  formData.username = row.username
+  formData.phone = row.phone
+  formData.email = row.email
+  formData.active = row.active
+  formData.roleId = row.roleId
+  kind.value = "Edit"
+  title.value = "编辑用户"
+  dialogVisible.value = true
+}
 </script>
 
 <style lang="scss" scoped>

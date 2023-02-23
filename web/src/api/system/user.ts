@@ -17,6 +17,7 @@ export interface UsersResponse {
   phone: string
   email: string
   active: boolean
+  roleId: number
   role: string
 }
 
@@ -53,13 +54,31 @@ export interface reqUser {
   phone: string
   email: string
   active: boolean
-  roleID: number
+  roleId: number
 }
 
 // 添加用户
 export function addUserApi(data: reqUser) {
   return request<IApiResponseData<null>>({
     url: "/user/addUser",
+    method: "post",
+    data
+  })
+}
+
+export interface reqEditUser {
+  id: number
+  username: string
+  phone: string
+  email: string
+  active: boolean
+  roleId: number
+}
+
+// 编辑用户
+export function editUserApi(data: reqEditUser) {
+  return request<IApiResponseData<UsersResponse>>({
+    url: "/user/editUser",
     method: "post",
     data
   })
