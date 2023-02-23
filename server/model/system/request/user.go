@@ -22,7 +22,7 @@ type EditUser struct {
 	Id          uint   `json:"id" validate:"required"`
 	Username    string `json:"username" validate:"required"` // 用户名
 	Phone       string `json:"phone"`                        // 手机号
-	Email       string `json:"email" validate:"email"`       // 邮箱
+	Email       string `json:"email"`                        // 邮箱
 	Active      bool   `json:"active"`                       // 是否活跃
-	RoleModelID uint   `json:"roleID" validate:"required"`   // 角色ID
+	RoleModelID uint   `json:"roleId" validate:"required"`   // 角色ID
 }

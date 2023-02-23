@@ -94,10 +94,10 @@ func (ua *UserApi) EditUser(c *gin.Context) {
 		return
 	}
 
-	if err := userService.EditUser(editUser); err != nil {
+	if user, err := userService.EditUser(editUser); err != nil {
 		response.FailWithMessage("编辑失败", c)
 		global.TD27_LOG.Error("编辑失败", zap.Error(err))
 	} else {
-		response.OkWithMessage("编辑成功", c)
+		response.OkWithDetailed(user, "编辑成功", c)
 	}
 }

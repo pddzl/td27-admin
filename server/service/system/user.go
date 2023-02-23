@@ -76,32 +76,28 @@ func (us *UserService) AddUser(user systemReq.AddUser) (err error) {
 }
 
 // EditUser 编辑用户
-func (us *UserService) EditUser(user systemReq.EditUser) (err error) {
+func (us *UserService) EditUser(user systemReq.EditUser) (*systemModel.UserModel, error) {
 	var userModel systemModel.UserModel
 	// 用户是否存在
-	err = global.TD27_DB.Where("id = ?", user.Id).First(&userModel).Error
+	err := global.TD27_DB.Where("id = ?", user.Id).First(&userModel).Error
 	if err != nil {
 		global.TD27_LOG.Error("编辑用户 -> 查询Id", zap.Error(err))
-		return err
+		return nil, err
 	}
 
 	// 角色是否存在
 	err = global.TD27_DB.Where("id = ?", user.RoleModelID).First(&systemModel.RoleModel{}).Error
 	if err != nil {
 		global.TD27_LOG.Error("编辑用户 -> 查询role", zap.Error(err))
-		return err
+		return nil, err
 	}
 
 	updateV := make(map[string]interface{}, 5)
 	updateV["username"] = user.Username
 	updateV["active"] = user.Active
-	updateV["roleId"] = user.RoleModelID
-	if user.Phone != "" {
-		updateV["phone"] = user.Phone
-	}
-	if user.Email != "" {
-		updateV["email"] = user.Email
-	}
+	updateV["role_model_id"] = user.RoleModelID
+	updateV["phone"] = user.Phone
+	updateV["email"] = user.Email
 
-	return global.TD27_DB.Model(&userModel).Updates(updateV).Error
+	return &userModel, global.TD27_DB.Model(&userModel).Updates(updateV).Error
 }
