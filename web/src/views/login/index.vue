@@ -100,24 +100,20 @@ const handleLogin = () => {
         captcha: loginForm.captcha,
         captchaId: loginForm.captchaId
       })
-
       if (res) {
         router.push({ path: "/" })
       } else {
         createCode()
       }
       loading.value = false
-    } else {
-      return false
     }
   })
 }
 /** 创建验证码 */
 const createCode = () => {
   // 先清空验证码的输入
-  // loginForm.code = ""
+  loginForm.captcha = ""
   // 获取验证码
-  // codeUrl.value = ""
   captcha().then((res) => {
     codeUrl.value = res.data.picPath
     loginForm.captchaId = res.data.captchaId

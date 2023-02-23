@@ -11,18 +11,23 @@ export const useUserStore = defineStore("user", () => {
 
   /** 登录 */
   const login = async (loginData: ILoginRequestData): Promise<boolean> => {
-    const res = await loginApi({
-      username: loginData.username,
-      password: loginData.password,
-      captcha: loginData.captcha,
-      captchaId: loginData.captchaId
-    })
-    if (res.code === 0) {
-      token.value = res.data.token
-      return true
+    try {
+      const res = await loginApi({
+        username: loginData.username,
+        password: loginData.password,
+        captcha: loginData.captcha,
+        captchaId: loginData.captchaId
+      })
+      if (res.code === 0) {
+        token.value = res.data.token
+        return true
+      }
+    } catch (error) {
+      return false
     }
     return false
   }
+
   /** 获取用户详情 */
   const getInfo = () => {
     return new Promise((resolve, reject) => {
