@@ -7,7 +7,7 @@ import (
 	"server/global"
 	"server/model/common/request"
 	"server/model/common/response"
-	systemModel "server/model/system"
+	systemReq "server/model/system/request"
 	"server/utils"
 )
 
@@ -62,7 +62,7 @@ func (ua *UserApi) DeleteUser(c *gin.Context) {
 
 // AddUser 添加用户
 func (ua *UserApi) AddUser(c *gin.Context) {
-	var addUser systemModel.AddUser
+	var addUser systemReq.AddUser
 	_ = c.ShouldBindJSON(&addUser)
 
 	// 参数校验
@@ -78,5 +78,26 @@ func (ua *UserApi) AddUser(c *gin.Context) {
 		global.TD27_LOG.Error("添加失败", zap.Error(err))
 	} else {
 		response.OkWithMessage("添加成功", c)
+	}
+}
+
+// EditUser 编辑用户
+func (ua *UserApi) EditUser(c *gin.Context) {
+	var editUser systemReq.EditUser
+	_ = c.ShouldBindJSON(&editUser)
+
+	// 参数校验
+	validate := validator.New()
+	if err := validate.Struct(&editUser); err != nil {
+		response.FailWithMessage("请求参数错误", c)
+		global.TD27_LOG.Error("请求参数错误", zap.Error(err))
+		return
+	}
+
+	if err := userService.EditUser(editUser); err != nil {
+		response.FailWithMessage("编辑失败", c)
+		global.TD27_LOG.Error("编辑失败", zap.Error(err))
+	} else {
+		response.OkWithMessage("编辑成功", c)
 	}
 }

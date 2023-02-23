@@ -7,6 +7,8 @@ import (
 	"server/global"
 	"server/model/common/request"
 	systemModel "server/model/system"
+	systemReq "server/model/system/request"
+	systemRes "server/model/system/response"
 	"server/utils"
 )
 
@@ -27,8 +29,8 @@ func (us *UserService) Login(u *systemModel.UserModel) (userInter *systemModel.U
 }
 
 // GetUsers 获取所有用户
-func (us *UserService) GetUsers(pageInfo request.PageInfo) ([]systemModel.UserResult, int64, error) {
-	var userResults []systemModel.UserResult
+func (us *UserService) GetUsers(pageInfo request.PageInfo) ([]systemRes.UserResult, int64, error) {
+	var userResults []systemRes.UserResult
 	var total int64
 
 	db := global.TD27_DB.Model(&systemModel.UserModel{})
@@ -55,7 +57,7 @@ func (us *UserService) DeleteUser(id uint) (err error) {
 }
 
 // AddUser 添加用户
-func (us *UserService) AddUser(user systemModel.AddUser) (err error) {
+func (us *UserService) AddUser(user systemReq.AddUser) (err error) {
 	err = global.TD27_DB.Where("id = ?", user.RoleModelID).First(&systemModel.RoleModel{}).Error
 	if err != nil {
 		global.TD27_LOG.Error("添加用户 -> 查询role", zap.Error(err))
@@ -71,4 +73,35 @@ func (us *UserService) AddUser(user systemModel.AddUser) (err error) {
 	userModel.RoleModelID = user.RoleModelID
 
 	return global.TD27_DB.Create(&userModel).Error
+}
+
+// EditUser 编辑用户
+func (us *UserService) EditUser(user systemReq.EditUser) (err error) {
+	var userModel systemModel.UserModel
+	// 用户是否存在
+	err = global.TD27_DB.Where("id = ?", user.Id).First(&userModel).Error
+	if err != nil {
+		global.TD27_LOG.Error("编辑用户 -> 查询Id", zap.Error(err))
+		return err
+	}
+
+	// 角色是否存在
+	err = global.TD27_DB.Where("id = ?", user.RoleModelID).First(&systemModel.RoleModel{}).Error
+	if err != nil {
+		global.TD27_LOG.Error("编辑用户 -> 查询role", zap.Error(err))
+		return err
+	}
+
+	updateV := make(map[string]interface{}, 5)
+	updateV["username"] = user.Username
+	updateV["active"] = user.Active
+	updateV["roleId"] = user.RoleModelID
+	if user.Phone != "" {
+		updateV["phone"] = user.Phone
+	}
+	if user.Email != "" {
+		updateV["email"] = user.Email
+	}
+
+	return global.TD27_DB.Model(&userModel).Updates(updateV).Error
 }
