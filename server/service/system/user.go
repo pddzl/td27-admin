@@ -76,8 +76,9 @@ func (us *UserService) AddUser(user systemReq.AddUser) (err error) {
 }
 
 // EditUser 编辑用户
-func (us *UserService) EditUser(user systemReq.EditUser) (*systemModel.UserModel, error) {
+func (us *UserService) EditUser(user systemReq.EditUser) (*systemRes.UserResult, error) {
 	var userModel systemModel.UserModel
+	var userResult systemRes.UserResult
 	// 用户是否存在
 	err := global.TD27_DB.Where("id = ?", user.Id).First(&userModel).Error
 	if err != nil {
@@ -86,7 +87,8 @@ func (us *UserService) EditUser(user systemReq.EditUser) (*systemModel.UserModel
 	}
 
 	// 角色是否存在
-	err = global.TD27_DB.Where("id = ?", user.RoleModelID).First(&systemModel.RoleModel{}).Error
+	var roleModel systemModel.RoleModel
+	err = global.TD27_DB.Where("id = ?", user.RoleModelID).First(&roleModel).Error
 	if err != nil {
 		global.TD27_LOG.Error("编辑用户 -> 查询role", zap.Error(err))
 		return nil, err
@@ -99,5 +101,19 @@ func (us *UserService) EditUser(user systemReq.EditUser) (*systemModel.UserModel
 	updateV["phone"] = user.Phone
 	updateV["email"] = user.Email
 
-	return &userModel, global.TD27_DB.Model(&userModel).Updates(updateV).Error
+	err = global.TD27_DB.Model(&userModel).Updates(updateV).Error
+	if err != nil {
+		global.TD27_LOG.Error("编辑用户 -> update", zap.Error(err))
+		return nil, err
+	}
+
+	userResult.ID = userModel.ID
+	userResult.Username = userModel.Username
+	userResult.Phone = userModel.Phone
+	userResult.Email = userModel.Email
+	userResult.Active = userModel.Active
+	userResult.RoleName = roleModel.RoleName
+	userResult.RoleModelID = userModel.RoleModelID
+
+	return &userResult, nil
 }
