@@ -17,6 +17,7 @@ func (u *UserRouter) InitUserRouter(Router *gin.RouterGroup) (R gin.IRoutes) {
 		userRouter.POST("addUser", userApi.AddUser)
 		userRouter.POST("editUser", userApi.EditUser)
 		userRouter.POST("modifyPass", userApi.ModifyPass)
+		userRouter.POST("switchActive", userApi.SwitchActive)
 	}
 	return userRouter
 }

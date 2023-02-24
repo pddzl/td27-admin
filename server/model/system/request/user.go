@@ -32,3 +32,8 @@ type ModifyPass struct {
 	OldPassword string `json:"oldPassword" validate:"required"` // 旧密码
 	NewPassword string `json:"newPassword" validate:"required"` // 新密码
 }
+
+type SwitchActive struct {
+	Id     uint `json:"id" validate:"required"`
+	Active bool `json:"active"`
+}

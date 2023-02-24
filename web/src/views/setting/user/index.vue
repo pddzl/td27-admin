@@ -31,13 +31,16 @@
                 :inactive-value="false"
                 active-text="启用"
                 inactive-text="禁用"
+                @change="switchAction(scope.row.ID, scope.row.active)"
               />
             </template>
           </el-table-column>
           <el-table-column fixed="right" label="操作" align="center" min-width="200px">
             <template #default="scope">
               <el-button type="primary" text icon="Edit" size="small" @click="editDialog(scope.row)">编辑</el-button>
-              <el-button type="primary" text icon="Key" size="small" @click="modifyDialog(scope.row)">修改密码</el-button>
+              <el-button type="primary" text icon="Key" size="small" @click="modifyDialog(scope.row)"
+                >修改密码</el-button
+              >
               <el-button
                 type="danger"
                 text
@@ -133,7 +136,15 @@
 <script lang="ts" setup>
 import { ref, reactive } from "vue"
 import { type FormInstance, type FormRules, ElMessage, ElMessageBox, ElNotification } from "element-plus"
-import { type UsersResponse, getUsersApi, deleteUserApi, addUserApi, editUserApi, modifyPassApi } from "@/api/system/user"
+import {
+  type UsersResponse,
+  getUsersApi,
+  deleteUserApi,
+  addUserApi,
+  editUserApi,
+  modifyPassApi,
+  SwitchActiveApi
+} from "@/api/system/user"
 import { getRolesApi } from "@/api/system/role"
 import { usePagination } from "@/hooks/usePagination"
 import { useValidatePhone, useValidateEmail } from "./hooks/validate"
@@ -203,19 +214,21 @@ const mpOperateAction = (formEl: FormInstance | undefined) => {
   formEl.validate(async (valid) => {
     if (valid) {
       if (mpFormData.newPassword !== mpFormData.rePassword) {
-        ElNotification({title: "提示", message: "确认密码不一致", type: "error"})
+        ElNotification({ title: "提示", message: "确认密码不一致", type: "error" })
         return
       }
       await modifyPassApi({
         id: activeRow.ID,
         oldPassword: mpFormData.oldPassword,
-        newPassword: mpFormData.newPassword,
-      }).then(res => {
-        if (res.code === 0) {
-          ElMessage({ type: "success", message: res.msg })
-          mpCloseDialog()
-        }
-      }).catch(err => {})
+        newPassword: mpFormData.newPassword
+      })
+        .then((res) => {
+          if (res.code === 0) {
+            ElMessage({ type: "success", message: res.msg })
+            mpCloseDialog()
+          }
+        })
+        .catch(() => {})
     }
   })
 }
@@ -358,6 +371,21 @@ const editDialog = (row: UsersResponse) => {
   kind.value = "Edit"
   title.value = "编辑用户"
   dialogVisible.value = true
+}
+
+// 切换用户状态
+const switchAction = (id: number, active: boolean) => {
+  SwitchActiveApi({ id: id, active: active })
+    .then((res) => {
+      if (res.code === 0) {
+        if (active) {
+          ElMessage({ type: "success", message: "启用成功" })
+        } else {
+          ElMessage({ type: "success", message: "禁用成功" })
+        }
+      }
+    })
+    .catch(() => {})
 }
 </script>
 

@@ -124,3 +124,24 @@ func (ua *UserApi) ModifyPass(c *gin.Context) {
 		response.OkWithMessage("修改成功", c)
 	}
 }
+
+// SwitchActive 切换启用状态
+func (ua *UserApi) SwitchActive(c *gin.Context) {
+	var sa systemReq.SwitchActive
+	_ = c.ShouldBindJSON(&sa)
+
+	// 参数校验
+	validate := validator.New()
+	if err := validate.Struct(&sa); err != nil {
+		response.FailWithMessage("请求参数错误", c)
+		global.TD27_LOG.Error("请求参数错误", zap.Error(err))
+		return
+	}
+
+	if err := userService.SwitchActive(sa); err != nil {
+		response.FailWithMessage("切换失败", c)
+		global.TD27_LOG.Error("切换失败", zap.Error(err))
+	} else {
+		response.OkWithMessage("切换成功", c)
+	}
+}

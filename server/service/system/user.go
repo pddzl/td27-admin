@@ -123,8 +123,23 @@ func (us *UserService) ModifyPass(mp systemReq.ModifyPass) (err error) {
 	var userModel systemModel.UserModel
 	err = global.TD27_DB.Where("id = ? and password = ?", mp.Id, utils.MD5V([]byte(mp.OldPassword))).First(&userModel).Error
 	if err != nil {
-		global.TD27_LOG.Error("修改用户密码 -> 查询", zap.Error(err))
+		global.TD27_LOG.Error("修改用户密码 -> 查询用户", zap.Error(err))
 		return err
 	}
 	return global.TD27_DB.Model(&userModel).Update("password", utils.MD5V([]byte(mp.NewPassword))).Error
+}
+
+// SwitchActive 切换启用状态
+func (us *UserService) SwitchActive(sa systemReq.SwitchActive) (err error) {
+	var userModel systemModel.UserModel
+	err = global.TD27_DB.Where("id = ?", sa.Id).First(&userModel).Error
+	if err != nil {
+		global.TD27_LOG.Error("切换启用状态 -> 查询用户", zap.Error(err))
+		return err
+	}
+	if sa.Active {
+		return global.TD27_DB.Model(&userModel).Update("active", true).Error
+	} else {
+		return global.TD27_DB.Model(&userModel).Update("active", false).Error
+	}
 }

@@ -98,3 +98,17 @@ export function modifyPassApi(data: reqModifyPass) {
     data
   })
 }
+
+// 切换用户状态
+interface reqSwitchActive {
+  id: number
+  active: boolean
+}
+
+export function SwitchActiveApi(data: reqSwitchActive) {
+  return request<IApiResponseData<null>>({
+    url: "/user/switchActive",
+    method: "post",
+    data
+  })
+}
