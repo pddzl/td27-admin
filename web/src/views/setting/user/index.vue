@@ -34,9 +34,10 @@
               />
             </template>
           </el-table-column>
-          <el-table-column fixed="right" label="操作" align="center" min-width="180px">
+          <el-table-column fixed="right" label="操作" align="center" min-width="200px">
             <template #default="scope">
               <el-button type="primary" text icon="Edit" size="small" @click="editDialog(scope.row)">编辑</el-button>
+              <el-button type="primary" text icon="Key" size="small" @click="modifyDialog(scope.row)">修改密码</el-button>
               <el-button
                 type="danger"
                 text
@@ -100,13 +101,39 @@
         </div>
       </template>
     </el-dialog>
+    <el-dialog v-model="mpDialogVisible" title="修改密码" :before-close="mpHandleClose" width="25%">
+      <el-form
+        ref="mpFormRef"
+        :model="mpFormData"
+        :rules="mpFormRules"
+        label-width="100px"
+        label-position="left"
+        style="width: 95%; margin-top: 15px"
+      >
+        <el-form-item label="旧密码" prop="oldPassword">
+          <el-input v-model="mpFormData.oldPassword" autocomplete="off" type="password" show-password />
+        </el-form-item>
+        <el-form-item label="新密码" prop="newPassword">
+          <el-input v-model="mpFormData.newPassword" autocomplete="off" type="password" show-password />
+        </el-form-item>
+        <el-form-item label="确认密码" prop="rePassword">
+          <el-input v-model="mpFormData.rePassword" autocomplete="off" type="password" show-password />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button @click="mpCloseDialog">取消</el-button>
+          <el-button type="primary" @click="mpOperateAction(mpFormRef)">确认</el-button>
+        </div>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { ref, reactive } from "vue"
-import { type FormInstance, type FormRules, ElMessage, ElMessageBox } from "element-plus"
-import { type UsersResponse, getUsersApi, deleteUserApi, addUserApi, editUserApi } from "@/api/system/user"
+import { type FormInstance, type FormRules, ElMessage, ElMessageBox, ElNotification } from "element-plus"
+import { type UsersResponse, getUsersApi, deleteUserApi, addUserApi, editUserApi, modifyPassApi } from "@/api/system/user"
 import { getRolesApi } from "@/api/system/role"
 import { usePagination } from "@/hooks/usePagination"
 import { useValidatePhone, useValidateEmail } from "./hooks/validate"
@@ -115,6 +142,7 @@ const loading = ref<boolean>(false)
 const { paginationData, handleCurrentChange, handleSizeChange } = usePagination()
 
 const tableData = ref<UsersResponse[]>([])
+let activeRow: UsersResponse
 
 const getTableData = async () => {
   loading.value = true
@@ -130,6 +158,69 @@ const getTableData = async () => {
   loading.value = false
 }
 getTableData()
+
+// 修改密码对话框
+const mpDialogVisible = ref<boolean>(false)
+
+const mpFormRef = ref<FormInstance>()
+
+const mpFormData = reactive({
+  oldPassword: "",
+  newPassword: "",
+  rePassword: ""
+})
+
+const mpInitForm = () => {
+  mpFormData.oldPassword = ""
+  mpFormData.newPassword = ""
+  mpFormData.rePassword = ""
+}
+
+const mpHandleClose = (done: Function) => {
+  mpInitForm()
+  done()
+}
+
+const mpFormRules: FormRules = reactive({
+  oldPassword: [{ required: true, trigger: "blur", message: "请填写密码" }],
+  newPassword: [{ required: true, trigger: "blur", message: "请填写密码" }],
+  rePassword: [{ required: true, trigger: "blur", message: "请填写密码" }]
+})
+
+const mpCloseDialog = () => {
+  mpFormRef.value?.resetFields
+  mpInitForm()
+  mpDialogVisible.value = false
+}
+
+const modifyDialog = (row: UsersResponse) => {
+  activeRow = row
+  mpDialogVisible.value = true
+}
+
+const mpOperateAction = (formEl: FormInstance | undefined) => {
+  if (!formEl) return
+  formEl.validate(async (valid) => {
+    if (valid) {
+      if (mpFormData.newPassword !== mpFormData.rePassword) {
+        ElNotification({title: "提示", message: "确认密码不一致", type: "error"})
+        return
+      }
+      await modifyPassApi({
+        id: activeRow.ID,
+        oldPassword: mpFormData.oldPassword,
+        newPassword: mpFormData.newPassword,
+      }).then(res => {
+        if (res.code === 0) {
+          ElMessage({ type: "success", message: res.msg })
+          mpCloseDialog()
+        }
+      }).catch(err => {})
+    }
+  })
+}
+
+// 添加、编辑用户对话框
 
 const initForm = () => {
   formRef.value?.resetFields()
@@ -257,7 +348,6 @@ const getRoleOption = async () => {
 }
 getRoleOption()
 
-let activeRow: UsersResponse
 const editDialog = (row: UsersResponse) => {
   activeRow = row
   formData.username = row.username

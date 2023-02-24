@@ -66,7 +66,7 @@ export function addUserApi(data: reqUser) {
   })
 }
 
-export interface reqEditUser {
+interface reqEditUser {
   id: number
   username: string
   phone: string
@@ -79,6 +79,21 @@ export interface reqEditUser {
 export function editUserApi(data: reqEditUser) {
   return request<IApiResponseData<UsersResponse>>({
     url: "/user/editUser",
+    method: "post",
+    data
+  })
+}
+
+// 修改用户密码
+interface reqModifyPass {
+  id: number
+  oldPassword: string
+  newPassword: string
+}
+
+export function modifyPassApi(data: reqModifyPass) {
+  return request<IApiResponseData<null>>({
+    url: "/user/modifyPass",
     method: "post",
     data
   })
