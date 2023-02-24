@@ -2,12 +2,14 @@ import { ref, watch } from "vue"
 import store from "@/store"
 import { defineStore } from "pinia"
 import { resetRouter } from "@/router"
+import { useTagsViewStore } from "./tags-view"
 import { getUserInfoApi } from "@/api/system/user"
 import { type ILoginRequestData, loginApi } from "@/api/system/base"
 
 export const useUserStore = defineStore("user", () => {
   const token = ref<string>(window.localStorage.getItem("token") || "")
   const username = ref<string>("")
+  const tagsViewStore = useTagsViewStore()
 
   /** 登录 */
   const login = async (loginData: ILoginRequestData): Promise<boolean> => {
@@ -47,10 +49,17 @@ export const useUserStore = defineStore("user", () => {
   const logout = () => {
     token.value = ""
     resetRouter()
+    _resetTagsView()
   }
   /** 重置 Token */
   const resetToken = () => {
     token.value = ""
+  }
+
+  /** 重置 visited views 和 cached views */
+  const _resetTagsView = () => {
+    tagsViewStore.delAllVisitedViews()
+    tagsViewStore.delAllCachedViews()
   }
 
   watch(

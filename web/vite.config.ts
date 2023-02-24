@@ -4,6 +4,7 @@ import vue from "@vitejs/plugin-vue"
 import vueJsx from "@vitejs/plugin-vue-jsx"
 import { createSvgIconsPlugin } from "vite-plugin-svg-icons"
 import svgLoader from "vite-svg-loader"
+import DefineOptions from "unplugin-vue-define-options/vite"
 
 /** 配置项文档：https://cn.vitejs.dev/config */
 export default (configEnv: ConfigEnv): UserConfigExport => {
@@ -72,7 +73,9 @@ export default (configEnv: ConfigEnv): UserConfigExport => {
       createSvgIconsPlugin({
         iconDirs: [path.resolve(process.cwd(), "src/icons/svg")],
         symbolId: "icon-[dir]-[name]"
-      })
+      }),
+      /** DefineOptions 可以更简单的注册组件名称 */
+      DefineOptions()
     ]
   }
 }
