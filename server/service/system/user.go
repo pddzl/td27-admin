@@ -117,3 +117,14 @@ func (us *UserService) EditUser(user systemReq.EditUser) (*systemRes.UserResult,
 
 	return &userResult, nil
 }
+
+// ModifyPass 修改用户密码
+func (us *UserService) ModifyPass(mp systemReq.ModifyPass) (err error) {
+	var userModel systemModel.UserModel
+	err = global.TD27_DB.Where("id = ? and password = ?", mp.Id, utils.MD5V([]byte(mp.OldPassword))).First(&userModel).Error
+	if err != nil {
+		global.TD27_LOG.Error("修改用户密码 -> 查询", zap.Error(err))
+		return err
+	}
+	return global.TD27_DB.Model(&userModel).Update("password", utils.MD5V([]byte(mp.NewPassword))).Error
+}

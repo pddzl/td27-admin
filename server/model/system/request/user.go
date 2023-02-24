@@ -26,3 +26,9 @@ type EditUser struct {
 	Active      bool   `json:"active"`                       // 是否活跃
 	RoleModelID uint   `json:"roleId" validate:"required"`   // 角色ID
 }
+
+type ModifyPass struct {
+	Id          uint   `json:"id" validate:"required"`
+	OldPassword string `json:"oldPassword" validate:"required"` // 旧密码
+	NewPassword string `json:"newPassword" validate:"required"` // 新密码
+}

@@ -13,6 +13,7 @@ import (
 
 type UserApi struct{}
 
+// GetUserInfo 获取用户信息
 func (ua *UserApi) GetUserInfo(c *gin.Context) {
 	if userInfo, err := utils.GetUserInfo(c); err != nil {
 		response.FailWithMessage("获取失败", c)
@@ -22,6 +23,7 @@ func (ua *UserApi) GetUserInfo(c *gin.Context) {
 	}
 }
 
+// GetUsers 获取所有用户
 func (ua *UserApi) GetUsers(c *gin.Context) {
 	var pageInfo request.PageInfo
 	_ = c.ShouldBindJSON(&pageInfo)
@@ -99,5 +101,26 @@ func (ua *UserApi) EditUser(c *gin.Context) {
 		global.TD27_LOG.Error("编辑失败", zap.Error(err))
 	} else {
 		response.OkWithDetailed(user, "编辑成功", c)
+	}
+}
+
+// ModifyPass 修改用户密码
+func (ua *UserApi) ModifyPass(c *gin.Context) {
+	var mp systemReq.ModifyPass
+	_ = c.ShouldBindJSON(&mp)
+
+	// 参数校验
+	validate := validator.New()
+	if err := validate.Struct(&mp); err != nil {
+		response.FailWithMessage("请求参数错误", c)
+		global.TD27_LOG.Error("请求参数错误", zap.Error(err))
+		return
+	}
+
+	if err := userService.ModifyPass(mp); err != nil {
+		response.FailWithMessage("修改失败", c)
+		global.TD27_LOG.Error("修改失败", zap.Error(err))
+	} else {
+		response.OkWithMessage("修改成功", c)
 	}
 }
