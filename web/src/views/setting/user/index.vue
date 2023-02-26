@@ -242,7 +242,7 @@ const initForm = () => {
   formData.phone = ""
   formData.email = ""
   formData.active = false
-  formData.roleId = 0
+  formData.roleId = ""
 }
 
 const dialogVisible = ref<boolean>(false)
@@ -258,7 +258,7 @@ const formData = reactive({
   phone: "",
   email: "",
   active: false,
-  roleId: 0
+  roleId: ""
 })
 const formRules: FormRules = reactive({
   username: [{ required: true, trigger: "blur", message: "请填写用户名" }],
@@ -347,7 +347,7 @@ const handleCurrentChangeAction = (value: number) => {
 }
 
 interface option {
-  ID: number
+  ID: String
   roleName: string
 }
 const roleOptions: option[] = []
@@ -355,7 +355,7 @@ const getRoleOption = async () => {
   const res = await getRolesApi()
   if (res.code === 0) {
     res.data.forEach((element) => {
-      roleOptions.push({ ID: element.ID, roleName: element.roleName })
+      roleOptions.push({ ID: String(element.ID), roleName: element.roleName })
     })
   }
 }
@@ -367,7 +367,7 @@ const editDialog = (row: UsersResponse) => {
   formData.phone = row.phone
   formData.email = row.email
   formData.active = row.active
-  formData.roleId = row.roleId
+  formData.roleId = String(row.roleId)
   kind.value = "Edit"
   title.value = "编辑用户"
   dialogVisible.value = true
