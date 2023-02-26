@@ -44,14 +44,24 @@ func JWTAuth() gin.HandlerFunc {
 			return
 		}
 
-		// 已登录用户被管理员禁用 需要使该用户的jwt失效 此处比较消耗性能 如果需要 请自行打开
-		// 用户被删除的逻辑 需要优化 此处比较消耗性能 如果需要 请自行打开
+		// 已登录用户被管理员删除
+		var userModel system.UserModel
+		err = global.TD27_DB.Where("username = ?", claims.Username).First(&userModel).Error
+		if err != nil {
+			response.FailWithMessage("用户不存在", c)
+			c.Abort()
+			global.TD27_LOG.Error("用户不存在")
+			return
+		}
 
-		//if user, err := userService.FindUserByUuid(claims.UUID.String()); err != nil || user.Enable == 2 {
-		//	_ = jwtService.JsonInBlacklist(system.JwtBlacklist{Jwt: token})
-		//	response.FailWithDetailed(gin.H{"reload": true}, err.Error(), c)
-		//	c.Abort()
-		//}
+		// 已登录用户被管理员禁用
+		if !userModel.Active {
+			response.FailWithMessage("用户被禁用", c)
+			c.Abort()
+			global.TD27_LOG.Error("用户被禁用")
+			return
+		}
+
 		if claims.ExpiresAt.Unix()-time.Now().Unix() < claims.BufferTime {
 			claims.ExpiresAt = jwt.NewNumericDate(time.Now().Add(time.Duration(global.TD27_CONFIG.JWT.ExpiresTime) * time.Second))
 			newToken, _ := j.CreateTokenByOldToken(token, *claims)
