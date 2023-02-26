@@ -18,7 +18,7 @@
           <el-table-column fixed="right" label="操作" align="center">
             <template #default="scope">
               <el-button type="primary" text icon="Setting" size="small">设置权限</el-button>
-              <el-button type="primary" text icon="Edit" size="small">编辑</el-button>
+              <el-button type="primary" text icon="Edit" size="small" @click="editDialog(scope.row)">编辑</el-button>
               <el-button
                 type="danger"
                 text
@@ -33,7 +33,7 @@
         </el-table>
       </div>
     </el-card>
-    <el-dialog v-model="dialogVisible" title="新增角色" :before-close="handleClose" width="30%">
+    <el-dialog v-model="dialogVisible" :title="title" :before-close="handleClose" width="30%">
       <el-form
         ref="formRef"
         :model="formData"
@@ -59,7 +59,7 @@
 <script lang="ts" setup>
 import { ref, reactive } from "vue"
 import { type FormInstance, type FormRules, ElMessage, ElMessageBox } from "element-plus"
-import { type roleData, type reqRole, getRolesApi, addRoleApi, deleteRoleApi } from "@/api/system/role"
+import { type roleData, getRolesApi, addRoleApi, deleteRoleApi, editRoleApi } from "@/api/system/role"
 
 const loading = ref<boolean>(false)
 const tableData = ref<roleData[]>([])
@@ -86,14 +86,30 @@ const handleClose = (done: Function) => {
 
 const formRef = ref<FormInstance>()
 const formData = reactive({
+  id: 0,
   roleName: ""
 })
 const formRules: FormRules = reactive({
   roleName: [{ required: true, trigger: "blur", message: "请填写角色名称" }]
 })
+
+const kind = ref("")
+const title = ref("")
 const addDialog = () => {
+  kind.value = "Add"
+  title.value = "新增用户"
   dialogVisible.value = true
 }
+
+let activeRow: roleData
+const editDialog = (row: roleData) => {
+  kind.value = "Edit"
+  title.value = "编辑用户"
+  activeRow = row
+  formData.roleName = row.roleName
+  dialogVisible.value = true
+}
+
 const closeDialog = () => {
   initForm()
   dialogVisible.value = false
@@ -103,21 +119,26 @@ const operateAction = (formEl: FormInstance | undefined) => {
   if (!formEl) return
   formEl.validate(async (valid) => {
     if (valid) {
-      const tempRole: reqRole = {
-        roleName: formData.roleName
-      }
-      const res = await addRoleApi(tempRole)
-      if (res.code === 0) {
-        ElMessage({ type: "success", message: res.msg })
-        const tempData: roleData = {
-          ID: res.data.ID,
-          roleName: res.data.roleName,
-          menus: []
+      if (kind.value === "Add") {
+        const res = await addRoleApi({ roleName: formData.roleName })
+        if (res.code === 0) {
+          ElMessage({ type: "success", message: res.msg })
+          const tempData: roleData = {
+            ID: res.data.ID,
+            roleName: res.data.roleName,
+            menus: []
+          }
+          tableData.value.push(tempData)
         }
-        tableData.value.push(tempData)
+      } else if (kind.value === "Edit") {
+        const res = await editRoleApi({ id: activeRow.ID, roleName: formData.roleName })
+        if (res.code === 0) {
+          ElMessage({ type: "success", message: res.msg })
+          const index = tableData.value.indexOf(activeRow)
+          tableData.value[index].roleName = formData.roleName
+        }
       }
-      initForm()
-      dialogVisible.value = false
+      closeDialog()
     }
   })
 }

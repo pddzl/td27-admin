@@ -37,3 +37,16 @@ export function deleteRoleApi(data: reqId) {
     data
   })
 }
+
+interface reqEditRole {
+  id: number
+  roleName: string
+}
+
+export function editRoleApi(data: reqEditRole) {
+  return request<IApiResponseData<null>>({
+    url: "/role/editRole",
+    method: "post",
+    data
+  })
+}

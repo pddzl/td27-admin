@@ -14,6 +14,7 @@ func (r *RoleRouter) InitRoleRouter(Router *gin.RouterGroup) (R gin.IRoutes) {
 		roleRouter.POST("getRoles", roleApi.GetRoles)
 		roleRouter.POST("addRole", roleApi.AddRole)
 		roleRouter.DELETE("deleteRole", roleApi.DeleteRole)
+		roleRouter.POST("editRole", roleApi.EditDelete)
 	}
 	return roleRouter
 }
