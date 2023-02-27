@@ -85,4 +85,22 @@ func (ra *RoleApi) EditRole(c *gin.Context) {
 }
 
 // EditRoleMenu 编辑用户menu
-func (ra *RoleApi) EditRoleMenu(c *gin.Context) {}
+func (ra *RoleApi) EditRoleMenu(c *gin.Context) {
+	var editRE systemReq.EditRoleMenu
+	_ = c.ShouldBindJSON(&editRE)
+
+	// 参数校验
+	validate := validator.New()
+	if err := validate.Struct(&editRE); err != nil {
+		response.FailWithMessage("请求参数错误", c)
+		global.TD27_LOG.Error("请求参数错误", zap.Error(err))
+		return
+	}
+
+	if err := roleService.EditRoleMenu(editRE.RoleId, editRE.Ids); err != nil {
+		response.FailWithMessage("编辑失败", c)
+		global.TD27_LOG.Error("编辑失败", zap.Error(err))
+	} else {
+		response.OkWithMessage("编辑成功", c)
+	}
+}

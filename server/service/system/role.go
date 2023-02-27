@@ -57,3 +57,16 @@ func (rs *RoleService) EditRole(eRole systemReq.EditRole) (err error) {
 
 	return global.TD27_DB.Model(&roleModel).Update("role_name", eRole.RoleName).Error
 }
+
+// EditRoleMenu 编辑用户menu
+func (rs *RoleService) EditRoleMenu(roleId uint, ids []uint) (err error) {
+	var menuModel []systemModel.MenuModel
+	err = global.TD27_DB.Where("id in ?", ids).Find(&menuModel).Error
+	if err != nil {
+		global.TD27_LOG.Error("EditRoleMenu 查询menu", zap.Error(err))
+	}
+
+	err = global.TD27_DB.Where("id = ?", roleId).First(&systemModel.RoleModel{}).Association("Menus").Replace(&menuModel)
+
+	return err
+}

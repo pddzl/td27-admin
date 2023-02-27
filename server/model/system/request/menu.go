@@ -20,3 +20,8 @@ type EditMenuReq struct {
 	Id uint `json:"id" validate:"required"`
 	Menu
 }
+
+type EditRoleMenu struct {
+	RoleId uint   `json:"roleId"`
+	Ids    []uint `json:"ids"`
+}
