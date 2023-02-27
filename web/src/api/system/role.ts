@@ -50,11 +50,3 @@ export function editRoleApi(data: reqEditRole) {
     data
   })
 }
-
-export function getRoleMenusApi(data: reqId) {
-  return request<IApiResponseData<MenusData[]>>({
-    url: "/role/getRoleMenus",
-    method: "post",
-    data
-  })
-}

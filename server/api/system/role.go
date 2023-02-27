@@ -84,25 +84,5 @@ func (ra *RoleApi) EditRole(c *gin.Context) {
 	}
 }
 
-// GetRoleMenus 查找角色的menu
-func (ra *RoleApi) GetRoleMenus(c *gin.Context) {
-	var cId request.CId
-	_ = c.ShouldBindJSON(&cId)
-
-	// 参数校验
-	validate := validator.New()
-	if err := validate.Struct(&cId); err != nil {
-		response.FailWithMessage("请求参数错误", c)
-		global.TD27_LOG.Error("请求参数错误", zap.Error(err))
-		return
-	}
-
-	if list, err := roleService.GetRoleMenus(cId.ID); err != nil {
-		response.FailWithMessage(err.Error(), c)
-	} else {
-		response.OkWithDetailed(list, "获取成功", c)
-	}
-}
-
-// EditRoleMenus 编辑用户menu
-func (ra *RoleApi) EditRoleMenus(c *gin.Context) {}
+// EditRoleMenu 编辑用户menu
+func (ra *RoleApi) EditRoleMenu(c *gin.Context) {}
