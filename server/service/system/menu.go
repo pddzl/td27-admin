@@ -129,7 +129,7 @@ func (ms *MenuService) DeleteMenu(id uint) (err error) {
 // GetAllMenus 获取所有menu
 func (ms *MenuService) GetAllMenus(roleId uint) ([]systemModel.MenuModel, []uint, error) {
 	var menuModels []systemModel.MenuModel
-	err := global.TD27_DB.First(&menuModels).Error
+	err := global.TD27_DB.Find(&menuModels).Error
 	if err != nil {
 		global.TD27_LOG.Error("GetAllMenus 查询menus", zap.Error(err))
 		return nil, nil, err
@@ -145,7 +145,7 @@ func (ms *MenuService) GetAllMenus(roleId uint) ([]systemModel.MenuModel, []uint
 	getTreeMap(menuListFormat, menuModels)
 
 	var roleModel systemModel.RoleModel
-	err = global.TD27_DB.Where("id = ?", roleId).Preload("Menus ").First(&roleModel).Error
+	err = global.TD27_DB.Where("id = ?", roleId).Preload("Menus").First(&roleModel).Error
 	if err != nil {
 		global.TD27_LOG.Error("GetAllMenus 查询role", zap.Error(err))
 		return nil, nil, err

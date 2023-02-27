@@ -23,8 +23,7 @@
 <script lang="ts" setup>
 import { ref, watch } from "vue"
 import { ElTree } from "element-plus"
-import { getRoleMenusApi } from "@/api/system/role"
-import { type MenusData } from "@/api/system/menu"
+import { type MenusData, getAllMenusApi } from "@/api/system/menu"
 
 const props = defineProps({
   id: {
@@ -52,22 +51,15 @@ const menuDefaultProps = {
   }
 }
 
-const menuIds: number[] = []
+let menuIds: number[]
 const menuTreeData = ref<MenusData[]>([])
 const getTreeData = (id: number) => {
-  getRoleMenusApi({ id: id }).then((res) => {
-    menuTreeData.value = res.data
-
-    // 遍历获取menuIds
-    menuTreeData.value.forEach((item: MenusData) => {
-      menuIds.push(item.id)
-      if (Array.isArray(item.children)) {
-        item.children.forEach((cItem: MenusData) => {
-          menuIds.push(cItem.id)
-        })
-      }
+  getAllMenusApi({ id: id })
+    .then((res) => {
+      menuTreeData.value = res.data.list
+      menuIds = res.data.menuIds
     })
-  })
+    .catch(() => {})
 }
 getTreeData(props.id)
 </script>

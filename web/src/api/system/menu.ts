@@ -65,3 +65,16 @@ export function deleteMenuApi(data: reqId) {
     data
   })
 }
+
+interface allMenus {
+  list: MenusData[]
+  menuIds: number[]
+}
+
+export function getAllMenusApi(data: reqId) {
+  return request<IApiResponseData<allMenus>>({
+    url: "menu/getAllMenus",
+    method: "post",
+    data
+  })
+}
