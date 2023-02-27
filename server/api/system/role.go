@@ -63,8 +63,8 @@ func (ra *RoleApi) DeleteRole(c *gin.Context) {
 	}
 }
 
-// EditDelete 编辑用户
-func (ra *RoleApi) EditDelete(c *gin.Context) {
+// EditRole 编辑用户
+func (ra *RoleApi) EditRole(c *gin.Context) {
 	var eRole systemReq.EditRole
 	_ = c.ShouldBindJSON(&eRole)
 
@@ -84,7 +84,7 @@ func (ra *RoleApi) EditDelete(c *gin.Context) {
 	}
 }
 
-// GetRoleMenus 查找角色的menus
+// GetRoleMenus 查找角色的menu
 func (ra *RoleApi) GetRoleMenus(c *gin.Context) {
 	var cId request.CId
 	_ = c.ShouldBindJSON(&cId)
@@ -103,3 +103,6 @@ func (ra *RoleApi) GetRoleMenus(c *gin.Context) {
 		response.OkWithDetailed(list, "获取成功", c)
 	}
 }
+
+// EditRoleMenus 编辑用户menu
+func (ra *RoleApi) EditRoleMenus(c *gin.Context) {}

@@ -8,6 +8,7 @@ import (
 	"server/model/common/request"
 	"server/model/common/response"
 	systemReq "server/model/system/request"
+	systemRep "server/model/system/response"
 	"server/utils"
 )
 
@@ -85,5 +86,29 @@ func (ma *MenuApi) DeleteMenu(c *gin.Context) {
 		global.TD27_LOG.Error("删除失败", zap.Error(err))
 	} else {
 		response.OkWithMessage("删除成功", c)
+	}
+}
+
+func (ma *MenuApi) GetAllMenus(c *gin.Context) {
+	var cId request.CId
+	_ = c.ShouldBindJSON(&cId)
+
+	// 参数校验
+	validate := validator.New()
+	if err := validate.Struct(&cId); err != nil {
+		response.FailWithMessage("请求参数错误", c)
+		global.TD27_LOG.Error("请求参数错误", zap.Error(err))
+		return
+	}
+
+	list, ids, err := menuService.GetAllMenus(cId.ID)
+	if err != nil {
+		response.FailWithMessage("获取失败", c)
+		global.TD27_LOG.Error("获取失败!", zap.Error(err))
+	} else {
+		response.OkWithDetailed(systemRep.Menu{
+			List:    list,
+			MenuIds: ids,
+		}, "获取成功", c)
 	}
 }
