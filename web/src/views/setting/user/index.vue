@@ -347,7 +347,7 @@ const handleCurrentChangeAction = (value: number) => {
 }
 
 interface option {
-  ID: String
+  ID: string
   roleName: string
 }
 const roleOptions: option[] = []

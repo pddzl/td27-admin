@@ -17,7 +17,9 @@
           <el-table-column prop="roleName" label="名称" align="center" />
           <el-table-column fixed="right" label="操作" align="center">
             <template #default="scope">
-              <el-button type="primary" text icon="Setting" size="small">设置权限</el-button>
+              <el-button type="primary" text icon="Setting" size="small" @click="openDrawer(scope.row)"
+                >设置权限</el-button
+              >
               <el-button type="primary" text icon="Edit" size="small" @click="editDialog(scope.row)">编辑</el-button>
               <el-button
                 type="danger"
@@ -53,6 +55,16 @@
         </div>
       </template>
     </el-dialog>
+    <el-drawer v-if="drawer" v-model="drawer" :with-header="false" size="30%" title="角色配置">
+      <el-tabs type="border-card">
+        <el-tab-pane label="角色菜单">
+          <Menus ref="menus" :id="activeId" />
+        </el-tab-pane>
+        <!-- <el-tab-pane label="角色api">
+          <Apis ref="apis" :row="activeRow" @changeRow="changeRow" />
+        </el-tab-pane> -->
+      </el-tabs>
+    </el-drawer>
   </div>
 </template>
 
@@ -60,9 +72,11 @@
 import { ref, reactive } from "vue"
 import { type FormInstance, type FormRules, ElMessage, ElMessageBox } from "element-plus"
 import { type roleData, getRolesApi, addRoleApi, deleteRoleApi, editRoleApi } from "@/api/system/role"
+import Menus from "./components/menus.vue"
 
 const loading = ref<boolean>(false)
 const tableData = ref<roleData[]>([])
+const activeRow = ref<any>({})
 
 const getTableData = async () => {
   loading.value = true
@@ -101,11 +115,10 @@ const addDialog = () => {
   dialogVisible.value = true
 }
 
-let activeRow: roleData
 const editDialog = (row: roleData) => {
   kind.value = "Edit"
   title.value = "编辑用户"
-  activeRow = row
+  activeRow.value = row
   formData.roleName = row.roleName
   dialogVisible.value = true
 }
@@ -131,7 +144,7 @@ const operateAction = (formEl: FormInstance | undefined) => {
           tableData.value.push(tempData)
         }
       } else if (kind.value === "Edit") {
-        const res = await editRoleApi({ id: activeRow.ID, roleName: formData.roleName })
+        const res = await editRoleApi({ id: activeRow.value.ID, roleName: formData.roleName })
         if (res.code === 0) {
           ElMessage({ type: "success", message: res.msg })
           const index = tableData.value.indexOf(activeRow)
@@ -157,6 +170,14 @@ const deleteRoleAction = (row: roleData) => {
       }
     })
   })
+}
+
+// 角色设置
+const drawer = ref(false)
+let activeId: number
+const openDrawer = (row: roleData) => {
+  activeId = row.ID
+  drawer.value = true
 }
 </script>
 

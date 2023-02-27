@@ -57,3 +57,38 @@ func (rs *RoleService) EditRole(eRole systemReq.EditRole) (err error) {
 
 	return global.TD27_DB.Model(&roleModel).Update("role_name", eRole.RoleName).Error
 }
+
+func getTreeMap1(menuListFormat []systemModel.MenuModel, menuList []*systemModel.MenuModel) {
+	for index, menuF := range menuListFormat {
+		for _, menu := range menuList {
+			if menuF.ID == menu.Pid {
+				menuListFormat[index].Children = append(menuListFormat[index].Children, *menu)
+			}
+		}
+		if len(menuListFormat[index].Children) > 0 {
+			getTreeMap1(menuListFormat[index].Children, menuList)
+		}
+	}
+}
+
+// GetRoleMenus 查找角色的menus
+func (rs *RoleService) GetRoleMenus(id uint) ([]systemModel.MenuModel, error) {
+	var roleModel systemModel.RoleModel
+	err := global.TD27_DB.Where("id = ?", id).Preload("Menus").First(&roleModel).Error
+	if err != nil {
+		global.TD27_LOG.Error("GetRoleMenus 查找角色", zap.Error(err))
+		return nil, err
+	}
+
+	// 获取menus树形结构
+	menuListFormat := make([]systemModel.MenuModel, 0)
+	for _, menu := range roleModel.Menus {
+		if menu.Pid == 0 {
+			menuListFormat = append(menuListFormat, *menu)
+		}
+	}
+
+	getTreeMap1(menuListFormat, roleModel.Menus)
+
+	return menuListFormat, nil
+}
