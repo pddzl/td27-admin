@@ -15,11 +15,16 @@ type UserApi struct{}
 
 // GetUserInfo 获取用户信息
 func (ua *UserApi) GetUserInfo(c *gin.Context) {
-	if userInfo, err := utils.GetUserInfo(c); err != nil {
+	userInfo, err := utils.GetUserInfo(c)
+	if err != nil {
 		response.FailWithMessage("获取失败", c)
 		global.TD27_LOG.Error("获取失败!", zap.Error(err))
+	}
+
+	if user, err := userService.GetUserInfo(userInfo.Username); err != nil {
+		response.FailWithMessage("获取失败", c)
 	} else {
-		response.OkWithDetailed(userInfo, "获取成功", c)
+		response.OkWithDetailed(user, "获取成功", c)
 	}
 }
 
