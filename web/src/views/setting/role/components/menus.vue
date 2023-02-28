@@ -2,7 +2,7 @@
   <div>
     <div class="clearfix">
       <el-input v-model="filterText" class="fitler" placeholder="筛选" />
-      <el-button type="primary" class="button">更新</el-button>
+      <el-button type="primary" class="button" @click="editRoleMenu">更新</el-button>
     </div>
     <div class="tree-content">
       <el-tree
@@ -22,8 +22,9 @@
 
 <script lang="ts" setup>
 import { ref, watch } from "vue"
-import { ElTree } from "element-plus"
+import { ElMessage, ElTree } from "element-plus"
 import { type MenusData, getAllMenusApi } from "@/api/system/menu"
+import { editRoleMenuApi } from "@/api/system/role"
 
 const props = defineProps({
   id: {
@@ -62,6 +63,16 @@ const getTreeData = (id: number) => {
     .catch(() => {})
 }
 getTreeData(props.id)
+
+const editRoleMenu = () => {
+  editRoleMenuApi({ roleId: props.id, ids: treeRef.value?.getCheckedKeys() as number[] })
+    .then((res) => {
+      if (res.code === 0) {
+        ElMessage({ type: "success", message: res.msg })
+      }
+    })
+    .catch(() => {})
+}
 </script>
 
 <style lang="scss" scoped>

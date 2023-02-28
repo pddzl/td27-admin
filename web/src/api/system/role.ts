@@ -50,3 +50,16 @@ export function editRoleApi(data: reqEditRole) {
     data
   })
 }
+
+interface reqEditRE {
+  roleId: number
+  ids: number[]
+}
+
+export function editRoleMenuApi(data: reqEditRE) {
+  return request<IApiResponseData<null>>({
+    url: "/role/editRoleMenu",
+    method: "post",
+    data
+  })
+}
