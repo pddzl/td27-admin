@@ -20,7 +20,13 @@ export const usePermissionStore = defineStore("permission", () => {
     routes.value = constantRoutes.concat(dynamicRoutes.value)
   }
 
-  return { routes, dynamicRoutes, asyncRouterList, setRoutes }
+  const resetDynamicRouter = () => {
+    routes.value = []
+    dynamicRoutes.value = []
+    asyncRouterList.value = []
+  }
+
+  return { routes, dynamicRoutes, asyncRouterList, setRoutes, resetDynamicRouter }
 })
 
 /** 在 setup 外使用 */

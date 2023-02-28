@@ -5,11 +5,13 @@ import { resetRouter } from "@/router"
 import { useTagsViewStore } from "./tags-view"
 import { getUserInfoApi } from "@/api/system/user"
 import { type ILoginRequestData, loginApi } from "@/api/system/base"
+import { usePermissionStoreHook } from "@/store/modules/permission"
 
 export const useUserStore = defineStore("user", () => {
   const token = ref<string>(window.localStorage.getItem("token") || "")
   const username = ref<string>("")
   const tagsViewStore = useTagsViewStore()
+  const permissionStore = usePermissionStoreHook()
 
   /** 登录 */
   const login = async (loginData: ILoginRequestData): Promise<boolean> => {
@@ -36,7 +38,6 @@ export const useUserStore = defineStore("user", () => {
     return new Promise((resolve, reject) => {
       getUserInfoApi()
         .then((res) => {
-          // roles.value = res.data.roles
           username.value = res.data.username
           resolve(res)
         })
@@ -47,7 +48,9 @@ export const useUserStore = defineStore("user", () => {
   }
   /** 登出 */
   const logout = () => {
+    username.value = ""
     token.value = ""
+    permissionStore.resetDynamicRouter()
     resetRouter()
     _resetTagsView()
   }

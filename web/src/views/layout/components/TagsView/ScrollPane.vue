@@ -1,11 +1,8 @@
 <script lang="ts" setup>
-import { computed, ref } from "vue"
+import { ref } from "vue"
 import { ElScrollbar } from "element-plus"
 import { ArrowLeft, ArrowRight } from "@element-plus/icons-vue"
-import { useSettingsStore } from "@/store/modules/settings"
 import Screenfull from "@/components/Screenfull/index.vue"
-
-const settingsStore = useSettingsStore()
 
 const scrollbarRef = ref<InstanceType<typeof ElScrollbar>>()
 const scrollbarContentRef = ref<HTMLDivElement>()

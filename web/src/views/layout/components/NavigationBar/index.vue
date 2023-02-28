@@ -6,13 +6,12 @@
       <Screenfull class="right-menu-item" />
       <ThemeSwitch class="right-menu-item" />
       <el-dropdown class="right-menu-item">
-        <div class="right-menu-avatar">
-          <el-avatar :icon="UserFilled" :size="30" />
-          <span>{{ userStore.username }}</span>
-        </div>
+        <el-button plain
+          >{{ userStore.username }}<el-icon class="el-icon--right"><arrow-down /></el-icon
+        ></el-button>
         <template #dropdown>
           <el-dropdown-menu>
-            <a target="_blank" href="https://github.com/pddzl">
+            <a target="_blank" href="https://github.com/pddzl/td27-admin">
               <el-dropdown-item>GitHub</el-dropdown-item>
             </a>
             <el-dropdown-item divided @click="logout">
@@ -30,7 +29,6 @@ import { computed } from "vue"
 import { useRouter } from "vue-router"
 import { useAppStore } from "@/store/modules/app"
 import { useUserStore } from "@/store/modules/user"
-import { UserFilled } from "@element-plus/icons-vue"
 import Breadcrumb from "../Breadcrumb/index.vue"
 import Hamburger from "../Hamburger/index.vue"
 import ThemeSwitch from "@/components/ThemeSwitch/index.vue"
@@ -83,17 +81,10 @@ const logout = () => {
     .right-menu-item {
       padding: 0 10px;
       cursor: pointer;
-      .right-menu-avatar {
-        display: flex;
-        align-items: center;
-        .el-avatar {
-          margin-right: 10px;
-        }
-        span {
-          font-size: 16px;
-        }
-      }
     }
   }
+}
+.el-button.is-plain {
+  --el-button-hover-border-color: #ffffff;
 }
 </style>
