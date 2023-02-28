@@ -64,9 +64,21 @@ func (rs *RoleService) EditRoleMenu(roleId uint, ids []uint) (err error) {
 	err = global.TD27_DB.Where("id in ?", ids).Find(&menuModel).Error
 	if err != nil {
 		global.TD27_LOG.Error("EditRoleMenu 查询menu", zap.Error(err))
+		return err
 	}
 
-	err = global.TD27_DB.Where("id = ?", roleId).First(&systemModel.RoleModel{}).Association("Menus").Replace(&menuModel)
+	var roleModel systemModel.RoleModel
+	err = global.TD27_DB.Where("id = ?", roleId).First(&roleModel).Error
+	if err != nil {
+		global.TD27_LOG.Error("EditRoleMenu 查询role", zap.Error(err))
+		return err
+	}
+
+	err = global.TD27_DB.Model(&roleModel).Association("Menus").Replace(menuModel)
+	if err != nil {
+		global.TD27_LOG.Error("EditRoleMenu 替换menu", zap.Error(err))
+		return err
+	}
 
 	return err
 }
