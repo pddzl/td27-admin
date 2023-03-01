@@ -14,10 +14,10 @@
               <el-form-item label="角色">
                 <el-input style="width: 400px" v-model="userInfoForm.role" disabled />
               </el-form-item>
-              <el-form-item label="手机号码">
+              <el-form-item label="手机号码" prop="phone">
                 <el-input style="width: 400px" v-model="userInfoForm.phone" />
               </el-form-item>
-              <el-form-item label="邮箱">
+              <el-form-item label="邮箱" prop="email">
                 <el-input style="width: 400px" v-model="userInfoForm.email" />
               </el-form-item>
               <el-form-item style="margin-top: 40px">
@@ -60,6 +60,7 @@ import { type FormInstance, type FormRules, ElMessage } from "element-plus"
 import { formatDateTime } from "@/utils/index"
 import { useUserStore } from "@/store/modules/user"
 import { editUserApi } from "@/api/system/user"
+import { useValidatePhone, useValidateEmail } from "@/hooks/useValidate"
 
 const userStore = useUserStore()
 const router = useRouter()
@@ -79,7 +80,11 @@ const userInfoForm = reactive({
   roleId: 0
 })
 
-const userInfoRule: FormRules = reactive({ username: [{ required: true, trigger: "blur", message: "请填写用户名" }] })
+const userInfoRule: FormRules = reactive({
+  username: [{ required: true, trigger: "blur", message: "请填写用户名" }],
+  phone: [{ validator: useValidatePhone, trigger: "blur" }],
+  email: [{ validator: useValidateEmail, trigger: "blur" }]
+})
 
 const getCache = () => {
   userInfoForm.id = userStore.userInfo.id
