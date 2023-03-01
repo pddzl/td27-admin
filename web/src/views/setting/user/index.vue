@@ -135,7 +135,7 @@
 
 <script lang="ts" setup>
 import { ref, reactive } from "vue"
-import { type FormInstance, type FormRules, ElMessage, ElMessageBox, ElNotification } from "element-plus"
+import { type FormInstance, type FormRules, ElMessage, ElMessageBox } from "element-plus"
 import {
   type UsersResponse,
   getUsersApi,
@@ -192,10 +192,24 @@ const mpHandleClose = (done: Function) => {
   done()
 }
 
+const equalToPassword = (rule: any, value: any, callback: any) => {
+  if (mpFormData.newPassword !== value) {
+    callback(new Error("两次输入的密码不一致"))
+  } else {
+    callback()
+  }
+}
+
 const mpFormRules: FormRules = reactive({
-  oldPassword: [{ required: true, trigger: "blur", message: "请填写密码" }],
-  newPassword: [{ required: true, trigger: "blur", message: "请填写密码" }],
-  rePassword: [{ required: true, trigger: "blur", message: "请填写密码" }]
+  oldPassword: [{ required: true, trigger: "blur", message: "旧密码不能为空" }],
+  newPassword: [
+    { required: true, trigger: "blur", message: "新密码不能为空" },
+    { min: 6, max: 20, message: "长度在 6 到 20 个字符", trigger: "blur" }
+  ],
+  rePassword: [
+    { required: true, trigger: "blur", message: "确认密码不能为空" },
+    { required: true, validator: equalToPassword, trigger: "blur" }
+  ]
 })
 
 const mpCloseDialog = () => {
@@ -213,10 +227,6 @@ const mpOperateAction = (formEl: FormInstance | undefined) => {
   if (!formEl) return
   formEl.validate(async (valid) => {
     if (valid) {
-      if (mpFormData.newPassword !== mpFormData.rePassword) {
-        ElNotification({ title: "提示", message: "确认密码不一致", type: "error" })
-        return
-      }
       await modifyPassApi({
         id: activeRow.ID,
         oldPassword: mpFormData.oldPassword,
