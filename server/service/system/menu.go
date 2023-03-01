@@ -27,10 +27,10 @@ func getTreeMap(menuListFormat []systemModel.MenuModel, menuList []systemModel.M
 	}
 }
 
-func (ms *MenuService) GetMenus(username string) ([]systemModel.MenuModel, error) {
+func (ms *MenuService) GetMenus(userId uint) ([]systemModel.MenuModel, error) {
 	// 查找用户
 	var userModel systemModel.UserModel
-	err := global.TD27_DB.Where("username = ?", username).First(&userModel).Error
+	err := global.TD27_DB.Where("id = ?", userId).First(&userModel).Error
 	if err != nil {
 		return nil, fmt.Errorf("GetMenus 用户查询 -> %v", err)
 	}

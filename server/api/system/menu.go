@@ -21,7 +21,7 @@ func (ma *MenuApi) GetMenus(c *gin.Context) {
 		global.TD27_LOG.Error("获取失败!", zap.Error(err))
 	}
 
-	list, err := menuService.GetMenus(userInfo.Username)
+	list, err := menuService.GetMenus(userInfo.ID)
 	if err != nil {
 		response.FailWithMessage("获取失败", c)
 		global.TD27_LOG.Error("获取失败!", zap.Error(err))

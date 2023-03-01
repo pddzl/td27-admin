@@ -46,7 +46,7 @@ func JWTAuth() gin.HandlerFunc {
 
 		// 已登录用户被管理员删除
 		var userModel system.UserModel
-		err = global.TD27_DB.Where("username = ?", claims.Username).First(&userModel).Error
+		err = global.TD27_DB.Where("id = ?", claims.ID).First(&userModel).Error
 		if err != nil {
 			response.FailWithMessage("用户不存在", c)
 			c.Abort()

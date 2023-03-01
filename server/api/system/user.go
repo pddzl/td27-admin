@@ -21,7 +21,7 @@ func (ua *UserApi) GetUserInfo(c *gin.Context) {
 		global.TD27_LOG.Error("获取失败!", zap.Error(err))
 	}
 
-	if user, err := userService.GetUserInfo(userInfo.Username); err != nil {
+	if user, err := userService.GetUserInfo(userInfo.ID); err != nil {
 		response.FailWithMessage("获取失败", c)
 	} else {
 		response.OkWithDetailed(user, "获取成功", c)
