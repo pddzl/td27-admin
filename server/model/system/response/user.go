@@ -1,6 +1,9 @@
 package response
 
-import "server/model/system"
+import (
+	"server/model/system"
+	"time"
+)
 
 type LoginResponse struct {
 	User      system.UserModel `json:"user"`
@@ -9,6 +12,7 @@ type LoginResponse struct {
 }
 
 type UserResult struct {
+	CreatedAt   time.Time `json:"createdAt"`
 	ID          uint
 	Username    string `json:"username"` // 用户名
 	Phone       string `json:"phone"`    // 手机号

@@ -31,7 +31,7 @@ func (us *UserService) Login(u *systemModel.UserModel) (userInter *systemModel.U
 func (us *UserService) GetUserInfo(username string) (userResults systemRes.UserResult, err error) {
 	var userModel systemModel.UserModel
 	db := global.TD27_DB.Where("username = ?", username).First(&userModel)
-	err = db.Select("sys_user.id,sys_user.username,sys_user.phone,sys_user.email,sys_user.active,sys_user.role_model_id,sys_role.role_name").Joins("inner join sys_role on sys_user.role_model_id = sys_role.id").Scan(&userResults).Error
+	err = db.Select("sys_user.created_at,sys_user.id,sys_user.username,sys_user.phone,sys_user.email,sys_user.active,sys_user.role_model_id,sys_role.role_name").Joins("inner join sys_role on sys_user.role_model_id = sys_role.id").Scan(&userResults).Error
 	return
 }
 

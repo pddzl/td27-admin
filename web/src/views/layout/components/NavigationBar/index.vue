@@ -14,6 +14,7 @@
             <a target="_blank" href="https://github.com/pddzl/td27-admin">
               <el-dropdown-item>GitHub</el-dropdown-item>
             </a>
+            <el-dropdown-item @click="toPersonal">个人中心</el-dropdown-item>
             <el-dropdown-item divided @click="logout">
               <span style="display: block">退出登录</span>
             </el-dropdown-item>
@@ -45,9 +46,14 @@ const sidebar = computed(() => {
 const toggleSidebar = () => {
   appStore.toggleSidebar(false)
 }
+
 const logout = () => {
   userStore.logout()
   router.push("/login")
+}
+
+const toPersonal = () => {
+  router.push({ name: "Personal" })
 }
 </script>
 

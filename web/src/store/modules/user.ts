@@ -1,4 +1,4 @@
-import { ref, watch } from "vue"
+import { reactive, ref, watch } from "vue"
 import store from "@/store"
 import { defineStore } from "pinia"
 import { resetRouter } from "@/router"
@@ -10,6 +10,14 @@ import { usePermissionStoreHook } from "@/store/modules/permission"
 export const useUserStore = defineStore("user", () => {
   const token = ref<string>(window.localStorage.getItem("token") || "")
   const username = ref<string>("")
+  const userInfo = reactive({
+    id: 0,
+    createdAt: "",
+    username: "",
+    phone: "",
+    email: "",
+    role: ""
+  })
   const tagsViewStore = useTagsViewStore()
   const permissionStore = usePermissionStoreHook()
 
@@ -39,6 +47,12 @@ export const useUserStore = defineStore("user", () => {
       getUserInfoApi()
         .then((res) => {
           username.value = res.data.username
+          userInfo.id = res.data.ID
+          userInfo.createdAt = res.data.createdAt
+          userInfo.username = res.data.username
+          userInfo.phone = res.data.phone
+          userInfo.email = res.data.email
+          userInfo.role = res.data.role
           resolve(res)
         })
         .catch((error) => {
@@ -72,7 +86,7 @@ export const useUserStore = defineStore("user", () => {
     }
   )
 
-  return { token, username, login, getInfo, logout, resetToken }
+  return { token, username, userInfo, login, getInfo, logout, resetToken }
 })
 
 /** 在 setup 外使用 */
