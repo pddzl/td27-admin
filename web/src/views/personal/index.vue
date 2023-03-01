@@ -20,6 +20,10 @@
               <el-form-item label="邮箱">
                 <el-input style="width: 400px" v-model="userInfoForm.email" />
               </el-form-item>
+              <el-form-item style="margin-top: 40px">
+                <el-button type="primary" style="margin-right: 20px" @click="handleEditUser">更新</el-button>
+                <el-button type="primary" plain @click="toDefault">关闭</el-button>
+              </el-form-item>
             </el-form>
           </div>
         </el-tab-pane>
@@ -35,6 +39,10 @@
               <el-form-item label="确认密码" required>
                 <el-input style="width: 400px" />
               </el-form-item>
+              <el-form-item style="margin-top: 40px">
+                <el-button type="primary" style="margin-right: 20px">确定</el-button>
+                <el-button type="primary" plain @click="toDefault">关闭</el-button>
+              </el-form-item>
             </el-form>
           </div>
         </el-tab-pane>
@@ -45,10 +53,18 @@
 
 <script lang="ts" setup>
 import { reactive } from "vue"
+import { useRouter } from "vue-router"
+import { ElMessage } from "element-plus"
 import { formatDateTime } from "@/utils/index"
 import { useUserStore } from "@/store/modules/user"
+import { editUserApi } from "@/api/system/user"
 
 const userStore = useUserStore()
+const router = useRouter()
+
+const toDefault = () => {
+  router.push("/")
+}
 
 const userInfoForm = reactive({
   id: 0,
@@ -56,7 +72,8 @@ const userInfoForm = reactive({
   username: "",
   phone: "",
   email: "",
-  role: ""
+  role: "",
+  roleId: 0
 })
 
 const getCache = () => {
@@ -66,8 +83,26 @@ const getCache = () => {
   userInfoForm.phone = userStore.userInfo.phone
   userInfoForm.email = userStore.userInfo.email
   userInfoForm.role = userStore.userInfo.role
+  userInfoForm.roleId = userStore.userInfo.roleId
 }
 getCache()
+
+const handleEditUser = () => {
+  editUserApi({
+    id: userInfoForm.id,
+    username: userInfoForm.username,
+    phone: userInfoForm.phone,
+    email: userInfoForm.email,
+    active: true,
+    roleId: userInfoForm.roleId
+  })
+    .then((res) => {
+      if (res.code === 0) {
+        ElMessage({ type: "success", message: res.msg })
+      }
+    })
+    .catch(() => {})
+}
 </script>
 
 <style lang="scss" scoped>

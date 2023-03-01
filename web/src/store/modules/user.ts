@@ -16,7 +16,8 @@ export const useUserStore = defineStore("user", () => {
     username: "",
     phone: "",
     email: "",
-    role: ""
+    role: "",
+    roleId: 0
   })
   const tagsViewStore = useTagsViewStore()
   const permissionStore = usePermissionStoreHook()
@@ -53,6 +54,7 @@ export const useUserStore = defineStore("user", () => {
           userInfo.phone = res.data.phone
           userInfo.email = res.data.email
           userInfo.role = res.data.role
+          userInfo.roleId = res.data.roleId
           resolve(res)
         })
         .catch((error) => {
