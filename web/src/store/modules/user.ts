@@ -64,7 +64,7 @@ export const useUserStore = defineStore("user", () => {
   }
   /** 登出 */
   const logout = () => {
-    username.value = ""
+    resetUserInfo()
     token.value = ""
     permissionStore.resetDynamicRouter()
     resetRouter()
@@ -73,6 +73,17 @@ export const useUserStore = defineStore("user", () => {
   /** 重置 Token */
   const resetToken = () => {
     token.value = ""
+  }
+
+  const resetUserInfo = () => {
+    userInfo.username = ""
+    userInfo.id = 0
+    userInfo.createdAt = ""
+    userInfo.username = ""
+    userInfo.phone = ""
+    userInfo.email = ""
+    userInfo.role = ""
+    userInfo.roleId = 0
   }
 
   /** 重置 visited views 和 cached views */
