@@ -19,8 +19,8 @@ router.beforeEach(async (to, _from, next) => {
       next({ path: "/" })
       NProgress.done()
     } else {
-      // 检查用户是否已获得其权限角色
-      if (userStore.username === "") {
+      // 检查当前用户是否已经获取到用户信息
+      if (userStore.userInfo.username === "") {
         try {
           await userStore.getInfo()
           await permissionStore.setRoutes()

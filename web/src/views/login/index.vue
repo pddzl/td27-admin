@@ -12,7 +12,7 @@
               placeholder="用户名"
               type="text"
               tabindex="1"
-              :prefix-icon="User"
+              prefix-icon="User"
               size="large"
             />
           </el-form-item>
@@ -22,7 +22,7 @@
               placeholder="密码"
               type="password"
               tabindex="2"
-              :prefix-icon="Lock"
+              prefix-icon="Lock"
               size="large"
               show-password
             />
@@ -33,7 +33,7 @@
               placeholder="验证码"
               type="text"
               tabindex="3"
-              :prefix-icon="Key"
+              prefix-icon="Key"
               maxlength="6"
               size="large"
             >
@@ -60,7 +60,6 @@
 import { reactive, ref } from "vue"
 import { useRouter } from "vue-router"
 import { useUserStore } from "@/store/modules/user"
-import { User, Lock, Key, Picture, Loading } from "@element-plus/icons-vue"
 import { type FormInstance, FormRules } from "element-plus"
 import { captcha, type ILoginRequestData } from "@/api/system/base"
 
@@ -89,7 +88,7 @@ const loginFormRules: FormRules = {
 }
 /** 登录逻辑 */
 const handleLogin = () => {
-  loginFormRef.value?.validate(async (valid: boolean) => {
+  loginFormRef.value?.validate(async (valid) => {
     if (valid) {
       loading.value = true
       const res = await useUserStore().login({
