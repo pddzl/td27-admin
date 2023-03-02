@@ -1,6 +1,5 @@
 <template>
   <div class="login-container">
-    <ThemeSwitch class="theme-switch" />
     <div class="login-card">
       <div class="title">
         <img src="@/assets/layout/logo-text-2.png" />
@@ -62,7 +61,6 @@ import { reactive, ref } from "vue"
 import { useRouter } from "vue-router"
 import { useUserStore } from "@/store/modules/user"
 import { User, Lock, Key, Picture, Loading } from "@element-plus/icons-vue"
-import ThemeSwitch from "@/components/ThemeSwitch/index.vue"
 import { type FormInstance, FormRules } from "element-plus"
 import { captcha, type ILoginRequestData } from "@/api/system/base"
 
@@ -85,7 +83,7 @@ const loginFormRules: FormRules = {
   username: [{ required: true, message: "请输入用户名", trigger: "blur" }],
   password: [
     { required: true, message: "请输入密码", trigger: "blur" },
-    // { min: 8, max: 16, message: "长度在 8 到 16 个字符", trigger: "blur" }
+    { min: 8, max: 16, message: "长度在 8 到 20 个字符", trigger: "blur" }
   ],
   captcha: [{ required: true, message: "请输入验证码", trigger: "blur" }]
 }
@@ -131,12 +129,6 @@ createCode()
   align-items: center;
   width: 100%;
   min-height: 100%;
-  .theme-switch {
-    position: fixed;
-    top: 5%;
-    right: 5%;
-    cursor: pointer;
-  }
   .login-card {
     width: 480px;
     border-radius: 20px;
