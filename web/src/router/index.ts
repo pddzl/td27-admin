@@ -1,6 +1,6 @@
 import { type RouteRecordRaw, createRouter, createWebHashHistory, createWebHistory } from "vue-router"
 
-const Layout = () => import("@/views/layout/index.vue")
+const Layout = () => import("@/layout/index.vue")
 
 /** 常驻路由 */
 export const constantRoutes: RouteRecordRaw[] = [
@@ -70,15 +70,15 @@ export const constantRoutes: RouteRecordRaw[] = [
         }
       }
     ]
-  },
-  {
-    path: "/:pathMatch(.*)*", // Must put the 'ErrorPage' route at the end, 必须将 'ErrorPage' 路由放在最后
-    redirect: "/404",
-    name: "ErrorPage",
-    meta: {
-      hidden: true
-    }
   }
+  // {
+  //   path: "/:pathMatch(.*)*", // Must put the 'ErrorPage' route at the end, 必须将 'ErrorPage' 路由放在最后
+  //   redirect: "/404",
+  //   name: "ErrorPage",
+  //   meta: {
+  //     hidden: true
+  //   }
+  // }
 ]
 
 /**
