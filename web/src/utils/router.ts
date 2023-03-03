@@ -26,9 +26,8 @@ export function formatRouter(menuList: MenusData[], formatMenu: RouteRecordRaw[]
     if (Array.isArray(menu.children) && menu.children.length > 0) {
       formatRouter(menu.children, fMenu.children)
     } else {
-      const empty = null
       // @ts-ignore
-      fMenu.children = <null>empty
+      fMenu.children = null
     }
   }
 }
