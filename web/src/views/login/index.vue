@@ -86,6 +86,7 @@ const loginFormRules: FormRules = {
   ],
   captcha: [{ required: true, message: "请输入验证码", trigger: "blur" }]
 }
+
 /** 登录逻辑 */
 const handleLogin = () => {
   loginFormRef.value?.validate(async (valid) => {

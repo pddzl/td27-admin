@@ -18,6 +18,13 @@ export const constantRoutes: RouteRecordRaw[] = [
     ]
   },
   {
+    path: "/login",
+    component: () => import("@/views/login/index.vue"),
+    meta: {
+      hidden: true
+    }
+  },
+  {
     path: "/403",
     component: () => import("@/views/error-page/403.vue"),
     meta: {
@@ -29,61 +36,49 @@ export const constantRoutes: RouteRecordRaw[] = [
     component: () => import("@/views/error-page/404.vue"),
     meta: {
       hidden: true
-    },
-    alias: "/:pathMatch(.*)*"
+    }
   },
   {
-    path: "/login",
-    component: () => import("@/views/login/index.vue"),
+    path: "/",
+    component: Layout,
+    redirect: "/dashboard",
+    children: [
+      {
+        path: "dashboard",
+        component: () => import("@/views/dashboard/index.vue"),
+        name: "Dashboard",
+        meta: {
+          title: "首页",
+          svgIcon: "dashboard",
+          affix: true
+        }
+      }
+    ]
+  },
+  {
+    path: "/profile",
+    component: Layout,
+    meta: { hidden: true },
+    redirect: "/profile/index",
+    children: [
+      {
+        path: "index",
+        component: () => import("@/views/profile/index.vue"),
+        name: "Profile",
+        meta: {
+          title: "个人中心"
+        }
+      }
+    ]
+  },
+  {
+    path: "/:pathMatch(.*)*", // Must put the 'ErrorPage' route at the end, 必须将 'ErrorPage' 路由放在最后
+    redirect: "/404",
+    name: "ErrorPage",
     meta: {
       hidden: true
     }
   }
-  // {
-  //   path: "/",
-  //   component: Layout,
-  //   redirect: "/dashboard",
-  //   children: [
-  //     {
-  //       path: "dashboard",
-  //       component: () => import("@/views/dashboard/index.vue"),
-  //       name: "Dashboard",
-  //       meta: {
-  //         title: "首页",
-  //         svgIcon: "dashboard",
-  //         affix: true
-  //       }
-  //     }
-  //   ]
-  // }
-  // {
-  //   path: "/table",
-  //   component: Layout,
-  //   redirect: "/table/host",
-  //   name: "Table",
-  //   meta: {
-  //     title: "表格",
-  //     elIcon: "Grid"
-  //   },
-  //   children: [
-  //     {
-  //       path: "host",
-  //       component: () => import("@/views/table/host/index.vue"),
-  //       name: "Host",
-  //       meta: {
-  //         title: "主机"
-  //       }
-  //     },
-  //     {
-  //       path: "container",
-  //       component: () => import("@/views/table/container/index.vue"),
-  //       name: "Container",
-  //       meta: {
-  //         title: "容器"
-  //       }
-  //     }
-  //   ]
-  // }
 ]
 
 /**
@@ -109,21 +104,5 @@ const router = createRouter({
       : createWebHistory(import.meta.env.VITE_PUBLIC_PATH),
   routes: constantRoutes
 })
-
-/** 重置路由 */
-export function resetRouter() {
-  // 注意：所有动态路由路由必须带有 Name 属性，否则可能会不能完全重置干净
-  try {
-    router.getRoutes().forEach((route) => {
-      const { name } = route
-      if (name) {
-        router.hasRoute(name) && router.removeRoute(name)
-      }
-    })
-  } catch (error) {
-    // 强制刷新浏览器也行，只是交互体验不是很好
-    window.location.reload()
-  }
-}
 
 export default router

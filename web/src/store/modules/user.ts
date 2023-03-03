@@ -1,7 +1,6 @@
 import { reactive, ref, watch } from "vue"
 import store from "@/store"
 import { defineStore } from "pinia"
-import { resetRouter } from "@/router"
 import { useTagsViewStore } from "./tags-view"
 import { getUserInfoApi } from "@/api/system/user"
 import { type ILoginRequestData, loginApi } from "@/api/system/base"
@@ -67,7 +66,6 @@ export const useUserStore = defineStore("user", () => {
     resetUserInfo()
     token.value = ""
     permissionStore.resetDynamicRouter()
-    resetRouter()
     _resetTagsView()
   }
   /** 重置 Token */
