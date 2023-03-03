@@ -53,7 +53,7 @@ const logout = () => {
 }
 
 const toPersonal = () => {
-  router.push({ name: "Personal" })
+  router.push({ name: "Profile" })
 }
 </script>
 
