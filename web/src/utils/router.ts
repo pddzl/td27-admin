@@ -4,7 +4,12 @@ import { type MenusData } from "@/api/system/menu"
 const modules = import.meta.glob("../views/**/*.vue", { eager: true })
 
 export function dynamicImport(component: string) {
-  return modules[`../views/${component}`]
+  return new Promise((resolve) => {
+    if (component === "Layout") {
+      resolve(import("@/layout/index.vue"))
+    }
+    resolve(modules[`../views/${component}`])
+  })
 }
 
 export function formatRouter(menuList: MenusData[], formatMenu: RouteRecordRaw[]) {
