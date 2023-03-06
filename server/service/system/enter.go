@@ -5,4 +5,5 @@ type ServiceGroup struct {
 	JwtService
 	MenuService
 	RoleService
+	CasbinService
 }
