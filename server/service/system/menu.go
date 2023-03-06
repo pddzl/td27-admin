@@ -152,8 +152,19 @@ func (ms *MenuService) GetAllMenus(roleId uint) ([]systemModel.MenuModel, []uint
 	}
 
 	roleIds := make([]uint, 0)
+	count := 0
 	for _, menu := range roleModel.Menus {
-		roleIds = append(roleIds, menu.ID)
+		for _, menu1 := range roleModel.Menus {
+			if menu.ID == menu1.Pid {
+				count++
+				break
+			}
+		}
+		if count == 0 {
+			roleIds = append(roleIds, menu.ID)
+		} else {
+			count--
+		}
 	}
 
 	return menuListFormat, roleIds, nil
