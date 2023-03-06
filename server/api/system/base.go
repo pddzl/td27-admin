@@ -89,6 +89,7 @@ func tokenNext(c *gin.Context, user *system.UserModel) {
 	claims := systemReq.CustomClaims{
 		ID:         user.ID,
 		Username:   user.Username,
+		RoleId:     user.RoleModelID,
 		BufferTime: global.TD27_CONFIG.JWT.BufferTime,
 		RegisteredClaims: jwt.RegisteredClaims{
 			NotBefore: jwt.NewNumericDate(time.Now().Add(-time.Duration(1000))),
