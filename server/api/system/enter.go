@@ -9,6 +9,7 @@ type ApiGroup struct {
 	UserApi
 	MenuApi
 	RoleApi
+	ApiApi
 }
 
 var (
@@ -16,4 +17,5 @@ var (
 	jwtService  = service.ServiceGroupApp.SystemServiceGroup.JwtService
 	menuService = service.ServiceGroupApp.SystemServiceGroup.MenuService
 	roleService = service.ServiceGroupApp.SystemServiceGroup.RoleService
+	apiService  = service.ServiceGroupApp.SystemServiceGroup.ApiService
 )

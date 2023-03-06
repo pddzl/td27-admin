@@ -6,4 +6,5 @@ type ServiceGroup struct {
 	MenuService
 	RoleService
 	CasbinService
+	ApiService
 }
