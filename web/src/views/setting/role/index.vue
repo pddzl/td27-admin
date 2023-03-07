@@ -180,14 +180,3 @@ const openDrawer = (row: roleData) => {
   drawer.value = true
 }
 </script>
-
-<style lang="scss" scoped>
-.toolbar-wrapper {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 20px;
-}
-.table-wrapper {
-  margin-bottom: 20px;
-}
-</style>

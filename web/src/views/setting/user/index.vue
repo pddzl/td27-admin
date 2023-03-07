@@ -398,18 +398,3 @@ const switchAction = (id: number, active: boolean) => {
     .catch(() => {})
 }
 </script>
-
-<style lang="scss" scoped>
-.toolbar-wrapper {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 20px;
-}
-.table-wrapper {
-  margin-bottom: 20px;
-}
-.pager-wrapper {
-  display: flex;
-  justify-content: flex-end;
-}
-</style>

@@ -1,0 +1,23 @@
+// 组件通用样式
+
+.search-wrapper {
+  margin-bottom: 20px;
+  :deep(.el-card__body) {
+    padding-bottom: 2px;
+  }
+}
+
+.toolbar-wrapper {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.table-wrapper {
+  margin-bottom: 20px;
+}
+
+.pager-wrapper {
+  display: flex;
+  justify-content: flex-end;
+}

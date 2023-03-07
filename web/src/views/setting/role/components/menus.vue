@@ -52,13 +52,14 @@ const menuDefaultProps = {
   }
 }
 
-let menuIds: number[]
+const menuIds = ref<number[]>([])
+// const menuIds = [2, 3, 4, 7, 8]
 const menuTreeData = ref<MenusData[]>([])
 const getTreeData = (id: number) => {
   getAllMenusApi({ id: id })
     .then((res) => {
       menuTreeData.value = res.data.list
-      menuIds = res.data.menuIds
+      menuIds.value = res.data.menuIds
     })
     .catch(() => {})
 }
