@@ -213,7 +213,7 @@ const mpFormRules: FormRules = reactive({
 })
 
 const mpCloseDialog = () => {
-  mpFormRef.value?.resetFields
+  mpFormRef.value?.resetFields()
   mpInitForm()
   mpDialogVisible.value = false
 }

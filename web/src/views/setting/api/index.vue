@@ -9,7 +9,7 @@
           <el-input v-model="searchFormData.apiGroup" placeholder="API组" />
         </el-form-item>
         <el-form-item prop="method" label="方法">
-          <el-select v-model="searchFormData.method" placeholder="方法">
+          <el-select v-model="searchFormData.method" placeholder="方法" :clearable="true">
             <el-option v-for="item in methodOptions" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
@@ -35,21 +35,15 @@
       </div>
       <div class="table-wrapper">
         <el-table :data="tableData">
-          <el-table-column prop="id" label="ID" />
+          <el-table-column prop="ID" label="ID" />
           <el-table-column prop="path" label="路径" />
-          <el-table-column prop="group" label="分组" />
+          <el-table-column prop="apiGroup" label="分组" />
           <el-table-column prop="method" label="请求方法" />
           <el-table-column prop="description" label="描述" />
           <el-table-column label="操作">
             <template #default="scope">
               <el-button type="primary" text icon="Edit" size="small" @click="editDialog(scope.row)">编辑</el-button>
-              <el-button
-                type="danger"
-                text
-                icon="Delete"
-                size="small"
-                @click="deleteRoleAction(scope.row)"
-                :disabled="scope.row.roleName === 'root'"
+              <el-button type="danger" text icon="Delete" size="small" @click="handleDeleteApi(scope.row)"
                 >删除</el-button
               >
             </template>
@@ -69,13 +63,40 @@
         />
       </div>
     </el-card>
+    <el-dialog v-model="dialogVisible" :title="dialogTitle" :before-close="handleClose" width="38%">
+      <warning-bar title="新增接口，需要在角色管理内配置权限才可使用" />
+      <el-form ref="formRef" :model="addFormData" :rules="addFormRules" label-width="80px">
+        <el-form-item label="API路径" prop="path">
+          <el-input v-model="addFormData.path" />
+        </el-form-item>
+        <el-form-item label="请求方法" prop="method">
+          <el-select v-model="addFormData.method" placeholder="请选择方法" :clearable="true" style="width: 100%">
+            <el-option v-for="item in methodOptions" :key="item.value" :label="item.label" :value="item.value" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="API分组" prop="apiGroup">
+          <el-input v-model="addFormData.apiGroup" />
+        </el-form-item>
+        <el-form-item label="API描述" prop="description">
+          <el-input v-model="addFormData.description" />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button @click="closeDialog">取消</el-button>
+          <el-button type="primary" @click="operateAction(formRef)">确认</el-button>
+        </div>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { reactive, ref } from "vue"
+import { type FormInstance, type FormRules, ElMessage, ElMessageBox } from "element-plus"
 import { usePagination } from "@/hooks/usePagination"
-import { type ApiData, getApis } from "@/api/system/api"
+import { type ApiData, getApis, addApi, deleteApiApi } from "@/api/system/api"
+import WarningBar from "@/components/warningBar/warningBar.vue"
 
 const { paginationData, changeCurrentPage, changePageSize } = usePagination()
 
@@ -100,9 +121,12 @@ const handleSearch = () => {
   getTableData()
 }
 
-const resetSearch = () => {}
-
-const addDialog = () => {}
+const resetSearch = () => {
+  searchFormData.path = ""
+  searchFormData.apiGroup = ""
+  searchFormData.method = ""
+  searchFormData.description = ""
+}
 
 const tableData = ref<ApiData[]>([])
 
@@ -137,5 +161,86 @@ const handleSizeChange = (value: number) => {
 const handleCurrentChange = (value: number) => {
   changeCurrentPage(value)
   getTableData()
+}
+
+// 对话框
+const formRef = ref<FormInstance>()
+const addFormData = reactive({
+  path: "",
+  apiGroup: "",
+  method: "",
+  description: ""
+})
+
+enum operationKind {
+  Add = "Add",
+  Edit = "Edit"
+}
+
+let oKind: operationKind
+const addFormRules: FormRules = reactive({
+  path: [{ required: true, trigger: "blur", message: "路径不能为空" }],
+  apiGroup: [{ required: true, trigger: "blur", message: "分组不能为空" }],
+  method: [{ required: true, trigger: "change", message: "方法不能为空" }],
+  description: [{ required: true, trigger: "blur", message: "描述不能为空" }]
+})
+
+const initForm = () => {
+  formRef.value?.resetFields()
+  addFormData.path = ""
+  addFormData.apiGroup = ""
+  addFormData.method = ""
+  addFormData.description = ""
+}
+
+const dialogVisible = ref(false)
+const dialogTitle = ref("")
+const handleClose = (done: Function) => {
+  initForm()
+  done()
+}
+
+const addDialog = () => {
+  dialogTitle.value = "新增接口"
+  oKind = operationKind.Add
+  dialogVisible.value = true
+}
+
+const closeDialog = () => {
+  initForm()
+  dialogVisible.value = false
+}
+
+const operateAction = (formEl: FormInstance | undefined) => {
+  if (!formEl) return
+  formEl.validate(async (valid) => {
+    if (valid) {
+      if (oKind === "Add") {
+        const res = await addApi({ ...addFormData })
+        if (res.code === 0) {
+          ElMessage({ type: "success", message: res.msg })
+          tableData.value.push(res.data)
+        }
+      }
+      closeDialog()
+    }
+  })
+}
+
+// 删除接口
+const handleDeleteApi = (row: ApiData) => {
+  ElMessageBox.confirm("此操作将永久删除所有角色下该api, 是否继续?", "提示", {
+    confirmButtonText: "确定",
+    cancelButtonText: "取消",
+    type: "warning"
+  }).then(() => {
+    deleteApiApi({ id: row.ID }).then((res) => {
+      if (res.code === 0) {
+        ElMessage({ type: "success", message: res.msg })
+        const index = tableData.value.indexOf(row)
+        tableData.value.splice(index, 1)
+      }
+    })
+  })
 }
 </script>

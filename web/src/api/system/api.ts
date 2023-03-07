@@ -1,11 +1,14 @@
 import { request } from "@/utils/service"
 
-export interface ApiData {
-  id: number
+export interface ApiDataBase {
   path: string
   apiGroup: string
   method: string
   description: string
+}
+
+export interface ApiData extends ApiDataBase {
+  ID: number
 }
 
 export interface ApiDataPageInfo {
@@ -14,8 +17,6 @@ export interface ApiDataPageInfo {
   page: number
   pageSize: number
 }
-
-type ApiResponseData = IApiResponseData<ApiDataPageInfo>
 
 interface reqApis extends PageInfo {
   path?: string
@@ -26,9 +27,27 @@ interface reqApis extends PageInfo {
 
 // 获取所有api
 export function getApis(data: reqApis) {
-  return request<ApiResponseData>({
+  return request<IApiResponseData<ApiDataPageInfo>>({
     url: "/api/getApis",
     method: "post",
+    data
+  })
+}
+
+// 添加api
+export function addApi(data: ApiDataBase) {
+  return request<IApiResponseData<ApiData>>({
+    url: "/api/addApi",
+    method: "post",
+    data
+  })
+}
+
+// 删除api
+export function deleteApiApi(data: reqId) {
+  return request<IApiResponseData<null>>({
+    url: "/api/deleteApi",
+    method: "delete",
     data
   })
 }

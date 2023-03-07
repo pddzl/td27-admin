@@ -5,6 +5,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	"go.uber.org/zap"
 	"server/global"
+	"server/model/common/request"
 	"server/model/common/response"
 	systemModel "server/model/system"
 	systemReq "server/model/system/request"
@@ -25,11 +26,11 @@ func (a *ApiApi) AddApi(c *gin.Context) {
 		return
 	}
 
-	if err := apiService.AddApi(apiReq); err != nil {
+	if instance, err := apiService.AddApi(apiReq); err != nil {
 		response.FailWithMessage("添加失败", c)
 		global.TD27_LOG.Error("添加失败", zap.Error(err))
 	} else {
-		response.OkWithMessage("添加成功", c)
+		response.OkWithDetailed(instance, "添加成功", c)
 	}
 }
 
@@ -56,5 +57,26 @@ func (a *ApiApi) GetApis(c *gin.Context) {
 			Page:     apiSp.Page,
 			PageSize: apiSp.PageSize,
 		}, "获取成功", c)
+	}
+}
+
+// DeleteApi 删除指定api
+func (a *ApiApi) DeleteApi(c *gin.Context) {
+	var cId request.CId
+	_ = c.ShouldBindJSON(&cId)
+
+	// 参数校验
+	validate := validator.New()
+	if err := validate.Struct(&cId); err != nil {
+		response.FailWithMessage("请求参数错误", c)
+		global.TD27_LOG.Error("请求参数错误", zap.Error(err))
+		return
+	}
+
+	if err := apiService.DeleteApi(cId.ID); err != nil {
+		response.FailWithMessage("删除失败", c)
+		global.TD27_LOG.Error("删除失败", zap.Error(err))
+	} else {
+		response.OkWithMessage("删除成功", c)
 	}
 }

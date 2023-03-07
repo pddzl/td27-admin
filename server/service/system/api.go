@@ -11,13 +11,18 @@ import (
 
 type ApiService struct{}
 
-func (a *ApiService) AddApi(api systemModel.ApiModel) (err error) {
+// AddApi 添加api
+func (a *ApiService) AddApi(api systemModel.ApiModel) (*systemModel.ApiModel, error) {
 	if !errors.Is(global.TD27_DB.Where("path = ? AND method = ?", api.Path, api.Method).First(&systemModel.ApiModel{}).Error, gorm.ErrRecordNotFound) {
-		return errors.New("存在相同api")
+		return nil, errors.New("存在相同api")
 	}
-	return global.TD27_DB.Create(&api).Error
+
+	err := global.TD27_DB.Create(&api).Error
+
+	return &api, err
 }
 
+// GetApis 获取所有api
 func (a *ApiService) GetApis(apiSp systemReq.ApiSearchParams) ([]systemModel.ApiModel, int64, error) {
 	limit := apiSp.PageSize
 	offset := apiSp.PageSize * (apiSp.Page - 1)
@@ -73,4 +78,9 @@ func (a *ApiService) GetApis(apiSp systemReq.ApiSearchParams) ([]systemModel.Api
 		}
 	}
 	return apiList, total, err
+}
+
+// DeleteApi 删除指定api
+func (a *ApiService) DeleteApi(id uint) (err error) {
+	return global.TD27_DB.Where("id = ?", id).Unscoped().Delete(&systemModel.ApiModel{}).Error
 }
