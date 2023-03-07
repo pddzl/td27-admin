@@ -151,6 +151,8 @@ func (ms *MenuService) GetAllMenus(roleId uint) ([]systemModel.MenuModel, []uint
 		return nil, nil, err
 	}
 
+	// 前端el-tree 选中数据
+	// 去掉夫菜单，防止直接选中父级造成全选
 	roleIds := make([]uint, 0)
 	count := 0
 	for _, menu := range roleModel.Menus {
