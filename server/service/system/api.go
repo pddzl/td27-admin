@@ -36,8 +36,8 @@ func (a *ApiService) GetApis(apiSp systemReq.ApiSearchParams) ([]systemModel.Api
 		db = db.Where("method = ?", apiSp.Method)
 	}
 
-	if apiSp.Group != "" {
-		db = db.Where("group = ?", apiSp.Group)
+	if apiSp.ApiGroup != "" {
+		db = db.Where("api_group = ?", apiSp.ApiGroup)
 	}
 
 	var total int64
@@ -53,7 +53,7 @@ func (a *ApiService) GetApis(apiSp systemReq.ApiSearchParams) ([]systemModel.Api
 			orderMap := make(map[string]bool, 5)
 			orderMap["id"] = true
 			orderMap["path"] = true
-			orderMap["group"] = true
+			orderMap["api_group"] = true
 			orderMap["description"] = true
 			orderMap["method"] = true
 			if orderMap[OrderStr] {
@@ -69,7 +69,7 @@ func (a *ApiService) GetApis(apiSp systemReq.ApiSearchParams) ([]systemModel.Api
 
 			err = db.Order(OrderStr).Find(&apiList).Error
 		} else {
-			err = db.Order("group").Find(&apiList).Error
+			err = db.Order("api_group").Find(&apiList).Error
 		}
 	}
 	return apiList, total, err

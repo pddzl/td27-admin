@@ -6,10 +6,12 @@
           <el-input v-model="searchFormData.path" placeholder="路径" />
         </el-form-item>
         <el-form-item prop="group" label="API组">
-          <el-input v-model="searchFormData.group" placeholder="API组" />
+          <el-input v-model="searchFormData.apiGroup" placeholder="API组" />
         </el-form-item>
         <el-form-item prop="method" label="方法">
-          <el-input v-model="searchFormData.method" placeholder="方法" />
+          <el-select v-model="searchFormData.method" placeholder="方法">
+            <el-option v-for="item in methodOptions" :key="item.value" :label="item.label" :value="item.value" />
+          </el-select>
         </el-form-item>
         <el-form-item prop="description" label="描述">
           <el-input v-model="searchFormData.description" placeholder="描述" />
@@ -36,8 +38,8 @@
           <el-table-column prop="id" label="ID" />
           <el-table-column prop="path" label="路径" />
           <el-table-column prop="group" label="分组" />
-          <el-table-column prop="description" label="描述" />
           <el-table-column prop="method" label="请求方法" />
+          <el-table-column prop="description" label="描述" />
           <el-table-column label="操作">
             <template #default="scope">
               <el-button type="primary" text icon="Edit" size="small" @click="editDialog(scope.row)">编辑</el-button>
@@ -54,28 +56,86 @@
           </el-table-column>
         </el-table>
       </div>
+      <div class="pager-wrapper">
+        <el-pagination
+          background
+          :layout="paginationData.layout"
+          :page-sizes="paginationData.pageSizes"
+          :total="paginationData.total"
+          :page-size="paginationData.pageSize"
+          :currentPage="paginationData.currentPage"
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+        />
+      </div>
     </el-card>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { reactive, ref } from "vue"
+import { usePagination } from "@/hooks/usePagination"
+import { type ApiData, getApis } from "@/api/system/api"
+
+const { paginationData, changeCurrentPage, changePageSize } = usePagination()
 
 const loading = ref(false)
 const searchFormData = reactive({
   path: "",
-  group: "",
+  apiGroup: "",
   method: "",
   description: ""
 })
 
-const handleSearch = () => {}
+const methodOptions = [
+  { value: "GET", label: "GET" },
+  { value: "POST", label: "POST" },
+  { value: "PUT", label: "PUT" },
+  { value: "DELETE", label: "DELETE" }
+]
+
+const handleSearch = () => {
+  paginationData.currentPage = 1
+  paginationData.pageSize = 10
+  getTableData()
+}
 
 const resetSearch = () => {}
 
 const addDialog = () => {}
 
-const tableData = ref([])
+const tableData = ref<ApiData[]>([])
 
-const getTableData = () => {}
+const getTableData = async () => {
+  loading.value = true
+  try {
+    const res = await getApis({
+      path: searchFormData.path || undefined,
+      apiGroup: searchFormData.apiGroup || undefined,
+      method: searchFormData.method || undefined,
+      description: searchFormData.description || undefined,
+      page: paginationData.currentPage,
+      pageSize: paginationData.pageSize
+    })
+    if (res.code === 0) {
+      tableData.value = res.data.list
+      paginationData.total = res.data.total
+    }
+  } catch (error) {
+    //
+  }
+  loading.value = false
+}
+getTableData()
+
+// 分页
+const handleSizeChange = (value: number) => {
+  changePageSize(value)
+  getTableData()
+}
+
+const handleCurrentChange = (value: number) => {
+  changeCurrentPage(value)
+  getTableData()
+}
 </script>

@@ -47,6 +47,7 @@ func RegisterTables(db *gorm.DB) {
 		system.RoleModel{},
 		system.UserModel{},
 		system.MenuModel{},
+		system.ApiModel{},
 		system.JwtBlacklist{},
 	)
 

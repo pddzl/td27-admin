@@ -30,14 +30,14 @@ export function usePagination(_paginationData: IPaginationData = {}) {
   const paginationData = reactive(Object.assign({ ...defaultPaginationData }, _paginationData))
 
   /** 改变当前页码 */
-  const handleCurrentChange = (value: number) => {
+  const changeCurrentPage = (value: number) => {
     paginationData.currentPage = value
   }
 
   /** 改变页面大小 */
-  const handleSizeChange = (value: number) => {
+  const changePageSize = (value: number) => {
     paginationData.pageSize = value
   }
 
-  return { paginationData, handleCurrentChange, handleSizeChange }
+  return { paginationData, changeCurrentPage, changePageSize }
 }

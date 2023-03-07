@@ -62,8 +62,8 @@
           :total="paginationData.total"
           :page-size="paginationData.pageSize"
           :currentPage="paginationData.currentPage"
-          @size-change="handleSizeChangeAction"
-          @current-change="handleCurrentChangeAction"
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
         />
       </div>
     </el-card>
@@ -150,7 +150,7 @@ import { usePagination } from "@/hooks/usePagination"
 import { useValidatePhone, useValidateEmail } from "@/hooks/useValidate"
 
 const loading = ref<boolean>(false)
-const { paginationData, handleCurrentChange, handleSizeChange } = usePagination()
+const { paginationData, changeCurrentPage, changePageSize } = usePagination()
 
 const tableData = ref<UsersResponse[]>([])
 let activeRow: UsersResponse
@@ -346,13 +346,13 @@ const deleteUserAction = (row: UsersResponse) => {
 }
 
 // 分页
-const handleSizeChangeAction = (value: number) => {
-  handleSizeChange(value)
+const handleSizeChange = (value: number) => {
+  changePageSize(value)
   getTableData()
 }
 
-const handleCurrentChangeAction = (value: number) => {
-  handleCurrentChange(value)
+const handleCurrentChange = (value: number) => {
+  changeCurrentPage(value)
   getTableData()
 }
 

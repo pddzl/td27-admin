@@ -3,9 +3,10 @@ package request
 import "server/model/common/request"
 
 type apiStruct struct {
-	Path        string `json:"path"`
-	Group       string `json:"group"`
-	Method      string `json:"method" validate:"oneof=GET POST DELETE PUT"`
+	Path     string `json:"path"`
+	ApiGroup string `json:"apiGroup"`
+	//Method      string `json:"method" validate:"oneof=GET POST DELETE PUT"`
+	Method      string `json:"method"`
 	Description string `json:"description"`
 }
 
