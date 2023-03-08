@@ -12,12 +12,14 @@ import (
 
 type CasbinService struct{}
 
+var CasbinServiceApp = new(CasbinService)
+
 var (
 	cachedEnforcer *casbin.CachedEnforcer
 	once           sync.Once
 )
 
-func (casbinService *CasbinService) Casbin() *casbin.CachedEnforcer {
+func (cs *CasbinService) Casbin() *casbin.CachedEnforcer {
 	once.Do(func() {
 		a, err := gormadapter.NewAdapterByDB(global.TD27_DB)
 		if err != nil {
@@ -50,4 +52,25 @@ func (casbinService *CasbinService) Casbin() *casbin.CachedEnforcer {
 		_ = cachedEnforcer.LoadPolicy()
 	})
 	return cachedEnforcer
+}
+
+// UpdateCasbinApi 更新api权限
+func (cs *CasbinService) UpdateCasbinApi(oldPath string, newPath string, oldMethod string, newMethod string) error {
+	err := global.TD27_DB.Debug().Model(&gormadapter.CasbinRule{}).Where("v1 = ? AND v2 = ?", oldPath, oldMethod).Updates(map[string]interface{}{
+		"v1": newPath,
+		"v2": newMethod,
+	}).Error
+	e := cs.Casbin()
+	err = e.InvalidateCache()
+	if err != nil {
+		return err
+	}
+	return err
+}
+
+// ClearCasbin 清除casbin rule
+func (cs *CasbinService) ClearCasbin(v int, p ...string) bool {
+	e := cs.Casbin()
+	ok, _ := e.RemoveFilteredPolicy(v, p...)
+	return ok
 }

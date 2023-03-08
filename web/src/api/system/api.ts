@@ -47,7 +47,20 @@ export function addApi(data: ApiDataBase) {
 export function deleteApiApi(data: reqId) {
   return request<IApiResponseData<null>>({
     url: "/api/deleteApi",
-    method: "delete",
+    method: "post",
+    data
+  })
+}
+
+interface reqEdit extends ApiDataBase {
+  id: number
+}
+
+// 编辑api
+export function editApiApi(data: reqEdit) {
+  return request<IApiResponseData<null>>({
+    url: "/api/editApi",
+    method: "post",
     data
   })
 }

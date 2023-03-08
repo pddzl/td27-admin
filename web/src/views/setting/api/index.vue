@@ -65,20 +65,20 @@
     </el-card>
     <el-dialog v-model="dialogVisible" :title="dialogTitle" :before-close="handleClose" width="38%">
       <warning-bar title="新增接口，需要在角色管理内配置权限才可使用" />
-      <el-form ref="formRef" :model="addFormData" :rules="addFormRules" label-width="80px">
+      <el-form ref="formRef" :model="opFormData" :rules="addFormRules" label-width="80px">
         <el-form-item label="API路径" prop="path">
-          <el-input v-model="addFormData.path" />
+          <el-input v-model="opFormData.path" />
         </el-form-item>
         <el-form-item label="请求方法" prop="method">
-          <el-select v-model="addFormData.method" placeholder="请选择方法" :clearable="true" style="width: 100%">
+          <el-select v-model="opFormData.method" placeholder="请选择方法" :clearable="true" style="width: 100%">
             <el-option v-for="item in methodOptions" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
         <el-form-item label="API分组" prop="apiGroup">
-          <el-input v-model="addFormData.apiGroup" />
+          <el-input v-model="opFormData.apiGroup" />
         </el-form-item>
         <el-form-item label="API描述" prop="description">
-          <el-input v-model="addFormData.description" />
+          <el-input v-model="opFormData.description" />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -95,7 +95,7 @@
 import { reactive, ref } from "vue"
 import { type FormInstance, type FormRules, ElMessage, ElMessageBox } from "element-plus"
 import { usePagination } from "@/hooks/usePagination"
-import { type ApiData, getApis, addApi, deleteApiApi } from "@/api/system/api"
+import { type ApiData, getApis, addApi, deleteApiApi, editApiApi } from "@/api/system/api"
 import WarningBar from "@/components/warningBar/warningBar.vue"
 
 const { paginationData, changeCurrentPage, changePageSize } = usePagination()
@@ -165,7 +165,7 @@ const handleCurrentChange = (value: number) => {
 
 // 对话框
 const formRef = ref<FormInstance>()
-const addFormData = reactive({
+const opFormData = reactive({
   path: "",
   apiGroup: "",
   method: "",
@@ -187,10 +187,10 @@ const addFormRules: FormRules = reactive({
 
 const initForm = () => {
   formRef.value?.resetFields()
-  addFormData.path = ""
-  addFormData.apiGroup = ""
-  addFormData.method = ""
-  addFormData.description = ""
+  opFormData.path = ""
+  opFormData.apiGroup = ""
+  opFormData.method = ""
+  opFormData.description = ""
 }
 
 const dialogVisible = ref(false)
@@ -216,10 +216,21 @@ const operateAction = (formEl: FormInstance | undefined) => {
   formEl.validate(async (valid) => {
     if (valid) {
       if (oKind === "Add") {
-        const res = await addApi({ ...addFormData })
+        const res = await addApi({ ...opFormData })
         if (res.code === 0) {
           ElMessage({ type: "success", message: res.msg })
           tableData.value.push(res.data)
+        }
+      } else if (oKind === "Edit") {
+        const res = await editApiApi({ id: activeRow.ID, ...opFormData })
+        if (res.code === 0) {
+          ElMessage({ type: "success", message: res.msg })
+          // 修改对应数据
+          const index = tableData.value.indexOf(activeRow)
+          tableData.value[index].apiGroup = opFormData.apiGroup
+          tableData.value[index].path = opFormData.path
+          tableData.value[index].description = opFormData.description
+          tableData.value[index].method = opFormData.method
         }
       }
       closeDialog()
@@ -227,7 +238,7 @@ const operateAction = (formEl: FormInstance | undefined) => {
   })
 }
 
-// 删除接口
+// 删除api
 const handleDeleteApi = (row: ApiData) => {
   ElMessageBox.confirm("此操作将永久删除所有角色下该api, 是否继续?", "提示", {
     confirmButtonText: "确定",
@@ -242,5 +253,18 @@ const handleDeleteApi = (row: ApiData) => {
       }
     })
   })
+}
+
+// 编辑dialog
+let activeRow: ApiData
+const editDialog = (row: ApiData) => {
+  dialogTitle.value = "编辑接口"
+  oKind = operationKind.Edit
+  opFormData.apiGroup = row.apiGroup
+  opFormData.description = row.description
+  opFormData.method = row.method
+  opFormData.path = row.path
+  activeRow = row
+  dialogVisible.value = true
 }
 </script>

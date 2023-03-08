@@ -3,6 +3,7 @@ package system
 import (
 	"errors"
 	"fmt"
+	"go.uber.org/zap"
 	"gorm.io/gorm"
 	"server/global"
 	systemModel "server/model/system"
@@ -82,5 +83,49 @@ func (a *ApiService) GetApis(apiSp systemReq.ApiSearchParams) ([]systemModel.Api
 
 // DeleteApi 删除指定api
 func (a *ApiService) DeleteApi(id uint) (err error) {
-	return global.TD27_DB.Where("id = ?", id).Unscoped().Delete(&systemModel.ApiModel{}).Error
+	var apiModel systemModel.ApiModel
+	err = global.TD27_DB.Where("id = ?", id).First(&apiModel).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		global.TD27_LOG.Error("deleteApi -> 查找id", zap.Error(err))
+		return err
+	}
+
+	err = global.TD27_DB.Unscoped().Delete(&apiModel).Error
+	if err != nil {
+		global.TD27_LOG.Error("deleteApi -> 删除id", zap.Error(err))
+		return err
+	}
+
+	ok := CasbinServiceApp.ClearCasbin(1, apiModel.Path, apiModel.Method)
+	if !ok {
+		return errors.New(apiModel.Path + ":" + apiModel.Method + "casbin同步清理失败")
+	}
+	e := CasbinServiceApp.Casbin()
+	err = e.InvalidateCache()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// EditApi 编辑api
+func (a *ApiService) EditApi(eApi systemReq.EditApi) (err error) {
+	var oldApiModel systemModel.ApiModel
+	err = global.TD27_DB.Where("id = ?", eApi.Id).First(&oldApiModel).Error
+	if err != nil {
+		return errors.New("editApi: id不存在")
+	}
+
+	if oldApiModel.Path != eApi.Path || oldApiModel.Method != eApi.Method {
+		if !errors.Is(global.TD27_DB.Where("path = ? AND method = ?", eApi.Path, eApi.Method).First(&systemModel.ApiModel{}).Error, gorm.ErrRecordNotFound) {
+			return errors.New("editApi: 存在相同接口")
+		}
+	}
+
+	err = CasbinServiceApp.UpdateCasbinApi(oldApiModel.Path, eApi.Path, oldApiModel.Method, eApi.Method)
+	if err != nil {
+		return fmt.Errorf("editApi: 更新casbin rule -> %v", err)
+	}
+
+	return global.TD27_DB.Debug().Model(&oldApiModel).Updates(map[string]interface{}{"path": eApi.Path, "method": eApi.Method, "api_group": eApi.ApiGroup, "description": eApi.Description}).Error
 }

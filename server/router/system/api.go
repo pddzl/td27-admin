@@ -13,7 +13,8 @@ func (u *ApiRouter) InitApiRouter(Router *gin.RouterGroup) (R gin.IRoutes) {
 	{
 		apiRouter.POST("addApi", apiApi.AddApi)
 		apiRouter.POST("getApis", apiApi.GetApis)
-		apiRouter.DELETE("deleteApi", apiApi.DeleteApi)
+		apiRouter.POST("deleteApi", apiApi.DeleteApi)
+		apiRouter.POST("editApi", apiApi.EditApi)
 	}
 	return apiRouter
 }

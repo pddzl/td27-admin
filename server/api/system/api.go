@@ -80,3 +80,24 @@ func (a *ApiApi) DeleteApi(c *gin.Context) {
 		response.OkWithMessage("删除成功", c)
 	}
 }
+
+// EditApi 编辑api
+func (a *ApiApi) EditApi(c *gin.Context) {
+	var eApi systemReq.EditApi
+	_ = c.ShouldBindJSON(&eApi)
+
+	// 参数校验
+	validate := validator.New()
+	if err := validate.Struct(&eApi); err != nil {
+		response.FailWithMessage("请求参数错误", c)
+		global.TD27_LOG.Error("请求参数错误", zap.Error(err))
+		return
+	}
+
+	if err := apiService.EditApi(eApi); err != nil {
+		response.FailWithMessage("编辑失败", c)
+		global.TD27_LOG.Error("编辑失败", zap.Error(err))
+	} else {
+		response.OkWithMessage("编辑成功", c)
+	}
+}
