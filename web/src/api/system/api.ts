@@ -26,7 +26,7 @@ interface reqApis extends PageInfo {
 }
 
 // 获取所有api
-export function getApis(data: reqApis) {
+export function getApisApi(data: reqApis) {
   return request<IApiResponseData<ApiDataPageInfo>>({
     url: "/api/getApis",
     method: "post",
@@ -35,7 +35,7 @@ export function getApis(data: reqApis) {
 }
 
 // 添加api
-export function addApi(data: ApiDataBase) {
+export function addApiApi(data: ApiDataBase) {
   return request<IApiResponseData<ApiData>>({
     url: "/api/addApi",
     method: "post",

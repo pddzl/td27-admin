@@ -95,7 +95,7 @@
 import { reactive, ref } from "vue"
 import { type FormInstance, type FormRules, ElMessage, ElMessageBox } from "element-plus"
 import { usePagination } from "@/hooks/usePagination"
-import { type ApiData, getApis, addApi, deleteApiApi, editApiApi } from "@/api/system/api"
+import { type ApiData, getApisApi, addApiApi, deleteApiApi, editApiApi } from "@/api/system/api"
 import WarningBar from "@/components/warningBar/warningBar.vue"
 
 const { paginationData, changeCurrentPage, changePageSize } = usePagination()
@@ -133,7 +133,7 @@ const tableData = ref<ApiData[]>([])
 const getTableData = async () => {
   loading.value = true
   try {
-    const res = await getApis({
+    const res = await getApisApi({
       path: searchFormData.path || undefined,
       apiGroup: searchFormData.apiGroup || undefined,
       method: searchFormData.method || undefined,
@@ -216,7 +216,7 @@ const operateAction = (formEl: FormInstance | undefined) => {
   formEl.validate(async (valid) => {
     if (valid) {
       if (oKind === "Add") {
-        const res = await addApi({ ...opFormData })
+        const res = await addApiApi({ ...opFormData })
         if (res.code === 0) {
           ElMessage({ type: "success", message: res.msg })
           tableData.value.push(res.data)
