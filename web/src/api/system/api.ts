@@ -25,12 +25,20 @@ interface reqApis extends PageInfo {
   description?: string
 }
 
-// 获取所有api
+// 获取所有api 分页
 export function getApisApi(data: reqApis) {
   return request<IApiResponseData<ApiDataPageInfo>>({
     url: "/api/getApis",
     method: "post",
     data
+  })
+}
+
+// 获取所有api 不分页
+export function getApisTreeApi() {
+  return request<IApiResponseData<ApiData[]>>({
+    url: "/api/getApisTree",
+    method: "get"
   })
 }
 

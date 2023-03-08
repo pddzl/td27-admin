@@ -101,3 +101,13 @@ func (a *ApiApi) EditApi(c *gin.Context) {
 		response.OkWithMessage("编辑成功", c)
 	}
 }
+
+// GetApisTree 列出所有api 不分页
+func (a *ApiApi) GetApisTree(c *gin.Context) {
+	list, err := apiService.GetApisTree()
+	if err != nil {
+		response.FailWithMessage("获取失败", c)
+	} else {
+		response.OkWithDetailed(list, "获取成功", c)
+	}
+}

@@ -60,9 +60,9 @@
         <el-tab-pane label="角色菜单">
           <Menus ref="menus" :id="activeId" />
         </el-tab-pane>
-        <!-- <el-tab-pane label="角色api">
-          <Apis ref="apis" :row="activeRow" @changeRow="changeRow" />
-        </el-tab-pane> -->
+        <el-tab-pane label="角色接口">
+          <Apis ref="apis" :row="activeRow" />
+        </el-tab-pane>
       </el-tabs>
     </el-drawer>
   </div>
@@ -73,6 +73,7 @@ import { ref, reactive } from "vue"
 import { type FormInstance, type FormRules, ElMessage, ElMessageBox } from "element-plus"
 import { type roleData, getRolesApi, addRoleApi, deleteRoleApi, editRoleApi } from "@/api/system/role"
 import Menus from "./components/menus.vue"
+import Apis from "./components/apis.vue"
 
 const loading = ref<boolean>(false)
 const tableData = ref<roleData[]>([])

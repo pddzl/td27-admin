@@ -13,3 +13,15 @@ type ApiModel struct {
 func (ApiModel) TableName() string {
 	return "sys_api"
 }
+
+type Children struct {
+	ApiGroup    string `json:"apiGroup"`
+	Path        string `json:"path"`
+	Method      string `json:"method"`
+	Description string `json:"description"`
+}
+
+type ApiTree struct {
+	ApiGroup string     `json:"apiGroup"`
+	Children []Children `json:"children"`
+}

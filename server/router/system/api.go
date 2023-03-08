@@ -15,6 +15,7 @@ func (u *ApiRouter) InitApiRouter(Router *gin.RouterGroup) (R gin.IRoutes) {
 		apiRouter.POST("getApis", apiApi.GetApis)
 		apiRouter.POST("deleteApi", apiApi.DeleteApi)
 		apiRouter.POST("editApi", apiApi.EditApi)
+		apiRouter.GET("getApisTree", apiApi.GetApisTree)
 	}
 	return apiRouter
 }

@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
+	"strings"
+	
 	"server/global"
 	systemModel "server/model/system"
 	systemReq "server/model/system/request"
@@ -79,6 +81,46 @@ func (a *ApiService) GetApis(apiSp systemReq.ApiSearchParams) ([]systemModel.Api
 		}
 	}
 	return apiList, total, err
+}
+
+// GetApisTree 获取所有api tree
+func (a *ApiService) GetApisTree() (list interface{}, err error) {
+	var apiModels []systemModel.ApiModel
+	err = global.TD27_DB.Find(&apiModels).Error
+	if err != nil {
+		return nil, fmt.Errorf("getApisTree: find -> %v", err)
+	}
+
+	var apiGroup []string
+	err = global.TD27_DB.Model(&systemModel.ApiModel{}).Distinct().Pluck("api_group", &apiGroup).Error
+	if err != nil {
+		return nil, fmt.Errorf("getApisTree: apiGroup -> %v", err)
+	}
+
+	treeData := make(map[string][]systemModel.Children, len(apiModels))
+	treeData1 := make([]systemModel.ApiTree, 0)
+	for _, model := range apiModels {
+		var children systemModel.Children
+		sPath := strings.Split(model.Path, fmt.Sprintf("%s/", model.ApiGroup))
+		var tPath string
+		if len(sPath) == 2 {
+			tPath = sPath[1]
+		}
+		children.ApiGroup = fmt.Sprintf("%s -> %s", tPath, model.Description)
+		children.Path = model.Path
+		children.Method = model.Method
+		children.Description = model.Description
+		treeData[model.ApiGroup] = append(treeData[model.ApiGroup], children)
+	}
+
+	for key, value := range treeData {
+		var apiTree systemModel.ApiTree
+		apiTree.ApiGroup = key
+		apiTree.Children = value
+		treeData1 = append(treeData1, apiTree)
+	}
+
+	return treeData1, err
 }
 
 // DeleteApi 删除指定api
