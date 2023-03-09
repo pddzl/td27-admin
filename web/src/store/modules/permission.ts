@@ -17,6 +17,16 @@ export const usePermissionStore = defineStore("permission", () => {
 
     formatRouter(asyncRouterList.value, dynamicRoutes.value)
 
+    // 添加404 ErrorPage
+    dynamicRoutes.value.push({
+      path: "/:pathMatch(.*)*",
+      redirect: "/404",
+      name: "ErrorPage",
+      meta: {
+        hidden: true
+      }
+    })
+
     routes.value = constantRoutes.concat(dynamicRoutes.value)
   }
 

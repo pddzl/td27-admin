@@ -195,15 +195,17 @@ const deleteMenuAction = (row: MenusData) => {
     confirmButtonText: "确定",
     cancelButtonText: "取消",
     type: "warning"
-  }).then(() => {
-    const index = tableData.value.indexOf(row)
-    deleteMenuApi({ id: row.id }).then((res) => {
-      if (res.code === 0) {
-        ElMessage({ type: "success", message: res.msg })
-        tableData.value.splice(index, 1)
-      }
-    })
   })
+    .then(() => {
+      const index = tableData.value.indexOf(row)
+      deleteMenuApi({ id: row.id }).then((res) => {
+        if (res.code === 0) {
+          ElMessage({ type: "success", message: res.msg })
+          tableData.value.splice(index, 1)
+        }
+      })
+    })
+    .catch(() => {})
 }
 
 // 表单
