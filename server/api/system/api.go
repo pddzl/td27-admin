@@ -9,6 +9,7 @@ import (
 	"server/model/common/response"
 	systemModel "server/model/system"
 	systemReq "server/model/system/request"
+	systemRep "server/model/system/response"
 )
 
 type ApiApi struct{}
@@ -102,12 +103,26 @@ func (a *ApiApi) EditApi(c *gin.Context) {
 	}
 }
 
-// GetApisTree 列出所有api 不分页
+// GetApisTree 格式化列出所有api
 func (a *ApiApi) GetApisTree(c *gin.Context) {
-	list, err := apiService.GetApisTree()
+	var cId request.CId
+	_ = c.ShouldBindJSON(&cId)
+
+	// 参数校验
+	validate := validator.New()
+	if err := validate.Struct(&cId); err != nil {
+		response.FailWithMessage("请求参数错误", c)
+		global.TD27_LOG.Error("请求参数错误", zap.Error(err))
+		return
+	}
+
+	list, checkedKey, err := apiService.GetApisTree(cId.ID)
 	if err != nil {
 		response.FailWithMessage("获取失败", c)
 	} else {
-		response.OkWithDetailed(list, "获取成功", c)
+		response.OkWithDetailed(systemRep.ApiTree{
+			List:       list,
+			CheckedKey: checkedKey,
+		}, "获取成功", c)
 	}
 }

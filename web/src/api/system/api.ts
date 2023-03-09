@@ -34,11 +34,30 @@ export function getApisApi(data: reqApis) {
   })
 }
 
+interface children {
+  key: string
+  apiGroup: string
+  path: string
+  method: string
+  description: string
+}
+
+export interface ApiTreeData {
+  apiGroup: string
+  children: children[]
+}
+
+interface ApiTreeAll {
+  list: ApiTreeData[]
+  checkedKey: string[]
+}
+
 // 获取所有api 不分页
-export function getApisTreeApi() {
-  return request<IApiResponseData<ApiData[]>>({
+export function getApisTreeApi(data: reqId) {
+  return request<IApiResponseData<ApiTreeAll>>({
     url: "/api/getApisTree",
-    method: "get"
+    method: "post",
+    data
   })
 }
 

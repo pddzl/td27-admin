@@ -15,7 +15,8 @@ func (ApiModel) TableName() string {
 }
 
 type Children struct {
-	ApiGroup    string `json:"apiGroup"`
+	Key         string `json:"key"`      // for 前端el-tree node-key (path + method)
+	ApiGroup    string `json:"apiGroup"` // for 前端el-tree label (path + description)
 	Path        string `json:"path"`
 	Method      string `json:"method"`
 	Description string `json:"description"`

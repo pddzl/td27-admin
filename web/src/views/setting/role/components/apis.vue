@@ -1,0 +1,99 @@
+<template>
+  <div>
+    <div class="clearfix">
+      <el-input v-model="filterText" class="fitler" placeholder="筛选" />
+      <el-button type="primary" class="button" @click="editRoleMenu">更新</el-button>
+    </div>
+    <div class="tree-content">
+      <el-tree
+        ref="treeRef"
+        :data="apisTreeData"
+        :default-checked-keys="apiIds"
+        default-expand-all
+        node-key="key"
+        highlight-current
+        :props="apiDefaultProps"
+        show-checkbox
+        :filter-node-method="filterNode"
+      />
+    </div>
+  </div>
+</template>
+
+<script lang="ts" setup>
+import { ref, watch } from "vue"
+import { ElMessage, ElTree } from "element-plus"
+import { type ApiTreeData, getApisTreeApi } from "@/api/system/api"
+import { editRoleMenuApi } from "@/api/system/role"
+
+const props = defineProps({
+  id: {
+    type: Number,
+    default: 0
+  }
+})
+
+const filterText = ref("")
+const treeRef = ref<InstanceType<typeof ElTree>>()
+
+const filterNode = (value: string, data: any) => {
+  if (!value) return true
+  return data.meta.title.includes(value)
+}
+
+watch(filterText, (val) => {
+  treeRef.value!.filter(val)
+})
+
+const apiDefaultProps = {
+  children: "children",
+  label: function (data: any) {
+    return data.apiGroup
+  }
+}
+
+const apiIds = ref<string[]>()
+// const apiIds = ["/base/login,POST"]
+const apisTreeData = ref<ApiTreeData[]>([])
+const getTreeData = () => {
+  getApisTreeApi({ id: props.id })
+    .then((res) => {
+      apisTreeData.value = res.data.list
+      apiIds.value = res.data.checkedKey
+    })
+    .catch(() => {})
+}
+getTreeData()
+
+const editRoleMenu = () => {
+  editRoleMenuApi({ roleId: props.id, ids: treeRef.value?.getCheckedKeys() as number[] })
+    .then((res) => {
+      if (res.code === 0) {
+        ElMessage({ type: "success", message: res.msg })
+      }
+    })
+    .catch(() => {})
+}
+</script>
+
+<style lang="scss" scoped>
+.button {
+  float: right;
+  margin-right: 5%;
+}
+.tree-content {
+  overflow: auto;
+  height: calc(100vh - 160px);
+  margin-top: 10px;
+}
+.clearfix::after {
+  content: "";
+  display: block;
+  height: 0;
+  clear: both;
+  visibility: hidden;
+}
+.fitler {
+  width: 80%;
+}
+</style>

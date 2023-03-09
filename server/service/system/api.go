@@ -5,8 +5,9 @@ import (
 	"fmt"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
+	"strconv"
 	"strings"
-	
+
 	"server/global"
 	systemModel "server/model/system"
 	systemReq "server/model/system/request"
@@ -84,21 +85,22 @@ func (a *ApiService) GetApis(apiSp systemReq.ApiSearchParams) ([]systemModel.Api
 }
 
 // GetApisTree 获取所有api tree
-func (a *ApiService) GetApisTree() (list interface{}, err error) {
+// element-plus el-tree的数据格式
+func (a *ApiService) GetApisTree(roleId uint) (list []systemModel.ApiTree, checkedKey []string, err error) {
 	var apiModels []systemModel.ApiModel
 	err = global.TD27_DB.Find(&apiModels).Error
 	if err != nil {
-		return nil, fmt.Errorf("getApisTree: find -> %v", err)
+		return nil, nil, fmt.Errorf("getApisTree: find -> %v", err)
 	}
 
 	var apiGroup []string
 	err = global.TD27_DB.Model(&systemModel.ApiModel{}).Distinct().Pluck("api_group", &apiGroup).Error
 	if err != nil {
-		return nil, fmt.Errorf("getApisTree: apiGroup -> %v", err)
+		return nil, nil, fmt.Errorf("getApisTree: apiGroup -> %v", err)
 	}
 
+	// 前端 el-tree data
 	treeData := make(map[string][]systemModel.Children, len(apiModels))
-	treeData1 := make([]systemModel.ApiTree, 0)
 	for _, model := range apiModels {
 		var children systemModel.Children
 		sPath := strings.Split(model.Path, fmt.Sprintf("%s/", model.ApiGroup))
@@ -106,6 +108,7 @@ func (a *ApiService) GetApisTree() (list interface{}, err error) {
 		if len(sPath) == 2 {
 			tPath = sPath[1]
 		}
+		children.Key = fmt.Sprintf("%s,%s", model.Path, model.Method)
 		children.ApiGroup = fmt.Sprintf("%s -> %s", tPath, model.Description)
 		children.Path = model.Path
 		children.Method = model.Method
@@ -113,14 +116,22 @@ func (a *ApiService) GetApisTree() (list interface{}, err error) {
 		treeData[model.ApiGroup] = append(treeData[model.ApiGroup], children)
 	}
 
-	for key, value := range treeData {
+	for _, value := range apiGroup {
 		var apiTree systemModel.ApiTree
-		apiTree.ApiGroup = key
-		apiTree.Children = value
-		treeData1 = append(treeData1, apiTree)
+		apiTree.ApiGroup = value
+		apiTree.Children = treeData[value]
+		list = append(list, apiTree)
 	}
 
-	return treeData1, err
+	// 前端 el-tree default-checked-keys
+	e := CasbinServiceApp.Casbin()
+	authorityId := strconv.Itoa(int(roleId))
+	cData := e.GetFilteredPolicy(0, authorityId)
+	for _, v := range cData {
+		checkedKey = append(checkedKey, fmt.Sprintf("%s,%s", v[1], v[2]))
+	}
+
+	return
 }
 
 // DeleteApi 删除指定api

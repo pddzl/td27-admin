@@ -61,7 +61,7 @@
           <Menus ref="menus" :id="activeId" />
         </el-tab-pane>
         <el-tab-pane label="角色接口">
-          <Apis ref="apis" :row="activeRow" />
+          <Apis ref="apis" :id="activeId" />
         </el-tab-pane>
       </el-tabs>
     </el-drawer>
