@@ -2,7 +2,7 @@
   <div>
     <div class="clearfix">
       <el-input v-model="filterText" class="fitler" placeholder="筛选" />
-      <el-button type="primary" class="button" @click="editRoleMenu">更新</el-button>
+      <el-button type="primary" class="button" @click="editAuthority">更新</el-button>
     </div>
     <div class="tree-content">
       <el-tree
@@ -24,7 +24,7 @@
 import { ref, watch } from "vue"
 import { ElMessage, ElTree } from "element-plus"
 import { type ApiTreeData, getApisTreeApi } from "@/api/system/api"
-import { editRoleMenuApi } from "@/api/system/role"
+import { type CasbinInfo, editCasbinApi } from "@/api/system/casbin"
 
 const props = defineProps({
   id: {
@@ -38,7 +38,7 @@ const treeRef = ref<InstanceType<typeof ElTree>>()
 
 const filterNode = (value: string, data: any) => {
   if (!value) return true
-  return data.meta.title.includes(value)
+  return data.apiGroup.includes(value)
 }
 
 watch(filterText, (val) => {
@@ -65,8 +65,18 @@ const getTreeData = () => {
 }
 getTreeData()
 
-const editRoleMenu = () => {
-  editRoleMenuApi({ roleId: props.id, ids: treeRef.value?.getCheckedKeys() as number[] })
+const editAuthority = () => {
+  const casbinInfos: CasbinInfo[] = []
+  for (const item of treeRef.value?.getCheckedNodes() as any[]) {
+    if (item.path && item.method) {
+      const casbinInfo: CasbinInfo = {
+        path: item.path,
+        method: item.method
+      }
+      casbinInfos.push(casbinInfo)
+    }
+  }
+  editCasbinApi({ roleId: props.id, casbinInfos: casbinInfos })
     .then((res) => {
       if (res.code === 0) {
         ElMessage({ type: "success", message: res.msg })

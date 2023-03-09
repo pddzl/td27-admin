@@ -1,13 +1,16 @@
 package system
 
 import (
+	"errors"
 	"github.com/casbin/casbin/v2"
 	"github.com/casbin/casbin/v2/model"
 	gormadapter "github.com/casbin/gorm-adapter/v3"
 	"go.uber.org/zap"
+	"strconv"
 	"sync"
 
 	"server/global"
+	systemReq "server/model/system/request"
 )
 
 type CasbinService struct{}
@@ -73,4 +76,24 @@ func (cs *CasbinService) ClearCasbin(v int, p ...string) bool {
 	e := cs.Casbin()
 	ok, _ := e.RemoveFilteredPolicy(v, p...)
 	return ok
+}
+
+// EditCasbin 更新casbin rule
+func (cs *CasbinService) EditCasbin(roleId uint, casbinInfos []systemReq.CasbinInfo) (err error) {
+	authorityId := strconv.Itoa(int(roleId))
+	cs.ClearCasbin(0, authorityId)
+	var rules [][]string
+	for _, v := range casbinInfos {
+		rules = append(rules, []string{authorityId, v.Path, v.Method})
+	}
+	e := cs.Casbin()
+	ok, _ := e.AddPolicies(rules)
+	if !ok {
+		return errors.New("存在相同api")
+	}
+	err = e.InvalidateCache()
+	if err != nil {
+		return err
+	}
+	return
 }

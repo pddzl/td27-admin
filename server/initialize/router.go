@@ -46,6 +46,7 @@ func Routers() *gin.Engine {
 		systemRouter.InitRoleRouter(PrivateGroup)
 		systemRouter.InitMenuRouter(PrivateGroup)
 		systemRouter.InitApiRouter(PrivateGroup)
+		systemRouter.InitCasbinRouter(PublicGroup)
 	}
 
 	global.TD27_LOG.Info("router register success")

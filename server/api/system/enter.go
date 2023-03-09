@@ -10,12 +10,14 @@ type ApiGroup struct {
 	MenuApi
 	RoleApi
 	ApiApi
+	CasbinApi
 }
 
 var (
-	userService = service.ServiceGroupApp.SystemServiceGroup.UserService
-	jwtService  = service.ServiceGroupApp.SystemServiceGroup.JwtService
-	menuService = service.ServiceGroupApp.SystemServiceGroup.MenuService
-	roleService = service.ServiceGroupApp.SystemServiceGroup.RoleService
-	apiService  = service.ServiceGroupApp.SystemServiceGroup.ApiService
+	userService   = service.ServiceGroupApp.SystemServiceGroup.UserService
+	jwtService    = service.ServiceGroupApp.SystemServiceGroup.JwtService
+	menuService   = service.ServiceGroupApp.SystemServiceGroup.MenuService
+	roleService   = service.ServiceGroupApp.SystemServiceGroup.RoleService
+	apiService    = service.ServiceGroupApp.SystemServiceGroup.ApiService
+	casbinService = service.ServiceGroupApp.SystemServiceGroup.CasbinService
 )

@@ -6,4 +6,5 @@ type RouterGroup struct {
 	RoleRouter
 	MenuRouter
 	ApiRouter
+	CasbinRouter
 }
