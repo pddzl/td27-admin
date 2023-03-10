@@ -2,7 +2,7 @@ import { request } from "@/utils/service"
 
 export interface ApiDataBase {
   path: string
-  apiGroup: string
+  api_group: string
   method: string
   description: string
 }
@@ -20,7 +20,7 @@ export interface ApiDataPageInfo {
 
 interface reqApis extends PageInfo {
   path?: string
-  apiGroup?: string
+  api_group?: string
   method?: string
   description?: string
   orderKey?: string
@@ -38,14 +38,14 @@ export function getApisApi(data: reqApis) {
 
 interface children {
   key: string
-  apiGroup: string
+  api_group: string
   path: string
   method: string
   description: string
 }
 
 export interface ApiTreeData {
-  apiGroup: string
+  api_group: string
   children: children[]
 }
 

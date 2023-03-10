@@ -6,7 +6,7 @@
           <el-input v-model="searchFormData.path" placeholder="路径" />
         </el-form-item>
         <el-form-item prop="group" label="API组">
-          <el-input v-model="searchFormData.apiGroup" placeholder="API组" />
+          <el-input v-model="searchFormData.api_group" placeholder="API组" />
         </el-form-item>
         <el-form-item prop="method" label="方法">
           <el-select v-model="searchFormData.method" placeholder="方法" :clearable="true">
@@ -37,7 +37,7 @@
         <el-table :data="tableData" @sort-change="handleSortChange">
           <el-table-column prop="ID" label="ID" />
           <el-table-column prop="path" label="路径" sortable="custom" />
-          <el-table-column prop="apiGroup" label="分组" sortable="custom" />
+          <el-table-column prop="api_group" label="分组" sortable="custom" />
           <el-table-column prop="method" label="请求方法" sortable="custom" />
           <el-table-column prop="description" label="描述" />
           <el-table-column label="操作">
@@ -74,8 +74,8 @@
             <el-option v-for="item in methodOptions" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
-        <el-form-item label="API分组" prop="apiGroup">
-          <el-input v-model="opFormData.apiGroup" />
+        <el-form-item label="API分组" prop="api_group">
+          <el-input v-model="opFormData.api_group" />
         </el-form-item>
         <el-form-item label="API描述" prop="description">
           <el-input v-model="opFormData.description" />
@@ -103,7 +103,7 @@ const { paginationData, changeCurrentPage, changePageSize } = usePagination()
 const loading = ref(false)
 const searchFormData = reactive({
   path: "",
-  apiGroup: "",
+  api_group: "",
   method: "",
   description: "",
   orderKey: "",
@@ -126,7 +126,7 @@ const handleSearch = () => {
 
 const resetSearch = () => {
   searchFormData.path = ""
-  searchFormData.apiGroup = ""
+  searchFormData.api_group = ""
   searchFormData.method = ""
   searchFormData.description = ""
   searchFormData.orderKey = ""
@@ -140,7 +140,7 @@ const getTableData = async () => {
   try {
     const res = await getApisApi({
       path: searchFormData.path || undefined,
-      apiGroup: searchFormData.apiGroup || undefined,
+      api_group: searchFormData.api_group || undefined,
       method: searchFormData.method || undefined,
       description: searchFormData.description || undefined,
       orderKey: searchFormData.orderKey || undefined,
@@ -185,7 +185,7 @@ const handleSortChange = (column: any) => {
 const formRef = ref<FormInstance>()
 const opFormData = reactive({
   path: "",
-  apiGroup: "",
+  api_group: "",
   method: "",
   description: ""
 })
@@ -198,7 +198,7 @@ enum operationKind {
 let oKind: operationKind
 const addFormRules: FormRules = reactive({
   path: [{ required: true, trigger: "blur", message: "路径不能为空" }],
-  apiGroup: [{ required: true, trigger: "blur", message: "分组不能为空" }],
+  api_group: [{ required: true, trigger: "blur", message: "分组不能为空" }],
   method: [{ required: true, trigger: "change", message: "方法不能为空" }],
   description: [{ required: true, trigger: "blur", message: "描述不能为空" }]
 })
@@ -206,7 +206,7 @@ const addFormRules: FormRules = reactive({
 const initForm = () => {
   formRef.value?.resetFields()
   opFormData.path = ""
-  opFormData.apiGroup = ""
+  opFormData.api_group = ""
   opFormData.method = ""
   opFormData.description = ""
 }
@@ -245,7 +245,7 @@ const operateAction = (formEl: FormInstance | undefined) => {
           ElMessage({ type: "success", message: res.msg })
           // 修改对应数据
           const index = tableData.value.indexOf(activeRow)
-          tableData.value[index].apiGroup = opFormData.apiGroup
+          tableData.value[index].api_group = opFormData.api_group
           tableData.value[index].path = opFormData.path
           tableData.value[index].description = opFormData.description
           tableData.value[index].method = opFormData.method
@@ -280,7 +280,7 @@ let activeRow: ApiData
 const editDialog = (row: ApiData) => {
   dialogTitle.value = "编辑接口"
   oKind = operationKind.Edit
-  opFormData.apiGroup = row.apiGroup
+  opFormData.api_group = row.api_group
   opFormData.description = row.description
   opFormData.method = row.method
   opFormData.path = row.path

@@ -4,7 +4,7 @@ import "server/model/common/request"
 
 type apiStruct struct {
 	Path     string `json:"path"`
-	ApiGroup string `json:"apiGroup"`
+	ApiGroup string `json:"api_group"`
 	//Method      string `json:"method" validate:"oneof=GET POST DELETE PUT"`
 	Method      string `json:"method"`
 	Description string `json:"description"`
