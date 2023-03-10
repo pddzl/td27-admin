@@ -104,7 +104,7 @@ func (ms *MenuService) UpdateMenu(menuRaw systemReq.EditMenuReq) (err error) {
 	metaData.Hidden = menuRaw.Meta.Hidden
 	metaData.Affix = menuRaw.Meta.Affix
 
-	err = global.TD27_DB.Debug().Model(&menuModel).Updates(map[string]interface{}{
+	err = global.TD27_DB.Model(&menuModel).Updates(map[string]interface{}{
 		"pid":       menuRaw.Pid,
 		"name":      menuRaw.Name,
 		"path":      menuRaw.Path,

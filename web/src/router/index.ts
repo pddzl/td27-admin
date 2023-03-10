@@ -38,40 +38,40 @@ export const constantRoutes: RouteRecordRaw[] = [
     meta: {
       hidden: true
     }
+  },
+  {
+    path: "/",
+    component: Layout,
+    redirect: "/dashboard",
+    children: [
+      {
+        path: "dashboard",
+        component: () => import("@/views/dashboard/index.vue"),
+        name: "Dashboard",
+        meta: {
+          title: "首页",
+          svgIcon: "dashboard",
+          affix: true
+        }
+      }
+    ]
+  },
+  {
+    path: "/profile",
+    component: Layout,
+    meta: { hidden: true },
+    redirect: "/profile/index",
+    children: [
+      {
+        path: "index",
+        component: () => import("@/views/profile/index.vue"),
+        name: "Profile",
+        meta: {
+          title: "个人中心"
+        }
+      }
+    ]
   }
-  // {
-  //   path: "/",
-  //   component: Layout,
-  //   redirect: "/dashboard",
-  //   children: [
-  //     {
-  //       path: "dashboard",
-  //       component: () => import("@/views/dashboard/index.vue"),
-  //       name: "Dashboard",
-  //       meta: {
-  //         title: "首页",
-  //         svgIcon: "dashboard",
-  //         affix: true
-  //       }
-  //     }
-  //   ]
-  // },
-  // {
-  //   path: "/profile",
-  //   component: Layout,
-  //   meta: { hidden: true },
-  //   redirect: "/profile/index",
-  //   children: [
-  //     {
-  //       path: "index",
-  //       component: () => import("@/views/profile/index.vue"),
-  //       name: "Profile",
-  //       meta: {
-  //         title: "个人中心"
-  //       }
-  //     }
-  //   ]
-  // }
 ]
 
 const router = createRouter({

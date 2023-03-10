@@ -244,15 +244,17 @@ const handleDeleteApi = (row: ApiData) => {
     confirmButtonText: "确定",
     cancelButtonText: "取消",
     type: "warning"
-  }).then(() => {
-    deleteApiApi({ id: row.ID }).then((res) => {
-      if (res.code === 0) {
-        ElMessage({ type: "success", message: res.msg })
-        const index = tableData.value.indexOf(row)
-        tableData.value.splice(index, 1)
-      }
-    })
   })
+    .then(() => {
+      deleteApiApi({ id: row.ID }).then((res) => {
+        if (res.code === 0) {
+          ElMessage({ type: "success", message: res.msg })
+          const index = tableData.value.indexOf(row)
+          tableData.value.splice(index, 1)
+        }
+      })
+    })
+    .catch(() => {})
 }
 
 // 编辑dialog
