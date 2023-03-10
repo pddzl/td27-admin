@@ -57,28 +57,27 @@ func (a *ApiService) GetApis(apiSp systemReq.ApiSearchParams) ([]systemModel.Api
 	} else {
 		db = db.Limit(limit).Offset(offset)
 		if apiSp.OrderKey != "" {
-			var OrderStr string
+			var orderStr string
 			// 设置有效排序key 防止sql注入
-			orderMap := make(map[string]bool, 5)
-			orderMap["id"] = true
+			orderMap := make(map[string]bool, 4)
 			orderMap["path"] = true
 			orderMap["api_group"] = true
 			orderMap["description"] = true
 			orderMap["method"] = true
-			if orderMap[OrderStr] {
+			if orderMap[apiSp.OrderKey] {
 				if apiSp.Desc {
-					OrderStr = apiSp.OrderKey + " desc"
+					orderStr = apiSp.OrderKey + " desc"
 				} else {
-					OrderStr = apiSp.OrderKey
+					orderStr = apiSp.OrderKey
 				}
 			} else { // didn't match any order key in `orderMap`
 				err = fmt.Errorf("非法的排序字段: %v", apiSp.OrderKey)
 				return apiList, total, err
 			}
 
-			err = db.Order(OrderStr).Find(&apiList).Error
+			err = db.Order(orderStr).Find(&apiList).Error
 		} else {
-			err = db.Order("api_group").Find(&apiList).Error
+			err = db.Find(&apiList).Error
 		}
 	}
 	return apiList, total, err

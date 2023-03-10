@@ -23,6 +23,8 @@ interface reqApis extends PageInfo {
   apiGroup?: string
   method?: string
   description?: string
+  orderKey?: string
+  desc?: boolean
 }
 
 // 获取所有api 分页

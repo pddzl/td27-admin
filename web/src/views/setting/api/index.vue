@@ -34,11 +34,11 @@
         </div>
       </div>
       <div class="table-wrapper">
-        <el-table :data="tableData">
+        <el-table :data="tableData" @sort-change="handleSortChange">
           <el-table-column prop="ID" label="ID" />
-          <el-table-column prop="path" label="路径" />
-          <el-table-column prop="apiGroup" label="分组" />
-          <el-table-column prop="method" label="请求方法" />
+          <el-table-column prop="path" label="路径" sortable="custom" />
+          <el-table-column prop="apiGroup" label="分组" sortable="custom" />
+          <el-table-column prop="method" label="请求方法" sortable="custom" />
           <el-table-column prop="description" label="描述" />
           <el-table-column label="操作">
             <template #default="scope">
@@ -105,7 +105,10 @@ const searchFormData = reactive({
   path: "",
   apiGroup: "",
   method: "",
-  description: ""
+  description: "",
+  orderKey: "",
+  // 默认升序
+  desc: false
 })
 
 const methodOptions = [
@@ -126,6 +129,8 @@ const resetSearch = () => {
   searchFormData.apiGroup = ""
   searchFormData.method = ""
   searchFormData.description = ""
+  searchFormData.orderKey = ""
+  searchFormData.desc = false
 }
 
 const tableData = ref<ApiData[]>([])
@@ -138,6 +143,8 @@ const getTableData = async () => {
       apiGroup: searchFormData.apiGroup || undefined,
       method: searchFormData.method || undefined,
       description: searchFormData.description || undefined,
+      orderKey: searchFormData.orderKey || undefined,
+      desc: searchFormData.desc || undefined,
       page: paginationData.currentPage,
       pageSize: paginationData.pageSize
     })
@@ -160,6 +167,17 @@ const handleSizeChange = (value: number) => {
 
 const handleCurrentChange = (value: number) => {
   changeCurrentPage(value)
+  getTableData()
+}
+
+// 排序
+const handleSortChange = (column: any) => {
+  searchFormData.orderKey = column.prop
+  if (column.order === "descending") {
+    searchFormData.desc = true
+  } else {
+    searchFormData.desc = false
+  }
   getTableData()
 }
 
