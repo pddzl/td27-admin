@@ -23,7 +23,7 @@
 <script lang="ts" setup>
 import { ref, watch } from "vue"
 import { ElMessage, ElTree } from "element-plus"
-import { type MenusData, getAllMenusApi } from "@/api/system/menu"
+import { type MenusData, getElTreeMenusApi } from "@/api/system/menu"
 import { editRoleMenuApi } from "@/api/system/role"
 
 const props = defineProps({
@@ -56,7 +56,7 @@ const menuIds = ref<number[]>([])
 // const menuIds = [2, 3, 4, 7, 8]
 const menuTreeData = ref<MenusData[]>([])
 const getTreeData = (id: number) => {
-  getAllMenusApi({ id: id })
+  getElTreeMenusApi({ id: id })
     .then((res) => {
       menuTreeData.value = res.data.list
       menuIds.value = res.data.menuIds

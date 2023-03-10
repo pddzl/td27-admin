@@ -89,7 +89,7 @@ func (ma *MenuApi) DeleteMenu(c *gin.Context) {
 	}
 }
 
-func (ma *MenuApi) GetAllMenus(c *gin.Context) {
+func (ma *MenuApi) GetElTreeMenus(c *gin.Context) {
 	var cId request.CId
 	_ = c.ShouldBindJSON(&cId)
 
@@ -101,7 +101,7 @@ func (ma *MenuApi) GetAllMenus(c *gin.Context) {
 		return
 	}
 
-	list, ids, err := menuService.GetAllMenus(cId.ID)
+	list, ids, err := menuService.GetElTreeMenus(cId.ID)
 	if err != nil {
 		response.FailWithMessage("获取失败", c)
 		global.TD27_LOG.Error("获取失败!", zap.Error(err))
