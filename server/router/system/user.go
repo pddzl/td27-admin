@@ -11,9 +11,9 @@ func (u *UserRouter) InitUserRouter(Router *gin.RouterGroup) (R gin.IRoutes) {
 	userRouter := Router.Group("user")
 	userApi := api.ApiGroupApp.SystemApiGroup.UserApi
 	{
-		userRouter.POST("getUserInfo", userApi.GetUserInfo)
+		userRouter.GET("getUserInfo", userApi.GetUserInfo)
 		userRouter.POST("getUsers", userApi.GetUsers)
-		userRouter.DELETE("deleteUser", userApi.DeleteUser)
+		userRouter.POST("deleteUser", userApi.DeleteUser)
 		userRouter.POST("addUser", userApi.AddUser)
 		userRouter.POST("editUser", userApi.EditUser)
 		userRouter.POST("modifyPass", userApi.ModifyPass)

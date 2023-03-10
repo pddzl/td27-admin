@@ -6,8 +6,7 @@ import { request } from "@/utils/service"
 export function getUserInfoApi() {
   return request<IApiResponseData<UsersResponse>>({
     url: "/user/getUserInfo",
-    method: "post",
-    data: {}
+    method: "get"
   })
 }
 
@@ -44,7 +43,7 @@ export function getUsersApi(data: PageInfo) {
 export function deleteUserApi(data: reqId) {
   return request<IApiResponseData<null>>({
     url: "/user/deleteUser",
-    method: "delete",
+    method: "post",
     data
   })
 }
