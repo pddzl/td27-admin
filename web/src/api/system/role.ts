@@ -33,7 +33,7 @@ export function addRoleApi(data: reqRole) {
 export function deleteRoleApi(data: reqId) {
   return request<IApiResponseData<null>>({
     url: "/role/deleteRole",
-    method: "delete",
+    method: "post",
     data
   })
 }
