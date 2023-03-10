@@ -84,19 +84,19 @@ func (a *ApiService) GetApis(apiSp systemReq.ApiSearchParams) ([]systemModel.Api
 	return apiList, total, err
 }
 
-// GetApisTree 获取所有api tree
+// GetElTreeApis 获取所有api tree
 // element-plus el-tree的数据格式
-func (a *ApiService) GetApisTree(roleId uint) (list []systemModel.ApiTree, checkedKey []string, err error) {
+func (a *ApiService) GetElTreeApis(roleId uint) (list []systemModel.ApiTree, checkedKey []string, err error) {
 	var apiModels []systemModel.ApiModel
 	err = global.TD27_DB.Find(&apiModels).Error
 	if err != nil {
-		return nil, nil, fmt.Errorf("getApisTree: find -> %v", err)
+		return nil, nil, fmt.Errorf("GetElTreeApis: find -> %v", err)
 	}
 
 	var apiGroup []string
 	err = global.TD27_DB.Model(&systemModel.ApiModel{}).Distinct().Pluck("api_group", &apiGroup).Error
 	if err != nil {
-		return nil, nil, fmt.Errorf("getApisTree: apiGroup -> %v", err)
+		return nil, nil, fmt.Errorf("GetElTreeApis: apiGroup -> %v", err)
 	}
 
 	// 前端 el-tree data

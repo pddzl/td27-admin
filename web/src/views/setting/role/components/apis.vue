@@ -23,7 +23,7 @@
 <script lang="ts" setup>
 import { ref, watch } from "vue"
 import { ElMessage, ElTree } from "element-plus"
-import { type ApiTreeData, getApisTreeApi } from "@/api/system/api"
+import { type ApiTreeData, getElTreeApisApi } from "@/api/system/api"
 import { type CasbinInfo, editCasbinApi } from "@/api/system/casbin"
 
 const props = defineProps({
@@ -56,7 +56,7 @@ const apiIds = ref<string[]>()
 // const apiIds = ["/base/login,POST"]
 const apisTreeData = ref<ApiTreeData[]>([])
 const getTreeData = () => {
-  getApisTreeApi({ id: props.id })
+  getElTreeApisApi({ id: props.id })
     .then((res) => {
       apisTreeData.value = res.data.list
       apiIds.value = res.data.checkedKey

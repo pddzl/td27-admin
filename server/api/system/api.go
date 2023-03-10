@@ -103,8 +103,8 @@ func (a *ApiApi) EditApi(c *gin.Context) {
 	}
 }
 
-// GetApisTree 格式化列出所有api
-func (a *ApiApi) GetApisTree(c *gin.Context) {
+// GetElTreeApis 格式化列出所有api
+func (a *ApiApi) GetElTreeApis(c *gin.Context) {
 	var cId request.CId
 	_ = c.ShouldBindJSON(&cId)
 
@@ -116,7 +116,7 @@ func (a *ApiApi) GetApisTree(c *gin.Context) {
 		return
 	}
 
-	list, checkedKey, err := apiService.GetApisTree(cId.ID)
+	list, checkedKey, err := apiService.GetElTreeApis(cId.ID)
 	if err != nil {
 		response.FailWithMessage("获取失败", c)
 	} else {

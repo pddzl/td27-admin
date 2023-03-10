@@ -53,9 +53,9 @@ interface ApiTreeAll {
 }
 
 // 获取所有api 不分页
-export function getApisTreeApi(data: reqId) {
+export function getElTreeApisApi(data: reqId) {
   return request<IApiResponseData<ApiTreeAll>>({
-    url: "/api/getApisTree",
+    url: "/api/getElTreeApis",
     method: "post",
     data
   })
