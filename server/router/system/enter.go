@@ -7,4 +7,5 @@ type RouterGroup struct {
 	MenuRouter
 	ApiRouter
 	CasbinRouter
+	JwtRouter
 }

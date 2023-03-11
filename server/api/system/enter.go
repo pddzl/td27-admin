@@ -11,6 +11,7 @@ type ApiGroup struct {
 	RoleApi
 	ApiApi
 	CasbinApi
+	JwtApi
 }
 
 var (

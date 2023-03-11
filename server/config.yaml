@@ -29,7 +29,7 @@ system:
   host: '0.0.0.0'
   port: '8888'
   stack: false
-  use-multipoint: true
+  use-multipoint: false
 
 # mysql configuration
 mysql:

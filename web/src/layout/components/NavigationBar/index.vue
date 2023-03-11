@@ -34,6 +34,7 @@ import Breadcrumb from "../Breadcrumb/index.vue"
 import Hamburger from "../Hamburger/index.vue"
 import ThemeSwitch from "@/components/ThemeSwitch/index.vue"
 import Screenfull from "@/components/Screenfull/index.vue"
+import { joinInBlacklistApi } from "@/api/system/jwt"
 
 const router = useRouter()
 const appStore = useAppStore()
@@ -48,8 +49,14 @@ const toggleSidebar = () => {
 }
 
 const logout = () => {
-  userStore.logout()
-  router.push("/login")
+  // userStore.logout()
+  // router.push("/login")
+  joinInBlacklistApi()
+    .then(() => {
+      userStore.logout()
+      router.push("/login")
+    })
+    .catch(() => {})
 }
 
 const toPersonal = () => {
