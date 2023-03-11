@@ -86,6 +86,12 @@
             <el-option :value="true" label="是" />
           </el-select>
         </el-form-item>
+        <el-form-item label="KeepAlive" prop="meta.keepAlive" style="width: 30%">
+          <el-select v-model="formData.meta.keepAlive">
+            <el-option :value="false" label="否" />
+            <el-option :value="true" label="是" />
+          </el-select>
+        </el-form-item>
       </el-form>
       <template #footer>
         <div class="dialog-footer">
@@ -187,6 +193,7 @@ const editMenuDialog = (row: MenusData) => {
   }
   formData.meta.hidden = !!row.meta?.hidden
   formData.meta.affix = Boolean(row.meta?.affix)
+  formData.meta.keepAlive = Boolean(row.meta?.keepAlive)
   dialogVisible.value = true
 }
 
@@ -226,6 +233,7 @@ const initForm = () => {
   formData.meta.icon = ""
   formData.meta.hidden = false
   formData.meta.affix = false
+  formData.meta.keepAlive = false
 }
 
 const closeDialog = () => {
@@ -249,7 +257,8 @@ const formData = reactive<reqMenu>({
     title: "",
     icon: "",
     hidden: false,
-    affix: false
+    affix: false,
+    keepAlive: false
   }
 })
 

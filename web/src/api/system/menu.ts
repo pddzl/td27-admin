@@ -13,6 +13,7 @@ export interface MenusData {
     elIcon: string
     svgIcon: string
     affix: boolean
+    keepAlive: boolean
   }
   children: MenusData[]
 }
@@ -39,6 +40,7 @@ export interface reqMenu {
     title: string
     icon: string
     affix: boolean
+    keepAlive: boolean
   }
 }
 

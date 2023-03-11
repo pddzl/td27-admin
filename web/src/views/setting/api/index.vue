@@ -98,6 +98,10 @@ import { usePagination } from "@/hooks/usePagination"
 import { type ApiData, getApisApi, addApiApi, deleteApiApi, editApiApi } from "@/api/system/api"
 import WarningBar from "@/components/warningBar/warningBar.vue"
 
+defineOptions({
+  name: "Api"
+})
+
 const { paginationData, changeCurrentPage, changePageSize } = usePagination()
 
 const loading = ref(false)

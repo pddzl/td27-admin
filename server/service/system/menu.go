@@ -82,6 +82,7 @@ func (ms *MenuService) AddMenu(menuRaw systemReq.Menu) bool {
 	menuModel.Meta.SvgIcon = menuRaw.Meta.Icon
 	menuModel.Meta.Hidden = menuRaw.Meta.Hidden
 	menuModel.Meta.Affix = menuRaw.Meta.Affix
+	menuModel.Meta.KeepAlive = menuRaw.Meta.KeepAlive
 
 	if err := global.TD27_DB.Create(&menuModel).Error; err != nil {
 		global.TD27_LOG.Error("创建menu失败", zap.Error(err))
@@ -103,6 +104,7 @@ func (ms *MenuService) UpdateMenu(menuRaw systemReq.EditMenuReq) (err error) {
 	metaData.Title = menuRaw.Meta.Title
 	metaData.Hidden = menuRaw.Meta.Hidden
 	metaData.Affix = menuRaw.Meta.Affix
+	metaData.KeepAlive = menuRaw.Meta.KeepAlive
 
 	err = global.TD27_DB.Model(&menuModel).Updates(map[string]interface{}{
 		"pid":       menuRaw.Pid,
