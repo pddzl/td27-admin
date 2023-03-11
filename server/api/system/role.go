@@ -38,6 +38,9 @@ func (ra *RoleApi) AddRole(c *gin.Context) {
 		response.FailWithMessage("添加失败", c)
 		global.TD27_LOG.Error("添加角色失败", zap.Error(err))
 	} else {
+		if err = casbinService.EditCasbin(role.ID, systemReq.DefaultCasbin()); err != nil {
+			global.TD27_LOG.Error("更新casbin rule失败", zap.Error(err))
+		}
 		response.OkWithDetailed(role, "添加成功", c)
 	}
 }

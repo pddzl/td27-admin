@@ -1,11 +1,14 @@
 package system
 
 import (
+	"errors"
 	"fmt"
 	"go.uber.org/zap"
+	"gorm.io/gorm"
 	"server/global"
 	systemModel "server/model/system"
 	systemReq "server/model/system/request"
+	"strconv"
 )
 
 type RoleService struct{}
@@ -33,17 +36,27 @@ func (rs *RoleService) DeleteRole(id uint) (err error) {
 		return fmt.Errorf("查询role -> %v", err)
 	}
 
+	if !errors.Is(global.TD27_DB.Where("role_model_id = ?", id).First(&systemModel.UserModel{}).Error, gorm.ErrRecordNotFound) {
+		return errors.New("该角色下面还有所属用户")
+	}
+
 	err = global.TD27_DB.Unscoped().Delete(&roleModel).Error
 	if err != nil {
 		return fmt.Errorf("删除role -> %v", err)
 	}
 
-	// 清空关联
+	// 清空menus关联
 	err = global.TD27_DB.Model(&roleModel).Association("Menus").Clear()
 	if err != nil {
 		return fmt.Errorf("删除role关联menus -> %v", err)
 	}
 
+	// 删除对应casbin rule
+	authorityId := strconv.Itoa(int(roleModel.ID))
+	ok := CasbinServiceApp.ClearCasbin(0, authorityId)
+	if !ok {
+		global.TD27_LOG.Warn("删除role关联casbin_rule失败")
+	}
 	return
 }
 

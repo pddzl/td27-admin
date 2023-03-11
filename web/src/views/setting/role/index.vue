@@ -55,7 +55,7 @@
         </div>
       </template>
     </el-dialog>
-    <el-drawer v-if="drawer" v-model="drawer" :with-header="false" size="30%" title="角色配置">
+    <el-drawer v-if="drawer" v-model="drawer" :with-header="false" size="35%" title="角色配置">
       <el-tabs type="border-card">
         <el-tab-pane label="角色菜单">
           <Menus ref="menus" :id="activeId" />
