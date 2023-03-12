@@ -149,6 +149,10 @@ import { getRolesApi } from "@/api/system/role"
 import { usePagination } from "@/hooks/usePagination"
 import { useValidatePhone, useValidateEmail } from "@/hooks/useValidate"
 
+defineOptions({
+  name: "User"
+})
+
 const loading = ref<boolean>(false)
 const { paginationData, changeCurrentPage, changePageSize } = usePagination()
 

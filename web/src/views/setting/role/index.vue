@@ -75,6 +75,10 @@ import { type roleData, getRolesApi, addRoleApi, deleteRoleApi, editRoleApi } fr
 import Menus from "./components/menus.vue"
 import Apis from "./components/apis.vue"
 
+defineOptions({
+  name: "Role"
+})
+
 const loading = ref<boolean>(false)
 const tableData = ref<roleData[]>([])
 const activeRow = ref<any>({})

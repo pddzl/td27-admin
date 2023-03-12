@@ -229,8 +229,8 @@ const addDialog = () => {
 }
 
 const closeDialog = () => {
-  initForm()
   dialogVisible.value = false
+  initForm()
 }
 
 const operateAction = (formEl: FormInstance | undefined) => {

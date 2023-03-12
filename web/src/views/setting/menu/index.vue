@@ -110,6 +110,10 @@ import { type MenusData, type reqMenu, getMenus, addMenuApi, editMenuApi, delete
 import WarningBar from "@/components/warningBar/warningBar.vue"
 import icon from "./icon.vue"
 
+defineOptions({
+  name: "Menu"
+})
+
 const loading = ref<boolean>(false)
 const dialogVisible = ref<boolean>(false)
 
