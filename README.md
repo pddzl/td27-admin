@@ -71,3 +71,12 @@ go build -o server main.go (windows编译命令为go build -o server.exe main.go
 # 运行二进制
 ./server (windows运行命令为 server.exe)
 ```
+
+## 项目预览图
+
+<table>
+  <tr>
+    <td><img src="./img/p1.png"/></td>
+    <td><img src="./img/p2.png"/></td>
+  </tr>
+</table>
