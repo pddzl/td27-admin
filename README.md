@@ -1,6 +1,6 @@
 <p align="center">
 <h1 align="center" style="margin: 30px 0 30px; font-weight: bold;">TD27 Admin</h1>
-<h4 align="center">基于Gin+Vue3前后端分离的go快速开发框架</h4>
+<h4 align="center">基于Gin+Vue3前后端分离的Golang快速开发框架</h4>
 
 ## 平台简介
 
