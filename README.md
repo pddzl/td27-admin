@@ -4,8 +4,8 @@
 
 ## 平台简介
 
-* 前端技术栈 [TypeScript] + [Vue3] + [Element-Plus] + [Vite] + [Pinia]
-* 后端技术栈 [Golang] + [Gin] + [MySQL] + [Redis] + [Casbin]
+* 前端技术栈 TypeScript、Vue3、Element-Plus、Vite、Pinia
+* 后端技术栈 Golang、Gin、Gorm、MySQL、Redis、Casbin
 
 ## 内置功能
 
