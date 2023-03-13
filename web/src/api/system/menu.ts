@@ -5,15 +5,15 @@ export interface MenusData {
   pid: number
   name: string
   path: string
-  redirect: string
+  redirect?: string
   component: string
   meta: {
-    hidden: boolean
+    hidden?: boolean
     title: string
-    elIcon: string
-    svgIcon: string
-    affix: boolean
-    keepAlive: boolean
+    elIcon?: string
+    svgIcon?: string
+    affix?: boolean
+    keepAlive?: boolean
   }
   children: MenusData[]
 }
@@ -28,19 +28,18 @@ export function getMenus() {
   })
 }
 
-export interface reqMenu {
-  id: number
+interface reqMenu {
   pid: number
-  name: string
+  name?: string
   path: string
-  redirect: string
+  redirect?: string
   component: string
   meta: {
-    hidden: boolean
-    title: string
-    icon: string
-    affix: boolean
-    keepAlive: boolean
+    hidden?: boolean
+    title?: string
+    icon?: string
+    affix?: boolean
+    keepAlive?: boolean
   }
 }
 
@@ -52,7 +51,11 @@ export function addMenuApi(data: reqMenu) {
   })
 }
 
-export function editMenuApi(data: reqMenu) {
+interface editReq extends reqMenu {
+  id: number
+}
+
+export function editMenuApi(data: editReq) {
   return request<IApiResponseData<null>>({
     url: "menu/editMenu",
     method: "post",

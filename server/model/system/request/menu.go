@@ -5,7 +5,7 @@ type Menu struct {
 	Name      string `json:"name"`
 	Path      string `json:"path" validate:"required"`
 	Redirect  string `json:"redirect"`
-	Component string `json:"component"`
+	Component string `json:"component" validate:"required"`
 	Meta      meta   `json:"meta"`
 }
 

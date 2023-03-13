@@ -92,7 +92,7 @@ func (ms *MenuService) AddMenu(menuRaw systemReq.Menu) bool {
 	return true
 }
 
-func (ms *MenuService) UpdateMenu(menuRaw systemReq.EditMenuReq) (err error) {
+func (ms *MenuService) EditMenu(menuRaw systemReq.EditMenuReq) (err error) {
 	var menuModel systemModel.MenuModel
 	var metaData systemModel.Meta
 

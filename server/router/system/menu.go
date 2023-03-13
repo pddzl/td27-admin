@@ -13,7 +13,7 @@ func (u *MenuRouter) InitMenuRouter(Router *gin.RouterGroup) (R gin.IRoutes) {
 	{
 		menuRouter.GET("getMenus", menuApi.GetMenus)
 		menuRouter.POST("addMenu", menuApi.AddMenu)
-		menuRouter.POST("editMenu", menuApi.UpdateMenu)
+		menuRouter.POST("editMenu", menuApi.EditMenu)
 		menuRouter.POST("deleteMenu", menuApi.DeleteMenu)
 		menuRouter.POST("getElTreeMenus", menuApi.GetElTreeMenus)
 	}

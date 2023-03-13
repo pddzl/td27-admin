@@ -46,7 +46,7 @@
         label-position="top"
         label-width="85px"
       >
-        <el-form-item label="父节点" prop="pid" style="width: 30%" required>
+        <el-form-item label="父节点" prop="pid" style="width: 30%">
           <el-cascader
             v-model="formData.pid"
             style="width: 100%"
@@ -59,7 +59,7 @@
         <el-form-item label="路由名称" prop="name" style="width: 30%">
           <el-input v-model="formData.name" />
         </el-form-item>
-        <el-form-item label="路由路径" prop="path" required style="width: 30%">
+        <el-form-item label="路由路径" prop="path" style="width: 30%">
           <el-input v-model="formData.path" />
         </el-form-item>
         <el-form-item label="前端组件" prop="component" style="width: 30%">
@@ -106,7 +106,7 @@
 <script lang="ts" setup>
 import { ref, reactive } from "vue"
 import { ElMessage, ElMessageBox, type FormInstance, type FormRules, type CascaderOption } from "element-plus"
-import { type MenusData, type reqMenu, getMenus, addMenuApi, editMenuApi, deleteMenuApi } from "@/api/system/menu"
+import { type MenusData, getMenus, addMenuApi, editMenuApi, deleteMenuApi } from "@/api/system/menu"
 import WarningBar from "@/components/warningBar/warningBar.vue"
 import icon from "./icon.vue"
 
@@ -164,20 +164,25 @@ const setMenuOptions = (menuData: any, optionsData: CascaderOption[]) => {
   }
 }
 
-let kind: string
+enum operationKind {
+  Add = "Add",
+  Edit = "Edit"
+}
+let oKind: operationKind
 
 const addMenuDialog = () => {
   dialogTitle.value = "新增菜单"
   setOptions()
-  kind = "Add"
+  oKind = operationKind.Add
   dialogVisible.value = true
 }
 
+let activeRowId: number
 const editMenuDialog = (row: MenusData) => {
   dialogTitle.value = "编辑菜单"
   setOptions()
-  kind = "Edit"
-  formData.id = row.id
+  oKind = operationKind.Edit
+  activeRowId = row.id
   formData.pid = row.pid
   if (row.name) {
     formData.name = row.name
@@ -208,11 +213,10 @@ const deleteMenuAction = (row: MenusData) => {
     type: "warning"
   })
     .then(() => {
-      const index = tableData.value.indexOf(row)
       deleteMenuApi({ id: row.id }).then((res) => {
         if (res.code === 0) {
           ElMessage({ type: "success", message: res.msg })
-          tableData.value.splice(index, 1)
+          getTableData()
         }
       })
     })
@@ -224,7 +228,8 @@ const formRef = ref<FormInstance>()
 
 const formRules: FormRules = reactive({
   pid: [{ required: true, trigger: "change", message: "请选择父节点" }],
-  path: [{ required: true, trigger: "blur", message: "请填写路由路径" }]
+  path: [{ required: true, trigger: "blur", message: "请填写路由路径" }],
+  component: [{ required: true, trigger: "blur", message: "请填写前端组件" }]
 })
 
 const initForm = () => {
@@ -241,8 +246,8 @@ const initForm = () => {
 }
 
 const closeDialog = () => {
-  initForm()
   dialogVisible.value = false
+  initForm()
 }
 
 const handleClose = (done: Function) => {
@@ -250,8 +255,7 @@ const handleClose = (done: Function) => {
   done()
 }
 
-const formData = reactive<reqMenu>({
-  id: 0,
+const formData = reactive({
   name: "",
   path: "",
   component: "",
@@ -270,21 +274,34 @@ const operateAction = (formEl: FormInstance | undefined) => {
   if (!formEl) return
   formEl.validate(async (valid) => {
     if (valid) {
-      if (kind === "Add") {
-        const res = await addMenuApi(formData)
+      const tempMenu = {
+        pid: formData.pid,
+        name: formData.name || undefined,
+        path: formData.path,
+        component: formData.component,
+        redirect: formData.redirect || undefined,
+        meta: {
+          title: formData.meta.title || undefined,
+          icon: formData.meta.icon || undefined,
+          hidden: formData.meta.hidden || undefined,
+          affix: formData.meta.affix || undefined,
+          keepAlive: formData.meta.keepAlive || undefined
+        }
+      }
+      if (oKind === "Add") {
+        const res = await addMenuApi(tempMenu)
         if (res.code === 0) {
           ElMessage({ type: "success", message: res.msg })
-          getTableData()
         }
-      } else if (kind === "Edit") {
-        const res = await editMenuApi(formData)
+      } else if (oKind === "Edit") {
+        const res = await editMenuApi({ id: activeRowId, ...tempMenu })
         if (res.code === 0) {
           ElMessage({ type: "success", message: res.msg })
           getTableData()
         }
       }
-      initForm()
       dialogVisible.value = false
+      initForm()
     }
   })
 }

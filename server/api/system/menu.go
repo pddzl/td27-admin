@@ -49,7 +49,7 @@ func (ma *MenuApi) AddMenu(c *gin.Context) {
 	}
 }
 
-func (ma *MenuApi) UpdateMenu(c *gin.Context) {
+func (ma *MenuApi) EditMenu(c *gin.Context) {
 	var editMenuReq systemReq.EditMenuReq
 	_ = c.ShouldBindJSON(&editMenuReq)
 
@@ -61,7 +61,7 @@ func (ma *MenuApi) UpdateMenu(c *gin.Context) {
 		return
 	}
 
-	if err := menuService.UpdateMenu(editMenuReq); err != nil {
+	if err := menuService.EditMenu(editMenuReq); err != nil {
 		response.FailWithMessage("编辑失败", c)
 		global.TD27_LOG.Error("编辑失败", zap.Error(err))
 	} else {
