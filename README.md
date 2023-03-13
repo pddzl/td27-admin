@@ -79,4 +79,20 @@ go build -o server main.go (windows编译命令为go build -o server.exe main.go
     <td><img src="./img/p1.png"/></td>
     <td><img src="./img/p2.png"/></td>
   </tr>
+  <tr>
+    <td><img src="./img/p3.png"/></td>
+    <td><img src="./img/p4.png"/></td>
+  </tr>
+  <tr>
+    <td><img src="./img/p5.png"/></td>
+    <td><img src="./img/p6.png"/></td>
+  </tr>
+  <tr>
+    <td><img src="./img/p7.png"/></td>
+    <td><img src="./img/p8.png"/></td>
+  </tr>
+  <tr>
+    <td><img src="./img/p9.png"/></td>
+    <td><img src="./img/p10.png"/></td>
+  </tr>
 </table>
