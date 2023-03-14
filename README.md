@@ -1,6 +1,3 @@
-<p align="center">
-  <img alt="logo" src="./web/src/assets/layout/td27-logo.png" width="100" height="100">
-</p>
 <h1 align="center" style="margin: 30px 0 30px; font-weight: bold;">TD27 Admin</h1>
 <h4 align="center">基于Gin+Vue3前后端分离的Golang快速开发框架</h4>
 
