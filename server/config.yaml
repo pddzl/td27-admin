@@ -1,6 +1,6 @@
 # jwt configuration
 jwt:
-  signing-key: pddZl
+  signing-key: pddzl
   expires-time: 86400
   buffer-time: 43200
   issuer: pddZl
@@ -38,7 +38,7 @@ mysql:
   config: 'charset=utf8&parseTime=true'
   db-name: 'td27'
   username: 'root'
-  password: ''
+  password: 'huayun2021'
   max-idle-conns: 10
   max-open-conns: 100
   log-mode: false
