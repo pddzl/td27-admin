@@ -14,6 +14,9 @@
 - 菜单管理：实现用户动态菜单配置，实现不同角色不同菜单。
 - api管理：不同用户可调用的api接口的权限不同。
 
+默认账号密码
+admin/123456
+
 ## 运行
 
 克隆项目
@@ -70,6 +73,19 @@ go build -o server main.go (windows编译命令为go build -o server.exe main.go
 # 运行二进制
 ./server (windows运行命令为 server.exe)
 ```
+
+## 一键安装
+
+Docker Compose 版本需要 V2
+
+```bash
+git clone https://github.com/pddzl/td27-admin
+cd td27-admin
+docker-compose -f docker-compose/docker-compose.yml build
+docker-compose -f docker-compose/docker-compose.yml up -d
+```
+
+浏览器打开 `http://ip:8500`
 
 ## 项目预览图
 
