@@ -38,7 +38,7 @@ mysql:
   config: 'charset=utf8&parseTime=true'
   db-name: 'td27'
   username: 'root'
-  password: 'huayun2021'
+  password: 'td27admin'
   max-idle-conns: 10
   max-open-conns: 100
   log-mode: false
