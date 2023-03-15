@@ -96,7 +96,7 @@ import { reactive, ref } from "vue"
 import { type FormInstance, type FormRules, ElMessage, ElMessageBox } from "element-plus"
 import { usePagination } from "@/hooks/usePagination"
 import { type ApiData, getApisApi, addApiApi, deleteApiApi, editApiApi } from "@/api/system/api"
-import WarningBar from "@/components/warningBar/warningBar.vue"
+import WarningBar from "@/components/WarningBar/warningBar.vue"
 
 defineOptions({
   name: "Api"

@@ -27,8 +27,6 @@ services:
       context: ../server/
       dockerfile: ./Dockerfile
     image: td27_server:1.0
-    # volumes:
-    #   - ./server/td27:/td27
     # command: ["./wait-for.sh", "./td27Server"]
     depends_on:
       - redis
@@ -45,7 +43,7 @@ services:
     image: td27_web:1.0
     environment:
       - BACKEND=server
-    command: /bin/bash -c "envsubst '$$BACKEND' < /etc/nginx/conf.d/default.template > /etc/nginx/conf.d/default.conf && sleep 2 && exec nginx -g 'daemon off;'"
+    command: /bin/sh -c "envsubst '$$BACKEND' < /etc/nginx/conf.d/default.template > /etc/nginx/conf.d/default.conf && sleep 2 && exec nginx -g 'daemon off;'"
     ports:
       - 8500:8500
     depends_on:

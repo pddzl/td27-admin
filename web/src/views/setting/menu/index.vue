@@ -107,7 +107,7 @@
 import { ref, reactive } from "vue"
 import { ElMessage, ElMessageBox, type FormInstance, type FormRules, type CascaderOption } from "element-plus"
 import { type MenusData, getMenus, addMenuApi, editMenuApi, deleteMenuApi } from "@/api/system/menu"
-import WarningBar from "@/components/warningBar/warningBar.vue"
+import WarningBar from "@/components/WarningBar/warningBar.vue"
 import icon from "./icon.vue"
 
 defineOptions({
