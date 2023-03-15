@@ -14,10 +14,11 @@
 - 菜单管理：实现用户动态菜单配置，实现不同角色不同菜单。
 - api管理：不同用户可调用的api接口的权限不同。
 
-默认账号密码
-admin/123456
-
 ## 运行
+
+默认账号密码
+
+admin/123456
 
 克隆项目
 `git clone https://github.com/pddzl/td27-admin.git`
