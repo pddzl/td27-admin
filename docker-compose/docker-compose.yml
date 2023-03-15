@@ -7,8 +7,6 @@ services:
     volumes:
       - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
       - ./redis/data:/data
-    ports:
-      - 6379:6379
   mysql:
     container_name: td27_mysql
     image: mysql:8.0.28
@@ -27,7 +25,6 @@ services:
       context: ../server/
       dockerfile: ./Dockerfile
     image: td27_server:1.0
-    # command: ["./wait-for.sh", "./td27Server"]
     depends_on:
       - redis
       - mysql

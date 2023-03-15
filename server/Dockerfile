@@ -20,7 +20,8 @@ COPY --from=0 /server/td27Server ./
 COPY --from=0 /server/config.yaml ./
 COPY --from=0 /server/wait-for.sh ./
 
+RUN chmod +x ./wait-for.sh
+
 EXPOSE 8888
 
-# CMD ["./wait-for.sh", "./td27Server"]
-CMD ["./td27Server"]
+CMD ["./wait-for.sh", "./td27Server"]
