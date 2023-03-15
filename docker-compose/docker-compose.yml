@@ -1,0 +1,53 @@
+version: "3"
+services:
+  redis:
+    container_name: td27_redis
+    image: redis:6.2.6
+    command: redis-server /usr/local/etc/redis/redis.conf
+    volumes:
+      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
+      - ./redis/data:/data
+    ports:
+      - 6379:6379
+  mysql:
+    container_name: td27_mysql
+    image: mysql:8.0.28
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - ./mysql/data/:/var/lib/mysql
+      - ./mysql/init/:/docker-entrypoint-initdb.d
+    environment:
+      MYSQL_ROOT_PASSWORD: td27admin
+      MYSQL_DATABASE: td27
+  server:
+    sysctls:
+      net.ipv4.ping_group_range: 0   2147483647
+    container_name: td27_server
+    build: 
+      context: ../server/
+      dockerfile: ./Dockerfile
+    image: td27_server:1.0
+    # volumes:
+    #   - ./server/td27:/td27
+    # command: ["./wait-for.sh", "./td27Server"]
+    depends_on:
+      - redis
+      - mysql
+    links:
+      - redis
+      - mysql
+    restart: on-failure
+  web:
+    container_name: td27_web
+    build: 
+      context: ../web/
+      dockerfile: ./Dockerfile
+    image: td27_web:1.0
+    environment:
+      - BACKEND=server
+    command: /bin/bash -c "envsubst '$$BACKEND' < /etc/nginx/conf.d/default.template > /etc/nginx/conf.d/default.conf && sleep 2 && exec nginx -g 'daemon off;'"
+    ports:
+      - 8500:8500
+    depends_on:
+      - server
+    restart: on-failure
