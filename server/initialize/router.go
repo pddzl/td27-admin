@@ -13,6 +13,9 @@ import (
 )
 
 func Routers() *gin.Engine {
+	if !global.TD27_CONFIG.System.Stack {
+		gin.SetMode(gin.ReleaseMode)
+	}
 	Router := gin.New()
 	Router.Use(log.GinLogger(), log.GinRecovery(global.TD27_CONFIG.System.Stack))
 
