@@ -66,7 +66,7 @@ const toPersonal = () => {
 
 <style lang="scss" scoped>
 .navigation-bar {
-  height: var(--v3-navigationbar-height);
+  height: var(--base-navigationbar-height);
   overflow: hidden;
   background: #fff;
   .hamburger {

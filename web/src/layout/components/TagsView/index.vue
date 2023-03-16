@@ -188,7 +188,7 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .tags-view-container {
-  height: var(--v3-tagsview-height);
+  height: var(--base-tagsview-height);
   width: 100%;
   background-color: #fff;
   border-bottom: 1px solid #d8dce5;
@@ -200,10 +200,10 @@ onMounted(() => {
       cursor: pointer;
       height: 26px;
       line-height: 26px;
-      border: 1px solid var(--v3-tagsview-tag-border-color);
-      border-radius: var(--v3-tagsview-tag-border-radius);
-      color: var(--v3-tagsview-tag-text-color);
-      background-color: var(--v3-tagsview-tag-bg-color);
+      border: 1px solid var(--base-tagsview-tag-border-color);
+      border-radius: var(--base-tagsview-tag-border-radius);
+      color: var(--base-tagsview-tag-text-color);
+      background-color: var(--base-tagsview-tag-bg-color);
       padding: 0 8px;
       font-size: 12px;
       margin-left: 5px;
@@ -215,12 +215,12 @@ onMounted(() => {
         margin-right: 5px;
       }
       &.active {
-        background-color: var(--v3-tagsview-tag-active-bg-color);
-        color: var(--v3-tagsview-tag-active-text-color);
-        border-color: var(--v3-tagsview-tag-active-border-color);
+        background-color: var(--base-tagsview-tag-active-bg-color);
+        color: var(--base-tagsview-tag-active-text-color);
+        border-color: var(--base-tagsview-tag-active-border-color);
         &::before {
           content: "";
-          background-color: var(--v3-tagsview-tag-active-before-color);
+          background-color: var(--base-tagsview-tag-active-before-color);
           display: inline-block;
           width: 8px;
           height: 8px;
@@ -234,8 +234,8 @@ onMounted(() => {
         vertical-align: middle;
         border-radius: 50%;
         &:hover {
-          background-color: var(--v3-tagsview-tag-icon-hover-bg-color);
-          color: var(--v3-tagsview-tag-icon-hover-color);
+          background-color: var(--base-tagsview-tag-icon-hover-bg-color);
+          color: var(--base-tagsview-tag-icon-hover-color);
         }
       }
     }

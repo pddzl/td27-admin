@@ -35,9 +35,9 @@ import SidebarItem from "./SidebarItem.vue"
 import SidebarLogo from "./SidebarLogo.vue"
 import { getCssVariableValue } from "@/utils"
 
-const v3SidebarMenuBgColor = getCssVariableValue("--v3-sidebar-menu-bg-color")
-const v3SidebarMenuTextColor = getCssVariableValue("--v3-sidebar-menu-text-color")
-const v3SidebarMenuActiveTextColor = getCssVariableValue("--v3-sidebar-menu-active-text-color")
+const v3SidebarMenuBgColor = getCssVariableValue("--base-sidebar-menu-bg-color")
+const v3SidebarMenuTextColor = getCssVariableValue("--base-sidebar-menu-text-color")
+const v3SidebarMenuActiveTextColor = getCssVariableValue("--base-sidebar-menu-active-text-color")
 
 const route = useRoute()
 const appStore = useAppStore()
@@ -68,13 +68,13 @@ const isCollapse = computed(() => {
     left: 0;
     width: 2px;
     height: 100%;
-    background-color: var(--v3-sidebar-menu-tip-line-bg-color);
+    background-color: var(--base-sidebar-menu-tip-line-bg-color);
   }
 }
 
 .has-logo {
   .el-scrollbar {
-    height: calc(100% - var(--v3-header-height));
+    height: calc(100% - var(--base-header-height));
   }
 }
 
@@ -105,11 +105,11 @@ const isCollapse = computed(() => {
 :deep(.el-menu-item),
 :deep(.el-sub-menu__title),
 :deep(.el-sub-menu .el-menu-item) {
-  height: var(--v3-sidebar-menu-item-height);
-  line-height: var(--v3-sidebar-menu-item-height);
+  height: var(--base-sidebar-menu-item-height);
+  line-height: var(--base-sidebar-menu-item-height);
   &.is-active,
   &:hover {
-    background-color: var(--v3-sidebar-menu-hover-bg-color);
+    background-color: var(--base-sidebar-menu-hover-bg-color);
   }
   display: block;
   * {
@@ -127,7 +127,7 @@ const isCollapse = computed(() => {
   :deep(.el-sub-menu) {
     &.is-active {
       .el-sub-menu__title {
-        color: var(--v3-sidebar-menu-active-text-color) !important;
+        color: var(--base-sidebar-menu-active-text-color) !important;
         @include tip-line;
       }
     }

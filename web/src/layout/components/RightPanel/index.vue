@@ -28,7 +28,7 @@ const show = ref(false)
 .handle-button {
   width: 48px;
   height: 48px;
-  background-color: var(--v3-rightpanel-button-bg-color);
+  background-color: var(--base-rightpanel-button-bg-color);
   position: fixed;
   top: v-bind(buttonTopCss);
   right: 0px;

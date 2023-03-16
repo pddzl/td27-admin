@@ -24,9 +24,9 @@ const props = defineProps({
 .sidebar-logo-container {
   position: relative;
   width: 100%;
-  height: var(--v3-header-height);
-  line-height: var(--v3-header-height);
-  background-color: var(--v3-sidebarlogo-bg-color);
+  height: var(--base-header-height);
+  line-height: var(--base-header-height);
+  background-color: var(--base-sidebarlogo-bg-color);
   text-align: center;
   overflow: hidden;
   .sidebar-logo {
