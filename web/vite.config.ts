@@ -9,7 +9,7 @@ import DefineOptions from "unplugin-vue-define-options/vite"
 /** 配置项文档：https://cn.vitejs.dev/config */
 export default (configEnv: ConfigEnv): UserConfigExport => {
   const viteEnv = loadEnv(configEnv.mode, process.cwd()) as ImportMetaEnv
-  const { VITE_PUBLIC_PATH } = viteEnv
+  const { VITE_PUBLIC_PATH, VITE_CLI_PORT, VITE_BASE_API, VITE_BASE_PATH, VITE_SERVER_PORT } = viteEnv
   return {
     /** 打包时根据实际情况修改 base */
     base: VITE_PUBLIC_PATH,
@@ -25,7 +25,7 @@ export default (configEnv: ConfigEnv): UserConfigExport => {
       /** 设置 host: true 才可以使用 Network 的形式，以 IP 访问项目 */
       host: true, // host: "0.0.0.0"
       /** 端口号 */
-      port: 8080,
+      port: VITE_CLI_PORT,
       /** 是否自动打开浏览器 */
       open: true,
       /** 跨域设置允许 */
@@ -34,12 +34,11 @@ export default (configEnv: ConfigEnv): UserConfigExport => {
       strictPort: false,
       /** 接口代理 */
       proxy: {
-        "/api": {
-          target: "http://127.0.0.1:8888/",
-          ws: true,
+        [VITE_BASE_API]: {
+          target: `${VITE_BASE_PATH}:${VITE_SERVER_PORT}/`, // "http://127.0.0.1:8888/",
           /** 是否允许跨域 */
           changeOrigin: true,
-          rewrite: (path) => path.replace("/api", "")
+          rewrite: (path) => path.replace(VITE_BASE_API, "")
         }
       }
     },
