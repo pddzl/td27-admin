@@ -15,7 +15,7 @@ export interface MenusData {
     affix?: boolean
     keepAlive?: boolean
   }
-  children: MenusData[]
+  children?: MenusData[]
 }
 
 type MenusResponseData = IApiResponseData<MenusData[]>
