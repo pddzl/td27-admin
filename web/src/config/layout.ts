@@ -8,13 +8,16 @@ interface ILayoutSettings {
   showSidebarLogo: boolean
   /** 是否固定 Header */
   fixedHeader: boolean
+  /** 是否显示全屏按钮 */
+  showScreenfull: boolean
 }
 
 const layoutSettings: ILayoutSettings = {
   showSettings: true,
   showTagsView: true,
   fixedHeader: true,
-  showSidebarLogo: true
+  showSidebarLogo: true,
+  showScreenfull: true
 }
 
 export default layoutSettings

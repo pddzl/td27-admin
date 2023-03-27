@@ -7,11 +7,13 @@ export const useSettingsStore = defineStore("settings", () => {
   const showSettings = ref<boolean>(layoutSettings.showSettings)
   const showTagsView = ref<boolean>(layoutSettings.showTagsView)
   const showSidebarLogo = ref<boolean>(layoutSettings.showSidebarLogo)
+  const showScreenfull = ref<boolean>(layoutSettings.showScreenfull)
 
   return {
     fixedHeader,
     showSettings,
     showTagsView,
-    showSidebarLogo
+    showSidebarLogo,
+    showScreenfull
   }
 })
