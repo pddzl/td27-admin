@@ -31,7 +31,7 @@ func GinRecovery(stack bool) gin.HandlerFunc {
 
 				httpRequest, _ := httputil.DumpRequest(c.Request, false)
 				if brokenPipe {
-					global.TD27_LOG.Error(c.Request.URL.Path, zap.Any("error", err), zap.String("request", string(httpRequest)))
+					global.TD27_LOG.Debug(c.Request.URL.Path, zap.Any("error", err), zap.String("request", string(httpRequest)))
 					// If the connection is dead, we can't write a status to it.
 					c.Error(err.(error))
 					c.Abort()
@@ -39,9 +39,9 @@ func GinRecovery(stack bool) gin.HandlerFunc {
 				}
 
 				if stack {
-					global.TD27_LOG.Error("[Recovery from panic]", zap.Any("error", err), zap.String("request", string(httpRequest)), zap.String("stack", string(debug.Stack())))
+					global.TD27_LOG.Debug("[Recovery from panic]", zap.Any("error", err), zap.String("request", string(httpRequest)), zap.String("stack", string(debug.Stack())))
 				} else {
-					global.TD27_LOG.Error("[Recovery from panic]", zap.Any("error", err), zap.String("request", string(httpRequest)))
+					global.TD27_LOG.Debug("[Recovery from panic]", zap.Any("error", err), zap.String("request", string(httpRequest)))
 				}
 				c.AbortWithStatus(http.StatusInternalServerError)
 			}

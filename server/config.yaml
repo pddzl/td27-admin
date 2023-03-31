@@ -28,7 +28,7 @@ system:
   env: 'production' # Change to "develop" to skip authentication for development mode
   host: '0.0.0.0'
   port: '8888'
-  stack: false
+  stack: true
   use-multipoint: false
 
 # mysql configuration

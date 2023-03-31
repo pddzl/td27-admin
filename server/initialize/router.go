@@ -13,7 +13,7 @@ import (
 )
 
 func Routers() *gin.Engine {
-	if !global.TD27_CONFIG.System.Stack {
+	if global.TD27_CONFIG.System.Env == "production" {
 		gin.SetMode(gin.ReleaseMode)
 	}
 	Router := gin.New()
