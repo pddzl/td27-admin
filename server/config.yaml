@@ -42,7 +42,7 @@ mysql:
   max-idle-conns: 10
   max-open-conns: 100
   log-mode: false
-  log-zap: false
+  log-zap: true
 
 # redis configuration
 redis:

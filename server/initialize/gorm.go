@@ -1,17 +1,51 @@
 package initialize
 
 import (
+	"fmt"
 	"go.uber.org/zap"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
+	"log"
 	"os"
+	"time"
 
 	"server/global"
 	"server/model/system"
 )
 
+type writer struct {
+	logger.Writer
+}
+
+// NewWriter writer 构造函数
+func NewWriter(w logger.Writer) *writer {
+	return &writer{Writer: w}
+}
+
+// Printf 格式化打印日志
+func (w *writer) Printf(message string, data ...interface{}) {
+	if global.TD27_CONFIG.Mysql.LogZap {
+		global.TD27_LOG.Info(fmt.Sprintf(message+"\n", data...))
+	} else {
+		w.Writer.Printf(message, data...)
+	}
+}
+
 func gormConfig() *gorm.Config {
-	config := &gorm.Config{DisableForeignKeyConstraintWhenMigrating: true}
+	newLogger := logger.New(
+		NewWriter(log.New(os.Stdout, "\r\n", log.LstdFlags)), // io writer（日志输出的目标，前缀和日志包含的内容——译者注）
+		logger.Config{
+			SlowThreshold:             200 * time.Millisecond, // 慢 SQL 阈值
+			LogLevel:                  logger.Warn,            // 日志级别
+			IgnoreRecordNotFoundError: true,                   // 忽略ErrRecordNotFound（记录未找到）错误
+			Colorful:                  false,                  // 禁用彩色打印
+		},
+	)
+	config := &gorm.Config{
+		Logger:                                   newLogger,
+		DisableForeignKeyConstraintWhenMigrating: true,
+	}
 	return config
 }
 
