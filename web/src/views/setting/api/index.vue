@@ -292,3 +292,12 @@ const editDialog = (row: ApiData) => {
   dialogVisible.value = true
 }
 </script>
+
+<style lang="scss" scoped>
+.search-wrapper {
+  margin-bottom: 20px;
+  :deep(.el-card__body) {
+    padding-bottom: 2px;
+  }
+}
+</style>
