@@ -22,8 +22,7 @@
       "node",
       "vite/client",
       /** Element Plus 的 Volar 插件支持 */
-      "element-plus/global",
-      "unplugin-vue-define-options/macros-global"
+      "element-plus/global"
     ],
     /** baseUrl 用来告诉编译器到哪里去查找模块，使用非相对模块时必须配置此项 */
     "baseUrl": ".",
@@ -32,10 +31,6 @@
       "@/*": ["src/*"]
     }
   },
-  "vueCompilerOptions": {
-    "target": 3,
-    "plugins": ["@vue-macros/volar/define-options"]
-  },
   "include": [
     "src/**/*.ts",
     "src/**/*.d.ts",
@@ -43,7 +38,7 @@
     "src/**/*.vue",
     "tests/**/*.ts",
     "types/**/*.d.ts",
-    "vite.config.ts",
+    "vite.config.ts"
   ],
   /** 编译器默认排除的编译文件 */
   "exclude": ["node_modules", "dist"]
