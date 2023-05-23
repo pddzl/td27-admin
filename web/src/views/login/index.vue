@@ -61,7 +61,7 @@ import { reactive, ref } from "vue"
 import { useRouter } from "vue-router"
 import { useUserStore } from "@/store/modules/user"
 import { type FormInstance, FormRules } from "element-plus"
-import { captcha, type ILoginRequestData } from "@/api/system/base"
+import { captcha, type LoginRequestData } from "@/api/system/base"
 
 const router = useRouter()
 const loginFormRef = ref<FormInstance | null>(null)
@@ -71,7 +71,7 @@ const loading = ref(false)
 /** 验证码图片 URL */
 const codeUrl = ref("")
 /** 登录表单数据 */
-const loginForm: ILoginRequestData = reactive({
+const loginForm: LoginRequestData = reactive({
   username: "",
   password: "",
   captcha: "",

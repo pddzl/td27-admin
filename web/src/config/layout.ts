@@ -1,5 +1,5 @@
 /** 布局配置 */
-interface ILayoutSettings {
+interface LayoutSettings {
   /** 是否显示 Settings Panel */
   showSettings: boolean
   /** 是否显示标签栏 */
@@ -12,7 +12,7 @@ interface ILayoutSettings {
   showScreenfull: boolean
 }
 
-const layoutSettings: ILayoutSettings = {
+const layoutSettings: LayoutSettings = {
   showSettings: true,
   showTagsView: true,
   fixedHeader: true,

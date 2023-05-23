@@ -7,7 +7,7 @@ export interface roleData {
   menus: MenusData[]
 }
 
-type RoleResponseData = IApiResponseData<roleData[]>
+type RoleResponseData = ApiResponseData<roleData[]>
 
 /** 获取用户详情 */
 export function getRolesApi() {
@@ -23,7 +23,7 @@ export interface reqRole {
 }
 
 export function addRoleApi(data: reqRole) {
-  return request<IApiResponseData<roleData>>({
+  return request<ApiResponseData<roleData>>({
     url: "/role/addRole",
     method: "post",
     data: data
@@ -31,7 +31,7 @@ export function addRoleApi(data: reqRole) {
 }
 
 export function deleteRoleApi(data: reqId) {
-  return request<IApiResponseData<null>>({
+  return request<ApiResponseData<null>>({
     url: "/role/deleteRole",
     method: "post",
     data
@@ -44,7 +44,7 @@ interface reqEditRole {
 }
 
 export function editRoleApi(data: reqEditRole) {
-  return request<IApiResponseData<null>>({
+  return request<ApiResponseData<null>>({
     url: "/role/editRole",
     method: "post",
     data
@@ -57,7 +57,7 @@ interface reqEditRE {
 }
 
 export function editRoleMenuApi(data: reqEditRE) {
-  return request<IApiResponseData<null>>({
+  return request<ApiResponseData<null>>({
     url: "/role/editRoleMenu",
     method: "post",
     data

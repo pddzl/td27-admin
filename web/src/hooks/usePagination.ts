@@ -1,6 +1,6 @@
 import { reactive } from "vue"
 
-interface IDefaultPaginationData {
+interface DefaultPaginationData {
   total: number
   currentPage: number
   pageSizes: number[]
@@ -17,7 +17,7 @@ interface IPaginationData {
 }
 
 /** 默认的分页参数 */
-const defaultPaginationData: IDefaultPaginationData = {
+const defaultPaginationData: DefaultPaginationData = {
   total: 0,
   currentPage: 1,
   pageSizes: [10, 20, 50],
@@ -25,9 +25,9 @@ const defaultPaginationData: IDefaultPaginationData = {
   layout: "total, sizes, prev, pager, next, jumper"
 }
 
-export function usePagination(_paginationData: IPaginationData = {}) {
+export function usePagination(initialPaginationData: IPaginationData = {}) {
   /** 合并分页参数 */
-  const paginationData = reactive(Object.assign({ ...defaultPaginationData }, _paginationData))
+  const paginationData = reactive({ ...defaultPaginationData, ...initialPaginationData })
 
   /** 改变当前页码 */
   const changeCurrentPage = (value: number) => {

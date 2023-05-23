@@ -2,22 +2,22 @@ import { reactive, ref } from "vue"
 import { defineStore } from "pinia"
 import { getSidebarStatus, setSidebarStatus } from "@/utils/cache/localStorage"
 
-export enum DeviceType {
+export enum DeviceEnum {
   Mobile,
   Desktop
 }
 
-interface ISidebar {
+interface Sidebar {
   opened: boolean
   withoutAnimation: boolean
 }
 
 export const useAppStore = defineStore("app", () => {
-  const sidebar: ISidebar = reactive({
+  const sidebar: Sidebar = reactive({
     opened: getSidebarStatus() !== "closed",
     withoutAnimation: false
   })
-  const device = ref<DeviceType>(DeviceType.Desktop)
+  const device = ref<DeviceEnum>(DeviceEnum.Desktop)
 
   const toggleSidebar = (withoutAnimation: boolean) => {
     sidebar.opened = !sidebar.opened
@@ -33,7 +33,7 @@ export const useAppStore = defineStore("app", () => {
     sidebar.withoutAnimation = withoutAnimation
     setSidebarStatus("closed")
   }
-  const toggleDevice = (value: DeviceType) => {
+  const toggleDevice = (value: DeviceEnum) => {
     device.value = value
   }
 

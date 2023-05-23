@@ -3,7 +3,7 @@ import store from "@/store"
 import { defineStore } from "pinia"
 import { useTagsViewStore } from "./tags-view"
 import { getUserInfoApi } from "@/api/system/user"
-import { type ILoginRequestData, loginApi } from "@/api/system/base"
+import { type LoginRequestData, loginApi } from "@/api/system/base"
 import { usePermissionStoreHook } from "@/store/modules/permission"
 
 export const useUserStore = defineStore("user", () => {
@@ -22,7 +22,7 @@ export const useUserStore = defineStore("user", () => {
   const permissionStore = usePermissionStoreHook()
 
   /** 登录 */
-  const login = async (loginData: ILoginRequestData): Promise<boolean> => {
+  const login = async (loginData: LoginRequestData): Promise<boolean> => {
     try {
       const res = await loginApi({
         username: loginData.username,

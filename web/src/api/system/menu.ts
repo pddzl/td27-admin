@@ -18,7 +18,7 @@ export interface MenusData {
   children?: MenusData[]
 }
 
-type MenusResponseData = IApiResponseData<MenusData[]>
+type MenusResponseData = ApiResponseData<MenusData[]>
 
 // 获取动态路由
 export function getMenus() {
@@ -44,7 +44,7 @@ interface reqMenu {
 }
 
 export function addMenuApi(data: reqMenu) {
-  return request<IApiResponseData<null>>({
+  return request<ApiResponseData<null>>({
     url: "menu/addMenu",
     method: "post",
     data
@@ -56,7 +56,7 @@ interface editReq extends reqMenu {
 }
 
 export function editMenuApi(data: editReq) {
-  return request<IApiResponseData<null>>({
+  return request<ApiResponseData<null>>({
     url: "menu/editMenu",
     method: "post",
     data
@@ -64,7 +64,7 @@ export function editMenuApi(data: editReq) {
 }
 
 export function deleteMenuApi(data: reqId) {
-  return request<IApiResponseData<null>>({
+  return request<ApiResponseData<null>>({
     url: "menu/deleteMenu",
     method: "post",
     data
@@ -77,7 +77,7 @@ interface allMenus {
 }
 
 export function getElTreeMenusApi(data: reqId) {
-  return request<IApiResponseData<allMenus>>({
+  return request<ApiResponseData<allMenus>>({
     url: "menu/getElTreeMenus",
     method: "post",
     data

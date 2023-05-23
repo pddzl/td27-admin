@@ -1,6 +1,6 @@
 import { request } from "@/utils/service"
 
-export interface ILoginRequestData {
+export interface LoginRequestData {
   /** admin 或 editor */
   username: string
   /** 密码 */
@@ -10,8 +10,8 @@ export interface ILoginRequestData {
   captchaId: string
 }
 
-type LoginCodeResponseData = IApiResponseData<{ picPath: string; captchaId: string }>
-type LoginResponseData = IApiResponseData<{ token: string }>
+type LoginCodeResponseData = ApiResponseData<{ picPath: string; captchaId: string }>
+type LoginResponseData = ApiResponseData<{ token: string }>
 
 // 获取验证码
 export const captcha = () => {
@@ -22,7 +22,7 @@ export const captcha = () => {
 }
 
 /** 登录并返回 Token */
-export function loginApi(data: ILoginRequestData) {
+export function loginApi(data: LoginRequestData) {
   return request<LoginResponseData>({
     url: "/base/login",
     method: "post",

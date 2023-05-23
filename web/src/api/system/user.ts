@@ -1,10 +1,10 @@
 import { request } from "@/utils/service"
 
-// type UserInfoResponseData = IApiResponseData<{ username: string; roles: string[] }>
+// type UserInfoResponseData = ApiResponseData<{ username: string; roles: string[] }>
 
 /** 获取用户详情 */
 export function getUserInfoApi() {
-  return request<IApiResponseData<UsersResponse>>({
+  return request<ApiResponseData<UsersResponse>>({
     url: "/user/getUserInfo",
     method: "get"
   })
@@ -28,7 +28,7 @@ export interface UsersResponsePageInfo {
   pageSize: number
 }
 
-type UsersResponseData = IApiResponseData<UsersResponsePageInfo>
+type UsersResponseData = ApiResponseData<UsersResponsePageInfo>
 
 /** 获取所有用户 */
 export function getUsersApi(data: PageInfo) {
@@ -41,7 +41,7 @@ export function getUsersApi(data: PageInfo) {
 
 // 删除用户
 export function deleteUserApi(data: reqId) {
-  return request<IApiResponseData<null>>({
+  return request<ApiResponseData<null>>({
     url: "/user/deleteUser",
     method: "post",
     data
@@ -59,7 +59,7 @@ export interface reqUser {
 
 // 添加用户
 export function addUserApi(data: reqUser) {
-  return request<IApiResponseData<null>>({
+  return request<ApiResponseData<null>>({
     url: "/user/addUser",
     method: "post",
     data
@@ -77,7 +77,7 @@ interface reqEditUser {
 
 // 编辑用户
 export function editUserApi(data: reqEditUser) {
-  return request<IApiResponseData<UsersResponse>>({
+  return request<ApiResponseData<UsersResponse>>({
     url: "/user/editUser",
     method: "post",
     data
@@ -92,7 +92,7 @@ interface reqModifyPass {
 }
 
 export function modifyPassApi(data: reqModifyPass) {
-  return request<IApiResponseData<null>>({
+  return request<ApiResponseData<null>>({
     url: "/user/modifyPass",
     method: "post",
     data
@@ -106,7 +106,7 @@ interface reqSwitchActive {
 }
 
 export function SwitchActiveApi(data: reqSwitchActive) {
-  return request<IApiResponseData<null>>({
+  return request<ApiResponseData<null>>({
     url: "/user/switchActive",
     method: "post",
     data

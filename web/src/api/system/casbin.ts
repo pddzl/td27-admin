@@ -11,7 +11,7 @@ interface reqCasbin {
 }
 
 export function editCasbinApi(data: reqCasbin) {
-  return request<IApiResponseData<null>>({
+  return request<ApiResponseData<null>>({
     url: "/casbin/editCasbin",
     method: "post",
     data
