@@ -6,6 +6,8 @@
 @import "./element-plus.scss";
 // 注册多主题
 @import "./theme/register.scss";
+// mixin
+@import "./mixins.scss";
 // 组件通用样式
 @import "./td27.scss";
 
@@ -20,11 +22,12 @@ html {
 
 body {
   height: 100%;
-  background-color: var(--base-body-bg-color);
+  background-color: var(--v3-body-bg-color);
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial,
     sans-serif;
+  @include scrollbar();
 }
 
 #app {
