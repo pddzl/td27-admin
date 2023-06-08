@@ -62,7 +62,7 @@
         <el-form-item label="路由路径" prop="path" style="width: 30%">
           <el-input v-model="formData.path" />
         </el-form-item>
-        <el-form-item label="前端组件" prop="component" style="width: 30%">
+        <el-form-item label="前端组件路径" prop="component" style="width: 30%">
           <el-input v-model="formData.component" />
         </el-form-item>
         <el-form-item label="重定向" prop="redirect" style="width: 30%">
@@ -111,7 +111,7 @@ import WarningBar from "@/components/WarningBar/warningBar.vue"
 import icon from "./icon.vue"
 
 defineOptions({
-  name: "Menu"
+  name: "SMenu"
 })
 
 const loading = ref<boolean>(false)
@@ -229,7 +229,7 @@ const formRef = ref<FormInstance>()
 const formRules: FormRules = reactive({
   pid: [{ required: true, trigger: "change", message: "请选择父节点" }],
   path: [{ required: true, trigger: "blur", message: "请填写路由路径" }],
-  component: [{ required: true, trigger: "blur", message: "请填写前端组件" }]
+  component: [{ required: true, trigger: "blur", message: "请填写前端组件路径" }]
 })
 
 const initForm = () => {
