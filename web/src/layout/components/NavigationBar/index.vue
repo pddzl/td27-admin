@@ -3,8 +3,8 @@
     <Hamburger :is-active="sidebar.opened" class="hamburger" @toggle-click="toggleSidebar" />
     <Breadcrumb class="breadcrumb" />
     <div class="right-menu">
-      <Screenfull class="right-menu-item" />
-      <ThemeSwitch class="right-menu-item" />
+      <Screenfull v-if="showScreenfull" class="right-menu-item" />
+      <ThemeSwitch v-if="showThemeSwitch" class="right-menu-item" />
       <el-dropdown class="right-menu-item">
         <el-button plain
           >{{ userStore.username }}<el-icon class="el-icon--right"><arrow-down /></el-icon
@@ -43,7 +43,7 @@ const settingsStore = useSettingsStore()
 const userStore = useUserStore()
 
 const { sidebar } = storeToRefs(appStore)
-const { showNotify, showThemeSwitch, showScreenfull } = storeToRefs(settingsStore)
+const { showThemeSwitch, showScreenfull } = storeToRefs(settingsStore)
 
 /** 切换侧边栏 */
 const toggleSidebar = () => {

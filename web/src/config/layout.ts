@@ -9,6 +9,8 @@ interface LayoutSettings {
   /** 是否固定 Header */
   fixedHeader: boolean
   /** 是否显示全屏按钮 */
+  /** 是否显示切换主题按钮 */
+  showThemeSwitch: boolean
   showScreenfull: boolean
 }
 
@@ -17,6 +19,7 @@ const layoutSettings: LayoutSettings = {
   showTagsView: true,
   fixedHeader: true,
   showSidebarLogo: true,
+  showThemeSwitch: true,
   showScreenfull: true
 }
 
