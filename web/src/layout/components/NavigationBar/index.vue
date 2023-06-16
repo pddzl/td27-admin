@@ -26,8 +26,8 @@
 </template>
 
 <script lang="ts" setup>
-import { computed } from "vue"
 import { useRouter } from "vue-router"
+import { storeToRefs } from "pinia"
 import { useAppStore } from "@/store/modules/app"
 import { useUserStore } from "@/store/modules/user"
 import Breadcrumb from "../Breadcrumb/index.vue"
@@ -35,15 +35,17 @@ import Hamburger from "../Hamburger/index.vue"
 import ThemeSwitch from "@/components/ThemeSwitch/index.vue"
 import Screenfull from "@/components/Screenfull/index.vue"
 import { joinInBlacklistApi } from "@/api/system/jwt"
+import { useSettingsStore } from "@/store/modules/settings"
 
 const router = useRouter()
 const appStore = useAppStore()
+const settingsStore = useSettingsStore()
 const userStore = useUserStore()
 
-const sidebar = computed(() => {
-  return appStore.sidebar
-})
+const { sidebar } = storeToRefs(appStore)
+const { showNotify, showThemeSwitch, showScreenfull } = storeToRefs(settingsStore)
 
+/** 切换侧边栏 */
 const toggleSidebar = () => {
   appStore.toggleSidebar(false)
 }
@@ -79,7 +81,7 @@ const toPersonal = () => {
   }
   .breadcrumb {
     float: left;
-    // 参考 Bootstrap 的响应式设计 WIDTH = 576
+    // 参考 Bootstrap 的响应式设计将宽度设置为 576
     @media screen and (max-width: 576px) {
       display: none;
     }

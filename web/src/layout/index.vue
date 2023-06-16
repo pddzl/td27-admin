@@ -1,3 +1,26 @@
+<template>
+  <div :class="layoutClasses" class="app-wrapper">
+    <!-- mobile 端侧边栏遮罩层 -->
+    <div v-if="layoutClasses.mobile && layoutClasses.openSidebar" class="drawer-bg" @click="handleClickOutside" />
+    <!-- 左侧边栏 -->
+    <Sidebar class="sidebar-container" />
+    <!-- 主容器 -->
+    <div :class="{ hasTagsView: showTagsView }" class="main-container">
+      <!-- 头部导航栏和标签栏 -->
+      <div :class="{ 'fixed-header': fixedHeader }">
+        <NavigationBar />
+        <TagsView v-show="showTagsView" />
+      </div>
+      <!-- 页面主体内容 -->
+      <AppMain />
+      <!-- 右侧设置面板 -->
+      <RightPanel v-if="showSettings">
+        <Settings />
+      </RightPanel>
+    </div>
+  </div>
+</template>
+
 <script lang="ts" setup>
 import { computed } from "vue"
 import { useAppStore } from "@/store/modules/app"
@@ -12,7 +35,7 @@ const settingsStore = useSettingsStore()
 /** Layout 布局响应式 */
 useResize()
 
-const classObj = computed(() => {
+const layoutClasses = computed(() => {
   return {
     hideSidebar: !appStore.sidebar.opened,
     openSidebar: appStore.sidebar.opened,
@@ -35,38 +58,14 @@ const handleClickOutside = () => {
 }
 </script>
 
-<template>
-  <div :class="classObj" class="app-wrapper">
-    <div v-if="classObj.mobile && classObj.openSidebar" class="drawer-bg" @click="handleClickOutside" />
-    <Sidebar class="sidebar-container" />
-    <div :class="{ hasTagsView: showTagsView }" class="main-container">
-      <div :class="{ 'fixed-header': fixedHeader }">
-        <NavigationBar />
-        <TagsView v-show="showTagsView" />
-      </div>
-      <AppMain />
-      <RightPanel v-if="showSettings">
-        <Settings />
-      </RightPanel>
-    </div>
-  </div>
-</template>
-
 <style lang="scss" scoped>
 @import "@/styles/mixins.scss";
+$transition-time: 0.35s;
 
 .app-wrapper {
   @include clearfix;
   position: relative;
   width: 100%;
-}
-
-.showGreyMode {
-  filter: grayscale(1);
-}
-
-.showColorWeakness {
-  filter: invert(0.8);
 }
 
 .drawer-bg {
@@ -81,13 +80,13 @@ const handleClickOutside = () => {
 
 .main-container {
   min-height: 100%;
-  transition: margin-left 0.28s;
+  transition: margin-left $transition-time;
   margin-left: var(--base-sidebar-width);
   position: relative;
 }
 
 .sidebar-container {
-  transition: width 0.28s;
+  transition: width $transition-time;
   width: var(--base-sidebar-width) !important;
   height: 100%;
   position: fixed;
@@ -120,13 +119,13 @@ const handleClickOutside = () => {
   }
 }
 
-// for mobile response 适配移动端
+// 适配 mobile 端
 .mobile {
   .main-container {
     margin-left: 0px;
   }
   .sidebar-container {
-    transition: transform 0.28s;
+    transition: transform $transition-time;
     width: var(--base-sidebar-width) !important;
   }
   &.openSidebar {
