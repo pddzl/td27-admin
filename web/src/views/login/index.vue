@@ -5,10 +5,10 @@
         <img src="@/assets/layout/logo-text-2.png" />
       </div>
       <div class="content">
-        <el-form ref="loginFormRef" :model="loginForm" :rules="loginFormRules" @keyup.enter="handleLogin">
+        <el-form ref="loginFormRef" :model="loginFormData" :rules="loginFormRules" @keyup.enter="handleLogin">
           <el-form-item prop="username">
             <el-input
-              v-model.trim="loginForm.username"
+              v-model.trim="loginFormData.username"
               placeholder="用户名"
               type="text"
               tabindex="1"
@@ -18,7 +18,7 @@
           </el-form-item>
           <el-form-item prop="password">
             <el-input
-              v-model.trim="loginForm.password"
+              v-model.trim="loginFormData.password"
               placeholder="密码"
               type="password"
               tabindex="2"
@@ -29,7 +29,7 @@
           </el-form-item>
           <el-form-item prop="captcha">
             <el-input
-              v-model.trim="loginForm.captcha"
+              v-model.trim="loginFormData.captcha"
               placeholder="验证码"
               type="text"
               tabindex="3"
@@ -49,7 +49,7 @@
               </template>
             </el-input>
           </el-form-item>
-          <el-button :loading="loading" type="primary" size="large" @click.prevent="handleLogin"> 登 录 </el-button>
+          <el-button :loading="loading" type="primary" size="large" @click.prevent="handleLogin">登 录</el-button>
         </el-form>
       </div>
     </div>
@@ -71,7 +71,7 @@ const loading = ref(false)
 /** 验证码图片 URL */
 const codeUrl = ref("")
 /** 登录表单数据 */
-const loginForm: LoginRequestData = reactive({
+const loginFormData: LoginRequestData = reactive({
   username: "",
   password: "",
   captcha: "",
@@ -93,10 +93,10 @@ const handleLogin = () => {
     if (valid) {
       loading.value = true
       const res = await useUserStore().login({
-        username: loginForm.username,
-        password: loginForm.password,
-        captcha: loginForm.captcha,
-        captchaId: loginForm.captchaId
+        username: loginFormData.username,
+        password: loginFormData.password,
+        captcha: loginFormData.captcha,
+        captchaId: loginFormData.captchaId
       })
       if (res) {
         router.push({ path: "/" })
@@ -110,11 +110,11 @@ const handleLogin = () => {
 /** 创建验证码 */
 const createCode = () => {
   // 先清空验证码的输入
-  loginForm.captcha = ""
+  loginFormData.captcha = ""
   // 获取验证码
   captcha().then((res) => {
     codeUrl.value = res.data.picPath
-    loginForm.captchaId = res.data.captchaId
+    loginFormData.captchaId = res.data.captchaId
   })
 }
 
