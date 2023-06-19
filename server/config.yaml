@@ -7,7 +7,7 @@ jwt:
 
 # zap logger configuration
 zap:
-  level: info
+  level: debug
   format: console
   prefix: '[TD27] '
   director: log
