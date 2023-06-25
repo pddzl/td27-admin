@@ -1,17 +1,16 @@
 <script lang="ts" setup>
-import { type PropType, ref, watch, nextTick } from "vue"
+import { ref, watch, nextTick } from "vue"
 import { RouterLink, useRoute } from "vue-router"
 import { ElScrollbar } from "element-plus"
 import { ArrowLeft, ArrowRight } from "@element-plus/icons-vue"
 import { useSettingsStore } from "@/store/modules/settings"
 import Screenfull from "@/components/Screenfull/index.vue"
 
-const props = defineProps({
-  tagRefs: {
-    type: Object as PropType<InstanceType<typeof RouterLink>[]>,
-    required: true
-  }
-})
+interface Props {
+  tagRefs: InstanceType<typeof RouterLink>[]
+}
+
+const props = defineProps<Props>()
 
 const route = useRoute()
 const settingsStore = useSettingsStore()
@@ -111,7 +110,7 @@ watch(
     <el-icon class="arrow left" @click="scrollTo('left')">
       <ArrowLeft />
     </el-icon>
-    <el-scrollbar ref="scrollbarRef" @wheel.prevent="wheelScroll" @scroll="scroll">
+    <el-scrollbar ref="scrollbarRef" @wheel.passive="wheelScroll" @scroll="scroll">
       <div ref="scrollbarContentRef" class="scrollbar-content">
         <slot />
       </div>

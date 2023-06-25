@@ -1,9 +1,10 @@
 <script lang="ts" setup>
-const props = defineProps({
-  collapse: {
-    type: Boolean,
-    default: true
-  }
+interface Props {
+  collapse?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  collapse: true
 })
 </script>
 
@@ -34,7 +35,6 @@ const props = defineProps({
   }
   .sidebar-logo-text {
     height: 100%;
-    width: 100%;
     vertical-align: middle;
   }
 }
@@ -49,13 +49,5 @@ const props = defineProps({
   .sidebar-logo-text {
     display: none;
   }
-}
-
-.tit-text {
-  // display: inline-block;
-  color: #fff;
-  font-weight: 600;
-  font-size: 20px;
-  padding-left: 50px;
 }
 </style>
