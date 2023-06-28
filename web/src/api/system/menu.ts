@@ -7,6 +7,7 @@ export interface MenusData {
   path: string
   redirect?: string
   component: string
+  sort: number
   meta: {
     hidden?: boolean
     title: string
@@ -34,6 +35,7 @@ interface reqMenu {
   path: string
   redirect?: string
   component: string
+  sort: number
   meta: {
     hidden?: boolean
     title?: string

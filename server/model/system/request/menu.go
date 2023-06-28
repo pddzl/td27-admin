@@ -6,6 +6,7 @@ type Menu struct {
 	Path      string `json:"path" validate:"required"`
 	Redirect  string `json:"redirect"`
 	Component string `json:"component" validate:"required"`
+	Sort      uint   `json:"sort" validate:"required"`
 	Meta      meta   `json:"meta"`
 }
 

@@ -17,6 +17,7 @@ type MenuModel struct {
 	Path      string         `json:"path" gorm:"unique"`        // 路由路径
 	Redirect  string         `json:"redirect,omitempty"`        // 重定向
 	Component string         `json:"component" gorm:"not null"` // 前端组件
+	Sort      uint           `json:"sort" gorm:"not null"`      // 排序
 	Meta      Meta           `json:"meta" gorm:"type:json"`     // 元数据
 	Children  []MenuModel    `json:"children,omitempty" gorm:"-"`
 	Roles     []*RoleModel   `json:"-" gorm:"many2many:role_menus;"`

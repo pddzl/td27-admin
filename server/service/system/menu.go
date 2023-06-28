@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
+	"sort"
+
 	"server/global"
 	systemModel "server/model/system"
 	systemReq "server/model/system/request"
@@ -22,6 +24,10 @@ func getTreeMap(menuListFormat []systemModel.MenuModel, menuList []systemModel.M
 			}
 		}
 		if len(menuListFormat[index].Children) > 0 {
+			// 排序
+			sort.Slice(menuListFormat[index].Children, func(i, j int) bool {
+				return menuListFormat[index].Children[i].Sort < menuListFormat[index].Children[j].Sort
+			})
 			getTreeMap(menuListFormat[index].Children, menuList)
 		}
 	}
@@ -59,6 +65,7 @@ func (ms *MenuService) GetMenus(userId uint) ([]systemModel.MenuModel, error) {
 		}
 	}
 
+	// 找出第一级路由，（父路由id为0）
 	menuListFormat := make([]systemModel.MenuModel, 0)
 	for _, menu := range menuList {
 		if menu.Pid == 0 {
@@ -66,6 +73,12 @@ func (ms *MenuService) GetMenus(userId uint) ([]systemModel.MenuModel, error) {
 		}
 	}
 
+	// 排序
+	sort.Slice(menuListFormat, func(i, j int) bool {
+		return menuListFormat[i].Sort < menuListFormat[j].Sort
+	})
+
+	// 递归找出一级路由下面的子路由
 	getTreeMap(menuListFormat, menuList)
 
 	return menuListFormat, nil
@@ -78,6 +91,7 @@ func (ms *MenuService) AddMenu(menuRaw systemReq.Menu) bool {
 	menuModel.Component = menuRaw.Component
 	menuModel.Redirect = menuRaw.Redirect
 	menuModel.Pid = menuRaw.Pid
+	menuModel.Sort = menuRaw.Sort
 	menuModel.Meta.Title = menuRaw.Meta.Title
 	menuModel.Meta.SvgIcon = menuRaw.Meta.Icon
 	menuModel.Meta.Hidden = menuRaw.Meta.Hidden
@@ -112,6 +126,7 @@ func (ms *MenuService) EditMenu(menuRaw systemReq.EditMenuReq) (err error) {
 		"path":      menuRaw.Path,
 		"component": menuRaw.Component,
 		"redirect":  menuRaw.Redirect,
+		"sort":      menuRaw.Sort,
 		"meta":      metaData,
 	}).Error
 

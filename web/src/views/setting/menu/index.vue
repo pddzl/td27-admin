@@ -22,6 +22,7 @@
               <el-tag v-else type="warning" effect="plain">隐藏</el-tag>
             </template>
           </el-table-column>
+          <el-table-column prop="sort" label="排序" width="80" align="center" />
           <el-table-column prop="component" label="组件路径" min-width="180" align="center" />
           <el-table-column fixed="right" label="操作" width="180" align="center">
             <template #default="scope">
@@ -52,8 +53,8 @@
             style="width: 100%"
             :options="menuOption"
             :props="{ checkStrictly: true, emitPath: false }"
-            :show-all-levels="false"
             clearable
+            filterable
           />
         </el-form-item>
         <el-form-item label="路由名称" prop="name" style="width: 30%">
@@ -70,6 +71,9 @@
         </el-form-item>
         <el-form-item label="展示名称" prop="meta.title" style="width: 30%">
           <el-input v-model="formData.meta.title" />
+        </el-form-item>
+        <el-form-item label="排序" prop="sort" style="width: 30%">
+          <el-input-number v-model="formData.sort" :min="1" />
         </el-form-item>
         <el-form-item label="是否隐藏" prop="meta.hidden" style="width: 30%">
           <el-select v-model="formData.meta.hidden">
@@ -188,6 +192,7 @@ const editMenuDialog = (row: MenusData) => {
     formData.name = row.name
   }
   formData.path = row.path
+  formData.sort = row.sort
   if (row.component) {
     formData.component = row.component
   }
@@ -227,7 +232,7 @@ const deleteMenuAction = (row: MenusData) => {
 const formRef = ref<FormInstance>()
 
 const formRules: FormRules = reactive({
-  pid: [{ required: true, trigger: "change", message: "请选择父节点" }],
+  pid: [{ required: true, trigger: "blur", message: "请选择父节点" }],
   path: [{ required: true, trigger: "blur", message: "请填写路由路径" }],
   component: [{ required: true, trigger: "blur", message: "请填写前端组件路径" }]
 })
@@ -261,6 +266,7 @@ const formData = reactive({
   component: "",
   redirect: "",
   pid: 0,
+  sort: 0,
   meta: {
     title: "",
     icon: "",
@@ -279,6 +285,7 @@ const operateAction = (formEl: FormInstance | undefined) => {
         name: formData.name || undefined,
         path: formData.path,
         component: formData.component,
+        sort: formData.sort,
         redirect: formData.redirect || undefined,
         meta: {
           title: formData.meta.title || undefined,
