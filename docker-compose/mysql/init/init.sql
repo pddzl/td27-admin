@@ -7,7 +7,7 @@
 #
 # Host: 127.0.0.1 (MySQL 8.0.28)
 # Database: td27
-# Generation Time: 2023-03-13 08:43:51 +0000
+# Generation Time: 2023-06-28 08:46:29 +0000
 # ************************************************************
 
 
@@ -89,16 +89,6 @@ CREATE TABLE `jwt_blacklists` (
   KEY `idx_jwt_blacklists_deleted_at` (`deleted_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-LOCK TABLES `jwt_blacklists` WRITE;
-/*!40000 ALTER TABLE `jwt_blacklists` DISABLE KEYS */;
-
-INSERT INTO `jwt_blacklists` (`id`, `created_at`, `updated_at`, `deleted_at`, `jwt`)
-VALUES
-	(1,'2023-03-11 10:11:53','2023-03-11 10:11:53',NULL,'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6MSwidXNlcm5hbWUiOiJhZG1pbiIsInJvbGVJZCI6MSwiYnVmZmVyVGltZSI6NDMyMDAsImlzcyI6InBkZFpsIiwiZXhwIjoxNjc4NjE1ODU1LCJuYmYiOjE2Nzg1Mjk0NTV9.-Ww9hn9RFISVSFpRidVSUvkIjsW2FZGJum710fhnMRA'),
-	(2,'2023-03-13 08:19:48','2023-03-13 08:19:48',NULL,'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6MSwidXNlcm5hbWUiOiJhZG1pbiIsInJvbGVJZCI6MSwiYnVmZmVyVGltZSI6NDMyMDAsImlzcyI6InBkZFpsIiwiZXhwIjoxNjc4NzYyMDgzLCJuYmYiOjE2Nzg2NzU2ODN9.0xZoylhrvlMh7Sn-KTpNKci2pE3DNlfHt1upB5-_jyQ');
-
-/*!40000 ALTER TABLE `jwt_blacklists` ENABLE KEYS */;
-UNLOCK TABLES;
 
 
 # Dump of table role_menus
@@ -201,6 +191,7 @@ CREATE TABLE `sys_menu` (
   `redirect` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `component` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
   `meta` json DEFAULT NULL,
+  `sort` bigint unsigned NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `path` (`path`),
   KEY `idx_sys_menu_deleted_at` (`deleted_at`)
@@ -209,17 +200,17 @@ CREATE TABLE `sys_menu` (
 LOCK TABLES `sys_menu` WRITE;
 /*!40000 ALTER TABLE `sys_menu` DISABLE KEYS */;
 
-INSERT INTO `sys_menu` (`id`, `created_at`, `updated_at`, `deleted_at`, `pid`, `name`, `path`, `redirect`, `component`, `meta`)
+INSERT INTO `sys_menu` (`id`, `created_at`, `updated_at`, `deleted_at`, `pid`, `name`, `path`, `redirect`, `component`, `meta`, `sort`)
 VALUES
-	(1,NULL,NULL,NULL,0,'Setting','/setting','/setting/user','Layout','{\"title\": \"系统管理\", \"elIcon\": \"Setting\"}'),
-	(2,NULL,NULL,NULL,1,'User','user',NULL,'setting/user/index.vue','{\"title\": \"用户管理\"}'),
-	(3,NULL,NULL,NULL,1,'Role','role',NULL,'setting/role/index.vue','{\"title\": \"角色管理\"}'),
-	(4,NULL,NULL,NULL,1,'Menu','menu',NULL,'setting/menu/index.vue','{\"title\": \"菜单管理\"}'),
-	(5,'2023-03-07 01:50:48','2023-03-11 15:05:15',NULL,1,'Api','api','','setting/api/index.vue','{\"title\": \"接口管理\", \"keepAlive\": true}'),
-	(6,NULL,NULL,NULL,0,'Cenu','/cenu','/cenu/cenu1','Layout','{\"title\": \"多级菜单\", \"svgIcon\": \"menu\"}'),
-	(7,NULL,NULL,NULL,6,'Cenu1','cenu1','/cenu/cenu1/cenu1-1','cenu/cenu1/index.vue','{\"title\": \"cenu1\"}'),
-	(8,NULL,'2023-03-11 14:06:08',NULL,7,'Cenu1-1','cenu1-1','','cenu/cenu1/cenu1-1/index.vue','{\"title\": \"cenu1-1\"}'),
-	(9,'2023-03-13 06:14:27','2023-03-13 06:14:27',NULL,7,'Cenu1-2','cenu1-2','','cenu/cenu1/cenu1-2/index.vue','{\"title\": \"cenu1-2\"}');
+	(1,NULL,'2023-06-28 03:10:50',NULL,0,'Setting','/setting','/setting/user','Layout','{\"title\": \"系统管理\", \"svgIcon\": \"setting\"}',1),
+	(2,NULL,'2023-06-28 08:11:56',NULL,1,'User','user','','setting/user/index.vue','{\"title\": \"用户管理\"}',1),
+	(3,NULL,'2023-06-28 08:12:06',NULL,1,'Role','role','','setting/role/index.vue','{\"title\": \"角色管理\"}',2),
+	(4,NULL,'2023-06-28 08:12:16',NULL,1,'Menu','menu','','setting/menu/index.vue','{\"title\": \"菜单管理\"}',3),
+	(5,'2023-03-07 01:50:48','2023-06-28 08:11:38',NULL,1,'Api','api','','setting/api/index.vue','{\"title\": \"接口管理\", \"keepAlive\": true}',4),
+	(6,NULL,'2023-06-28 08:11:23',NULL,0,'Cenu','/cenu','/cenu/cenu1','Layout','{\"title\": \"多级菜单\", \"svgIcon\": \"menu\"}',2),
+	(7,NULL,'2023-06-28 08:42:39',NULL,6,'Cenu1','cenu1','/cenu/cenu1/cenu1-1','cenu/cenu1/index.vue','{\"title\": \"cenu1\"}',1),
+	(8,NULL,'2023-06-28 08:42:44',NULL,7,'Cenu1-1','cenu1-1','','cenu/cenu1/cenu1-1/index.vue','{\"title\": \"cenu1-1\"}',1),
+	(9,'2023-03-13 06:14:27','2023-06-28 08:43:02',NULL,7,'Cenu1-2','cenu1-2','','cenu/cenu1/cenu1-2/index.vue','{\"title\": \"cenu1-2\"}',2);
 
 /*!40000 ALTER TABLE `sys_menu` ENABLE KEYS */;
 UNLOCK TABLES;
