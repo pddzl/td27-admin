@@ -111,3 +111,12 @@ docker-compose -f docker-compose/docker-compose.yml up -d
     <td><img src="./img/p10.png"/></td>
   </tr>
 </table>
+
+## 致谢
++ 项目脚手架 [v3-admin-vite](https://github.com/un-pany/v3-admin-vite)
+
+## 📄 License
+
+[MIT](./LICENSE)
+
+Copyright (c) 2022-present [pddzl](https://github.com/pddzl)
