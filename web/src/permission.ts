@@ -2,7 +2,7 @@ import router from "@/router"
 import { useUserStoreHook } from "@/store/modules/user"
 import { usePermissionStoreHook } from "@/store/modules/permission"
 import { ElMessage } from "element-plus"
-import { whiteList } from "@/config/white-list"
+import isWhiteList from "@/config/white-list"
 import NProgress from "nprogress"
 import "nprogress/nprogress.css"
 
@@ -45,7 +45,7 @@ router.beforeEach(async (to, _from, next) => {
     }
   } else {
     // 如果没有 Token
-    if (whiteList.indexOf(to.path) !== -1) {
+    if (isWhiteList(to)) {
       // 如果在免登录的白名单中，则直接进入
       next()
     } else {

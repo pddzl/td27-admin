@@ -1,5 +1,4 @@
 /** 全局 CSS 变量，这种变量不仅可以在 CSS 和 SCSS 中使用，还可以导入到 JS 中使用 */
-
 :root {
   /** 全局背景色 */
   --base-body-bg-color: #f2f3f5;
@@ -32,4 +31,15 @@
   --base-tagsview-tag-icon-hover-color: #ffffff;
   /** RightPanel 组件  */
   --base-rightpanel-button-bg-color: #001428;
+}
+
+/** 内容区放大时，将不需要的组件隐藏 */
+body.content-large {
+  /** Header 区域 = TagsView 组件 */
+  --base-header-height: var(--base-tagsview-height);
+  /** NavigationBar 组件 */
+  --base-navigationbar-height: 0px;
+  /** Sidebar 组件 */
+  --base-sidebar-width: 0px;
+  --base-sidebar-hide-width: 0px;
 }
