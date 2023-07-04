@@ -3,7 +3,7 @@ FROM node:17
 WORKDIR /web
 COPY . .
 
-RUN npm install pnpm -g
+RUN npm install pnpm --location=global
 
 RUN pnpm i && pnpm build:prod
 
