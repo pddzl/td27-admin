@@ -3,7 +3,7 @@ FROM node:17
 WORKDIR /web
 COPY . .
 
-RUN curl -f curl -f https://get.pnpm.io/v6.16.js | node - add --global pnpm
+RUN npm install pnpm -g
 
 RUN pnpm i && pnpm build:prod
 
