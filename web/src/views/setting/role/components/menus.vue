@@ -66,7 +66,10 @@ const getTreeData = (id: number) => {
 getTreeData(props.id)
 
 const editRoleMenu = () => {
-  editRoleMenuApi({ roleId: props.id, ids: treeRef.value?.getCheckedKeys() as number[] })
+  editRoleMenuApi({
+    roleId: props.id,
+    ids: [...(treeRef.value?.getCheckedKeys() as number[]), ...(treeRef.value?.getHalfCheckedKeys() as number[])]
+  })
     .then((res) => {
       if (res.code === 0) {
         ElMessage({ type: "success", message: res.msg })
