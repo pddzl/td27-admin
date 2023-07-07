@@ -32,6 +32,7 @@
                 active-text="启用"
                 inactive-text="禁用"
                 @change="switchAction(scope.row.ID, scope.row.active)"
+                :disabled="scope.row.username === 'admin' && scope.row.role === 'root'"
               />
             </template>
           </el-table-column>
