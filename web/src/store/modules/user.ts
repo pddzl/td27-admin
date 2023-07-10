@@ -2,6 +2,7 @@ import { reactive, ref, watch } from "vue"
 import store from "@/store"
 import { defineStore } from "pinia"
 import { useTagsViewStore } from "./tags-view"
+import { useSettingsStore } from "./settings"
 import { getUserInfoApi } from "@/api/system/user"
 import { type LoginRequestData, loginApi } from "@/api/system/base"
 import { usePermissionStoreHook } from "@/store/modules/permission"
@@ -20,6 +21,7 @@ export const useUserStore = defineStore("user", () => {
   })
   const tagsViewStore = useTagsViewStore()
   const permissionStore = usePermissionStoreHook()
+  const settingsStore = useSettingsStore()
 
   /** 登录 */
   const login = async (loginData: LoginRequestData): Promise<boolean> => {
@@ -86,8 +88,10 @@ export const useUserStore = defineStore("user", () => {
 
   /** 重置 visited views 和 cached views */
   const _resetTagsView = () => {
-    tagsViewStore.delAllVisitedViews()
-    tagsViewStore.delAllCachedViews()
+    if (!settingsStore.cacheTagsView) {
+      tagsViewStore.delAllVisitedViews()
+      tagsViewStore.delAllCachedViews()
+    }
   }
 
   watch(

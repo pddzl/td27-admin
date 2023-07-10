@@ -1,13 +1,51 @@
+<script lang="ts" setup>
+import { computed } from "vue"
+import { useRoute } from "vue-router"
+import { storeToRefs } from "pinia"
+import { useAppStore } from "@/store/modules/app"
+import { usePermissionStore } from "@/store/modules/permission"
+import { useSettingsStore } from "@/store/modules/settings"
+import SidebarItem from "./SidebarItem.vue"
+import Logo from "../Logo/index.vue"
+import { getCssVariableValue } from "@/utils"
+
+const v3SidebarMenuBgColor = getCssVariableValue("--base-sidebar-menu-bg-color")
+const v3SidebarMenuTextColor = getCssVariableValue("--base-sidebar-menu-text-color")
+const v3SidebarMenuActiveTextColor = getCssVariableValue("--base-sidebar-menu-active-text-color")
+
+const route = useRoute()
+const appStore = useAppStore()
+const permissionStore = usePermissionStore()
+const settingsStore = useSettingsStore()
+
+const { layoutMode, showLogo } = storeToRefs(settingsStore)
+
+const activeMenu = computed(() => {
+  const {
+    meta: { activeMenu },
+    path
+  } = route
+  return activeMenu ? activeMenu : path
+})
+
+const isCollapse = computed(() => !appStore.sidebar.opened)
+const isLeft = computed(() => layoutMode.value === "left")
+const isLogo = computed(() => isLeft.value && showLogo.value)
+const backgroundColor = computed(() => (isLeft.value ? v3SidebarMenuBgColor : undefined))
+const textColor = computed(() => (isLeft.value ? v3SidebarMenuTextColor : undefined))
+const activeTextColor = computed(() => (isLeft.value ? v3SidebarMenuActiveTextColor : undefined))
+</script>
+
 <template>
-  <div :class="{ 'has-logo': showSidebarLogo }">
-    <SidebarLogo v-if="showSidebarLogo" :collapse="isCollapse" />
+  <div :class="{ 'has-logo': isLogo }">
+    <Logo v-if="isLogo" :collapse="isCollapse" />
     <el-scrollbar wrap-class="scrollbar-wrapper">
       <el-menu
         :default-active="activeMenu"
         :collapse="isCollapse"
-        :background-color="v3SidebarMenuBgColor"
-        :text-color="v3SidebarMenuTextColor"
-        :active-text-color="v3SidebarMenuActiveTextColor"
+        :background-color="backgroundColor"
+        :text-color="textColor"
+        :active-text-color="activeTextColor"
         :unique-opened="true"
         :collapse-transition="false"
         mode="vertical"
@@ -23,41 +61,6 @@
     </el-scrollbar>
   </div>
 </template>
-
-<script lang="ts" setup>
-import { computed } from "vue"
-import { useRoute } from "vue-router"
-import { storeToRefs } from "pinia"
-import { useAppStore } from "@/store/modules/app"
-import { usePermissionStore } from "@/store/modules/permission"
-import { useSettingsStore } from "@/store/modules/settings"
-import SidebarItem from "./SidebarItem.vue"
-import SidebarLogo from "./SidebarLogo.vue"
-import { getCssVariableValue } from "@/utils"
-
-const v3SidebarMenuBgColor = getCssVariableValue("--base-sidebar-menu-bg-color")
-const v3SidebarMenuTextColor = getCssVariableValue("--base-sidebar-menu-text-color")
-const v3SidebarMenuActiveTextColor = getCssVariableValue("--base-sidebar-menu-active-text-color")
-
-const route = useRoute()
-const appStore = useAppStore()
-const permissionStore = usePermissionStore()
-const settingsStore = useSettingsStore()
-
-const { showSidebarLogo } = storeToRefs(settingsStore)
-
-const activeMenu = computed(() => {
-  const { meta, path } = route
-  if (meta?.activeMenu) {
-    return meta.activeMenu
-  }
-  return path
-})
-
-const isCollapse = computed(() => {
-  return !appStore.sidebar.opened
-})
-</script>
 
 <style lang="scss" scoped>
 @mixin tip-line {
@@ -127,7 +130,6 @@ const isCollapse = computed(() => {
   :deep(.el-sub-menu) {
     &.is-active {
       .el-sub-menu__title {
-        color: var(--base-sidebar-menu-active-text-color) !important;
         @include tip-line;
       }
     }

@@ -2,7 +2,7 @@
   <div class="login-container">
     <div class="login-card">
       <div class="title">
-        <img src="@/assets/layout/logo-text-2.png" />
+        <img src="@/assets/layouts/logo-text-2.png" />
       </div>
       <div class="content">
         <el-form ref="loginFormRef" :model="loginFormData" :rules="loginFormRules" @keyup.enter="handleLogin">

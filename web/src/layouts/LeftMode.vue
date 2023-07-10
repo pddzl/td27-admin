@@ -1,43 +1,18 @@
-<template>
-  <div :class="layoutClasses" class="app-wrapper">
-    <!-- mobile 端侧边栏遮罩层 -->
-    <div v-if="layoutClasses.mobile && layoutClasses.openSidebar" class="drawer-bg" @click="handleClickOutside" />
-    <!-- 左侧边栏 -->
-    <Sidebar class="sidebar-container" />
-    <!-- 主容器 -->
-    <div :class="{ hasTagsView: showTagsView }" class="main-container">
-      <!-- 头部导航栏和标签栏 -->
-      <div :class="{ 'fixed-header': fixedHeader }">
-        <NavigationBar />
-        <TagsView v-show="showTagsView" />
-      </div>
-      <!-- 页面主体内容 -->
-      <AppMain />
-      <!-- 右侧设置面板 -->
-      <RightPanel v-if="showSettings">
-        <Settings />
-      </RightPanel>
-    </div>
-  </div>
-</template>
-
+import { removeConfigLayout } from "@/utils/cache/local-storage"
 <script lang="ts" setup>
 import { computed } from "vue"
 import { storeToRefs } from "pinia"
 import { useAppStore } from "@/store/modules/app"
 import { useSettingsStore } from "@/store/modules/settings"
-import { AppMain, NavigationBar, Settings, Sidebar, TagsView, RightPanel } from "./components"
-import useResize from "./hooks/useResize"
+import { AppMain, NavigationBar, Sidebar, TagsView } from "./components"
 import { DeviceEnum } from "@/constants/app-key"
 
 const appStore = useAppStore()
 const settingsStore = useSettingsStore()
 
-const { showSettings, showTagsView, fixedHeader } = storeToRefs(settingsStore)
+const { showTagsView, fixedHeader } = storeToRefs(settingsStore)
 
-/** Layout 布局响应式 */
-useResize()
-
+/** 定义计算属性 layoutClasses，用于控制布局的类名 */
 const layoutClasses = computed(() => {
   return {
     hideSidebar: !appStore.sidebar.opened,
@@ -52,6 +27,25 @@ const handleClickOutside = () => {
   appStore.closeSidebar(false)
 }
 </script>
+
+<template>
+  <div :class="layoutClasses" class="app-wrapper">
+    <!-- mobile 端侧边栏遮罩层 -->
+    <div v-if="layoutClasses.mobile && layoutClasses.openSidebar" class="drawer-bg" @click="handleClickOutside" />
+    <!-- 左侧边栏 -->
+    <Sidebar class="sidebar-container" />
+    <!-- 主容器 -->
+    <div :class="{ hasTagsView: showTagsView }" class="main-container">
+      <!-- 头部导航栏和标签栏 -->
+      <div :class="{ 'fixed-header': fixedHeader }" class="layout-header">
+        <NavigationBar />
+        <TagsView v-show="showTagsView" />
+      </div>
+      <!-- 页面主体内容 -->
+      <AppMain class="app-main" />
+    </div>
+  </div>
+</template>
 
 <style lang="scss" scoped>
 @import "@/styles/mixins.scss";
@@ -73,24 +67,23 @@ $transition-time: 0.35s;
   z-index: 999;
 }
 
-.main-container {
-  min-height: 100%;
-  transition: margin-left $transition-time;
-  margin-left: var(--base-sidebar-width);
-  position: relative;
-}
-
 .sidebar-container {
   transition: width $transition-time;
   width: var(--base-sidebar-width) !important;
   height: 100%;
   position: fixed;
-  font-size: 0px;
   top: 0;
   bottom: 0;
   left: 0;
   z-index: 1001;
   overflow: hidden;
+}
+
+.main-container {
+  min-height: 100%;
+  transition: margin-left $transition-time;
+  margin-left: var(--base-sidebar-width);
+  position: relative;
 }
 
 .fixed-header {
@@ -99,15 +92,40 @@ $transition-time: 0.35s;
   right: 0;
   z-index: 9;
   width: calc(100% - var(--base-sidebar-width));
-  transition: width 0.28s;
+  transition: width $transition-time;
+}
+
+.layout-header {
+  box-shadow: var(--el-box-shadow-lighter);
+}
+
+.app-main {
+  min-height: calc(100vh - var(--base-navigationbar-height));
+  position: relative;
+  overflow: hidden;
+}
+
+.fixed-header + .app-main {
+  padding-top: var(--base-navigationbar-height);
+  height: 100vh;
+  overflow: auto;
+}
+
+.hasTagsView {
+  .app-main {
+    min-height: calc(100vh - var(--base-header-height));
+  }
+  .fixed-header + .app-main {
+    padding-top: var(--base-header-height);
+  }
 }
 
 .hideSidebar {
-  .main-container {
-    margin-left: var(--base-sidebar-hide-width);
-  }
   .sidebar-container {
     width: var(--base-sidebar-hide-width) !important;
+  }
+  .main-container {
+    margin-left: var(--base-sidebar-hide-width);
   }
   .fixed-header {
     width: calc(100% - var(--base-sidebar-hide-width));
@@ -116,12 +134,15 @@ $transition-time: 0.35s;
 
 // 适配 mobile 端
 .mobile {
-  .main-container {
-    margin-left: 0px;
-  }
   .sidebar-container {
     transition: transform $transition-time;
     width: var(--base-sidebar-width) !important;
+  }
+  .main-container {
+    margin-left: 0px;
+  }
+  .fixed-header {
+    width: 100%;
   }
   &.openSidebar {
     position: fixed;
@@ -134,15 +155,11 @@ $transition-time: 0.35s;
       transform: translate3d(calc(0px - var(--base-sidebar-width)), 0, 0);
     }
   }
-
-  .fixed-header {
-    width: 100%;
-  }
 }
 
 .withoutAnimation {
-  .main-container,
-  .sidebar-container {
+  .sidebar-container,
+  .main-container {
     transition: none;
   }
 }

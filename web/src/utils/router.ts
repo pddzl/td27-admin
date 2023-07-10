@@ -6,7 +6,7 @@ const modules = import.meta.glob("../views/**/*.vue", { eager: true })
 export function dynamicImport(component: string) {
   return new Promise((resolve) => {
     if (component === "Layout") {
-      resolve(import("@/layout/index.vue"))
+      resolve(import("@/layouts/index.vue"))
     }
     resolve(modules[`../views/${component}`])
   })

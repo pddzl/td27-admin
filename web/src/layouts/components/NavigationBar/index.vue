@@ -70,7 +70,7 @@ const toPersonal = () => {
 .navigation-bar {
   height: var(--base-navigationbar-height);
   overflow: hidden;
-  background: #fff;
+  background: var(--base-header-bg-color);
   .hamburger {
     display: flex;
     align-items: center;
