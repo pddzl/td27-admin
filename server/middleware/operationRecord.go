@@ -83,7 +83,7 @@ func OperationRecord() gin.HandlerFunc {
 		c.Next()
 
 		record.Status = c.Writer.Status()
-		record.RespTime = time.Since(now)
+		record.RespTime = time.Since(now).Milliseconds()
 		record.RespData = writer.body.String()
 
 		if err := operationRecordService.CreateSysOperationRecord(record); err != nil {
