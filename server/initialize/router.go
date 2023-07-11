@@ -43,7 +43,7 @@ func Routers() *gin.Engine {
 
 	// 需要认证的路由
 	PrivateGroup := Router.Group("")
-	PrivateGroup.Use(middleware.JWTAuth()).Use(middleware.CasbinHandler())
+	PrivateGroup.Use(middleware.JWTAuth()).Use(middleware.CasbinHandler()).Use(middleware.OperationRecord())
 	{
 		systemRouter.InitUserRouter(PrivateGroup)
 		systemRouter.InitRoleRouter(PrivateGroup)

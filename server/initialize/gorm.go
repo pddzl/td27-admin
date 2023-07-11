@@ -84,6 +84,7 @@ func RegisterTables(db *gorm.DB) {
 		system.MenuModel{},
 		system.ApiModel{},
 		system.JwtBlacklist{},
+		system.OperationRecord{},
 	)
 
 	if err != nil {
