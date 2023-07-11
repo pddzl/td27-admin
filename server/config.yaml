@@ -72,3 +72,12 @@ cors:
       allow-methods: GET, POST
       expose-headers: Content-Length, Access-Control-Allow-Origin, Access-Control-Allow-Headers, Content-Type
       allow-credentials: true # 布尔值
+
+# crontab; clear table data
+crontab:
+  open: true
+  spec: "@daily"
+  objects:
+    - tableName: jwt_blacklists
+    - compareField: created_at
+    - interval: 168h

@@ -14,6 +14,8 @@ func main() {
 	global.TD27_LOG = core.Zap()  // 初始化zap日志
 	zap.ReplaceGlobals(global.TD27_LOG)
 	global.TD27_DB = initialize.Gorm() // gorm连接数据库
+	// 清理数据库
+	initialize.Crontab()
 	if global.TD27_DB == nil {
 		global.TD27_LOG.Error("mysql连接失败，退出程序")
 		os.Exit(127)
