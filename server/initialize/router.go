@@ -43,14 +43,15 @@ func Routers() *gin.Engine {
 
 	// 需要认证的路由
 	PrivateGroup := Router.Group("")
-	PrivateGroup.Use(middleware.JWTAuth()).Use(middleware.CasbinHandler()).Use(middleware.OperationRecord())
+	PrivateGroup.Use(middleware.JWTAuth()).Use(middleware.CasbinHandler())
 	{
 		systemRouter.InitUserRouter(PrivateGroup)
 		systemRouter.InitRoleRouter(PrivateGroup)
 		systemRouter.InitMenuRouter(PrivateGroup)
 		systemRouter.InitApiRouter(PrivateGroup)
-		systemRouter.InitCasbinRouter(PublicGroup)
-		systemRouter.InitJwtRouter(PublicGroup)
+		systemRouter.InitCasbinRouter(PrivateGroup)
+		systemRouter.InitJwtRouter(PrivateGroup)
+		systemRouter.InitOperationRecordRouter(PrivateGroup)
 	}
 
 	global.TD27_LOG.Info("router register success")

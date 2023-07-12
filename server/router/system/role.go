@@ -3,12 +3,13 @@ package system
 import (
 	"github.com/gin-gonic/gin"
 	"server/api"
+	"server/middleware"
 )
 
 type RoleRouter struct{}
 
 func (r *RoleRouter) InitRoleRouter(Router *gin.RouterGroup) (R gin.IRoutes) {
-	roleRouter := Router.Group("role")
+	roleRouter := Router.Group("role").Use(middleware.OperationRecord())
 	roleApi := api.ApiGroupApp.SystemApiGroup.RoleApi
 	{
 		roleRouter.POST("getRoles", roleApi.GetRoles)

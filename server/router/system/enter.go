@@ -8,4 +8,5 @@ type RouterGroup struct {
 	ApiRouter
 	CasbinRouter
 	JwtRouter
+	OperationRecordRouter
 }
