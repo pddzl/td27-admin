@@ -7,7 +7,7 @@
 #
 # Host: 127.0.0.1 (MySQL 8.0.28)
 # Database: td27
-# Generation Time: 2023-06-28 08:46:29 +0000
+# Generation Time: 2023-07-13 07:08:33 +0000
 # ************************************************************
 
 
@@ -43,32 +43,35 @@ LOCK TABLES `casbin_rule` WRITE;
 
 INSERT INTO `casbin_rule` (`id`, `ptype`, `v0`, `v1`, `v2`, `v3`, `v4`, `v5`)
 VALUES
-	(1,'p','1','/api/addApi','POST','','',''),
-	(2,'p','1','/api/deleteApi','POST','','',''),
-	(3,'p','1','/api/editApi','POST','','',''),
-	(4,'p','1','/api/getApis','POST','','',''),
-	(5,'p','1','/api/getElTreeApis','POST','','',''),
-	(6,'p','1','/base/captcha','POST','','',''),
-	(7,'p','1','/base/login','POST','','',''),
-	(8,'p','1','/casbin/editCasbin','POST','','',''),
-	(9,'p','1','/jwt/joinInBlacklist','POST','','',''),
-	(10,'p','1','/menu/addMenu','POST','','',''),
-	(11,'p','1','/menu/deleteMenu','POST','','',''),
-	(12,'p','1','/menu/editMenu','POST','','',''),
-	(13,'p','1','/menu/getElTreeMenus','POST','','',''),
-	(14,'p','1','/menu/getMenus','GET','','',''),
-	(15,'p','1','/role/addRole','POST','','',''),
-	(16,'p','1','/role/deleteRole','POST','','',''),
-	(17,'p','1','/role/editRole','POST','','',''),
-	(18,'p','1','/role/editRoleMenu','POST','','',''),
-	(19,'p','1','/role/getRoles','POST','','',''),
-	(20,'p','1','/user/addUser','POST','','',''),
-	(21,'p','1','/user/deleteUser','POST','','',''),
-	(22,'p','1','/user/editUser','POST','','',''),
-	(23,'p','1','/user/getUserInfo','GET','','',''),
-	(24,'p','1','/user/getUsers','POST','','',''),
-	(25,'p','1','/user/modifyPass','POST','','',''),
-	(26,'p','1','/user/switchActive','POST','','','');
+	(187,'p','1','/api/addApi','POST','','',''),
+	(189,'p','1','/api/deleteApi','POST','','',''),
+	(190,'p','1','/api/editApi','POST','','',''),
+	(188,'p','1','/api/getApis','POST','','',''),
+	(191,'p','1','/api/getElTreeApis','POST','','',''),
+	(167,'p','1','/base/captcha','POST','','',''),
+	(168,'p','1','/base/login','POST','','',''),
+	(186,'p','1','/casbin/editCasbin','POST','','',''),
+	(192,'p','1','/jwt/joinInBlacklist','POST','','',''),
+	(182,'p','1','/menu/addMenu','POST','','',''),
+	(184,'p','1','/menu/deleteMenu','POST','','',''),
+	(183,'p','1','/menu/editMenu','POST','','',''),
+	(185,'p','1','/menu/getElTreeMenus','POST','','',''),
+	(181,'p','1','/menu/getMenus','GET','','',''),
+	(194,'p','1','/or/deleteOr','POST','','',''),
+	(195,'p','1','/or/deleteOrByIds','POST','','',''),
+	(193,'p','1','/or/getOrList','POST','','',''),
+	(177,'p','1','/role/addRole','POST','','',''),
+	(178,'p','1','/role/deleteRole','POST','','',''),
+	(179,'p','1','/role/editRole','POST','','',''),
+	(180,'p','1','/role/editRoleMenu','POST','','',''),
+	(176,'p','1','/role/getRoles','POST','','',''),
+	(172,'p','1','/user/addUser','POST','','',''),
+	(171,'p','1','/user/deleteUser','POST','','',''),
+	(173,'p','1','/user/editUser','POST','','',''),
+	(169,'p','1','/user/getUserInfo','GET','','',''),
+	(170,'p','1','/user/getUsers','POST','','',''),
+	(174,'p','1','/user/modifyPass','POST','','',''),
+	(175,'p','1','/user/switchActive','POST','','','');
 
 /*!40000 ALTER TABLE `casbin_rule` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -115,7 +118,8 @@ VALUES
 	(6,1),
 	(7,1),
 	(8,1),
-	(9,1);
+	(9,1),
+	(10,1);
 
 /*!40000 ALTER TABLE `role_menus` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -144,7 +148,7 @@ LOCK TABLES `sys_api` WRITE;
 
 INSERT INTO `sys_api` (`id`, `created_at`, `updated_at`, `deleted_at`, `path`, `description`, `api_group`, `method`)
 VALUES
-	(1,'2023-03-10 06:24:36','2023-03-10 06:24:36',NULL,'/base/captcha','获取验证码（必选）','base','POST'),
+	(1,'2023-03-10 06:24:36','2023-07-13 05:42:10',NULL,'/base/captcha','获取验证码（必选）','base','POST'),
 	(2,'2023-03-08 06:36:24','2023-03-09 08:50:20',NULL,'/base/login','登录（必选）','base','POST'),
 	(3,'2023-03-08 08:56:13','2023-03-10 07:11:53',NULL,'/user/getUserInfo','获取用户信息（必选）','user','GET'),
 	(4,'2023-03-08 08:56:54','2023-03-08 08:56:54',NULL,'/user/getUsers','获取所有用户','user','POST'),
@@ -169,7 +173,10 @@ VALUES
 	(23,'2023-03-10 07:24:33','2023-03-10 07:24:33',NULL,'/api/deleteApi','删除api','api','POST'),
 	(24,'2023-03-10 07:26:15','2023-03-10 07:26:15',NULL,'/api/editApi','编辑api','api','POST'),
 	(25,'2023-03-10 07:34:08','2023-03-10 07:35:04',NULL,'/api/getElTreeApis','获取所有api（el-tree结构）','api','POST'),
-	(27,'2023-03-11 13:05:40','2023-03-11 13:05:40',NULL,'/jwt/joinInBlacklist','拉黑token','jwt','POST');
+	(27,'2023-03-11 13:05:40','2023-03-11 13:05:40',NULL,'/jwt/joinInBlacklist','拉黑token','jwt','POST'),
+	(28,'2023-07-13 02:32:16','2023-07-13 02:35:41',NULL,'/or/getOrList','分页获取操作记录','operationRecord','POST'),
+	(29,'2023-07-13 02:33:32','2023-07-13 02:35:50',NULL,'/or/deleteOr','删除操作记录','operationRecord','POST'),
+	(30,'2023-07-13 06:48:47','2023-07-13 06:48:47',NULL,'/or/deleteOrByIds','批量删除操作记录','operationRecord','POST');
 
 /*!40000 ALTER TABLE `sys_api` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -202,18 +209,45 @@ LOCK TABLES `sys_menu` WRITE;
 
 INSERT INTO `sys_menu` (`id`, `created_at`, `updated_at`, `deleted_at`, `pid`, `name`, `path`, `redirect`, `component`, `meta`, `sort`)
 VALUES
-	(1,NULL,'2023-06-28 03:10:50',NULL,0,'Setting','/setting','/setting/user','Layout','{\"title\": \"系统管理\", \"svgIcon\": \"setting\"}',1),
+	(1,NULL,'2023-07-11 09:26:52',NULL,0,'Setting','/setting','/setting/user','Layout','{\"title\": \"系统管理\", \"svgIcon\": \"setting\"}',1),
 	(2,NULL,'2023-06-28 08:11:56',NULL,1,'User','user','','setting/user/index.vue','{\"title\": \"用户管理\"}',1),
 	(3,NULL,'2023-06-28 08:12:06',NULL,1,'Role','role','','setting/role/index.vue','{\"title\": \"角色管理\"}',2),
 	(4,NULL,'2023-06-28 08:12:16',NULL,1,'Menu','menu','','setting/menu/index.vue','{\"title\": \"菜单管理\"}',3),
-	(5,'2023-03-07 01:50:48','2023-06-28 08:11:38',NULL,1,'Api','api','','setting/api/index.vue','{\"title\": \"接口管理\", \"keepAlive\": true}',4),
-	(6,NULL,'2023-06-28 08:11:23',NULL,0,'Cenu','/cenu','/cenu/cenu1','Layout','{\"title\": \"多级菜单\", \"svgIcon\": \"menu\"}',2),
-	(7,NULL,'2023-06-28 08:42:39',NULL,6,'Cenu1','cenu1','/cenu/cenu1/cenu1-1','cenu/cenu1/index.vue','{\"title\": \"cenu1\"}',1),
-	(8,NULL,'2023-06-28 08:42:44',NULL,7,'Cenu1-1','cenu1-1','','cenu/cenu1/cenu1-1/index.vue','{\"title\": \"cenu1-1\"}',1),
-	(9,'2023-03-13 06:14:27','2023-06-28 08:43:02',NULL,7,'Cenu1-2','cenu1-2','','cenu/cenu1/cenu1-2/index.vue','{\"title\": \"cenu1-2\"}',2);
+	(5,'2023-03-07 01:50:48','2023-06-28 08:11:38',NULL,1,'Api','api','','setting/api/index.vue','{\"title\": \"接口管理\"}',4),
+	(6,'2023-03-07 01:50:48','2023-06-28 08:11:38',NULL,1,'OperationRecord','operationRecord','','setting/operationRecord/index.vue','{\"title\": \"操作记录\"}',5),
+	(7,NULL,'2023-06-28 08:11:23',NULL,0,'Cenu','/cenu','/cenu/cenu1','Layout','{\"title\": \"多级菜单\", \"svgIcon\": \"menu\"}',2),
+	(8,NULL,'2023-06-28 08:42:39',NULL,7,'Cenu1','cenu1','/cenu/cenu1/cenu1-1','cenu/cenu1/index.vue','{\"title\": \"cenu1\"}',1),
+	(9,NULL,'2023-06-28 08:42:44',NULL,8,'Cenu1-1','cenu1-1','','cenu/cenu1/cenu1-1/index.vue','{\"title\": \"cenu1-1\"}',1),
+	(10,'2023-03-13 06:14:27','2023-06-28 08:43:02',NULL,8,'Cenu1-2','cenu1-2','','cenu/cenu1/cenu1-2/index.vue','{\"title\": \"cenu1-2\"}',2);
 
 /*!40000 ALTER TABLE `sys_menu` ENABLE KEYS */;
 UNLOCK TABLES;
+
+
+# Dump of table sys_operation_record
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `sys_operation_record`;
+
+CREATE TABLE `sys_operation_record` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `created_at` datetime DEFAULT NULL,
+  `updated_at` datetime DEFAULT NULL,
+  `deleted_at` datetime DEFAULT NULL,
+  `ip` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '请求ip',
+  `method` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '请求方法',
+  `path` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '请求路径',
+  `status` bigint DEFAULT NULL COMMENT '请求状态',
+  `user_agent` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `req_param` text COLLATE utf8mb4_unicode_ci COMMENT '请求Body',
+  `resp_data` text COLLATE utf8mb4_unicode_ci COMMENT '响应数据',
+  `resp_time` bigint DEFAULT NULL,
+  `user_id` bigint unsigned DEFAULT NULL COMMENT '用户id',
+  `user_name` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '用户名称',
+  PRIMARY KEY (`id`),
+  KEY `idx_sys_operation_record_deleted_at` (`deleted_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 
 
 # Dump of table sys_role
@@ -237,7 +271,7 @@ LOCK TABLES `sys_role` WRITE;
 
 INSERT INTO `sys_role` (`id`, `created_at`, `updated_at`, `deleted_at`, `role_name`)
 VALUES
-	(1,NULL,'2023-03-13 07:24:04',NULL,'root');
+	(1,NULL,'2023-07-05 07:23:48',NULL,'root');
 
 /*!40000 ALTER TABLE `sys_role` ENABLE KEYS */;
 UNLOCK TABLES;
