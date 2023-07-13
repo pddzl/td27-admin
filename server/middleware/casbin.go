@@ -27,7 +27,8 @@ func CasbinHandler() gin.HandlerFunc {
 			e := casbinService.Casbin() // 判断策略中是否存在
 			success, _ := e.Enforce(sub, obj, act)
 			if !success {
-				response.FailWithDetailed(gin.H{}, "权限不足", c)
+				global.TD27_LOG.Error("接口权限不足")
+				response.FailWithDetailed(gin.H{}, "接口权限不足", c)
 				c.Abort()
 				return
 			}

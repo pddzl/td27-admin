@@ -59,3 +59,24 @@ func (o *OperationRecordApi) DeleteOperationRecord(c *gin.Context) {
 		response.OkWithMessage("删除成功", c)
 	}
 }
+
+// DeleteOperationRecordByIds 批量删除操作记录
+func (o *OperationRecordApi) DeleteOperationRecordByIds(c *gin.Context) {
+	var cIds request.CIds
+	_ = c.ShouldBindJSON(&cIds)
+
+	// 参数校验
+	validate := validator.New()
+	if err := validate.Struct(&cIds); err != nil {
+		response.FailWithMessage("请求参数错误", c)
+		global.TD27_LOG.Error("请求参数错误", zap.Error(err))
+		return
+	}
+
+	if err := operationService.DeleteOperationByIds(cIds.Ids); err != nil {
+		response.FailWithMessage("删除失败", c)
+		global.TD27_LOG.Error("删除失败", zap.Error(err))
+	} else {
+		response.OkWithMessage("删除成功", c)
+	}
+}

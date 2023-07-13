@@ -10,6 +10,11 @@ interface reqId {
   id: number
 }
 
+/** 请求IDs */
+interface reqIds {
+  ids: number[]
+}
+
 /** 分页 */
 interface PageInfo {
   page: number

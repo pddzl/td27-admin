@@ -10,3 +10,7 @@ type PageInfo struct {
 	Page     int `json:"page" validate:"required"`     // 页码
 	PageSize int `json:"pageSize" validate:"required"` // 每页大小
 }
+
+type CIds struct {
+	Ids []uint `json:"ids"`
+}

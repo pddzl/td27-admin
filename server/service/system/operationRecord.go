@@ -52,3 +52,8 @@ func (o *OperationRecordService) GetOperationRecordList(orSp systemReq.OrSearchP
 func (o *OperationRecordService) DeleteOperation(id uint) error {
 	return global.TD27_DB.Unscoped().Delete(&modelSystem.OperationRecord{}, id).Error
 }
+
+// DeleteOperationByIds 批量删除操作记录
+func (o *OperationRecordService) DeleteOperationByIds(ids []uint) error {
+	return global.TD27_DB.Unscoped().Delete(&[]modelSystem.OperationRecord{}, ids).Error
+}

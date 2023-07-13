@@ -13,6 +13,7 @@ func (o *OperationRecordRouter) InitOperationRecordRouter(Router *gin.RouterGrou
 	{
 		operationRecordRouter.POST("getOrList", operationRecordApi.GetOperationRecordList)
 		operationRecordRouter.POST("deleteOr", operationRecordApi.DeleteOperationRecord)
+		operationRecordRouter.POST("deleteOrByIds", operationRecordApi.DeleteOperationRecordByIds)
 	}
 	return operationRecordRouter
 }
