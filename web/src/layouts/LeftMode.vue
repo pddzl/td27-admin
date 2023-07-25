@@ -1,4 +1,3 @@
-import { removeConfigLayout } from "@/utils/cache/local-storage"
 <script lang="ts" setup>
 import { computed } from "vue"
 import { storeToRefs } from "pinia"
@@ -68,6 +67,7 @@ $transition-time: 0.35s;
 }
 
 .sidebar-container {
+  background-color: var(--base-sidebar-menu-bg-color);
   transition: width $transition-time;
   width: var(--base-sidebar-width) !important;
   height: 100%;

@@ -7,7 +7,7 @@
   --base-header-bg-color: #ffffff;
   /** NavigationBar 组件 */
   --base-navigationbar-height: 50px;
-  /** Sidebar 组件 */
+   /** Sidebar 组件（左侧模式全部生效、顶部模式全部不生效、混合模式非颜色部分生效） */
   --base-sidebar-width: 220px;
   --base-sidebar-hide-width: 58px;
   --base-sidebar-menu-item-height: 60px;
