@@ -4,6 +4,7 @@
     <Breadcrumb v-if="!isTop || isMobile" class="breadcrumb" />
     <Sidebar v-if="isTop && !isMobile" class="sidebar" />
     <div class="right-menu">
+      <SearchMenu v-if="showSearchMenu" class="right-menu-item" />
       <Screenfull v-if="showScreenfull" class="right-menu-item" />
       <ThemeSwitch v-if="showThemeSwitch" class="right-menu-item" />
       <el-dropdown class="right-menu-item">
@@ -40,6 +41,7 @@ import Screenfull from "@/components/Screenfull/index.vue"
 import { joinInBlacklistApi } from "@/api/system/jwt"
 import { useSettingsStore } from "@/store/modules/settings"
 import { DeviceEnum } from "@/constants/app-key"
+import SearchMenu from "@/components/SearchMenu/index.vue"
 
 const router = useRouter()
 const appStore = useAppStore()
@@ -47,7 +49,7 @@ const settingsStore = useSettingsStore()
 const userStore = useUserStore()
 
 const { sidebar, device } = storeToRefs(appStore)
-const { layoutMode, showThemeSwitch, showScreenfull } = storeToRefs(settingsStore)
+const { layoutMode, showThemeSwitch, showScreenfull, showSearchMenu } = storeToRefs(settingsStore)
 
 const isTop = computed(() => layoutMode.value === "top")
 const isMobile = computed(() => device.value === DeviceEnum.Mobile)
