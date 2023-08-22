@@ -1,6 +1,6 @@
 import { getConfigLayout } from "@/utils/cache/local-storage"
 
-/** 项目配置 */
+/** 项目配置类型 */
 export interface LayoutSettings {
   /** 是否显示 Settings Panel */
   showSettings: boolean
@@ -22,7 +22,8 @@ export interface LayoutSettings {
   cacheTagsView: boolean
 }
 
-export const layoutSettings: LayoutSettings = getConfigLayout() ?? {
+/** 默认配置 */
+const defaultSettings: LayoutSettings = {
   layoutMode: "left",
   showSettings: true,
   showTagsView: true,
@@ -34,4 +35,5 @@ export const layoutSettings: LayoutSettings = getConfigLayout() ?? {
   cacheTagsView: false
 }
 
-export default layoutSettings
+/** 项目配置 */
+export const layoutSettings: LayoutSettings = { ...defaultSettings, ...getConfigLayout() }

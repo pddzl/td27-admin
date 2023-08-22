@@ -39,12 +39,10 @@ const backgroundColor = computed(() => (isLeft.value ? v3SidebarMenuBgColor : un
 const textColor = computed(() => (isLeft.value ? v3SidebarMenuTextColor : undefined))
 const activeTextColor = computed(() => (isLeft.value ? v3SidebarMenuActiveTextColor : undefined))
 const sidebarMenuItemHeight = computed(() => {
-  return layoutMode.value !== "top"
-    ? getCssVariableValue("--base-sidebar-menu-item-height")
-    : getCssVariableValue("--base-navigationbar-height")
+  return layoutMode.value !== "top" ? "var(--base-sidebar-menu-item-height)" : "var(--base-navigationbar-height)"
 })
 const sidebarMenuHoverBgColor = computed(() => {
-  return layoutMode.value !== "top" ? getCssVariableValue("--base-sidebar-menu-hover-bg-color") : "transparent"
+  return layoutMode.value !== "top" ? "var(--base-sidebar-menu-hover-bg-color)" : "transparent"
 })
 const tipLineWidth = computed(() => {
   return layoutMode.value !== "top" ? "2px" : "0px"
@@ -141,7 +139,7 @@ const tipLineWidth = computed(() => {
 
 :deep(.el-sub-menu) {
   &.is-active {
-    .el-sub-menu__title {
+    > .el-sub-menu__title {
       color: v-bind(activeTextColor) !important;
     }
   }
