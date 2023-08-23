@@ -24,23 +24,16 @@ export const useUserStore = defineStore("user", () => {
   const settingsStore = useSettingsStore()
 
   /** 登录 */
-  const login = async (loginData: LoginRequestData): Promise<boolean> => {
-    try {
-      const res = await loginApi({
-        username: loginData.username,
-        password: loginData.password,
-        captcha: loginData.captcha,
-        captchaId: loginData.captchaId
-      })
-      if (res.code === 0) {
-        token.value = res.data.token
-        return true
-      }
-    } catch (error) {
-      // console.log(error)
-      return false
+  const login = async (loginData: LoginRequestData) => {
+    const res = await loginApi({
+      username: loginData.username,
+      password: loginData.password,
+      captcha: loginData.captcha,
+      captchaId: loginData.captchaId
+    })
+    if (res.code === 0) {
+      token.value = res.data.token
     }
-    return false
   }
 
   /** 获取用户详情 */

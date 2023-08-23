@@ -77,6 +77,7 @@ const loginFormData: LoginRequestData = reactive({
   captcha: "",
   captchaId: ""
 })
+
 /** 登录表单校验规则 */
 const loginFormRules: FormRules = {
   username: [{ required: true, message: "请输入用户名", trigger: "blur" }],
@@ -92,21 +93,27 @@ const handleLogin = () => {
   loginFormRef.value?.validate(async (valid) => {
     if (valid) {
       loading.value = true
-      const res = await useUserStore().login({
-        username: loginFormData.username,
-        password: loginFormData.password,
-        captcha: loginFormData.captcha,
-        captchaId: loginFormData.captchaId
-      })
-      if (res) {
-        router.push({ path: "/" })
-      } else {
-        createCode()
-      }
-      loading.value = false
+      await useUserStore()
+        .login({
+          username: loginFormData.username,
+          password: loginFormData.password,
+          captcha: loginFormData.captcha,
+          captchaId: loginFormData.captchaId
+        })
+        .then(() => {
+          router.push({ path: "/" })
+        })
+        .catch(() => {
+          createCode()
+          loginFormData.password = ""
+        })
+        .finally(() => {
+          loading.value = false
+        })
     }
   })
 }
+
 /** 创建验证码 */
 const createCode = () => {
   // 先清空验证码的输入
