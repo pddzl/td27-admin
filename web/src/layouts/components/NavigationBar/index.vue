@@ -60,8 +60,7 @@ const toggleSidebar = () => {
 }
 
 const logout = () => {
-  // userStore.logout()
-  // router.push("/login")
+   // token加入黑名单
   joinInBlacklistApi()
     .then(() => {
       userStore.logout()

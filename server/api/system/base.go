@@ -69,20 +69,23 @@ func (ba *BaseApi) Login(c *gin.Context) {
 		return
 	}
 
+	// 验证码
 	if store.Verify(login.CaptchaId, login.Captcha, true) {
 		u := &system.UserModel{Username: login.Username, Password: login.Password}
 		user, err := userService.Login(u)
 		if err != nil {
-			global.TD27_LOG.Error("登陆失败", zap.Error(err))
-			response.FailWithMessage("登陆失败", c)
+			global.TD27_LOG.Error("登录失败", zap.Error(err))
+			response.FailWithMessage("登录失败", c)
 			return
 		}
+		// 获取token
 		tokenNext(c, user)
 	} else {
 		response.FailWithMessage("验证码错误", c)
 	}
 }
 
+// 生成jwt token
 func tokenNext(c *gin.Context, user *system.UserModel) {
 	j := &utils.JWT{SigningKey: []byte(global.TD27_CONFIG.JWT.SigningKey)} // 唯一签名
 
@@ -100,11 +103,14 @@ func tokenNext(c *gin.Context, user *system.UserModel) {
 
 	token, err := j.CreateToken(claims)
 	if err != nil {
-		response.FailWithMessage("获取token失败", c)
-		global.TD27_LOG.Error("获取token失败", zap.Error(err))
+		response.FailWithMessage("创建token失败", c)
+		global.TD27_LOG.Error("创建token失败", zap.Error(err))
 		return
 	}
 
+	// 是否开启多点登录
+	// true: 只允许账号单点登录，后续登录的会挤掉前面的
+	// false: 允许账号多点登录
 	if !global.TD27_CONFIG.System.UseMultipoint {
 		response.OkWithDetailed(systemRes.LoginResponse{
 			User:      *user,
@@ -132,11 +138,11 @@ func tokenNext(c *gin.Context, user *system.UserModel) {
 	} else {
 		var blackJWT system.JwtBlacklist
 		blackJWT.Jwt = jwtStr
-		if err := jwtService.JoinInBlacklist(blackJWT); err != nil {
+		if err = jwtService.JoinInBlacklist(blackJWT); err != nil {
 			response.FailWithMessage("jwt作废失败", c)
 			return
 		}
-		if err := jwtService.SetRedisJWT(user.Username, token); err != nil {
+		if err = jwtService.SetRedisJWT(user.Username, token); err != nil {
 			response.FailWithMessage("设置登录状态失败", c)
 			return
 		}
