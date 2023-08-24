@@ -18,8 +18,8 @@ zap:
 
 # 日志割接
 rotateLogs:
-  max-size: 10
-  max-backups: 5
+  max-size: 5
+  max-backups: 7
   max-age: 7
   compress: false
 
