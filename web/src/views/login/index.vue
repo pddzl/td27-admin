@@ -1,10 +1,9 @@
 <template>
-  <div class="login-container">
+  <div class="login-container bg">
     <div class="login-card">
-      <div class="title">
-        <img src="@/assets/layouts/logo-text-2.png" />
-      </div>
       <div class="content">
+        <p class="p1">TD27 ADMIN</p>
+        <p class="p2">Enjoy yourself with Golang and Vue</p>
         <el-form ref="loginFormRef" :model="loginFormData" :rules="loginFormRules" @keyup.enter="handleLogin">
           <el-form-item prop="username">
             <el-input
@@ -52,6 +51,12 @@
           <el-button :loading="loading" type="primary" size="large" @click.prevent="handleLogin">登 录</el-button>
         </el-form>
       </div>
+    </div>
+    <div class="footer">
+      <span>Copyright © 2023 Pddzl | </span>
+      <a href="https://github.com/pddzl/td27-admin" target="_blank">
+        <img src="@/assets/github.png" alt="github" />
+      </a>
     </div>
   </div>
 </template>
@@ -105,7 +110,6 @@ const handleLogin = () => {
         })
         .catch(() => {
           createCode()
-          loginFormData.password = ""
         })
         .finally(() => {
           loading.value = false
@@ -132,26 +136,28 @@ createCode()
 <style lang="scss" scoped>
 .login-container {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   width: 100%;
   min-height: 100%;
   .login-card {
+    margin-top: -7%;
     width: 480px;
-    border-radius: 20px;
-    box-shadow: 0 0 10px #dcdfe6;
-    background-color: #fff;
     overflow: hidden;
-    .title {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 150px;
-      img {
-        height: 100%;
-      }
-    }
     .content {
+      .p1 {
+        text-align: center;
+        font-size: 33px;
+        color: rgba(0, 0, 0, 0.796);
+      }
+      .p2 {
+        margin-top: -20px;
+        margin-bottom: 40px;
+        text-align: center;
+        font-size: 14px;
+        color: rgba(0, 0, 0, 0.45);
+      }
       padding: 20px 50px 50px 50px;
       :deep(.el-input-group__append) {
         padding: 0;
@@ -170,6 +176,24 @@ createCode()
         margin-top: 10px;
       }
     }
+  }
+}
+.bg {
+  // width: 100%;
+  // min-height: 100%;
+  background: #f0f2f5 url(@/assets/layouts/background.svg) no-repeat 50%;
+  background-size: 100%;
+}
+.footer {
+  span {
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.45);
+    // text-align: center;
+  }
+  img {
+    width: 20px;
+    height: 20px;
+    transform: translateY(25%);
   }
 }
 </style>
