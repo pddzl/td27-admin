@@ -1,6 +1,7 @@
 package system
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"github.com/go-redis/redis/v8"
@@ -74,8 +75,8 @@ func (ba *BaseApi) Login(c *gin.Context) {
 		u := &system.UserModel{Username: login.Username, Password: login.Password}
 		user, err := userService.Login(u)
 		if err != nil {
+			response.FailWithMessage(fmt.Sprintf("登录失败: %s", err.Error()), c)
 			global.TD27_LOG.Error("登录失败", zap.Error(err))
-			response.FailWithMessage("登录失败", c)
 			return
 		}
 		// 获取token
