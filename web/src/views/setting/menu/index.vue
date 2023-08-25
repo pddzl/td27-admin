@@ -75,7 +75,7 @@
         <el-form-item label="排序" prop="sort" style="width: 30%">
           <el-input-number v-model="formData.sort" :min="1" />
         </el-form-item>
-        <el-form-item label="是否隐藏" prop="meta.hidden" style="width: 30%">
+        <el-form-item label="隐藏" prop="meta.hidden" style="width: 30%">
           <el-select v-model="formData.meta.hidden">
             <el-option :value="false" label="否" />
             <el-option :value="true" label="是" />
@@ -84,8 +84,14 @@
         <el-form-item label="图标" prop="meta.icon" style="width: 30%">
           <icon :meta="formData.meta" style="width: 100%" />
         </el-form-item>
-        <el-form-item label="是否固定" prop="meta.affix" style="width: 30%">
+        <el-form-item label="固定" prop="meta.affix" style="width: 30%">
           <el-select v-model="formData.meta.affix">
+            <el-option :value="false" label="否" />
+            <el-option :value="true" label="是" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="一直显示" prop="meta.alwaysShow" style="width: 30%">
+          <el-select v-model="formData.meta.alwaysShow">
             <el-option :value="false" label="否" />
             <el-option :value="true" label="是" />
           </el-select>
@@ -208,6 +214,7 @@ const editMenuDialog = (row: MenusData) => {
   formData.meta.hidden = !!row.meta?.hidden
   formData.meta.affix = Boolean(row.meta?.affix)
   formData.meta.keepAlive = Boolean(row.meta?.keepAlive)
+  formData.meta.alwaysShow = Boolean(row.meta?.alwaysShow)
   dialogVisible.value = true
 }
 
@@ -248,6 +255,7 @@ const initForm = () => {
   formData.meta.hidden = false
   formData.meta.affix = false
   formData.meta.keepAlive = false
+  formData.meta.alwaysShow = false
 }
 
 const closeDialog = () => {
@@ -272,7 +280,8 @@ const formData = reactive({
     icon: "",
     hidden: false,
     affix: false,
-    keepAlive: false
+    keepAlive: false,
+    alwaysShow: true
   }
 })
 
@@ -292,7 +301,8 @@ const operateAction = (formEl: FormInstance | undefined) => {
           icon: formData.meta.icon || undefined,
           hidden: formData.meta.hidden || undefined,
           affix: formData.meta.affix || undefined,
-          keepAlive: formData.meta.keepAlive || undefined
+          keepAlive: formData.meta.keepAlive || undefined,
+          alwaysShow: formData.meta.alwaysShow || undefined
         }
       }
       if (oKind === "Add") {

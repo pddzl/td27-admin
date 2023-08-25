@@ -15,6 +15,7 @@ export interface MenusData {
     svgIcon?: string
     affix?: boolean
     keepAlive?: boolean
+    alwaysShow?: boolean
   }
   children?: MenusData[]
 }

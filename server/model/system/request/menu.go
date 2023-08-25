@@ -11,11 +11,12 @@ type Menu struct {
 }
 
 type meta struct {
-	Hidden    bool   `json:"hidden"` // 菜单是否隐藏
-	Title     string `json:"title"`  // 菜单名
-	Icon      string `json:"icon"`   // element图标
-	Affix     bool   `json:"affix"`  // 是否固定
-	KeepAlive bool   `json:"keepAlive"`
+	Hidden     bool   `json:"hidden"` // 菜单是否隐藏
+	Title      string `json:"title"`  // 菜单名
+	Icon       string `json:"icon"`   // element图标
+	Affix      bool   `json:"affix"`  // 是否固定
+	KeepAlive  bool   `json:"keepAlive"`
+	AlwaysShow bool   `json:"alwaysShow"` // 是否一直显示根路由
 }
 
 type EditMenuReq struct {
