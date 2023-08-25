@@ -12,11 +12,16 @@ export const usePermissionStore = defineStore("permission", () => {
   const asyncRouterList = ref<MenusData[]>([])
 
   const setRoutes = async () => {
+    // 获取动态路由
     const asyncRouterRes = await getMenus()
-    asyncRouterList.value = asyncRouterRes.data
+    if (asyncRouterRes.code === 0) {
+      asyncRouterList.value = asyncRouterRes.data
+    }
 
+    // 格式化后端路由
     formatRouter(asyncRouterList.value, dynamicRoutes.value)
 
+    // 404路由放最后
     // 添加404 ErrorPage
     dynamicRoutes.value.push({
       path: "/:pathMatch(.*)*",
@@ -27,6 +32,7 @@ export const usePermissionStore = defineStore("permission", () => {
       }
     })
 
+    // 合并静态路由，动态路由
     routes.value = constantRoutes.concat(dynamicRoutes.value)
   }
 

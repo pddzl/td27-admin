@@ -37,24 +37,18 @@ export const useUserStore = defineStore("user", () => {
   }
 
   /** 获取用户详情 */
-  const getInfo = () => {
-    return new Promise((resolve, reject) => {
-      getUserInfoApi()
-        .then((res) => {
-          username.value = res.data.username
-          userInfo.id = res.data.ID
-          userInfo.createdAt = res.data.createdAt
-          userInfo.username = res.data.username
-          userInfo.phone = res.data.phone
-          userInfo.email = res.data.email
-          userInfo.role = res.data.role
-          userInfo.roleId = res.data.roleId
-          resolve(res)
-        })
-        .catch((error) => {
-          reject(error)
-        })
-    })
+  const getInfo = async () => {
+    const res = await getUserInfoApi()
+    if (res.code === 0) {
+      username.value = res.data.username
+      userInfo.id = res.data.ID
+      userInfo.createdAt = res.data.createdAt
+      userInfo.username = res.data.username
+      userInfo.phone = res.data.phone
+      userInfo.email = res.data.email
+      userInfo.role = res.data.role
+      userInfo.roleId = res.data.roleId
+    }
   }
 
   /** 登出 */

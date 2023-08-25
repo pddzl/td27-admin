@@ -24,7 +24,9 @@ router.beforeEach(async (to, _from, next) => {
       // 检查当前用户是否已经获取到用户信息
       if (userStore.userInfo.username === "") {
         try {
+          // 获取用户信息
           await userStore.getInfo()
+          // 获取路由
           await permissionStore.setRoutes()
           // 将'有访问权限的动态路由' 添加到 Router 中
           permissionStore.dynamicRoutes.forEach((route) => {
