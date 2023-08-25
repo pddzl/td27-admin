@@ -1,56 +1,54 @@
 <template>
   <div class="login-container bg">
     <div class="login-card">
-      <div class="content">
-        <p class="p1">TD27 ADMIN</p>
-        <p class="p2">Enjoy yourself with Golang and Vue</p>
-        <el-form ref="loginFormRef" :model="loginFormData" :rules="loginFormRules" @keyup.enter="handleLogin">
-          <el-form-item prop="username">
-            <el-input
-              v-model.trim="loginFormData.username"
-              placeholder="用户名"
-              type="text"
-              tabindex="1"
-              prefix-icon="User"
-              size="large"
-            />
-          </el-form-item>
-          <el-form-item prop="password">
-            <el-input
-              v-model.trim="loginFormData.password"
-              placeholder="密码"
-              type="password"
-              tabindex="2"
-              prefix-icon="Lock"
-              size="large"
-              show-password
-            />
-          </el-form-item>
-          <el-form-item prop="captcha">
-            <el-input
-              v-model.trim="loginFormData.captcha"
-              placeholder="验证码"
-              type="text"
-              tabindex="3"
-              prefix-icon="Key"
-              maxlength="6"
-              size="large"
-            >
-              <template #append>
-                <el-image :src="codeUrl" @click="createCode" draggable="false">
-                  <template #placeholder>
-                    <el-icon><Picture /></el-icon>
-                  </template>
-                  <template #error>
-                    <el-icon><Loading /></el-icon>
-                  </template>
-                </el-image>
-              </template>
-            </el-input>
-          </el-form-item>
-          <el-button :loading="loading" type="primary" size="large" @click.prevent="handleLogin">登 录</el-button>
-        </el-form>
-      </div>
+      <p class="p1">TD27 ADMIN</p>
+      <p class="p2">Enjoy yourself with Golang and Vue</p>
+      <el-form ref="loginFormRef" :model="loginFormData" :rules="loginFormRules" @keyup.enter="handleLogin">
+        <el-form-item prop="username">
+          <el-input
+            v-model.trim="loginFormData.username"
+            placeholder="用户名"
+            type="text"
+            tabindex="1"
+            prefix-icon="User"
+            size="large"
+          />
+        </el-form-item>
+        <el-form-item prop="password">
+          <el-input
+            v-model.trim="loginFormData.password"
+            placeholder="密码"
+            type="password"
+            tabindex="2"
+            prefix-icon="Lock"
+            size="large"
+            show-password
+          />
+        </el-form-item>
+        <el-form-item prop="captcha">
+          <el-input
+            v-model.trim="loginFormData.captcha"
+            placeholder="验证码"
+            type="text"
+            tabindex="3"
+            prefix-icon="Key"
+            maxlength="6"
+            size="large"
+          >
+            <template #append>
+              <el-image :src="codeUrl" @click="createCode" draggable="false">
+                <template #placeholder>
+                  <el-icon><Picture /></el-icon>
+                </template>
+                <template #error>
+                  <el-icon><Loading /></el-icon>
+                </template>
+              </el-image>
+            </template>
+          </el-input>
+        </el-form-item>
+        <el-button :loading="loading" type="primary" size="large" @click.prevent="handleLogin">登 录</el-button>
+      </el-form>
     </div>
     <div class="footer">
       <span>Copyright © 2023 Pddzl | </span>
@@ -135,65 +133,64 @@ createCode()
 
 <style lang="scss" scoped>
 .login-container {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  position: relative;
   width: 100%;
   min-height: 100%;
   .login-card {
-    margin-top: -7%;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -60%);
     width: 480px;
     overflow: hidden;
-    .content {
-      .p1 {
+    .p1 {
+      text-align: center;
+      font-size: 33px;
+      color: rgba(0, 0, 0, 0.796);
+    }
+    .p2 {
+      margin-top: -20px;
+      margin-bottom: 40px;
+      text-align: center;
+      font-size: 14px;
+      color: rgba(0, 0, 0, 0.45);
+    }
+    padding: 20px 50px 50px 50px;
+    :deep(.el-input-group__append) {
+      padding: 0;
+      overflow: hidden;
+      .el-image {
+        width: 100px;
+        height: 40px;
+        border-left: 0px;
+        user-select: none;
+        cursor: pointer;
         text-align: center;
-        font-size: 33px;
-        color: rgba(0, 0, 0, 0.796);
       }
-      .p2 {
-        margin-top: -20px;
-        margin-bottom: 40px;
-        text-align: center;
-        font-size: 14px;
-        color: rgba(0, 0, 0, 0.45);
-      }
-      padding: 20px 50px 50px 50px;
-      :deep(.el-input-group__append) {
-        padding: 0;
-        overflow: hidden;
-        .el-image {
-          width: 100px;
-          height: 40px;
-          border-left: 0px;
-          user-select: none;
-          cursor: pointer;
-          text-align: center;
-        }
-      }
-      .el-button {
-        width: 100%;
-        margin-top: 10px;
-      }
+    }
+    .el-button {
+      width: 100%;
+      margin-top: 10px;
+    }
+  }
+  .footer {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 15%;
+    span {
+      font-size: 14px;
+      color: rgba(0, 0, 0, 0.45);
+    }
+    img {
+      width: 20px;
+      height: 20px;
+      transform: translateY(25%);
     }
   }
 }
 .bg {
-  // width: 100%;
-  // min-height: 100%;
   background: #f0f2f5 url(@/assets/layouts/background.svg) no-repeat 50%;
   background-size: 100%;
-}
-.footer {
-  span {
-    font-size: 14px;
-    color: rgba(0, 0, 0, 0.45);
-    // text-align: center;
-  }
-  img {
-    width: 20px;
-    height: 20px;
-    transform: translateY(25%);
-  }
 }
 </style>
