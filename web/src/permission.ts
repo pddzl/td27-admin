@@ -2,6 +2,7 @@ import router from "@/router"
 import { useUserStoreHook } from "@/store/modules/user"
 import { usePermissionStoreHook } from "@/store/modules/permission"
 import { ElMessage } from "element-plus"
+import { fixBlankPage } from "@/utils/fix-blank-page"
 import isWhiteList from "@/config/white-list"
 import NProgress from "nprogress"
 import "nprogress/nprogress.css"
@@ -9,6 +10,7 @@ import "nprogress/nprogress.css"
 NProgress.configure({ showSpinner: false })
 
 router.beforeEach(async (to, _from, next) => {
+  fixBlankPage()
   NProgress.start()
   const userStore = useUserStoreHook()
   const permissionStore = usePermissionStoreHook()
