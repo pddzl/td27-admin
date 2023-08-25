@@ -1,4 +1,5 @@
 import { useUserStoreHook } from "@/store/modules/user"
+import router from '@/router/index'
 import axios, { type AxiosInstance, type AxiosRequestConfig } from "axios"
 import { ElMessage } from "element-plus"
 import { get, merge } from "lodash-es"
@@ -33,6 +34,10 @@ function createService() {
             // 本系统采用 code === 0 来表示没有业务错误
             return apiData
           default:
+            if (apiData.data && apiData.data.reload) {
+              useUserStoreHook().logout()
+              router.push({ name: 'Login', replace: true })
+            }
             // 不是正确的 Code
             ElMessage.error(apiData.msg || "Error")
             return Promise.reject(apiData.msg || "Error")
