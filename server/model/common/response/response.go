@@ -29,6 +29,15 @@ func Ok(c *gin.Context) {
 	Result(SUCCESS, map[string]interface{}{}, "操作成功", c)
 }
 
+func ResultStatus(status int, code int, data interface{}, msg string, c *gin.Context) {
+	// 开始时间
+	c.JSON(status, Response{
+		code,
+		data,
+		msg,
+	})
+}
+
 func OkWithMessage(message string, c *gin.Context) {
 	Result(SUCCESS, map[string]interface{}{}, message, c)
 }
@@ -51,4 +60,8 @@ func FailWithMessage(message string, c *gin.Context) {
 
 func FailWithDetailed(data interface{}, message string, c *gin.Context) {
 	Result(ERROR, data, message, c)
+}
+
+func FailWithStatusMessage(status int, message string, c *gin.Context) {
+	ResultStatus(status, ERROR, map[string]interface{}{}, message, c)
 }

@@ -30,6 +30,7 @@ system:
   port: '8888'
   stack: true
   use-multipoint: false
+  upload: './resource/upload' # 上传目录
 
 # mysql configuration
 mysql:

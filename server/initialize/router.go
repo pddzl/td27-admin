@@ -28,7 +28,11 @@ func Routers() *gin.Engine {
 	Router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	// 路由组
+	// -> 系统管理
 	systemRouter := router.RouterGroupApp.System
+
+	// -> 文件管理
+	fileMRouter := router.RouterGroupApp.FileM
 
 	PublicGroup := Router.Group("")
 	{
@@ -45,6 +49,7 @@ func Routers() *gin.Engine {
 	PrivateGroup := Router.Group("")
 	PrivateGroup.Use(middleware.JWTAuth()).Use(middleware.CasbinHandler())
 	{
+		// 系统管理
 		systemRouter.InitUserRouter(PrivateGroup)
 		systemRouter.InitRoleRouter(PrivateGroup)
 		systemRouter.InitMenuRouter(PrivateGroup)
@@ -52,6 +57,8 @@ func Routers() *gin.Engine {
 		systemRouter.InitCasbinRouter(PrivateGroup)
 		systemRouter.InitJwtRouter(PrivateGroup)
 		systemRouter.InitOperationRecordRouter(PrivateGroup)
+		// 文件管理
+		fileMRouter.InitFileRouter(PrivateGroup)
 	}
 
 	global.TD27_LOG.Info("router register success")
