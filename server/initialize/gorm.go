@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"server/global"
+	"server/model/fileM"
 	"server/model/system"
 )
 
@@ -85,6 +86,8 @@ func RegisterTables(db *gorm.DB) {
 		system.ApiModel{},
 		system.JwtBlacklist{},
 		system.OperationRecord{},
+		// fileM
+		fileM.FileModel{},
 	)
 
 	if err != nil {

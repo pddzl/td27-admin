@@ -3,9 +3,12 @@ package fileM
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 	"go.uber.org/zap"
+
 	"server/global"
 	"server/model/common/response"
+	fileMReq "server/model/fileM/request"
 )
 
 type FileApi struct{}
@@ -29,5 +32,31 @@ func (f *FileApi) Upload(c *gin.Context) {
 		global.TD27_LOG.Error("上传失败", zap.Error(err))
 	} else {
 		response.OkWithDetailed(gin.H{"path": fullPath}, "上传成功", c)
+	}
+}
+
+// GetFileList 分页获取文件信息
+func (f *FileApi) GetFileList(c *gin.Context) {
+	var params fileMReq.FileSearchParams
+	_ = c.ShouldBindJSON(&params)
+
+	// 参数校验
+	validate := validator.New()
+	if err := validate.Struct(&params); err != nil {
+		response.FailWithMessage("请求参数错误", c)
+		global.TD27_LOG.Error("请求参数错误", zap.Error(err))
+		return
+	}
+
+	if list, total, err := fileService.GetFileList(params); err != nil {
+		response.FailWithMessage("获取失败", c)
+		global.TD27_LOG.Error("获取失败", zap.Error(err))
+	} else {
+		response.OkWithDetailed(response.PageResult{
+			List:     list,
+			Total:    total,
+			Page:     params.Page,
+			PageSize: params.PageSize,
+		}, "获取成功", c)
 	}
 }
