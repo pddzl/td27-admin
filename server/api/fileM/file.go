@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"go.uber.org/zap"
+	"os"
 
 	"server/global"
 	"server/model/common/response"
@@ -59,4 +60,23 @@ func (f *FileApi) GetFileList(c *gin.Context) {
 			PageSize: params.PageSize,
 		}, "获取成功", c)
 	}
+}
+
+// Download 下载文件
+func (f *FileApi) Download(c *gin.Context) {
+	fileName := c.Query("name")
+
+	path := fmt.Sprintf("%s/%s", global.TD27_CONFIG.System.Upload, fileName)
+
+	// 打开文件
+	_, err := os.Stat(path)
+	if err != nil {
+		response.FailWithMessage(fmt.Sprintf("文件错误：%v", err), c)
+		return
+	}
+
+	c.Header("Content-Type", "application/octet-stream")
+	c.Header("Content-Disposition", "attachment; filename="+fileName)
+	c.Header("Content-Transfer-Encoding", "binary")
+	c.File(path)
 }
