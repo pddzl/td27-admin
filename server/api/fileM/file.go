@@ -23,10 +23,10 @@ func (f *FileApi) Upload(c *gin.Context) {
 	}
 
 	// 只允许上传csv文件
-	//if file.Header.Get("Content-Type") != "text/csv" {
-	//	response.FailWithStatusMessage(400, "只允许上传csv文件", c)
-	//	return
-	//}
+	if file.Header.Get("Content-Type") != "text/csv" {
+		response.FailWithStatusMessage(400, "只允许上传csv文件", c)
+		return
+	}
 
 	if fullPath, err := fileService.Upload(file); err != nil {
 		response.FailWithStatusMessage(400, "上传失败", c)

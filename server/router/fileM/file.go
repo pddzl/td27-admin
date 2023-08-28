@@ -15,7 +15,6 @@ func (f *FileRouter) InitFileRouter(Router *gin.RouterGroup) (R gin.IRoutes) {
 		fileRouter.POST("upload", fileApi.Upload)           // 文件上传
 		fileRouter.POST("getFileList", fileApi.GetFileList) // 分页获取文件信息
 		fileRouter.GET("download", fileApi.Download)        // 下载文件
-
 	}
 	return fileRouter
 }
