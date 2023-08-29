@@ -80,3 +80,15 @@ func (f *FileApi) Download(c *gin.Context) {
 	c.Header("Content-Transfer-Encoding", "binary")
 	c.File(path)
 }
+
+// Delete 删除文件
+func (f *FileApi) Delete(c *gin.Context) {
+	fileName := c.Query("name")
+
+	if err := fileService.Delete(fileName); err != nil {
+		response.FailWithMessage("删除文件失败", c)
+		global.TD27_LOG.Error("删除文件失败", zap.Error(err))
+	} else {
+		response.OkWithMessage("删除文件成功", c)
+	}
+}

@@ -6,8 +6,9 @@ import (
 	"io"
 	"mime/multipart"
 	"os"
+
 	"server/global"
-	fileMModel "server/model/fileM"
+	modelFileM "server/model/fileM"
 	fileMReq "server/model/fileM/request"
 	"server/utils"
 )
@@ -16,7 +17,7 @@ type FileService struct{}
 
 // Upload 上传文件
 func (fs *FileService) Upload(file *multipart.FileHeader) (string, error) {
-	var uploadModel fileMModel.FileModel
+	var uploadModel modelFileM.FileModel
 	uploadModel.Mime = file.Header.Get("Content-Type")
 	// 读取文件、文件后缀
 	fileName, fileExt := utils.GetFileAndExt(file.Filename)
@@ -52,11 +53,11 @@ func (fs *FileService) Upload(file *multipart.FileHeader) (string, error) {
 }
 
 // GetFileList 分页获取文件信息
-func (fs *FileService) GetFileList(params fileMReq.FileSearchParams) ([]fileMModel.FileModel, int64, error) {
+func (fs *FileService) GetFileList(params fileMReq.FileSearchParams) ([]modelFileM.FileModel, int64, error) {
 	limit := params.PageSize
 	offset := params.PageSize * (params.Page - 1)
-	db := global.TD27_DB.Model(&fileMModel.FileModel{})
-	var fileList []fileMModel.FileModel
+	db := global.TD27_DB.Model(&modelFileM.FileModel{})
+	var fileList []modelFileM.FileModel
 
 	if params.Name != "" {
 		db = db.Where("file_name LIKE ?", "%"+params.Name+"%")
@@ -91,4 +92,17 @@ func (fs *FileService) GetFileList(params fileMReq.FileSearchParams) ([]fileMMod
 		}
 	}
 	return fileList, total, err
+}
+
+// Delete 删除文件
+func (fs *FileService) Delete(fileName string) (err error) {
+	// 物理删除
+	err = os.Remove(fmt.Sprintf("%s/%s", global.TD27_CONFIG.System.Upload, fileName))
+
+	// 删除数据库记录
+	if err == nil {
+		err = global.TD27_DB.Where("file_name = ?", fileName).Delete(&modelFileM.FileModel{}).Error
+	}
+
+	return
 }
