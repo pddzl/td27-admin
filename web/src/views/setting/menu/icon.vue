@@ -50,7 +50,8 @@ const options = reactive([
   { key: "load", label: "load" },
   { key: "config", label: "config" },
   { key: "link", label: "link" },
-  { key: "access", label: "access" }
+  { key: "access", label: "access" },
+  { key: "file", label: "file" }
 ])
 
 const metaData = ref(props.meta)

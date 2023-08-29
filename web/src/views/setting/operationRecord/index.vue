@@ -53,7 +53,7 @@
               {{ formatDateTime(scope.row.CreatedAt) }}
             </template>
           </el-table-column>
-          <el-table-column label="操作" fixed="right" min-width="120">
+          <el-table-column label="操作" fixed="right" width="180">
             <template #default="scope">
               <el-button type="primary" text icon="View" size="small" @click="openDetail(scope.row)">详情</el-button>
               <el-popover placement="top" width="160">
