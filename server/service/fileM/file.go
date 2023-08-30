@@ -16,7 +16,7 @@ import (
 type FileService struct{}
 
 // Upload 上传文件
-func (fs *FileService) Upload(file *multipart.FileHeader) (string, error) {
+func (fs *FileService) Upload(file *multipart.FileHeader) (*modelFileM.FileModel, error) {
 	var uploadModel modelFileM.FileModel
 	uploadModel.Mime = file.Header.Get("Content-Type")
 	// 读取文件、文件后缀
@@ -30,26 +30,26 @@ func (fs *FileService) Upload(file *multipart.FileHeader) (string, error) {
 	// 读取文件内容
 	f, err := file.Open()
 	if err != nil {
-		return "", fmt.Errorf("open file failed: %s", err.Error())
+		return nil, fmt.Errorf("open file failed: %s", err.Error())
 	}
 	defer f.Close()
 
 	// 创建目标文件
 	destFile, err := os.Create(fullPath)
 	if err != nil {
-		return "", fmt.Errorf("create dest file failed: %s", err.Error())
+		return nil, fmt.Errorf("create dest file failed: %s", err.Error())
 	}
 	defer destFile.Close()
 
 	// copy内容到目标文件
 	_, err = io.Copy(destFile, f)
 	if err != nil {
-		return "", fmt.Errorf("copy file failed: %s", err.Error())
+		return nil, fmt.Errorf("copy file failed: %s", err.Error())
 	}
 
 	global.TD27_DB.Save(&uploadModel)
 
-	return fullPath, nil
+	return &uploadModel, nil
 }
 
 // GetFileList 分页获取文件信息

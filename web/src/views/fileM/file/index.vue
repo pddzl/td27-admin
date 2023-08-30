@@ -77,8 +77,9 @@ const { paginationData, changeCurrentPage, changePageSize } = usePagination()
 
 const path = ref(import.meta.env.VITE_BASE_API)
 
-const uploadSuccess = (res: ApiResponseData<{ path: string }>) => {
+const uploadSuccess = (res: ApiResponseData<FileData>) => {
   if (res.code === 0) {
+    tableData.value.push(res.data)
     ElMessage.success("上传成功")
   } else {
     ElMessage.error(res.msg)

@@ -11,6 +11,7 @@ export interface FileData {
   fileName: string
   fullPath: string
   mime: string
+  CreatedAt: string
 }
 
 export interface FileDataPageInfo {

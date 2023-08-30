@@ -28,11 +28,11 @@ func (f *FileApi) Upload(c *gin.Context) {
 		return
 	}
 
-	if fullPath, err := fileService.Upload(file); err != nil {
+	if fullInfo, err := fileService.Upload(file); err != nil {
 		response.FailWithStatusMessage(400, "上传失败", c)
 		global.TD27_LOG.Error("上传失败", zap.Error(err))
 	} else {
-		response.OkWithDetailed(gin.H{"path": fullPath}, "上传成功", c)
+		response.OkWithDetailed(fullInfo, "上传成功", c)
 	}
 }
 
