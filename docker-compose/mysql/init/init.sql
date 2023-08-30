@@ -1,13 +1,13 @@
 # ************************************************************
 # Sequel Ace SQL dump
-# Version 20046
+# Version 20050
 #
 # https://sequel-ace.com/
 # https://github.com/Sequel-Ace/Sequel-Ace
 #
 # Host: 127.0.0.1 (MySQL 8.0.28)
 # Database: td27
-# Generation Time: 2023-07-13 07:08:33 +0000
+# Generation Time: 2023-08-30 11:19:15 +0000
 # ************************************************************
 
 
@@ -43,38 +43,61 @@ LOCK TABLES `casbin_rule` WRITE;
 
 INSERT INTO `casbin_rule` (`id`, `ptype`, `v0`, `v1`, `v2`, `v3`, `v4`, `v5`)
 VALUES
-	(187,'p','1','/api/addApi','POST','','',''),
-	(189,'p','1','/api/deleteApi','POST','','',''),
-	(190,'p','1','/api/editApi','POST','','',''),
-	(188,'p','1','/api/getApis','POST','','',''),
-	(191,'p','1','/api/getElTreeApis','POST','','',''),
-	(167,'p','1','/base/captcha','POST','','',''),
-	(168,'p','1','/base/login','POST','','',''),
-	(186,'p','1','/casbin/editCasbin','POST','','',''),
-	(192,'p','1','/jwt/joinInBlacklist','POST','','',''),
-	(182,'p','1','/menu/addMenu','POST','','',''),
-	(184,'p','1','/menu/deleteMenu','POST','','',''),
-	(183,'p','1','/menu/editMenu','POST','','',''),
-	(185,'p','1','/menu/getElTreeMenus','POST','','',''),
-	(181,'p','1','/menu/getMenus','GET','','',''),
-	(194,'p','1','/or/deleteOr','POST','','',''),
-	(195,'p','1','/or/deleteOrByIds','POST','','',''),
-	(193,'p','1','/or/getOrList','POST','','',''),
-	(177,'p','1','/role/addRole','POST','','',''),
-	(178,'p','1','/role/deleteRole','POST','','',''),
-	(179,'p','1','/role/editRole','POST','','',''),
-	(180,'p','1','/role/editRoleMenu','POST','','',''),
-	(176,'p','1','/role/getRoles','POST','','',''),
-	(172,'p','1','/user/addUser','POST','','',''),
-	(171,'p','1','/user/deleteUser','POST','','',''),
-	(173,'p','1','/user/editUser','POST','','',''),
-	(169,'p','1','/user/getUserInfo','GET','','',''),
-	(170,'p','1','/user/getUsers','POST','','',''),
-	(174,'p','1','/user/modifyPass','POST','','',''),
-	(175,'p','1','/user/switchActive','POST','','','');
+	(309,'p','1','/api/addApi','POST','','',''),
+	(311,'p','1','/api/deleteApi','POST','','',''),
+	(312,'p','1','/api/editApi','POST','','',''),
+	(310,'p','1','/api/getApis','POST','','',''),
+	(313,'p','1','/api/getElTreeApis','POST','','',''),
+	(289,'p','1','/base/captcha','POST','','',''),
+	(290,'p','1','/base/login','POST','','',''),
+	(308,'p','1','/casbin/editCasbin','POST','','',''),
+	(321,'p','1','/file/delete','GET','','',''),
+	(320,'p','1','/file/download','GET','','',''),
+	(319,'p','1','/file/getFileList','POST','','',''),
+	(318,'p','1','/file/upload','POST','','',''),
+	(314,'p','1','/jwt/joinInBlacklist','POST','','',''),
+	(304,'p','1','/menu/addMenu','POST','','',''),
+	(306,'p','1','/menu/deleteMenu','POST','','',''),
+	(305,'p','1','/menu/editMenu','POST','','',''),
+	(307,'p','1','/menu/getElTreeMenus','POST','','',''),
+	(303,'p','1','/menu/getMenus','GET','','',''),
+	(316,'p','1','/or/deleteOr','POST','','',''),
+	(317,'p','1','/or/deleteOrByIds','POST','','',''),
+	(315,'p','1','/or/getOrList','POST','','',''),
+	(299,'p','1','/role/addRole','POST','','',''),
+	(300,'p','1','/role/deleteRole','POST','','',''),
+	(301,'p','1','/role/editRole','POST','','',''),
+	(302,'p','1','/role/editRoleMenu','POST','','',''),
+	(298,'p','1','/role/getRoles','POST','','',''),
+	(294,'p','1','/user/addUser','POST','','',''),
+	(293,'p','1','/user/deleteUser','POST','','',''),
+	(295,'p','1','/user/editUser','POST','','',''),
+	(291,'p','1','/user/getUserInfo','GET','','',''),
+	(292,'p','1','/user/getUsers','POST','','',''),
+	(296,'p','1','/user/modifyPass','POST','','',''),
+	(297,'p','1','/user/switchActive','POST','','','');
 
 /*!40000 ALTER TABLE `casbin_rule` ENABLE KEYS */;
 UNLOCK TABLES;
+
+
+# Dump of table fileM_file
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `fileM_file`;
+
+CREATE TABLE `fileM_file` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `created_at` datetime DEFAULT NULL,
+  `updated_at` datetime DEFAULT NULL,
+  `deleted_at` datetime DEFAULT NULL,
+  `file_name` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '文件名',
+  `full_path` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '文件完整路径',
+  `mime` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '文件类型',
+  PRIMARY KEY (`id`),
+  KEY `idx_fileM_file_deleted_at` (`deleted_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 
 
 # Dump of table jwt_blacklists
@@ -119,7 +142,9 @@ VALUES
 	(7,1),
 	(8,1),
 	(9,1),
-	(10,1);
+	(10,1),
+	(12,1),
+	(13,1);
 
 /*!40000 ALTER TABLE `role_menus` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -176,7 +201,11 @@ VALUES
 	(27,'2023-03-11 13:05:40','2023-03-11 13:05:40',NULL,'/jwt/joinInBlacklist','拉黑token','jwt','POST'),
 	(28,'2023-07-13 02:32:16','2023-07-13 02:35:41',NULL,'/or/getOrList','分页获取操作记录','operationRecord','POST'),
 	(29,'2023-07-13 02:33:32','2023-07-13 02:35:50',NULL,'/or/deleteOr','删除操作记录','operationRecord','POST'),
-	(30,'2023-07-13 06:48:47','2023-07-13 06:48:47',NULL,'/or/deleteOrByIds','批量删除操作记录','operationRecord','POST');
+	(30,'2023-07-13 06:48:47','2023-07-13 06:48:47',NULL,'/or/deleteOrByIds','批量删除操作记录','operationRecord','POST'),
+	(31,'2023-08-27 06:05:00','2023-08-27 06:05:00',NULL,'/file/upload','文件上传','file','POST'),
+	(32,'2023-08-27 06:06:43','2023-08-27 06:06:43',NULL,'/file/getFileList','分页获取文件信息','file','POST'),
+	(33,'2023-08-28 15:38:40','2023-08-28 15:38:40',NULL,'/file/download','下载文件','file','GET'),
+	(34,'2023-08-29 15:54:07','2023-08-29 15:54:07',NULL,'/file/delete','删除文件','file','GET');
 
 /*!40000 ALTER TABLE `sys_api` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -215,10 +244,12 @@ VALUES
 	(4,NULL,'2023-06-28 08:12:16',NULL,1,'Menu','menu','','setting/menu/index.vue','{\"title\": \"菜单管理\"}',3),
 	(5,'2023-03-07 01:50:48','2023-06-28 08:11:38',NULL,1,'Api','api','','setting/api/index.vue','{\"title\": \"接口管理\"}',4),
 	(6,'2023-03-07 01:50:48','2023-06-28 08:11:38',NULL,1,'OperationRecord','operationRecord','','setting/operationRecord/index.vue','{\"title\": \"操作记录\"}',5),
-	(7,NULL,'2023-06-28 08:11:23',NULL,0,'Cenu','/cenu','/cenu/cenu1','Layout','{\"title\": \"多级菜单\", \"svgIcon\": \"menu\"}',2),
+	(7,NULL,'2023-08-25 09:55:12',NULL,0,'Cenu','/cenu','/cenu/cenu1','Layout','{\"title\": \"多级菜单\", \"svgIcon\": \"menu\", \"alwaysShow\": true}',2),
 	(8,NULL,'2023-06-28 08:42:39',NULL,7,'Cenu1','cenu1','/cenu/cenu1/cenu1-1','cenu/cenu1/index.vue','{\"title\": \"cenu1\"}',1),
 	(9,NULL,'2023-06-28 08:42:44',NULL,8,'Cenu1-1','cenu1-1','','cenu/cenu1/cenu1-1/index.vue','{\"title\": \"cenu1-1\"}',1),
-	(10,'2023-03-13 06:14:27','2023-06-28 08:43:02',NULL,8,'Cenu1-2','cenu1-2','','cenu/cenu1/cenu1-2/index.vue','{\"title\": \"cenu1-2\"}',2);
+	(10,'2023-03-13 06:14:27','2023-06-28 08:43:02',NULL,8,'Cenu1-2','cenu1-2','','cenu/cenu1/cenu1-2/index.vue','{\"title\": \"cenu1-2\"}',2),
+	(12,'2023-08-26 08:57:01','2023-08-26 09:02:58',NULL,0,'FileM','/fileM','/fileM/file','Layout','{\"title\": \"文件管理\", \"svgIcon\": \"file\", \"alwaysShow\": true}',3),
+	(13,'2023-08-26 08:58:51','2023-08-26 08:58:51',NULL,12,'File','/fileM/file','','fileM/file/index.vue','{\"title\": \"文件\"}',1);
 
 /*!40000 ALTER TABLE `sys_menu` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -271,7 +302,7 @@ LOCK TABLES `sys_role` WRITE;
 
 INSERT INTO `sys_role` (`id`, `created_at`, `updated_at`, `deleted_at`, `role_name`)
 VALUES
-	(1,NULL,'2023-07-05 07:23:48',NULL,'root');
+	(1,NULL,'2023-08-26 08:59:36',NULL,'root');
 
 /*!40000 ALTER TABLE `sys_role` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -304,7 +335,7 @@ LOCK TABLES `sys_user` WRITE;
 
 INSERT INTO `sys_user` (`id`, `created_at`, `updated_at`, `deleted_at`, `username`, `password`, `phone`, `email`, `active`, `role_model_id`)
 VALUES
-	(1,'2023-02-20 12:51:58','2023-03-10 09:59:49',NULL,'admin','e10adc3949ba59abbe56e057f20f883e','11111111111','pddzl@163.com',1,1);
+	(1,'2023-02-20 12:51:58','2023-03-10 09:59:49',NULL,'admin','e10adc3949ba59abbe56e057f20f883e','11111111111','pddzl5@163.com',1,1);
 
 /*!40000 ALTER TABLE `sys_user` ENABLE KEYS */;
 UNLOCK TABLES;
