@@ -20,7 +20,7 @@ COPY --from=0 /server/td27Server ./
 COPY --from=0 /server/config.yaml ./
 COPY --from=0 /server/wait-for-it.sh ./
 
-RUN chmod +x ./wait-for-it.sh
+RUN mkdir -p ./resource/upload && chmod +x ./wait-for-it.sh
 
 EXPOSE 8888
 
