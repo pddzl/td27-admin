@@ -12,7 +12,7 @@
             :show-file-list="false"
             class="upload-btn"
           >
-            <el-button type="primary" plain icon="upload">普通上传</el-button>
+            <el-button type="primary" plain icon="upload">上传</el-button>
           </el-upload>
         </el-form-item>
         <el-form-item prop="name" label="名称">

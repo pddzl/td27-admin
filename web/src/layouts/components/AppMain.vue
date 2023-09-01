@@ -27,7 +27,7 @@ const tagsViewStore = useTagsViewStore()
 
 .app-main {
   width: 100%;
-  background-color: var(--v3-body-bg-color);
+  background-color: var(--base-body-bg-color);
 }
 
 .app-scrollbar {

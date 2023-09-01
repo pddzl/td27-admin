@@ -20,6 +20,8 @@ export interface LayoutSettings {
   showSearchMenu: boolean
   /** 是否缓存标签栏 */
   cacheTagsView: boolean
+  /** 开启系统水印 */
+  showWatermark: boolean
 }
 
 /** 默认配置 */
@@ -32,7 +34,8 @@ const defaultSettings: LayoutSettings = {
   showThemeSwitch: true,
   showScreenfull: true,
   showSearchMenu: true,
-  cacheTagsView: false
+  cacheTagsView: false,
+  showWatermark: true,
 }
 
 /** 项目配置 */

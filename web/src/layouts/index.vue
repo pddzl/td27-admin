@@ -4,6 +4,7 @@ import { storeToRefs } from "pinia"
 import { useAppStore } from "@/store/modules/app"
 import { useSettingsStore } from "@/store/modules/settings"
 import useResize from "./hooks/useResize"
+import { useWatermark } from "@/hooks/useWatermark"
 import LeftMode from "./LeftMode.vue"
 import TopMode from "./TopMode.vue"
 import LeftTopMode from "./LeftTopMode.vue"
@@ -13,11 +14,12 @@ import { getCssVariableValue, setCssVariableValue } from "@/utils"
 
 /** Layout 布局响应式 */
 useResize()
+const { setWatermark, clearWatermark } = useWatermark()
 
 const appStore = useAppStore()
 const settingsStore = useSettingsStore()
 
-const { showSettings, layoutMode, showTagsView } = storeToRefs(settingsStore)
+const { showSettings, layoutMode, showTagsView, showWatermark } = storeToRefs(settingsStore)
 
 //#region 隐藏标签栏时删除其高度，是为了让 Logo 组件高度和 Header 区域高度始终一致
 const cssVariableName = "--base-tagsview-height"
@@ -28,6 +30,11 @@ watchEffect(() => {
     : setCssVariableValue(cssVariableName, "0px")
 })
 //#endregion
+
+/** 开启或关闭系统水印 */
+watchEffect(() => {
+  showWatermark.value ? setWatermark(import.meta.env.VITE_APP_TITLE) : clearWatermark()
+})
 </script>
 
 <template>
