@@ -8,10 +8,14 @@
 
 ## 内置功能
 
-- 权限管理：登录认证 `jwt`，后端接口认证 `casbin`。
+- 用户管理：用户是系统操作者，该功能主要完成系统用户配置。
 - 角色管理：分配权限控制的对象，不可角色可分配不同的菜单和后端接口权限。
 - 菜单管理：根据用户角色动态分配菜单配置，实现不同角色不同菜单。
-- api管理：不同角色可调用的api接口的权限不同。
+- 接口管理：不同角色可调用的api接口的权限不同。
+- 操作记录：详细记录用户访问接口的行为
+- 定时任务：目前仅支持配置文件方式。
+- 水印设置：目前仅支持在前端设置。
+- 文件管理：文件上传、下载、删除
 
 ## 运行
 
@@ -91,24 +95,24 @@ docker-compose -f docker-compose/docker-compose.yml up -d
 
 <table>
   <tr>
+    <td><img src="./img/p0.png"/></td>
+    <td><img src="./img/personal.png"/></td>
+  </tr>
+  <tr>
     <td><img src="./img/p1.png"/></td>
     <td><img src="./img/p2.png"/></td>
   </tr>
   <tr>
     <td><img src="./img/p3.png"/></td>
+    <td><img src="./img/menu-add.png"/></td>
+  </tr>
+  <tr>
     <td><img src="./img/p4.png"/></td>
-  </tr>
-  <tr>
     <td><img src="./img/p5.png"/></td>
+  </tr>
+<tr>
     <td><img src="./img/p6.png"/></td>
-  </tr>
-  <tr>
-    <td><img src="./img/p7.png"/></td>
-    <td><img src="./img/p8.png"/></td>
-  </tr>
-  <tr>
-    <td><img src="./img/p9.png"/></td>
-    <td><img src="./img/p10.png"/></td>
+    <td><img src="./img/file.png"/></td>
   </tr>
 </table>
 
