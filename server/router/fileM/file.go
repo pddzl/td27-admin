@@ -8,14 +8,17 @@ import (
 
 type FileRouter struct{}
 
-func (f *FileRouter) InitFileRouter(Router *gin.RouterGroup) (R gin.IRoutes) {
+func (f *FileRouter) InitFileRouter(Router *gin.RouterGroup) {
 	fileRouter := Router.Group("file").Use(middleware.OperationRecord())
+	fileWithoutRouter := Router.Group("file")
+
 	fileApi := api.ApiGroupApp.FileApiGroup.FileApi
 	{
-		fileRouter.POST("upload", fileApi.Upload)           // 文件上传
-		fileRouter.POST("getFileList", fileApi.GetFileList) // 分页获取文件信息
-		fileRouter.GET("download", fileApi.Download)        // 下载文件
-		fileRouter.GET("delete", fileApi.Delete)            // 删除文件
+		fileRouter.POST("upload", fileApi.Upload)    // 文件上传
+		fileRouter.GET("download", fileApi.Download) // 下载文件
+		fileRouter.GET("delete", fileApi.Delete)     // 删除文件
 	}
-	return fileRouter
+	{
+		fileWithoutRouter.POST("getFileList", fileApi.GetFileList) // 分页获取文件信息
+	}
 }

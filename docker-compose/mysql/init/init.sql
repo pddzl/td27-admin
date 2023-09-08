@@ -271,7 +271,7 @@ CREATE TABLE `sys_operation_record` (
   `status` bigint DEFAULT NULL COMMENT '请求状态',
   `user_agent` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `req_param` text COLLATE utf8mb4_unicode_ci COMMENT '请求Body',
-  `resp_data` text COLLATE utf8mb4_unicode_ci COMMENT '响应数据',
+  `resp_data` mediumtext COLLATE utf8mb4_unicode_ci COMMENT '响应数据',
   `resp_time` bigint DEFAULT NULL,
   `user_id` bigint unsigned DEFAULT NULL COMMENT '用户id',
   `user_name` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '用户名称',
