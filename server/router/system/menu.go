@@ -8,15 +8,18 @@ import (
 
 type MenuRouter struct{}
 
-func (u *MenuRouter) InitMenuRouter(Router *gin.RouterGroup) (R gin.IRoutes) {
+func (u *MenuRouter) InitMenuRouter(Router *gin.RouterGroup) {
 	menuRouter := Router.Group("menu").Use(middleware.OperationRecord())
+	menuWithoutRouter := Router.Group("menu")
+
 	menuApi := api.ApiGroupApp.SystemApiGroup.MenuApi
 	{
-		menuRouter.GET("getMenus", menuApi.GetMenus)
 		menuRouter.POST("addMenu", menuApi.AddMenu)
 		menuRouter.POST("editMenu", menuApi.EditMenu)
 		menuRouter.POST("deleteMenu", menuApi.DeleteMenu)
 		menuRouter.POST("getElTreeMenus", menuApi.GetElTreeMenus)
 	}
-	return menuRouter
+	{
+		menuWithoutRouter.GET("getMenus", menuApi.GetMenus)
+	}
 }
