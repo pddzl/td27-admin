@@ -57,7 +57,7 @@ func Gorm() *gorm.DB {
 		return nil
 	}
 
-	dsn := m.Username + ":" + m.Password + "@tcp(" + m.Host + ")/" + m.Dbname + "?" + m.Config
+	dsn := m.Username + ":" + m.Password + "@tcp(" + fmt.Sprintf("%s:%s", m.Host, m.Port) + ")/" + m.Dbname + "?" + m.Config
 	mysqlConfig := mysql.Config{
 		DSN:                       dsn,   // DSN data source name
 		DefaultStringSize:         191,   // string 类型字段的默认长度
