@@ -12,6 +12,8 @@ export interface LayoutSettings {
   showLogo: boolean
   /** 是否固定 Header */
   fixedHeader: boolean
+  /** 是否显示页脚 Footer */
+  showFooter: boolean
   /** 是否显示切换主题按钮 */
   showThemeSwitch: boolean
   /** 是否显示全屏按钮 */
@@ -30,6 +32,7 @@ const defaultSettings: LayoutSettings = {
   showSettings: true,
   showTagsView: true,
   fixedHeader: true,
+  showFooter: true,
   showLogo: true,
   showThemeSwitch: true,
   showScreenfull: true,
