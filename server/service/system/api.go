@@ -179,5 +179,5 @@ func (a *ApiService) EditApi(eApi systemReq.EditApi) (err error) {
 		return fmt.Errorf("editApi: 更新casbin rule -> %v", err)
 	}
 
-	return global.TD27_DB.Debug().Model(&oldApiModel).Updates(map[string]interface{}{"path": eApi.Path, "method": eApi.Method, "api_group": eApi.ApiGroup, "description": eApi.Description}).Error
+	return global.TD27_DB.Model(&oldApiModel).Updates(map[string]interface{}{"path": eApi.Path, "method": eApi.Method, "api_group": eApi.ApiGroup, "description": eApi.Description}).Error
 }
