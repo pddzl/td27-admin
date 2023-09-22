@@ -84,15 +84,17 @@
       </div>
     </el-card>
     <el-dialog v-model="dialogVisible" title="接口详情" width="70%" :destroy-on-close="true" center>
-      <div>
-        <h3 style="color: rgba(0, 0, 0, 0.69)">请求参数</h3>
-        <!-- eslint-disable-next-line vue/attribute-hyphenation -->
-        <vue-json-pretty :data="reqParam" :showLine="true" />
+      <div v-if="JSON.stringify(reqParam) != '{}'">
+        <h4 class="info-header">请求参数</h4>
+        <div class="info-wrapper">
+          <vue-json-pretty :data="reqParam" :showLine="true" :deep="2" />
+        </div>
       </div>
       <div>
-        <h3 style="color: rgba(0, 0, 0, 0.69)">接口返回</h3>
-        <!-- eslint-disable-next-line vue/attribute-hyphenation -->
-        <vue-json-pretty :data="respData" :showLine="true" />
+        <p class="info-header">接口返回</p>
+        <div class="info-wrapper">
+          <vue-json-pretty :data="respData" :showLine="true" :deep="2" />
+        </div>
       </div>
     </el-dialog>
   </div>
@@ -220,6 +222,15 @@ const deleteByIdsFunc = async () => {
 </script>
 
 <style lang="scss" scoped>
+.info-header {
+  color: rgba(0, 0, 0, 0.575);
+  font-size: 14px;
+}
+
+.info-wrapper {
+  padding: 5px;
+  background-color: rgba(128, 128, 128, 0.069);
+}
 .search-wrapper {
   margin-bottom: 20px;
   :deep(.el-card__body) {
