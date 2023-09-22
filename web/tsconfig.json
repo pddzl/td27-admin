@@ -7,7 +7,6 @@
     "moduleResolution": "node",
     /** TS 严格模式 */
     "strict": true,
-    "jsx": "preserve",
     "importHelpers": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
@@ -34,7 +33,6 @@
   "include": [
     "src/**/*.ts",
     "src/**/*.d.ts",
-    "src/**/*.tsx",
     "src/**/*.vue",
     "tests/**/*.ts",
     "types/**/*.d.ts",
