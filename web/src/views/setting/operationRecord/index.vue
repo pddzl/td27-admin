@@ -93,7 +93,7 @@
       <div>
         <p class="info-header">接口返回</p>
         <div class="info-wrapper">
-          <vue-json-pretty :data="respData" :showLine="true" :deep="2" />
+          <vue-json-pretty :data="respData" :showLine="true" :deep="3" />
         </div>
       </div>
     </el-dialog>
@@ -231,6 +231,7 @@ const deleteByIdsFunc = async () => {
   padding: 5px;
   background-color: rgba(128, 128, 128, 0.069);
 }
+
 .search-wrapper {
   margin-bottom: 20px;
   :deep(.el-card__body) {
