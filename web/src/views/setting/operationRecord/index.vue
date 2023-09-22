@@ -93,7 +93,7 @@
       <div>
         <p class="info-header">接口返回</p>
         <div class="info-wrapper">
-          <vue-json-pretty :data="respData" :showLine="true" :deep="3" />
+          <vue-json-pretty :data="respData" :showLine="true" :deep="2" />
         </div>
       </div>
     </el-dialog>
