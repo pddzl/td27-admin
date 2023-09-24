@@ -1,10 +1,10 @@
 package request
 
 type Role struct {
-	RoleName string `json:"roleName" validate:"required"`
+	RoleName string `json:"roleName" validate:"required"` // 角色名称
 }
 
 type EditRole struct {
-	ID       uint   `json:"id" validate:"required"`
-	RoleName string `json:"roleName" validate:"required"`
+	ID       uint   `json:"id" validate:"required"`       // 角色ID
+	RoleName string `json:"roleName" validate:"required"` // 角色名称
 }

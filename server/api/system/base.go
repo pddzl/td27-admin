@@ -25,12 +25,11 @@ var store = base64Captcha.DefaultMemStore
 type BaseApi struct{}
 
 // Captcha
-// @Tags      Base
+// @Tags      BaseApi
 // @Summary   生成验证码
 // @Security  ApiKeyAuth
-// @accept    application/json
 // @Produce   application/json
-// @Success   200  {object}  response.Response{data=systemRes.SysCaptchaResponse,msg=string}  "生成验证码,返回包括随机数id,base64,验证码长度"
+// @Success   200  {object}  response.Response{data=systemRes.SysCaptchaResponse,msg=string}
 // @Router    /base/captcha [post]
 func (ba *BaseApi) Captcha(c *gin.Context) {
 	// 字符,公式,验证码配置
@@ -52,11 +51,12 @@ func (ba *BaseApi) Captcha(c *gin.Context) {
 }
 
 // Login
-// @Tags     Base
+// @Tags     BaseApi
 // @Summary  用户登录
+// @accept    application/json
 // @Produce   application/json
-// @Param    data  body      systemReq.Login                                             true  "用户名, 密码, 验证码"
-// @Success  200   {object}  response.Response{data=systemRes.LoginResponse,msg=string}  "返回包括用户信息,token,过期时间"
+// @Param    data  body      systemReq.Login true "请求参数"
+// @Success  200   {object}  response.Response{data=systemRes.LoginResponse,msg=string}
 // @Router   /base/login [post]
 func (ba *BaseApi) Login(c *gin.Context) {
 	var login systemReq.Login

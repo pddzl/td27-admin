@@ -14,7 +14,15 @@ import (
 
 type ApiApi struct{}
 
-// AddApi 添加api
+// AddApi
+// @Tags      ApiApi
+// @Summary   添加api
+// @Security  ApiKeyAuth
+// @accept    application/json
+// @Produce   application/json
+// @Param     data  body      systemModel.ApiModel true "请求参数"
+// @Success   200   {object}  response.Response{data=systemModel.ApiModel,msg=string}
+// @Router    /api/addApi [post]
 func (a *ApiApi) AddApi(c *gin.Context) {
 	var apiReq systemModel.ApiModel
 	_ = c.ShouldBindJSON(&apiReq)
@@ -35,7 +43,15 @@ func (a *ApiApi) AddApi(c *gin.Context) {
 	}
 }
 
-// GetApis 列出所有api
+// GetApis
+// @Tags      ApiApi
+// @Summary   分页获取api
+// @Security  ApiKeyAuth
+// @accept    application/json
+// @Produce   application/json
+// @Param     data  body      systemReq.ApiSearchParams true  "请求参数"
+// @Success   200   {object}  response.Response{data=response.PageResult{list=[]system.ApiModel},msg=string}
+// @Router    /api/getApis [post]
 func (a *ApiApi) GetApis(c *gin.Context) {
 	var apiSp systemReq.ApiSearchParams
 	_ = c.ShouldBindJSON(&apiSp)
@@ -61,7 +77,15 @@ func (a *ApiApi) GetApis(c *gin.Context) {
 	}
 }
 
-// DeleteApi 删除指定api
+// DeleteApi
+// @Tags      ApiApi
+// @Summary   删除api
+// @Security  ApiKeyAuth
+// @accept    application/json
+// @Produce   application/json
+// @Param     data  body      request.CId true "请求参数"
+// @Success   200   {object}  response.Response{msg=string}
+// @Router    /api/deleteApi [post]
 func (a *ApiApi) DeleteApi(c *gin.Context) {
 	var cId request.CId
 	_ = c.ShouldBindJSON(&cId)
@@ -82,7 +106,15 @@ func (a *ApiApi) DeleteApi(c *gin.Context) {
 	}
 }
 
-// EditApi 编辑api
+// EditApi
+// @Tags      ApiApi
+// @Summary   编辑api
+// @Security  ApiKeyAuth
+// @accept    application/json
+// @Produce   application/json
+// @Param     data  body      systemReq.EditApi true "请求参数"
+// @Success   200   {object}  response.Response{msg=string}
+// @Router    /api/editApi [post]
 func (a *ApiApi) EditApi(c *gin.Context) {
 	var eApi systemReq.EditApi
 	_ = c.ShouldBindJSON(&eApi)
@@ -103,7 +135,15 @@ func (a *ApiApi) EditApi(c *gin.Context) {
 	}
 }
 
-// GetElTreeApis 格式化列出所有api
+// GetElTreeApis
+// @Tags      ApiApi
+// @Summary   格式化列出所有api
+// @Security  ApiKeyAuth
+// @accept    application/json
+// @Produce   application/json
+// @Param     data  body      request.CId true "请求参数"
+// @Success   200   {object}  response.Response{data=systemRep.ApiTree{list=[]systemModel.ApiTree,checkedKey=[]string},msg=string}
+// @Router    /api/getElTreeApis [post]
 func (a *ApiApi) GetElTreeApis(c *gin.Context) {
 	var cId request.CId
 	_ = c.ShouldBindJSON(&cId)

@@ -3,11 +3,10 @@ package request
 import "server/model/common/request"
 
 type apiStruct struct {
-	Path     string `json:"path"`
-	ApiGroup string `json:"api_group"`
-	//Method      string `json:"method" validate:"oneof=GET POST DELETE PUT"`
-	Method      string `json:"method"`
-	Description string `json:"description"`
+	Path        string `json:"path"`                                                  // 路径
+	ApiGroup    string `json:"api_group"`                                             // API分组
+	Method      string `json:"method" validate:"omitempty,oneof=GET POST DELETE PUT"` // 请求方法
+	Description string `json:"description"`                                           // 描述
 }
 
 // ApiSearchParams api分页条件查询及排序结构体
@@ -19,6 +18,6 @@ type ApiSearchParams struct {
 }
 
 type EditApi struct {
-	Id uint `json:"id" validate:"required"`
+	Id uint `json:"id" validate:"required"` // api ID
 	apiStruct
 }

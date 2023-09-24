@@ -11,13 +11,12 @@ import (
 type JwtApi struct{}
 
 // JoinInBlacklist
-// @Tags      Jwt
+// @Tags      JwtApi
 // @Summary   jwt加入黑名单
 // @Security  ApiKeyAuth
-// @accept    application/json
 // @Produce   application/json
-// @Success   200  {object}  response.Response{msg=string}  "jwt加入黑名单"
-// @Router    /jwt/jsonInBlacklist [post]
+// @Success   200  {object}  response.Response{msg=string}
+// @Router    /jwt/jsonInBlacklist [POST]
 func (j *JwtApi) JoinInBlacklist(c *gin.Context) {
 	token := c.Request.Header.Get("x-token")
 	jwt := system.JwtBlacklist{Jwt: token}

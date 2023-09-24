@@ -13,7 +13,13 @@ import (
 
 type UserApi struct{}
 
-// GetUserInfo 获取用户信息
+// GetUserInfo
+// @Tags      UserApi
+// @Summary   获取用户信息
+// @Security  ApiKeyAuth
+// @Produce   application/json
+// @Success   200   {object}  response.Response{msg=string}
+// @Router    /user/getUserInfo [post]
 func (ua *UserApi) GetUserInfo(c *gin.Context) {
 	userInfo, err := utils.GetUserInfo(c)
 	if err != nil {
@@ -28,7 +34,15 @@ func (ua *UserApi) GetUserInfo(c *gin.Context) {
 	}
 }
 
-// GetUsers 获取所有用户
+// GetUsers
+// @Tags      UserApi
+// @Summary   分页获取用户
+// @Security  ApiKeyAuth
+// @accept    application/json
+// @Produce   application/json
+// @Param     data  body      request.PageInfo true "请求参数"
+// @Success   200   {object}  response.Response{data=response.PageResult{list=[]response.UserResult},msg=string}
+// @Router    /user/getUsers [post]
 func (ua *UserApi) GetUsers(c *gin.Context) {
 	var pageInfo request.PageInfo
 	_ = c.ShouldBindJSON(&pageInfo)
@@ -46,7 +60,15 @@ func (ua *UserApi) GetUsers(c *gin.Context) {
 	}
 }
 
-// DeleteUser 删除用户
+// DeleteUser
+// @Tags      UserApi
+// @Summary   删除用户
+// @Security  ApiKeyAuth
+// @accept    application/json
+// @Produce   application/json
+// @Param     data  body      request.CId true "请求参数"
+// @Success   200   {object}  response.Response{msg=string}
+// @Router    /user/deleteUser [post]
 func (ua *UserApi) DeleteUser(c *gin.Context) {
 	var cId request.CId
 	_ = c.ShouldBindJSON(&cId)
@@ -67,7 +89,15 @@ func (ua *UserApi) DeleteUser(c *gin.Context) {
 	}
 }
 
-// AddUser 添加用户
+// AddUser
+// @Tags      UserApi
+// @Summary   添加用户
+// @Security  ApiKeyAuth
+// @accept    application/json
+// @Produce   application/json
+// @Param     data  body      systemReq.AddUser true "请求参数"
+// @Success   200   {object}  response.Response{msg=string}
+// @Router    /user/addUser [post]
 func (ua *UserApi) AddUser(c *gin.Context) {
 	var addUser systemReq.AddUser
 	_ = c.ShouldBindJSON(&addUser)
@@ -88,7 +118,15 @@ func (ua *UserApi) AddUser(c *gin.Context) {
 	}
 }
 
-// EditUser 编辑用户
+// EditUser
+// @Tags      UserApi
+// @Summary   编辑用户
+// @Security  ApiKeyAuth
+// @accept    application/json
+// @Produce   application/json
+// @Param     data  body      systemReq.EditUser true "请求参数"
+// @Success   200   {object}  response.Response{msg=string}
+// @Router    /user/editUser [post]
 func (ua *UserApi) EditUser(c *gin.Context) {
 	var editUser systemReq.EditUser
 	_ = c.ShouldBindJSON(&editUser)
@@ -109,7 +147,15 @@ func (ua *UserApi) EditUser(c *gin.Context) {
 	}
 }
 
-// ModifyPass 修改用户密码
+// ModifyPass
+// @Tags      UserApi
+// @Summary   修改用户密码
+// @Security  ApiKeyAuth
+// @accept    application/json
+// @Produce   application/json
+// @Param     data  body      systemReq.ModifyPass true "请求参数"
+// @Success   200   {object}  response.Response{msg=string}
+// @Router    /user/modifyPass [post]
 func (ua *UserApi) ModifyPass(c *gin.Context) {
 	var mp systemReq.ModifyPass
 	_ = c.ShouldBindJSON(&mp)
@@ -130,7 +176,15 @@ func (ua *UserApi) ModifyPass(c *gin.Context) {
 	}
 }
 
-// SwitchActive 切换启用状态
+// SwitchActive
+// @Tags      UserApi
+// @Summary   切换启用状态
+// @Security  ApiKeyAuth
+// @accept    application/json
+// @Produce   application/json
+// @Param     data  body      systemReq.SwitchActive true "请求参数"
+// @Success   200   {object}  response.Response{msg=string}
+// @Router    /user/switchActive [post]
 func (ua *UserApi) SwitchActive(c *gin.Context) {
 	var sa systemReq.SwitchActive
 	_ = c.ShouldBindJSON(&sa)

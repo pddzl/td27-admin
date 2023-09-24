@@ -14,7 +14,15 @@ import (
 
 type FileApi struct{}
 
-// Upload 上传文件
+// Upload
+// @Tags      FileApi
+// @Summary   上传文件
+// @Security  ApiKeyAuth
+// @accept    mpfd
+// @Produce   application/json
+// @Param     file formData file true "The file to upload"
+// @Success   200   {object}  response.Response{msg=string}
+// @Router    /file/upload [post]
 func (f *FileApi) Upload(c *gin.Context) {
 	file, err := c.FormFile("file")
 	if err != nil {
@@ -36,7 +44,15 @@ func (f *FileApi) Upload(c *gin.Context) {
 	}
 }
 
-// GetFileList 分页获取文件信息
+// GetFileList
+// @Tags      FileApi
+// @Summary   分页获取文件信息
+// @Security  ApiKeyAuth
+// @accept    application/json
+// @Produce   application/json
+// @Param     data  body      fileMReq.FileSearchParams true  "请求参数"
+// @Success   200   {object}  response.Response{data=response.PageResult{list=[]fileM.FileModel},msg=string}
+// @Router    /file/getFileList [post]
 func (f *FileApi) GetFileList(c *gin.Context) {
 	var params fileMReq.FileSearchParams
 	_ = c.ShouldBindJSON(&params)
@@ -62,7 +78,15 @@ func (f *FileApi) GetFileList(c *gin.Context) {
 	}
 }
 
-// Download 下载文件
+// Download
+// @Tags      FileApi
+// @Summary   下载文件
+// @Security  ApiKeyAuth
+// @accept    application/json
+// @Produce   octet-stream
+// @Param     name query string true "文件名"
+// @Success   200   {file} application/octet-stream
+// @Router    /file/download [get]
 func (f *FileApi) Download(c *gin.Context) {
 	fileName := c.Query("name")
 
@@ -81,7 +105,15 @@ func (f *FileApi) Download(c *gin.Context) {
 	c.File(path)
 }
 
-// Delete 删除文件
+// Delete
+// @Tags      FileApi
+// @Summary   删除文件
+// @Security  ApiKeyAuth
+// @accept    application/json
+// @Produce   application/json
+// @Param     name query string true "文件名"
+// @Success   200   {object}  response.Response{msg=string}
+// @Router    /file/delete [get]
 func (f *FileApi) Delete(c *gin.Context) {
 	fileName := c.Query("name")
 

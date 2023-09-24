@@ -13,7 +13,15 @@ import (
 
 type OperationRecordApi struct{}
 
-// GetOperationRecordList 分页获取操作记录
+// GetOperationRecordList
+// @Tags      OperationRecordApi
+// @Summary   分页获取操作记录
+// @Security  ApiKeyAuth
+// @accept    application/json
+// @Produce   application/json
+// @Param     data  body      systemReq.OrSearchParams true "请求参数"
+// @Success   200   {object}  response.Response{data=response.PageResult{list=[]system.OperationRecord},msg=string}
+// @Router    /or/getOperationRecordList [post]
 func (o *OperationRecordApi) GetOperationRecordList(c *gin.Context) {
 	var orSp systemReq.OrSearchParams
 	_ = c.ShouldBindJSON(&orSp)
@@ -39,7 +47,15 @@ func (o *OperationRecordApi) GetOperationRecordList(c *gin.Context) {
 	}
 }
 
-// DeleteOperationRecord 批量删除操作记录
+// DeleteOperationRecord
+// @Tags      OperationRecordApi
+// @Summary   删除操作记录
+// @Security  ApiKeyAuth
+// @accept    application/json
+// @Produce   application/json
+// @Param     data  body      request.CId true "请求参数"
+// @Success   200   {object}  response.Response{msg=string}
+// @Router    /or/deleteOperationRecord [post]
 func (o *OperationRecordApi) DeleteOperationRecord(c *gin.Context) {
 	var cId request.CId
 	_ = c.ShouldBindJSON(&cId)
@@ -60,7 +76,15 @@ func (o *OperationRecordApi) DeleteOperationRecord(c *gin.Context) {
 	}
 }
 
-// DeleteOperationRecordByIds 批量删除操作记录
+// DeleteOperationRecordByIds
+// @Tags      OperationRecordApi
+// @Summary   批量删除操作记录
+// @Security  ApiKeyAuth
+// @accept    application/json
+// @Produce   application/json
+// @Param     data  body      request.CIds true "请求参数"
+// @Success   200   {object}  response.Response{msg=string}
+// @Router    /or/deleteOperationRecordByIds [post]
 func (o *OperationRecordApi) DeleteOperationRecordByIds(c *gin.Context) {
 	var cIds request.CIds
 	_ = c.ShouldBindJSON(&cIds)

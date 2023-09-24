@@ -6,7 +6,7 @@ type CasbinInfo struct {
 }
 
 type ReqCasbin struct {
-	RoleId      uint         `json:"roleId" validate:"required"`
+	RoleId      uint         `json:"roleId" validate:"required"` // 角色ID
 	CasbinInfos []CasbinInfo `json:"casbinInfos"`
 }
 

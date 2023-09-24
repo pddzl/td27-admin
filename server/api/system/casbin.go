@@ -12,6 +12,15 @@ import (
 
 type CasbinApi struct{}
 
+// EditCasbin
+// @Tags      CasbinApi
+// @Summary   编辑casbin
+// @Security  ApiKeyAuth
+// @accept    application/json
+// @Produce   application/json
+// @Param     data  body      systemReq.ReqCasbin true "请求参数"
+// @Success   200   {object}  response.Response{msg=string}
+// @Router    /casbin/editCasbin [post]
 func (ca *CasbinApi) EditCasbin(c *gin.Context) {
 	var reqCasbin systemReq.ReqCasbin
 	_ = c.ShouldBindJSON(&reqCasbin)

@@ -14,6 +14,13 @@ import (
 
 type MenuApi struct{}
 
+// GetMenus
+// @Tags      MenuApi
+// @Summary   获取用户菜单
+// @Security  ApiKeyAuth
+// @Produce   application/json
+// @Success   200   {object}  response.Response{data=[]system.MenuModel,msg=string}
+// @Router    /menu/getMenus [post]
 func (ma *MenuApi) GetMenus(c *gin.Context) {
 	userInfo, err := utils.GetUserInfo(c)
 	if err != nil {
@@ -30,6 +37,15 @@ func (ma *MenuApi) GetMenus(c *gin.Context) {
 	}
 }
 
+// AddMenu
+// @Tags      MenuApi
+// @Summary   添加菜单
+// @Security  ApiKeyAuth
+// @accept    application/json
+// @Produce   application/json
+// @Param     data  body      systemReq.EditMenuReq true "请求参数"
+// @Success   200   {object}  response.Response{msg=string}
+// @Router    /menu/addMenu [post]
 func (ma *MenuApi) AddMenu(c *gin.Context) {
 	var menuReq systemReq.Menu
 	_ = c.ShouldBindJSON(&menuReq)
@@ -49,6 +65,15 @@ func (ma *MenuApi) AddMenu(c *gin.Context) {
 	}
 }
 
+// EditMenu
+// @Tags      MenuApi
+// @Summary   编辑菜单
+// @Security  ApiKeyAuth
+// @accept    application/json
+// @Produce   application/json
+// @Param     data  body      systemReq.EditMenuReq true "请求参数"
+// @Success   200   {object}  response.Response{msg=string}
+// @Router    /menu/editMenu [post]
 func (ma *MenuApi) EditMenu(c *gin.Context) {
 	var editMenuReq systemReq.EditMenuReq
 	_ = c.ShouldBindJSON(&editMenuReq)
@@ -69,6 +94,15 @@ func (ma *MenuApi) EditMenu(c *gin.Context) {
 	}
 }
 
+// DeleteMenu
+// @Tags      MenuApi
+// @Summary   删除菜单
+// @Security  ApiKeyAuth
+// @accept    application/json
+// @Produce   application/json
+// @Param     data  body      request.CId true "请求参数"
+// @Success   200   {object}  response.Response{msg=string}
+// @Router    /menu/deleteMenu [post]
 func (ma *MenuApi) DeleteMenu(c *gin.Context) {
 	var cId request.CId
 	_ = c.ShouldBindJSON(&cId)
@@ -89,6 +123,15 @@ func (ma *MenuApi) DeleteMenu(c *gin.Context) {
 	}
 }
 
+// GetElTreeMenus
+// @Tags      MenuApi
+// @Summary   获取菜单树
+// @Security  ApiKeyAuth
+// @accept    application/json
+// @Produce   application/json
+// @Param     data  body      request.CId true "请求参数"
+// @Success   200   {object}  response.Response{data=systemRep.Menu{list=[]system.MenuModel,menuIds=[]uint},msg=string}
+// @Router    /menu/getElTreeMenus [post]
 func (ma *MenuApi) GetElTreeMenus(c *gin.Context) {
 	var cId request.CId
 	_ = c.ShouldBindJSON(&cId)

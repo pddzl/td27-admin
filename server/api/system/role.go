@@ -12,7 +12,13 @@ import (
 
 type RoleApi struct{}
 
-// GetRoles 获取所有角色
+// GetRoles
+// @Tags      RoleApi
+// @Summary   获取所有角色
+// @Security  ApiKeyAuth
+// @Produce   application/json
+// @Success   200   {object}  response.Response{data=[]system.RoleModel,msg=string}
+// @Router    /role/getRoles [post]
 func (ra *RoleApi) GetRoles(c *gin.Context) {
 	if list, err := roleService.GetRoles(); err != nil {
 		response.FailWithMessage(err.Error(), c)
@@ -21,7 +27,15 @@ func (ra *RoleApi) GetRoles(c *gin.Context) {
 	}
 }
 
-// AddRole 添加角色
+// AddRole
+// @Tags      RoleApi
+// @Summary   添加角色
+// @Security  ApiKeyAuth
+// @accept    application/json
+// @Produce   application/json
+// @Param     data  body      systemReq.Role true "请求参数"
+// @Success   200   {object}  response.Response{data=system.RoleModel,msg=string}
+// @Router    /api/addRole [post]
 func (ra *RoleApi) AddRole(c *gin.Context) {
 	var roleReq systemReq.Role
 	_ = c.ShouldBindJSON(&roleReq)
@@ -45,7 +59,15 @@ func (ra *RoleApi) AddRole(c *gin.Context) {
 	}
 }
 
-// DeleteRole 删除角色
+// DeleteRole
+// @Tags      RoleApi
+// @Summary   删除角色
+// @Security  ApiKeyAuth
+// @accept    application/json
+// @Produce   application/json
+// @Param     data  body      request.CId true "请求参数"
+// @Success   200   {object}  response.Response{msg=string}
+// @Router    /api/deleteRole [post]
 func (ra *RoleApi) DeleteRole(c *gin.Context) {
 	var cId request.CId
 	_ = c.ShouldBindJSON(&cId)
@@ -66,7 +88,15 @@ func (ra *RoleApi) DeleteRole(c *gin.Context) {
 	}
 }
 
-// EditRole 编辑用户
+// EditRole
+// @Tags      RoleApi
+// @Summary   编辑角色
+// @Security  ApiKeyAuth
+// @accept    application/json
+// @Produce   application/json
+// @Param     data  body      systemReq.EditRole true "请求参数"
+// @Success   200   {object}  response.Response{msg=string}
+// @Router    /api/editRole [post]
 func (ra *RoleApi) EditRole(c *gin.Context) {
 	var eRole systemReq.EditRole
 	_ = c.ShouldBindJSON(&eRole)
@@ -87,7 +117,15 @@ func (ra *RoleApi) EditRole(c *gin.Context) {
 	}
 }
 
-// EditRoleMenu 编辑用户menu
+// EditRoleMenu
+// @Tags      RoleApi
+// @Summary   编辑用户菜单
+// @Security  ApiKeyAuth
+// @accept    application/json
+// @Produce   application/json
+// @Param     data  body      systemReq.EditRoleMenu true "请求参数"
+// @Success   200   {object}  response.Response{msg=string}
+// @Router    /api/editRoleMenu [post]
 func (ra *RoleApi) EditRoleMenu(c *gin.Context) {
 	var editRE systemReq.EditRoleMenu
 	_ = c.ShouldBindJSON(&editRE)
