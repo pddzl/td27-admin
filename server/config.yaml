@@ -80,5 +80,8 @@ crontab:
   spec: "@daily"
   objects:
     - tableName: jwt_blacklists
-    - compareField: created_at
-    - interval: 168h
+      compareField: created_at
+      interval: 168h
+    - tableName: sys_operation_record
+      compareField: created_at
+      interval: 2160h
