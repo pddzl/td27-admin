@@ -78,6 +78,19 @@ go build -o server main.go (windows编译命令为go build -o server.exe main.go
 ./server (windows运行命令为 server.exe)
 ```
 
+## swagger
+
+```bash
+cd server
+swag init
+```
+
+`浏览`
+
+```bash
+http://localhost:8888/swagger/index.html
+```
+
 ## 一键安装
 
 Docker Compose 版本需要 V2
@@ -117,7 +130,7 @@ docker-compose -f docker-compose/docker-compose.yml up -d
 </table>
 
 ## 致谢
-+ 项目脚手架 [v3-admin-vite](https://github.com/un-pany/v3-admin-vite)
++ 项目前端脚手架 [v3-admin-vite](https://github.com/un-pany/v3-admin-vite)
 
 ## 📄 License
 
