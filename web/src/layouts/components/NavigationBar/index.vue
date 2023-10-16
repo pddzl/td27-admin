@@ -42,11 +42,13 @@ import { joinInBlacklistApi } from "@/api/system/jwt"
 import { useSettingsStore } from "@/store/modules/settings"
 import { DeviceEnum } from "@/constants/app-key"
 import SearchMenu from "@/components/SearchMenu/index.vue"
+import { useTheme } from "@/hooks/useTheme"
 
 const router = useRouter()
 const appStore = useAppStore()
 const settingsStore = useSettingsStore()
 const userStore = useUserStore()
+const { setTheme } = useTheme()
 
 const { sidebar, device } = storeToRefs(appStore)
 const { layoutMode, showThemeSwitch, showScreenfull, showSearchMenu } = storeToRefs(settingsStore)
@@ -64,6 +66,8 @@ const logout = () => {
   joinInBlacklistApi()
     .then(() => {
       userStore.logout()
+      // 背景色重置
+      setTheme("normal")
       router.push("/login")
     })
     .catch(() => {})
