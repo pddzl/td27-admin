@@ -25,7 +25,7 @@
           <p>确定要删除此记录吗</p>
           <div style="text-align: right; margin-top: 8px">
             <el-button type="primary" link>取消</el-button>
-            <el-button type="primary" size="small" @click="deleteByIdsFunc">确定</el-button>
+            <el-button type="primary" @click="deleteByIdsFunc">确定</el-button>
           </div>
           <template #reference>
             <el-button type="danger" plain icon="delete" :disabled="!multipleSelection.length">删除</el-button>
@@ -60,7 +60,7 @@
                 <p>确定要删除此记录吗</p>
                 <div style="text-align: right; margin-top: 8px">
                   <el-button type="primary" link>取消</el-button>
-                  <el-button type="primary" size="small" @click="deleteOrFunc(scope.row)">确定</el-button>
+                  <el-button type="primary" @click="deleteOrFunc(scope.row)">确定</el-button>
                 </div>
                 <template #reference>
                   <el-button type="danger" size="small" link icon="Delete">删除</el-button>
@@ -102,7 +102,7 @@
 
 <script lang="ts" setup>
 import { reactive, ref } from "vue"
-import { ElMessage } from "element-plus"
+import { ElMessage, ElNotification } from "element-plus"
 import { usePagination } from "@/hooks/usePagination"
 import { type OrData, getOrListApi, deleteOrApi, deleteOrByIdsApi } from "@/api/system/operationRecord"
 import { formatDateTime } from "@/utils/index"
@@ -210,6 +210,14 @@ const deleteByIdsFunc = async () => {
     multipleSelection.value.forEach((item) => {
       ids.push(item.ID)
     })
+  if (ids.length === 0) {
+    ElNotification({
+      title: "警告",
+      message: "请选择记录",
+      type: "warning"
+    })
+    return
+  }
   const res = await deleteOrByIdsApi({ ids })
   if (res.code === 0) {
     ElMessage({
