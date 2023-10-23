@@ -62,7 +62,7 @@ const toggleSidebar = () => {
 }
 
 const logout = () => {
-   // token加入黑名单
+  // token加入黑名单
   joinInBlacklistApi()
     .then(() => {
       userStore.logout()
