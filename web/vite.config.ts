@@ -38,6 +38,10 @@ export default (configEnv: ConfigEnv): UserConfigExport => {
           changeOrigin: true,
           rewrite: (path) => path.replace(VITE_BASE_API, "")
         }
+      },
+       /** 预热常用文件，提高初始页面加载速度 */
+       warmup: {
+        clientFiles: ["./src/layouts/**/*.vue"]
       }
     },
     build: {
