@@ -37,8 +37,8 @@ export default (configEnv: ConfigEnv): UserConfigExport => {
           rewrite: (path) => path.replace(VITE_BASE_API, "")
         }
       },
-       /** 预热常用文件，提高初始页面加载速度 */
-       warmup: {
+      /** 预热常用文件，提高初始页面加载速度 */
+      warmup: {
         clientFiles: ["./src/layouts/**/*.vue"]
       }
     },
@@ -64,8 +64,8 @@ export default (configEnv: ConfigEnv): UserConfigExport => {
         }
       }
     },
-     /** 混淆器 */
-     esbuild: {
+    /** 混淆器 */
+    esbuild: {
       /** 打包时移除 console.log */
       pure: ["console.log"],
       /** 打包时移除 debugger */
