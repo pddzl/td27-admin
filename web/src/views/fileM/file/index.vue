@@ -2,19 +2,6 @@
   <div class="app-container">
     <el-card shadow="never" class="search-wrapper">
       <el-form ref="searchFormRef" :inline="true" :model="searchFormData">
-        <el-form-item>
-          <el-upload
-            :action="`${path}/file/upload`"
-            :before-upload="checkFile"
-            :headers="{ 'x-token': useUserStoreHook().token }"
-            :on-error="uploadError"
-            :on-success="uploadSuccess"
-            :show-file-list="false"
-            class="upload-btn"
-          >
-            <el-button type="primary" plain icon="upload">上传</el-button>
-          </el-upload>
-        </el-form-item>
         <el-form-item prop="name" label="名称">
           <el-input v-model="searchFormData.name" placeholder="名称" />
         </el-form-item>
@@ -24,6 +11,24 @@
       </el-form>
     </el-card>
     <el-card v-loading="loading" shadow="never">
+      <div class="toolbar-wrapper">
+        <el-upload
+          :action="`${path}/file/upload`"
+          :before-upload="checkFile"
+          :headers="{ 'x-token': useUserStoreHook().token }"
+          :on-error="uploadError"
+          :on-success="uploadSuccess"
+          :show-file-list="false"
+          class="upload-btn"
+        >
+          <el-button type="primary" plain icon="upload">上传</el-button>
+        </el-upload>
+        <div>
+          <el-tooltip content="刷新" effect="light">
+            <el-button type="primary" icon="RefreshRight" circle plain @click="getTableData" />
+          </el-tooltip>
+        </div>
+      </div>
       <div class="table-wrapper">
         <el-table :data="tableData" @sort-change="handleSortChange">
           <el-table-column prop="ID" label="ID" sortable="custom" width="80" />
