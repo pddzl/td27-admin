@@ -136,8 +136,7 @@ func (a *ApiService) GetElTreeApis(roleId uint) (list []systemModel.ApiTree, che
 // DeleteApi 删除指定api
 func (a *ApiService) DeleteApi(id uint) (err error) {
 	var apiModel systemModel.ApiModel
-	err = global.TD27_DB.Where("id = ?", id).First(&apiModel).Error
-	if errors.Is(err, gorm.ErrRecordNotFound) {
+	if errors.Is(global.TD27_DB.Where("id = ?", id).First(&apiModel).Error, gorm.ErrRecordNotFound) {
 		global.TD27_LOG.Error("deleteApi -> 查找id", zap.Error(err))
 		return err
 	}
@@ -152,12 +151,26 @@ func (a *ApiService) DeleteApi(id uint) (err error) {
 	if !ok {
 		return errors.New(apiModel.Path + ":" + apiModel.Method + "casbin同步清理失败")
 	}
-	e := CasbinServiceApp.Casbin()
-	err = e.InvalidateCache()
-	if err != nil {
-		return err
-	}
+
 	return nil
+}
+
+// DeleteApiById 批量删除API
+func (a *ApiService) DeleteApiById(ids []uint) (err error) {
+	var apis []systemModel.ApiModel
+	err = global.TD27_DB.Find(&apis, "id in ?", ids).Unscoped().Delete(&apis).Error
+	// 删除对应casbin条目
+	if err == nil {
+		for _, sysApi := range apis {
+			fmt.Println(sysApi.Path, sysApi.Method)
+			ok := CasbinServiceApp.ClearCasbin(1, sysApi.Path, sysApi.Method)
+			if !ok {
+				global.TD27_LOG.Error(fmt.Sprintf("%s:%s casbin同步清理失败", sysApi.Path, sysApi.Method))
+			}
+		}
+	}
+
+	return
 }
 
 // EditApi 编辑api

@@ -12,5 +12,5 @@ type PageInfo struct {
 }
 
 type CIds struct {
-	Ids []uint `json:"ids"`
+	Ids []uint `json:"ids" validate:"required"`
 }

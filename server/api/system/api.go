@@ -106,6 +106,35 @@ func (a *ApiApi) DeleteApi(c *gin.Context) {
 	}
 }
 
+// DeleteApiById
+// @Tags      ApiApi
+// @Summary   批量删除api
+// @Security  ApiKeyAuth
+// @accept    application/json
+// @Produce   application/json
+// @Param     data  body      request.CIds true "请求参数"
+// @Success   200   {object}  response.Response{msg=string}
+// @Router    /api/deleteApiById [post]
+func (a *ApiApi) DeleteApiById(c *gin.Context) {
+	var cIds request.CIds
+	_ = c.ShouldBindJSON(&cIds)
+
+	// 校验字段
+	validate := validator.New()
+	if err := validate.Struct(&cIds); err != nil {
+		response.FailWithMessage(err.Error(), c)
+		global.TD27_LOG.Error("请求参数错误", zap.Error(err))
+		return
+	}
+
+	if err := apiService.DeleteApiById(cIds.Ids); err != nil {
+		response.FailWithMessage("批量删除失败", c)
+		global.TD27_LOG.Error("批量删除失败", zap.Error(err))
+	} else {
+		response.OkWithMessage("批量删除成功", c)
+	}
+}
+
 // EditApi
 // @Tags      ApiApi
 // @Summary   编辑api

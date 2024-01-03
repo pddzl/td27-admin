@@ -81,6 +81,15 @@ export function deleteApiApi(data: reqId) {
   })
 }
 
+// 批量删除api
+export const deleteApiByIdApi = (data: { ids: number[] }) => {
+  return request<ApiResponseData<null>>({
+    url: "/api/deleteApiById",
+    method: "post",
+    data
+  })
+}
+
 interface reqEdit extends ApiDataBase {
   id: number
 }

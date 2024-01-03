@@ -16,6 +16,7 @@ func (u *ApiRouter) InitApiRouter(Router *gin.RouterGroup) {
 	{
 		apiRouter.POST("addApi", apiApi.AddApi)
 		apiRouter.POST("deleteApi", apiApi.DeleteApi)
+		apiRouter.POST("deleteApiById", apiApi.DeleteApiById)
 		apiRouter.POST("editApi", apiApi.EditApi)
 		apiRouter.POST("getElTreeApis", apiApi.GetElTreeApis)
 	}

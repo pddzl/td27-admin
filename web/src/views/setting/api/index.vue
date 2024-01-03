@@ -26,6 +26,24 @@
       <div class="toolbar-wrapper">
         <div>
           <el-button type="primary" icon="CirclePlus" @click="addDialog">新增</el-button>
+          <el-popover v-model:visible="deleteVisible" placement="top" width="160">
+            <p>确定要删除吗？</p>
+            <div style="text-align: right; margin-top: 8px">
+              <el-button text @click="deleteVisible = false">取消</el-button>
+              <el-button type="primary" @click="onDelete">确定</el-button>
+            </div>
+            <template #reference>
+              <el-button
+                icon="delete"
+                type="danger"
+                plain
+                :disabled="!ids.length"
+                style="margin-left: 10px"
+                @click="deleteVisible = true"
+                >删除</el-button
+              >
+            </template>
+          </el-popover>
         </div>
         <div>
           <el-tooltip content="刷新" effect="light">
@@ -34,7 +52,8 @@
         </div>
       </div>
       <div class="table-wrapper">
-        <el-table :data="tableData" @sort-change="handleSortChange">
+        <el-table :data="tableData" @sort-change="handleSortChange" @selection-change="handleSelectionChange">
+          <el-table-column type="selection" width="40" />
           <el-table-column prop="ID" label="ID" />
           <el-table-column prop="path" label="路径" sortable="custom" />
           <el-table-column prop="api_group" label="分组" sortable="custom" />
@@ -93,9 +112,9 @@
 
 <script lang="ts" setup>
 import { reactive, ref } from "vue"
-import { type FormInstance, type FormRules, ElMessage, ElMessageBox } from "element-plus"
+import { type FormInstance, type FormRules, ElMessage, ElMessageBox, ElNotification } from "element-plus"
 import { usePagination } from "@/hooks/usePagination"
-import { type ApiData, getApisApi, addApiApi, deleteApiApi, editApiApi } from "@/api/system/api"
+import { type ApiData, getApisApi, addApiApi, deleteApiApi, deleteApiByIdApi, editApiApi } from "@/api/system/api"
 import WarningBar from "@/components/WarningBar/warningBar.vue"
 
 defineOptions({
@@ -172,6 +191,13 @@ const handleSizeChange = (value: number) => {
 const handleCurrentChange = (value: number) => {
   changeCurrentPage(value)
   getTableData()
+}
+
+const ids = ref<number[]>([])
+const taskIds = ref("") // for csv
+const handleSelectionChange = (val: ApiData[]) => {
+  ids.value = val.map((item) => item.ID)
+  taskIds.value = ids.value.join(",")
 }
 
 // 排序
@@ -290,6 +316,27 @@ const editDialog = (row: ApiData) => {
   opFormData.path = row.path
   activeRow = row
   dialogVisible.value = true
+}
+
+const deleteVisible = ref(false)
+const onDelete = async () => {
+  if (ids.value.length === 0) {
+    ElNotification({
+      title: "警告",
+      message: "请选择记录",
+      type: "warning"
+    })
+    return
+  }
+  const res = await deleteApiByIdApi({ ids: ids.value })
+  if (res.code === 0) {
+    ElMessage({
+      type: "success",
+      message: res.msg
+    })
+    deleteVisible.value = false
+    getTableData()
+  }
 }
 </script>
 
