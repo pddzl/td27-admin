@@ -18,11 +18,11 @@ type CasbinService struct{}
 var CasbinServiceApp = new(CasbinService)
 
 var (
-	cachedEnforcer *casbin.CachedEnforcer
-	once           sync.Once
+	syncedCachedEnforcer *casbin.SyncedCachedEnforcer
+	once                 sync.Once
 )
 
-func (cs *CasbinService) Casbin() *casbin.CachedEnforcer {
+func (cs *CasbinService) Casbin() *casbin.SyncedCachedEnforcer {
 	once.Do(func() {
 		a, err := gormadapter.NewAdapterByDB(global.TD27_DB)
 		if err != nil {
@@ -50,11 +50,11 @@ func (cs *CasbinService) Casbin() *casbin.CachedEnforcer {
 			zap.L().Error("字符串加载模型失败!", zap.Error(err))
 			return
 		}
-		cachedEnforcer, _ = casbin.NewCachedEnforcer(m, a)
-		cachedEnforcer.SetExpireTime(60 * 60)
-		_ = cachedEnforcer.LoadPolicy()
+		syncedCachedEnforcer, _ = casbin.NewSyncedCachedEnforcer(m, a)
+		syncedCachedEnforcer.SetExpireTime(60 * 60)
+		_ = syncedCachedEnforcer.LoadPolicy()
 	})
-	return cachedEnforcer
+	return syncedCachedEnforcer
 }
 
 // UpdateCasbinApi 更新api权限
@@ -90,10 +90,6 @@ func (cs *CasbinService) EditCasbin(roleId uint, casbinInfos []systemReq.CasbinI
 	ok, _ := e.AddPolicies(rules)
 	if !ok {
 		return errors.New("存在相同api")
-	}
-	err = e.InvalidateCache()
-	if err != nil {
-		return err
 	}
 	return
 }
