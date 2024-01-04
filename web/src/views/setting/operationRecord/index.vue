@@ -43,12 +43,12 @@
           <el-table-column prop="ID" label="ID" width="55" />
           <el-table-column prop="userName" label="用户" width="80" />
           <el-table-column prop="ip" label="IP" width="120" />
-          <el-table-column prop="userAgent" label="UserAgent" min-width="140" />
-          <el-table-column prop="path" label="路径" min-width="100" />
-          <el-table-column prop="status" label="状态码" width="80" />
-          <el-table-column prop="method" label="请求方法" width="90" />
-          <el-table-column prop="respTime" label="响应时间（毫秒）" width="150" />
-          <el-table-column prop="CreatedAt" label="创建时间" width="200">
+          <!-- <el-table-column prop="userAgent" label="UserAgent" min-width="140" /> -->
+          <el-table-column prop="path" label="路径" min-width="150" />
+          <el-table-column prop="status" label="状态码" />
+          <el-table-column prop="method" label="请求方法" />
+          <el-table-column prop="respTime" label="响应时间(ms)" width="150" />
+          <el-table-column prop="CreatedAt" label="创建时间" min-width="200">
             <template #default="scope">
               {{ formatDateTime(scope.row.CreatedAt) }}
             </template>
