@@ -83,8 +83,14 @@ func (cs *CasbinService) EditCasbin(roleId uint, casbinInfos []systemReq.CasbinI
 	authorityId := strconv.Itoa(int(roleId))
 	cs.ClearCasbin(0, authorityId)
 	var rules [][]string
+	// casbin rule 去重
+	deduplicateMap := make(map[string]struct{})
 	for _, v := range casbinInfos {
-		rules = append(rules, []string{authorityId, v.Path, v.Method})
+		key := authorityId + v.Path + v.Method
+		if _, ok := deduplicateMap[key]; !ok {
+			deduplicateMap[key] = struct{}{}
+			rules = append(rules, []string{authorityId, v.Path, v.Method})
+		}
 	}
 	e := cs.Casbin()
 	ok, _ := e.AddPolicies(rules)

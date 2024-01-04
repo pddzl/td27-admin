@@ -2,11 +2,12 @@ package middleware
 
 import (
 	"github.com/gin-gonic/gin"
+	"strconv"
+
 	"server/global"
 	"server/model/common/response"
 	"server/service"
 	"server/utils"
-	"strconv"
 )
 
 var (
@@ -27,8 +28,8 @@ func CasbinHandler() gin.HandlerFunc {
 			e := casbinService.Casbin() // 判断策略中是否存在
 			success, _ := e.Enforce(sub, obj, act)
 			if !success {
-				global.TD27_LOG.Error("接口权限不足")
 				response.FailWithDetailed(gin.H{}, "接口权限不足", c)
+				global.TD27_LOG.Error("接口权限不足")
 				c.Abort()
 				return
 			}
