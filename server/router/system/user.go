@@ -10,7 +10,7 @@ type UserRouter struct{}
 
 func (u *UserRouter) InitUserRouter(Router *gin.RouterGroup) {
 	userRouter := Router.Group("user").Use(middleware.OperationRecord())
-	userWithoutRouter := Router.Group("user").Use(middleware.OperationRecord())
+	userWithoutRouter := Router.Group("user")
 
 	userApi := api.ApiGroupApp.SystemApiGroup.UserApi
 	{

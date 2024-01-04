@@ -10,7 +10,7 @@ type RoleRouter struct{}
 
 func (r *RoleRouter) InitRoleRouter(Router *gin.RouterGroup) {
 	roleRouter := Router.Group("role").Use(middleware.OperationRecord())
-	roleWithoutRouter := Router.Group("role").Use(middleware.OperationRecord())
+	roleWithoutRouter := Router.Group("role")
 
 	roleApi := api.ApiGroupApp.SystemApiGroup.RoleApi
 	{

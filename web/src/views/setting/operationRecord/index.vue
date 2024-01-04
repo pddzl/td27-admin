@@ -20,7 +20,7 @@
       </el-form>
     </el-card>
     <el-card v-loading="loading" shadow="never">
-      <div class="toolbar-wrapper">
+      <!-- <div class="toolbar-wrapper">
         <el-popover placement="top" width="160">
           <p>确定要删除此记录吗</p>
           <div style="text-align: right; margin-top: 8px">
@@ -36,24 +36,44 @@
             <el-button type="primary" icon="RefreshRight" circle plain @click="getTableData" />
           </el-tooltip>
         </div>
-      </div>
+      </div> -->
       <div class="table-wrapper">
         <el-table :data="tableData" style="width: 100%" row-key="ID" @selection-change="handleSelectionChange">
-          <el-table-column type="selection" width="55" />
-          <el-table-column prop="ID" label="ID" width="55" />
-          <el-table-column prop="userName" label="用户" width="80" />
+          <!-- <el-table-column type="selection" width="40" /> -->
+          <el-table-column type="expand">
+            <template #default="props">
+              <div style="padding: 0px 18px">
+                <el-tabs>
+                  <el-tab-pane label="请求信息">
+                    <vue-json-pretty
+                      :data="props.row.reqParam !== '{}' ? JSON.parse(props.row.reqParam) : null"
+                      :showLine="true"
+                  /></el-tab-pane>
+                  <el-tab-pane label="响应信息">
+                    <vue-json-pretty :data="JSON.parse(props.row.respData)" :showLine="true"
+                  /></el-tab-pane>
+                </el-tabs>
+              </div>
+            </template>
+          </el-table-column>
+          <el-table-column prop="ID" label="ID" />
+          <el-table-column prop="userName" label="用户" />
           <el-table-column prop="ip" label="IP" width="120" />
           <!-- <el-table-column prop="userAgent" label="UserAgent" min-width="140" /> -->
           <el-table-column prop="path" label="路径" min-width="150" />
-          <el-table-column prop="status" label="状态码" />
+          <el-table-column prop="status" label="状态码">
+            <template #default="scope">
+              <el-tag :type="typeFilter(scope.row.status)">{{ scope.row.status }}</el-tag>
+            </template>
+          </el-table-column>
           <el-table-column prop="method" label="请求方法" />
-          <el-table-column prop="respTime" label="响应时间(ms)" width="150" />
+          <el-table-column prop="respTime" label="响应时间(ms)" />
           <el-table-column prop="CreatedAt" label="创建时间" min-width="200">
             <template #default="scope">
               {{ formatDateTime(scope.row.CreatedAt) }}
             </template>
           </el-table-column>
-          <el-table-column label="操作" fixed="right" width="180">
+          <!-- <el-table-column label="操作" fixed="right" width="180">
             <template #default="scope">
               <el-button type="primary" text icon="View" size="small" @click="openDetail(scope.row)">详情</el-button>
               <el-popover placement="top" width="160">
@@ -67,7 +87,7 @@
                 </template>
               </el-popover>
             </template>
-          </el-table-column>
+          </el-table-column> -->
         </el-table>
       </div>
       <div class="pager-wrapper">
@@ -83,28 +103,13 @@
         />
       </div>
     </el-card>
-    <el-dialog v-model="dialogVisible" title="接口详情" width="70%" :destroy-on-close="true" center>
-      <div v-if="JSON.stringify(reqParam) != '{}'">
-        <h4 class="info-header">请求参数</h4>
-        <div class="info-wrapper">
-          <vue-json-pretty :data="reqParam" :showLine="true" :deep="2" />
-        </div>
-      </div>
-      <div>
-        <p class="info-header">接口返回</p>
-        <div class="info-wrapper">
-          <vue-json-pretty :data="respData" :showLine="true" :deep="2" />
-        </div>
-      </div>
-    </el-dialog>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { reactive, ref } from "vue"
-import { ElMessage, ElNotification } from "element-plus"
 import { usePagination } from "@/hooks/usePagination"
-import { type OrData, getOrListApi, deleteOrApi, deleteOrByIdsApi } from "@/api/system/operationRecord"
+import { type OrData, getOrListApi } from "@/api/system/operationRecord"
 import { formatDateTime } from "@/utils/index"
 import VueJsonPretty from "vue-json-pretty"
 import "vue-json-pretty/lib/styles.css"
@@ -176,27 +181,18 @@ const handleCurrentChange = (value: number) => {
 }
 
 // 对话框
-const dialogVisible = ref(false)
+// const dialogVisible = ref(false)
 
 // 删除操作记录
-const deleteOrFunc = (row: OrData) => {
-  deleteOrApi({ id: row.ID }).then((res) => {
-    if (res.code === 0) {
-      ElMessage({ type: "success", message: res.msg })
-      const index = tableData.value.indexOf(row)
-      tableData.value.splice(index, 1)
-    }
-  })
-}
-
-const reqParam = ref({})
-const respData = ref({})
-const openDetail = (row: OrData) => {
-  console.log(row.respData)
-  reqParam.value = JSON.parse(row.reqParam)
-  respData.value = JSON.parse(row.respData)
-  dialogVisible.value = true
-}
+// const deleteOrFunc = (row: OrData) => {
+//   deleteOrApi({ id: row.ID }).then((res) => {
+//     if (res.code === 0) {
+//       ElMessage({ type: "success", message: res.msg })
+//       const index = tableData.value.indexOf(row)
+//       tableData.value.splice(index, 1)
+//     }
+//   })
+// }
 
 // 批量删除
 const multipleSelection = ref<OrData[]>([])
@@ -204,42 +200,47 @@ const handleSelectionChange = (val: OrData[]) => {
   multipleSelection.value = val
 }
 
-const deleteByIdsFunc = async () => {
-  const ids: number[] = []
-  multipleSelection.value &&
-    multipleSelection.value.forEach((item) => {
-      ids.push(item.ID)
-    })
-  if (ids.length === 0) {
-    ElNotification({
-      title: "警告",
-      message: "请选择记录",
-      type: "warning"
-    })
-    return
-  }
-  const res = await deleteOrByIdsApi({ ids })
-  if (res.code === 0) {
-    ElMessage({
-      type: "success",
-      message: "删除成功"
-    })
-    getTableData()
+// const deleteByIdsFunc = async () => {
+//   const ids: number[] = []
+//   multipleSelection.value &&
+//     multipleSelection.value.forEach((item) => {
+//       ids.push(item.ID)
+//     })
+//   if (ids.length === 0) {
+//     ElNotification({
+//       title: "警告",
+//       message: "请选择记录",
+//       type: "warning"
+//     })
+//     return
+//   }
+//   const res = await deleteOrByIdsApi({ ids })
+//   if (res.code === 0) {
+//     ElMessage({
+//       type: "success",
+//       message: "删除成功"
+//     })
+//     getTableData()
+//   }
+// }
+
+const typeFilter = (effect: number) => {
+  switch (String(effect)[0]) {
+    case "2":
+      return "success"
+    case "3":
+      return "primary"
+    case "4":
+      return "warning"
+    case "5":
+      return "danger"
+    default:
+      return "info"
   }
 }
 </script>
 
 <style lang="scss" scoped>
-.info-header {
-  color: rgba(0, 0, 0, 0.575);
-  font-size: 14px;
-}
-
-.info-wrapper {
-  padding: 5px;
-  background-color: rgba(128, 128, 128, 0.069);
-}
-
 .search-wrapper {
   margin-bottom: 20px;
   :deep(.el-card__body) {
