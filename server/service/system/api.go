@@ -162,7 +162,6 @@ func (a *ApiService) DeleteApiById(ids []uint) (err error) {
 	// 删除对应casbin条目
 	if err == nil {
 		for _, sysApi := range apis {
-			fmt.Println(sysApi.Path, sysApi.Method)
 			ok := CasbinServiceApp.ClearCasbin(1, sysApi.Path, sysApi.Method)
 			if !ok {
 				global.TD27_LOG.Error(fmt.Sprintf("%s:%s casbin同步清理失败", sysApi.Path, sysApi.Method))

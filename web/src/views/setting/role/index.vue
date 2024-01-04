@@ -81,7 +81,7 @@ defineOptions({
 
 const loading = ref<boolean>(false)
 const tableData = ref<roleData[]>([])
-const activeRow = ref<any>({})
+let activeRow: roleData
 
 const getTableData = async () => {
   loading.value = true
@@ -116,14 +116,14 @@ const kind = ref("")
 const title = ref("")
 const addDialog = () => {
   kind.value = "Add"
-  title.value = "新增用户"
+  title.value = "新增角色"
   dialogVisible.value = true
 }
 
 const editDialog = (row: roleData) => {
   kind.value = "Edit"
-  title.value = "编辑用户"
-  activeRow.value = row
+  title.value = "编辑角色"
+  activeRow = row
   formData.roleName = row.roleName
   dialogVisible.value = true
 }
@@ -149,7 +149,7 @@ const operateAction = (formEl: FormInstance | undefined) => {
           tableData.value.push(tempData)
         }
       } else if (kind.value === "Edit") {
-        const res = await editRoleApi({ id: activeRow.value.ID, roleName: formData.roleName })
+        const res = await editRoleApi({ id: activeRow.ID, roleName: formData.roleName })
         if (res.code === 0) {
           ElMessage({ type: "success", message: res.msg })
           const index = tableData.value.indexOf(activeRow)
