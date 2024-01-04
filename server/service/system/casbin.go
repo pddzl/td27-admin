@@ -64,7 +64,7 @@ func (cs *CasbinService) UpdateCasbinApi(oldPath string, newPath string, oldMeth
 		"v2": newMethod,
 	}).Error
 	e := cs.Casbin()
-	err = e.InvalidateCache()
+	err = e.LoadPolicy()
 	if err != nil {
 		return err
 	}
