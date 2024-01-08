@@ -26,5 +26,7 @@ func Crontab() {
 				}
 			}(global.TD27_CONFIG.Crontab.Objects[index])
 		}
+		// 启动cron
+		ct.Start()
 	}
 }
