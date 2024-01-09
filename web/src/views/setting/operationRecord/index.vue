@@ -107,15 +107,24 @@
 </template>
 
 <script lang="ts" setup>
-import { reactive, ref } from "vue"
+import { reactive, ref, h } from "vue"
 import { usePagination } from "@/hooks/usePagination"
 import { type OrData, getOrListApi } from "@/api/system/operationRecord"
 import { formatDateTime } from "@/utils/index"
 import VueJsonPretty from "vue-json-pretty"
 import "vue-json-pretty/lib/styles.css"
+import { ElNotification } from "element-plus"
 
 defineOptions({
   name: "OperationRecord"
+})
+
+ElNotification({
+  title: "提示",
+  type: "warning",
+  message: h("p", { style: "color: teal" }, "操作记录默认保持90天，如需调整请修改配置文件。谢谢"),
+  duration: 5000,
+  offset: 100
 })
 
 const { paginationData, changeCurrentPage, changePageSize } = usePagination()
@@ -225,17 +234,16 @@ const handleSelectionChange = (val: OrData[]) => {
 // }
 
 const typeFilter = (effect: number) => {
-  switch (String(effect)[0]) {
-    case "2":
-      return "success"
-    case "3":
-      return "primary"
-    case "4":
-      return "warning"
-    case "5":
-      return "danger"
-    default:
-      return "info"
+  const structure: Record<string, "success" | "info" | "warning" | "danger" | ""> = {
+    2: "success",
+    4: "warning",
+    5: "danger"
+  }
+  const key = String(effect)[0]
+  if (key === "3") {
+    return ""
+  } else {
+    return structure[key] || "info"
   }
 }
 </script>
