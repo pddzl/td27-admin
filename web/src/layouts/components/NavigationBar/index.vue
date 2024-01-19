@@ -8,9 +8,10 @@
       <Screenfull v-if="showScreenfull" class="right-menu-item" />
       <ThemeSwitch v-if="showThemeSwitch" class="right-menu-item" />
       <el-dropdown class="right-menu-item">
-        <el-button plain
-          >{{ userStore.username }}<el-icon class="el-icon--right"><arrow-down /></el-icon
-        ></el-button>
+        <div class="right-menu-avatar">
+          <span>{{ userStore.username }}</span>
+          <el-icon><arrow-down /></el-icon>
+        </div>
         <template #dropdown>
           <el-dropdown-menu>
             <a target="_blank" href="https://github.com/pddzl/td27-admin">
@@ -32,16 +33,16 @@ import { computed } from "vue"
 import { useRouter } from "vue-router"
 import { storeToRefs } from "pinia"
 import { useAppStore } from "@/store/modules/app"
+import { useSettingsStore } from "@/store/modules/settings"
 import { useUserStore } from "@/store/modules/user"
+import Hamburger from "../Hamburger/index.vue"
 import Breadcrumb from "../Breadcrumb/index.vue"
 import Sidebar from "../Sidebar/index.vue"
-import Hamburger from "../Hamburger/index.vue"
 import ThemeSwitch from "@/components/ThemeSwitch/index.vue"
 import Screenfull from "@/components/Screenfull/index.vue"
-import { joinInBlacklistApi } from "@/api/system/jwt"
-import { useSettingsStore } from "@/store/modules/settings"
-import { DeviceEnum } from "@/constants/app-key"
 import SearchMenu from "@/components/SearchMenu/index.vue"
+import { DeviceEnum } from "@/constants/app-key"
+import { joinInBlacklistApi } from "@/api/system/jwt"
 import { useTheme } from "@/hooks/useTheme"
 
 const router = useRouter()
@@ -121,6 +122,9 @@ const toPersonal = () => {
     align-items: center;
     color: #606266;
     .right-menu-item {
+      // display: flex;
+      // justify-content: center;
+      // align-items: center;
       padding: 0 10px;
       cursor: pointer;
       .right-menu-avatar {
