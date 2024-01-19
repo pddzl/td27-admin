@@ -1,11 +1,8 @@
-package system
+package authority
 
 type ServiceGroup struct {
 	UserService
-	JwtService
 	MenuService
 	RoleService
-	CasbinService
 	ApiService
-	OperationRecordService
 }

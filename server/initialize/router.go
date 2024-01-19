@@ -27,13 +27,9 @@ func Routers() *gin.Engine {
 	global.TD27_LOG.Info("register swagger handler")
 	Router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	// 路由组
 	// -> 系统管理
-	systemRouter := router.RouterGroupApp.System
 
-	// -> 文件管理
-	fileMRouter := router.RouterGroupApp.FileM
-
+	// 公共路由组 不需要鉴权
 	PublicGroup := Router.Group("")
 	{
 		// 健康监测
@@ -41,22 +37,35 @@ func Routers() *gin.Engine {
 			c.JSON(200, "ok")
 		})
 	}
+
+	// 路由组
+	// -> 基础
+	baseRouter := router.RouterGroupApp.Base
 	{
-		systemRouter.InitBaseRouter(PublicGroup) // 注册基础功能路由 不做鉴权
+		baseRouter.InitLogRegRouter(PublicGroup) // 登录相关
 	}
+
+	// -> 鉴权管理
+	authorityRouter := router.RouterGroupApp.Authority
+	// -> 文件管理
+	fileMRouter := router.RouterGroupApp.FileM
+	// -> 系统监控
+	monitorRouter := router.RouterGroupApp.Monitor
 
 	// 需要认证的路由
 	PrivateGroup := Router.Group("")
 	PrivateGroup.Use(middleware.JWTAuth()).Use(middleware.CasbinHandler())
 	{
-		// 系统管理
-		systemRouter.InitUserRouter(PrivateGroup)
-		systemRouter.InitRoleRouter(PrivateGroup)
-		systemRouter.InitMenuRouter(PrivateGroup)
-		systemRouter.InitApiRouter(PrivateGroup)
-		systemRouter.InitCasbinRouter(PrivateGroup)
-		systemRouter.InitJwtRouter(PrivateGroup)
-		systemRouter.InitOperationRecordRouter(PrivateGroup)
+		// 基础
+		baseRouter.InitCasbinRouter(PrivateGroup)
+		baseRouter.InitJwtRouter(PrivateGroup)
+		// 鉴权管理
+		authorityRouter.InitUserRouter(PrivateGroup) // 用户
+		authorityRouter.InitRoleRouter(PrivateGroup) // 角色
+		authorityRouter.InitMenuRouter(PrivateGroup) // 菜单
+		authorityRouter.InitApiRouter(PrivateGroup)  // 接口
+		// 系统监控
+		monitorRouter.InitOperationLogRouter(PrivateGroup) // 操作日志
 		// 文件管理
 		fileMRouter.InitFileRouter(PrivateGroup)
 	}

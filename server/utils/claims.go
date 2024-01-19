@@ -3,7 +3,7 @@ package utils
 import (
 	"github.com/gin-gonic/gin"
 	"server/global"
-	systemReq "server/model/system/request"
+	systemReq "server/model/authority/request"
 )
 
 func GetUserInfo(c *gin.Context) (*systemReq.CustomClaims, error) {

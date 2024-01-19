@@ -1,13 +1,17 @@
 package router
 
 import (
+	"server/router/authority"
+	"server/router/base"
 	"server/router/fileM"
-	"server/router/system"
+	"server/router/monitor"
 )
 
 type RouterGroup struct {
-	System system.RouterGroup
-	FileM  fileM.RouterGroup
+	Base      base.RouterGroup
+	Authority authority.RouterGroup
+	FileM     fileM.RouterGroup
+	Monitor   monitor.RouterGroup
 }
 
 var RouterGroupApp = new(RouterGroup)

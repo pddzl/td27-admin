@@ -12,13 +12,13 @@ import (
 	"time"
 
 	"server/global"
-	systemModel "server/model/system"
+	modelMonitor "server/model/monitor"
 	"server/service"
 	"server/utils"
 )
 
 var (
-	operationRecordService = service.ServiceGroupApp.SystemServiceGroup.OperationRecordService
+	operationLogService = service.ServiceGroupApp.MonitorServiceGroup.OperationLogService
 )
 
 type responseProxyWriter struct {
@@ -63,7 +63,7 @@ func OperationRecord() gin.HandlerFunc {
 		// 解析token
 		claims, _ := utils.GetClaims(c)
 
-		record := systemModel.OperationRecord{
+		record := modelMonitor.OperationLogModel{
 			Ip:        c.ClientIP(),
 			Method:    c.Request.Method,
 			Path:      c.Request.URL.Path,
@@ -86,7 +86,7 @@ func OperationRecord() gin.HandlerFunc {
 		record.RespTime = time.Since(now).Milliseconds()
 		record.RespData = writer.body.String()
 
-		if err := operationRecordService.CreateOperationRecord(record); err != nil {
+		if err := operationLogService.CreateOperationLog(record); err != nil {
 			global.TD27_LOG.Error("create operation record error:", zap.Error(err))
 		}
 	}

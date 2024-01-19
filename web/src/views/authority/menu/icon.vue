@@ -1,6 +1,6 @@
 <template>
   <div>
-    <span class="td27-icon" style="position: absolute; z-index: 9999; padding: 3px 15px 0; ">
+    <span class="td27-icon" style="position: absolute; z-index: 9999; padding: 3px 15px 0">
       <SvgIcon :name="metaData.icon" />
     </span>
     <el-select
@@ -18,7 +18,7 @@
         :label="item.key"
         :value="item.key"
       >
-        <span class="td27-icon" style=" padding: 3px 0 0;">
+        <span class="td27-icon" style="padding: 3px 0 0">
           <SvgIcon :name="item.label" />
         </span>
         <span style="text-align: left">{{ item.key }}</span>
@@ -51,7 +51,8 @@ const options = reactive([
   { key: "config", label: "config" },
   { key: "link", label: "link" },
   { key: "access", label: "access" },
-  { key: "file", label: "file" }
+  { key: "file", label: "file" },
+  { key: "monitor", label: "monitor" }
 ])
 
 const metaData = ref(props.meta)
@@ -65,7 +66,7 @@ const metaData = ref(props.meta)
 }
 
 .td27-select .el-input__inner {
-  padding: 0 30px !important
+  padding: 0 30px !important;
 }
 
 .select__option_item {

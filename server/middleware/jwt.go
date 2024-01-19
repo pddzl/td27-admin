@@ -4,17 +4,17 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
 	"go.uber.org/zap"
+	"server/model/base"
 	"strconv"
 	"time"
 
 	"server/global"
 	"server/model/common/response"
-	"server/model/system"
 	"server/service"
 	"server/utils"
 )
 
-var jwtService = service.ServiceGroupApp.SystemServiceGroup.JwtService
+var jwtService = service.ServiceGroupApp.BaseServiceGroup.JwtService
 
 func JWTAuth() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -45,7 +45,7 @@ func JWTAuth() gin.HandlerFunc {
 		}
 
 		// 已登录用户被管理员删除
-		var userModel system.UserModel
+		var userModel base.UserModel
 		err = global.TD27_DB.Where("id = ?", claims.ID).First(&userModel).Error
 		if err != nil {
 			response.FailWithMessage("用户不存在", c)
@@ -73,7 +73,7 @@ func JWTAuth() gin.HandlerFunc {
 				if err != nil {
 					global.TD27_LOG.Error("get redis jwt failed", zap.Error(err))
 				} else { // 当之前的取成功时才进行拉黑操作
-					_ = jwtService.JoinInBlacklist(system.JwtBlacklist{Jwt: RedisJwtToken})
+					_ = jwtService.JoinInBlacklist(base.JwtBlackListModel{Jwt: RedisJwtToken})
 				}
 				// 无论如何都要记录当前的活跃状态
 				_ = jwtService.SetRedisJWT(newToken, newClaims.Username)
