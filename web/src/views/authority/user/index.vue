@@ -145,8 +145,8 @@ import {
   editUserApi,
   modifyPassApi,
   SwitchActiveApi
-} from "@/api/system/user"
-import { getRolesApi } from "@/api/system/role"
+} from "@/api/authority/user"
+import { getRolesApi } from "@/api/authority/role"
 import { usePagination } from "@/hooks/usePagination"
 import { useValidatePhone, useValidateEmail } from "@/hooks/useValidate"
 
@@ -405,3 +405,4 @@ const switchAction = (id: number, active: boolean) => {
     .catch(() => {})
 }
 </script>
+@/api/authority/role @/api/authority/user

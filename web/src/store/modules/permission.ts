@@ -4,7 +4,7 @@ import { defineStore } from "pinia"
 import { type RouteRecordRaw } from "vue-router"
 import { constantRoutes } from "@/router"
 import { formatRouter } from "@/utils/router"
-import { type MenusData, getMenus } from "@/api/system/menu"
+import { type MenusData, getMenus } from "@/api/authority/menu"
 
 export const usePermissionStore = defineStore("permission", () => {
   const routes = ref<RouteRecordRaw[]>([])

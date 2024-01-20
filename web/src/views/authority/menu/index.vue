@@ -116,7 +116,7 @@
 <script lang="ts" setup>
 import { ref, reactive } from "vue"
 import { ElMessage, ElMessageBox, type FormInstance, type FormRules, type CascaderOption } from "element-plus"
-import { type MenusData, getMenus, addMenuApi, editMenuApi, deleteMenuApi } from "@/api/system/menu"
+import { type MenusData, getMenus, addMenuApi, editMenuApi, deleteMenuApi } from "@/api/authority/menu"
 import WarningBar from "@/components/WarningBar/warningBar.vue"
 import icon from "./icon.vue"
 
@@ -323,3 +323,4 @@ const operateAction = (formEl: FormInstance | undefined) => {
   })
 }
 </script>
+@/api/authority/menu

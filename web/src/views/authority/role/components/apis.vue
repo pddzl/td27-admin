@@ -23,8 +23,8 @@
 <script lang="ts" setup>
 import { ref, watch } from "vue"
 import { ElMessage, ElTree } from "element-plus"
-import { type ApiTreeData, getElTreeApisApi } from "@/api/system/api"
-import { type CasbinInfo, editCasbinApi } from "@/api/system/casbin"
+import { type ApiTreeData, getElTreeApisApi } from "@/api/authority/api"
+import { type CasbinInfo, editCasbinApi } from "@/api/base/casbin"
 
 const props = defineProps({
   id: {
@@ -107,3 +107,4 @@ const editAuthority = () => {
   width: 80%;
 }
 </style>
+@/api/authority/api @/api/base/casbin

@@ -114,7 +114,7 @@
 import { reactive, ref } from "vue"
 import { type FormInstance, type FormRules, ElMessage, ElMessageBox, ElNotification } from "element-plus"
 import { usePagination } from "@/hooks/usePagination"
-import { type ApiData, getApisApi, addApiApi, deleteApiApi, deleteApiByIdApi, editApiApi } from "@/api/system/api"
+import { type ApiData, getApisApi, addApiApi, deleteApiApi, deleteApiByIdApi, editApiApi } from "@/api/authority/api"
 import WarningBar from "@/components/WarningBar/warningBar.vue"
 
 defineOptions({
@@ -348,3 +348,4 @@ const onDelete = async () => {
   }
 }
 </style>
+@/api/authority/api

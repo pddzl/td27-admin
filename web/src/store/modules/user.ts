@@ -3,8 +3,8 @@ import store from "@/store"
 import { defineStore } from "pinia"
 import { useTagsViewStore } from "./tags-view"
 import { useSettingsStore } from "./settings"
-import { getUserInfoApi } from "@/api/system/user"
-import { type LoginRequestData, loginApi } from "@/api/system/base"
+import { getUserInfoApi } from "@/api/authority/user"
+import { type LoginRequestData, loginApi } from "@/api/base/logReg"
 import { usePermissionStoreHook } from "@/store/modules/permission"
 
 export const useUserStore = defineStore("user", () => {

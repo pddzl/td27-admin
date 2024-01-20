@@ -23,8 +23,8 @@
 <script lang="ts" setup>
 import { ref, watch } from "vue"
 import { ElMessage, ElTree } from "element-plus"
-import { type MenusData, getElTreeMenusApi } from "@/api/system/menu"
-import { editRoleMenuApi } from "@/api/system/role"
+import { type MenusData, getElTreeMenusApi } from "@/api/authority/menu"
+import { editRoleMenuApi } from "@/api/authority/role"
 
 const props = defineProps({
   id: {
@@ -100,3 +100,4 @@ const editRoleMenu = () => {
   width: 80%;
 }
 </style>
+@/api/authority/menu @/api/authority/role

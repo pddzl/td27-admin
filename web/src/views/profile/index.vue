@@ -79,7 +79,7 @@ import { useRouter } from "vue-router"
 import { type FormInstance, type FormRules, ElMessage } from "element-plus"
 import { formatDateTime } from "@/utils/index"
 import { useUserStore } from "@/store/modules/user"
-import { editUserApi, modifyPassApi } from "@/api/system/user"
+import { editUserApi, modifyPassApi } from "@/api/authority/user"
 import { useValidatePhone, useValidateEmail } from "@/hooks/useValidate"
 
 const userStore = useUserStore()
@@ -199,3 +199,4 @@ getCache()
   padding: 20px;
 }
 </style>
+@/api/authority/user

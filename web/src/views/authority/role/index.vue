@@ -71,7 +71,7 @@
 <script lang="ts" setup>
 import { ref, reactive } from "vue"
 import { type FormInstance, type FormRules, ElMessage, ElMessageBox } from "element-plus"
-import { type roleData, getRolesApi, addRoleApi, deleteRoleApi, editRoleApi } from "@/api/system/role"
+import { type roleData, getRolesApi, addRoleApi, deleteRoleApi, editRoleApi } from "@/api/authority/role"
 import Menus from "./components/menus.vue"
 import Apis from "./components/apis.vue"
 
@@ -187,3 +187,4 @@ const openDrawer = (row: roleData) => {
   drawer.value = true
 }
 </script>
+@/api/authority/role

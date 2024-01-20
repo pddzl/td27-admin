@@ -42,7 +42,7 @@ import ThemeSwitch from "@/components/ThemeSwitch/index.vue"
 import Screenfull from "@/components/Screenfull/index.vue"
 import SearchMenu from "@/components/SearchMenu/index.vue"
 import { DeviceEnum } from "@/constants/app-key"
-import { joinInBlacklistApi } from "@/api/system/jwt"
+import { joinInBlacklistApi } from "@/api/base/jwt"
 import { useTheme } from "@/hooks/useTheme"
 
 const router = useRouter()
@@ -141,3 +141,4 @@ const toPersonal = () => {
   }
 }
 </style>
+@/api/base/jwt

@@ -64,7 +64,7 @@ import { reactive, ref } from "vue"
 import { useRouter } from "vue-router"
 import { useUserStore } from "@/store/modules/user"
 import { type FormInstance, FormRules } from "element-plus"
-import { captcha, type LoginRequestData } from "@/api/system/base"
+import { captcha, type LoginRequestData } from "@/api/base/logReg"
 
 const router = useRouter()
 const loginFormRef = ref<FormInstance | null>(null)
@@ -194,3 +194,4 @@ createCode()
   background-size: 100%;
 }
 </style>
+@/api/base/base

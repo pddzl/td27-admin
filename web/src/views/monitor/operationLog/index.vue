@@ -108,7 +108,7 @@
 <script lang="ts" setup>
 import { reactive, ref, h } from "vue"
 import { usePagination } from "@/hooks/usePagination"
-import { type OrData, getOrListApi, deleteOrApi, deleteOrByIdsApi } from "@/api/system/operationRecord"
+import { type OrData, getOrListApi, deleteOrApi, deleteOrByIdsApi } from "@/api/monitor/operationLog"
 import { formatDateTime } from "@/utils/index"
 import VueJsonPretty from "vue-json-pretty"
 import "vue-json-pretty/lib/styles.css"
@@ -252,3 +252,4 @@ const typeFilter = (effect: number) => {
   }
 }
 </style>
+@/api/monitor/operationRecord
