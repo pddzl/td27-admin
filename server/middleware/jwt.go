@@ -14,7 +14,7 @@ import (
 	"server/utils"
 )
 
-var jwtService = service.ServiceGroupApp.BaseServiceGroup.JwtService
+var jwtService = service.ServiceGroupApp.Base.JwtService
 
 func JWTAuth() gin.HandlerFunc {
 	return func(c *gin.Context) {

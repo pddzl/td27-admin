@@ -8,10 +8,10 @@ import (
 )
 
 type ServiceGroup struct {
-	BaseServiceGroup      base.ServiceGroup
-	AuthorityServiceGroup authority.ServiceGroup
-	FileMServiceGroup     fileM.ServiceGroup
-	MonitorServiceGroup   monitor.ServiceGroup
+	Base      base.ServiceGroup
+	Authority authority.ServiceGroup
+	FileM     fileM.ServiceGroup
+	Monitor   monitor.ServiceGroup
 }
 
 var ServiceGroupApp = new(ServiceGroup)

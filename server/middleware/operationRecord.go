@@ -18,7 +18,7 @@ import (
 )
 
 var (
-	operationLogService = service.ServiceGroupApp.MonitorServiceGroup.OperationLogService
+	operationLogService = service.ServiceGroupApp.Monitor.OperationLogService
 )
 
 type responseProxyWriter struct {

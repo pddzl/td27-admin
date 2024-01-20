@@ -8,10 +8,10 @@ import (
 )
 
 type ApiGroup struct {
-	AuthorityApiGroup authority.ApiGroup
-	BaseApiGroup      base.ApiGroup
-	FileMApiGroup     fileM.ApiGroup
-	MonitorApiGroup   monitor.ApiGroup
+	Authority authority.ApiGroup
+	Base      base.ApiGroup
+	FileM     fileM.ApiGroup
+	Monitor   monitor.ApiGroup
 }
 
 var ApiGroupApp = new(ApiGroup)

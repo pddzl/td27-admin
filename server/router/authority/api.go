@@ -12,7 +12,7 @@ func (u *ApiRouter) InitApiRouter(Router *gin.RouterGroup) {
 	apiRouter := Router.Group("api").Use(middleware.OperationRecord())
 	apiWithoutRouter := Router.Group("api")
 
-	apiApi := api.ApiGroupApp.AuthorityApiGroup.ApiApi
+	apiApi := api.ApiGroupApp.Authority.ApiApi
 	{
 		apiRouter.POST("addApi", apiApi.AddApi)
 		apiRouter.POST("deleteApi", apiApi.DeleteApi)

@@ -12,7 +12,7 @@ func (r *RoleRouter) InitRoleRouter(Router *gin.RouterGroup) {
 	roleRouter := Router.Group("role").Use(middleware.OperationRecord())
 	roleWithoutRouter := Router.Group("role")
 
-	roleApi := api.ApiGroupApp.AuthorityApiGroup.RoleApi
+	roleApi := api.ApiGroupApp.Authority.RoleApi
 	{
 		roleRouter.POST("addRole", roleApi.AddRole)
 		roleRouter.POST("deleteRole", roleApi.DeleteRole)

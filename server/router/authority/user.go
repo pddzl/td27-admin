@@ -12,7 +12,7 @@ func (u *UserRouter) InitUserRouter(Router *gin.RouterGroup) {
 	userRouter := Router.Group("user").Use(middleware.OperationRecord())
 	userWithoutRouter := Router.Group("user")
 
-	userApi := api.ApiGroupApp.AuthorityApiGroup.UserApi
+	userApi := api.ApiGroupApp.Authority.UserApi
 	{
 		userRouter.POST("deleteUser", userApi.DeleteUser)
 		userRouter.POST("addUser", userApi.AddUser)

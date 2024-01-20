@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	casbinService = service.ServiceGroupApp.BaseServiceGroup.CasbinService
+	casbinService = service.ServiceGroupApp.Base.CasbinService
 )
 
 // CasbinHandler 拦截器

@@ -10,7 +10,7 @@ type LogRegRouter struct{}
 func (br *LogRegRouter) InitLogRegRouter(Router *gin.RouterGroup) (R gin.IRouter) {
 	logRegRouter := Router.Group("logReg")
 
-	logRegApi := api.ApiGroupApp.BaseApiGroup.LogRegApi
+	logRegApi := api.ApiGroupApp.Base.LogRegApi
 	{
 		logRegRouter.POST("captcha", logRegApi.Captcha)
 		logRegRouter.POST("login", logRegApi.Login)

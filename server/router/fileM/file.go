@@ -12,7 +12,7 @@ func (f *FileRouter) InitFileRouter(Router *gin.RouterGroup) {
 	fileRouter := Router.Group("file").Use(middleware.OperationRecord())
 	fileWithoutRouter := Router.Group("file")
 
-	fileApi := api.ApiGroupApp.FileMApiGroup.FileApi
+	fileApi := api.ApiGroupApp.FileM.FileApi
 	{
 		fileRouter.POST("upload", fileApi.Upload)    // 文件上传
 		fileRouter.GET("download", fileApi.Download) // 下载文件

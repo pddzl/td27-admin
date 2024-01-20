@@ -12,7 +12,7 @@ func (u *MenuRouter) InitMenuRouter(Router *gin.RouterGroup) {
 	menuRouter := Router.Group("menu").Use(middleware.OperationRecord())
 	menuWithoutRouter := Router.Group("menu")
 
-	menuApi := api.ApiGroupApp.AuthorityApiGroup.MenuApi
+	menuApi := api.ApiGroupApp.Authority.MenuApi
 	{
 		menuRouter.POST("addMenu", menuApi.AddMenu)
 		menuRouter.POST("editMenu", menuApi.EditMenu)
