@@ -31,7 +31,7 @@ interface reqOrList extends PageInfo {
 // 分页获取操作记录
 export function getOrListApi(data: reqOrList) {
   return request<ApiResponseData<OrDataPageInfo>>({
-    url: "/or/getOrList",
+    url: "/opl/getOplList",
     method: "post",
     data
   })
@@ -40,7 +40,7 @@ export function getOrListApi(data: reqOrList) {
 // 删除操作记录
 export function deleteOrApi(data: reqId) {
   return request<ApiResponseData<null>>({
-    url: "/or/deleteOr",
+    url: "/opl/deleteOpl",
     method: "post",
     data
   })
@@ -49,7 +49,7 @@ export function deleteOrApi(data: reqId) {
 // 批量删除操作记录
 export function deleteOrByIdsApi(data: reqIds) {
   return request<ApiResponseData<null>>({
-    url: "/or/deleteOrByIds",
+    url: "/opl/deleteOplByIds",
     method: "post",
     data
   })

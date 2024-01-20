@@ -16,7 +16,7 @@ import (
 type UserService struct{}
 
 func (us *UserService) GetUserInfo(userId uint) (userResults authorityRes.UserResult, err error) {
-	err = global.TD27_DB.Table("base_user").Select("base_user.created_at,base_user.id,base_user.username,base_user.phone,base_user.email,base_user.active,base_user.role_model_id,base_role.role_name").Joins("inner join base_role on base_user.role_model_id = base_role.id").Where("base_user.id = ?", userId).Scan(&userResults).Error
+	err = global.TD27_DB.Table("base_user").Select("base_user.created_at,base_user.id,base_user.username,base_user.phone,base_user.email,base_user.active,base_user.role_model_id,authority_role.role_name").Joins("inner join authority_role on base_user.role_model_id = authority_role.id").Where("base_user.id = ?", userId).Scan(&userResults).Error
 	return
 }
 
@@ -37,7 +37,7 @@ func (us *UserService) GetUsers(pageInfo request.PageInfo) ([]authorityRes.UserR
 		db = db.Limit(limit).Offset(offset)
 		//err = db.Find(&list).Error
 		// 左连接 查询出role_name
-		db.Select("base_user.id,base_user.username,base_user.phone,base_user.email,base_user.active,base_user.role_model_id,base_role.role_name").Joins("left join base_role on base_user.role_model_id = base_role.id").Scan(&userResults)
+		db.Select("base_user.id,base_user.username,base_user.phone,base_user.email,base_user.active,base_user.role_model_id,authority_role.role_name").Joins("left join authority_role on base_user.role_model_id = authority_role.id").Scan(&userResults)
 	}
 
 	return userResults, total, err

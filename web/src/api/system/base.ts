@@ -16,7 +16,7 @@ type LoginResponseData = ApiResponseData<{ token: string }>
 // 获取验证码
 export const captcha = () => {
   return request<LoginCodeResponseData>({
-    url: "/base/captcha",
+    url: "/logReg/captcha",
     method: "post"
   })
 }
@@ -24,7 +24,7 @@ export const captcha = () => {
 /** 登录并返回 Token */
 export function loginApi(data: LoginRequestData) {
   return request<LoginResponseData>({
-    url: "/base/login",
+    url: "/logReg/login",
     method: "post",
     data
   })

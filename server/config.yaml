@@ -27,7 +27,7 @@ rotateLogs:
 system:
   env: 'production' # Change to "develop" to skip authentication for development mode
   host: '0.0.0.0'
-  port: '8888'
+  port: 8888
   stack: true
   use-multipoint: false
   upload: './resource/upload' # 上传目录
@@ -39,7 +39,7 @@ mysql:
   config: 'charset=utf8&parseTime=true'
   db-name: 'td27'
   username: 'root'
-  password: 'td27admin'
+  password: 'bank2023'
   max-idle-conns: 10
   max-open-conns: 100
   log-mode: false

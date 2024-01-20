@@ -8,7 +8,7 @@ import (
 type OperationLogRouter struct{}
 
 func (o *OperationLogRouter) InitOperationLogRouter(Router *gin.RouterGroup) (R gin.IRoutes) {
-	operationLogRouter := Router.Group("or")
+	operationLogRouter := Router.Group("opl")
 	operationLogApi := api.ApiGroupApp.Monitor.OperationLogApi
 	{
 		operationLogRouter.POST("getOplList", operationLogApi.GetOperationLogList)
