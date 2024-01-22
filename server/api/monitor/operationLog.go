@@ -20,7 +20,7 @@ type OperationLogApi struct{}
 // @accept    application/json
 // @Produce   application/json
 // @Param     data  body      authorityReq.OrSearchParams true "请求参数"
-// @Success   200   {object}  response.Response{data=response.PageResult{list=[]monitor.OperationLog},msg=string}
+// @Success   200   {object}  response.Response{data=response.PageResult{list=[]monitor.OperationLogModel},msg=string}
 // @Router    /opl/getOperationLogList [post]
 func (o *OperationLogApi) GetOperationLogList(c *gin.Context) {
 	var orSp authorityReq.OrSearchParams

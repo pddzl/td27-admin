@@ -5,7 +5,6 @@ import (
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 
-	_ "server/docs"
 	"server/global"
 	"server/middleware"
 	"server/middleware/log"
