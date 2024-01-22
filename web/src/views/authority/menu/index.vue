@@ -90,7 +90,7 @@
             <el-option :value="true" label="是" />
           </el-select>
         </el-form-item>
-        <el-form-item label="一直显示" prop="meta.alwaysShow" style="width: 30%">
+        <el-form-item label="一直显示根路由" prop="meta.alwaysShow" style="width: 30%">
           <el-select v-model="formData.meta.alwaysShow">
             <el-option :value="false" label="否" />
             <el-option :value="true" label="是" />
