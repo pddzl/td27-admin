@@ -1,11 +1,9 @@
-FROM node:17
+FROM node:18
 
 WORKDIR /web
 COPY . .
 
-RUN npm install pnpm --location=global
-
-RUN pnpm i && pnpm build:prod
+RUN npm install pnpm --location=global && pnpm i && pnpm build:prod
 
 FROM nginx:alpine
 LABEL MAINTAINER="pddzl5@foxmail.com"
