@@ -3,7 +3,7 @@ FROM node:18
 WORKDIR /web
 COPY . .
 
-RUN npm install pnpm --location=global && pnpm i && pnpm build:prod
+RUN npm install pnpm --location=global --registry=http://registry.npm.taobao.org && pnpm config set registry http://registry.npm.taobao.org && pnpm i && pnpm build:prod
 
 FROM nginx:alpine
 LABEL MAINTAINER="pddzl5@foxmail.com"
