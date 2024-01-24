@@ -1,7 +1,7 @@
 package global
 
 import (
-	"github.com/go-redis/redis/v8"
+	"github.com/redis/go-redis/v9"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
 	"golang.org/x/sync/singleflight"

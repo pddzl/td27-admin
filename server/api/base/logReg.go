@@ -4,13 +4,15 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
-	"github.com/go-redis/redis/v8"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/mojocn/base64Captcha"
+	"github.com/redis/go-redis/v9"
 	"go.uber.org/zap"
+	"server/model/base/request"
 	"time"
 
 	"server/global"
+	modelAuthority "server/model/authority"
 	authorityReq "server/model/authority/request"
 	authorityRes "server/model/authority/response"
 	modelBase "server/model/base"
@@ -35,7 +37,7 @@ func (ba *LogRegApi) Captcha(c *gin.Context) {
 	// 字符,公式,验证码配置
 	// 生成默认数字的driver
 	driver := base64Captcha.NewDriverDigit(global.TD27_CONFIG.Captcha.ImgHeight, global.TD27_CONFIG.Captcha.ImgWidth, global.TD27_CONFIG.Captcha.KeyLong, 0.7, 80)
-	// cp := base64Captcha.NewCaptcha(driver, store.UseWithCtx(c))   // v8下使用redis
+	// cp := base64Captcha.NewCaptcha(driver, store.UseWithCtx(c))   // v9下使用redis
 	cp := base64Captcha.NewCaptcha(driver, store)
 	id, b64s, err := cp.Generate()
 	if err != nil {
@@ -72,7 +74,7 @@ func (ba *LogRegApi) Login(c *gin.Context) {
 
 	// 验证码
 	if store.Verify(login.CaptchaId, login.Captcha, true) {
-		u := &modelBase.UserModel{Username: login.Username, Password: login.Password}
+		u := &modelAuthority.UserModel{Username: login.Username, Password: login.Password}
 		user, err := logRegService.Login(u)
 		if err != nil {
 			commonRes.FailWithMessage(fmt.Sprintf("登录失败: %s", err.Error()), c)
@@ -87,10 +89,10 @@ func (ba *LogRegApi) Login(c *gin.Context) {
 }
 
 // 生成jwt token
-func tokenNext(c *gin.Context, user *modelBase.UserModel) {
+func tokenNext(c *gin.Context, user *modelAuthority.UserModel) {
 	j := &utils.JWT{SigningKey: []byte(global.TD27_CONFIG.JWT.SigningKey)} // 唯一签名
 
-	claims := authorityReq.CustomClaims{
+	claims := request.CustomClaims{
 		ID:         user.ID,
 		Username:   user.Username,
 		RoleId:     user.RoleModelID,
