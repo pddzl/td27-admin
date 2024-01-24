@@ -7,7 +7,7 @@
 #
 # Host: 127.0.0.1 (MySQL 8.0.28)
 # Database: td27
-# Generation Time: 2024-01-22 02:53:37 +0000
+# Generation Time: 2024-01-24 09:02:38 +0000
 # ************************************************************
 
 
@@ -44,8 +44,8 @@ LOCK TABLES `authority_api` WRITE;
 
 INSERT INTO `authority_api` (`id`, `created_at`, `updated_at`, `deleted_at`, `path`, `description`, `api_group`, `method`)
 VALUES
-	(1,'2023-03-10 06:24:36','2023-07-13 05:42:10',NULL,'/base/captcha','获取验证码（必选）','base','POST'),
-	(2,'2023-03-08 06:36:24','2023-03-09 08:50:20',NULL,'/base/login','登录（必选）','base','POST'),
+	(1,'2023-03-10 06:24:36','2024-01-24 08:59:10',NULL,'/logReg/captcha','获取验证码（必选）','logReg','POST'),
+	(2,'2023-03-08 06:36:24','2024-01-24 08:59:21',NULL,'/logReg/login','登录（必选）','logReg','POST'),
 	(3,'2023-03-08 08:56:13','2023-03-10 07:11:53',NULL,'/user/getUserInfo','获取用户信息（必选）','user','GET'),
 	(4,'2023-03-08 08:56:54','2023-03-08 08:56:54',NULL,'/user/getUsers','获取所有用户','user','POST'),
 	(5,'2023-03-10 06:41:32','2023-03-10 06:41:32',NULL,'/user/deleteUser','删除用户','user','POST'),
@@ -111,7 +111,7 @@ LOCK TABLES `authority_menu` WRITE;
 
 INSERT INTO `authority_menu` (`id`, `created_at`, `updated_at`, `deleted_at`, `pid`, `name`, `path`, `redirect`, `component`, `meta`, `sort`)
 VALUES
-	(1,NULL,'2024-01-19 07:19:08',NULL,0,'Authority','/authority','/authority/user','Layout','{\"title\": \"权限管理\", \"svgIcon\": \"lock\"}',1),
+	(1,NULL,'2024-01-22 07:32:30',NULL,0,'Authority','/authority','/authority/user','Layout','{\"title\": \"权限管理\", \"svgIcon\": \"lock\"}',1),
 	(2,NULL,'2023-06-28 08:11:56',NULL,1,'User','user','','authority/user/index.vue','{\"title\": \"用户管理\"}',1),
 	(3,NULL,'2023-06-28 08:12:06',NULL,1,'Role','role','','authority/role/index.vue','{\"title\": \"角色管理\"}',2),
 	(4,NULL,'2023-06-28 08:12:16',NULL,1,'Menu','menu','','authority/menu/index.vue','{\"title\": \"菜单管理\"}',3),
@@ -157,29 +157,12 @@ VALUES
 UNLOCK TABLES;
 
 
-# Dump of table base_jwtBlacklist
+# Dump of table authority_user
 # ------------------------------------------------------------
 
-DROP TABLE IF EXISTS `base_jwtBlacklist`;
+DROP TABLE IF EXISTS `authority_user`;
 
-CREATE TABLE `base_jwtBlacklist` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `created_at` datetime DEFAULT NULL,
-  `updated_at` datetime DEFAULT NULL,
-  `deleted_at` datetime DEFAULT NULL,
-  `jwt` text COLLATE utf8mb4_unicode_ci COMMENT 'jwt',
-  PRIMARY KEY (`id`),
-  KEY `idx_base_jwtBlacklist_deleted_at` (`deleted_at`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-
-
-# Dump of table base_user
-# ------------------------------------------------------------
-
-DROP TABLE IF EXISTS `base_user`;
-
-CREATE TABLE `base_user` (
+CREATE TABLE `authority_user` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
@@ -195,18 +178,37 @@ CREATE TABLE `base_user` (
   KEY `idx_sys_user_deleted_at` (`deleted_at`),
   KEY `idx_sys_user_username` (`username`),
   KEY `idx_base_user_deleted_at` (`deleted_at`),
-  KEY `idx_base_user_username` (`username`)
+  KEY `idx_base_user_username` (`username`),
+  KEY `idx_authority_user_deleted_at` (`deleted_at`),
+  KEY `idx_authority_user_username` (`username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-LOCK TABLES `base_user` WRITE;
-/*!40000 ALTER TABLE `base_user` DISABLE KEYS */;
+LOCK TABLES `authority_user` WRITE;
+/*!40000 ALTER TABLE `authority_user` DISABLE KEYS */;
 
-INSERT INTO `base_user` (`id`, `created_at`, `updated_at`, `deleted_at`, `username`, `password`, `phone`, `email`, `active`, `role_model_id`)
+INSERT INTO `authority_user` (`id`, `created_at`, `updated_at`, `deleted_at`, `username`, `password`, `phone`, `email`, `active`, `role_model_id`)
 VALUES
 	(1,'2023-02-20 12:51:58','2024-01-20 04:56:38',NULL,'admin','e10adc3949ba59abbe56e057f20f883e','11111111111','pddzl5@163.com',1,1);
 
-/*!40000 ALTER TABLE `base_user` ENABLE KEYS */;
+/*!40000 ALTER TABLE `authority_user` ENABLE KEYS */;
 UNLOCK TABLES;
+
+
+# Dump of table base_jwtBlacklist
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `base_jwtBlacklist`;
+
+CREATE TABLE `base_jwtBlacklist` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `created_at` datetime DEFAULT NULL,
+  `updated_at` datetime DEFAULT NULL,
+  `deleted_at` datetime DEFAULT NULL,
+  `jwt` text COLLATE utf8mb4_unicode_ci COMMENT 'jwt',
+  PRIMARY KEY (`id`),
+  KEY `idx_base_jwtBlacklist_deleted_at` (`deleted_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 
 
 # Dump of table casbin_rule
@@ -238,14 +240,14 @@ VALUES
 	(512,'p','1','/api/editApi','POST','','',''),
 	(510,'p','1','/api/getApis','POST','','',''),
 	(513,'p','1','/api/getElTreeApis','POST','','',''),
-	(489,'p','1','/base/captcha','POST','','',''),
-	(490,'p','1','/base/login','POST','','',''),
 	(508,'p','1','/casbin/editCasbin','POST','','',''),
 	(522,'p','1','/file/delete','GET','','',''),
 	(521,'p','1','/file/download','GET','','',''),
 	(520,'p','1','/file/getFileList','POST','','',''),
 	(519,'p','1','/file/upload','POST','','',''),
 	(515,'p','1','/jwt/joinInBlacklist','POST','','',''),
+	(489,'p','1','/logReg/captcha','POST','','',''),
+	(490,'p','1','/logReg/login','POST','','',''),
 	(504,'p','1','/menu/addMenu','POST','','',''),
 	(506,'p','1','/menu/deleteMenu','POST','','',''),
 	(505,'p','1','/menu/editMenu','POST','','',''),
