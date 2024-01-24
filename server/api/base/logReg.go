@@ -8,14 +8,13 @@ import (
 	"github.com/mojocn/base64Captcha"
 	"github.com/redis/go-redis/v9"
 	"go.uber.org/zap"
-	"server/model/base/request"
 	"time"
 
 	"server/global"
 	modelAuthority "server/model/authority"
-	authorityReq "server/model/authority/request"
-	authorityRes "server/model/authority/response"
 	modelBase "server/model/base"
+	baseReq "server/model/base/request"
+	baseRes "server/model/base/response"
 	commonRes "server/model/common/response"
 	"server/utils"
 )
@@ -31,8 +30,8 @@ type LogRegApi struct{}
 // @Summary   生成验证码
 // @Security  ApiKeyAuth
 // @Produce   application/json
-// @Success   200  {object}  response.Response{data=authorityRes.SysCaptchaResponse,msg=string}
-// @Router    /base/captcha [post]
+// @Success   200  {object}  response.Response{data=baseReq.CaptchaResponse,msg=string}
+// @Router    /logReg/captcha [post]
 func (ba *LogRegApi) Captcha(c *gin.Context) {
 	// 字符,公式,验证码配置
 	// 生成默认数字的driver
@@ -45,7 +44,7 @@ func (ba *LogRegApi) Captcha(c *gin.Context) {
 		commonRes.FailWithMessage("验证码获取失败", c)
 		return
 	}
-	commonRes.OkWithDetailed(authorityRes.SysCaptchaResponse{
+	commonRes.OkWithDetailed(baseReq.CaptchaResponse{
 		CaptchaId:     id,
 		PicPath:       b64s,
 		CaptchaLength: global.TD27_CONFIG.Captcha.KeyLong,
@@ -57,11 +56,11 @@ func (ba *LogRegApi) Captcha(c *gin.Context) {
 // @Summary  用户登录
 // @accept    application/json
 // @Produce   application/json
-// @Param    data  body      authorityReq.Login true "请求参数"
-// @Success  200   {object}  response.Response{data=authorityRes.LoginResponse,msg=string}
-// @Router   /base/login [post]
+// @Param    data  body      baseReq.Login true "请求参数"
+// @Success  200   {object}  response.Response{data=baseRes.LoginResponse,msg=string}
+// @Router   /logReg/login [post]
 func (ba *LogRegApi) Login(c *gin.Context) {
-	var login authorityReq.Login
+	var login baseReq.Login
 	_ = c.ShouldBindJSON(&login)
 
 	// 参数校验
@@ -92,7 +91,7 @@ func (ba *LogRegApi) Login(c *gin.Context) {
 func tokenNext(c *gin.Context, user *modelAuthority.UserModel) {
 	j := &utils.JWT{SigningKey: []byte(global.TD27_CONFIG.JWT.SigningKey)} // 唯一签名
 
-	claims := request.CustomClaims{
+	claims := baseReq.CustomClaims{
 		ID:         user.ID,
 		Username:   user.Username,
 		RoleId:     user.RoleModelID,
@@ -115,7 +114,7 @@ func tokenNext(c *gin.Context, user *modelAuthority.UserModel) {
 	// true: 只允许账号单点登录，后续登录的会挤掉前面的
 	// false: 允许账号多点登录
 	if !global.TD27_CONFIG.System.UseMultipoint {
-		commonRes.OkWithDetailed(authorityRes.LoginResponse{
+		commonRes.OkWithDetailed(baseRes.LoginResponse{
 			User:      *user,
 			Token:     token,
 			ExpiresAt: claims.RegisteredClaims.ExpiresAt.Unix(),
@@ -130,7 +129,7 @@ func tokenNext(c *gin.Context, user *modelAuthority.UserModel) {
 			return
 		}
 
-		commonRes.OkWithDetailed(authorityRes.LoginResponse{
+		commonRes.OkWithDetailed(baseRes.LoginResponse{
 			User:      *user,
 			Token:     token,
 			ExpiresAt: claims.RegisteredClaims.ExpiresAt.Unix(),
@@ -149,7 +148,7 @@ func tokenNext(c *gin.Context, user *modelAuthority.UserModel) {
 			commonRes.FailWithMessage("设置登录状态失败", c)
 			return
 		}
-		commonRes.OkWithDetailed(authorityRes.LoginResponse{
+		commonRes.OkWithDetailed(baseRes.LoginResponse{
 			User:      *user,
 			Token:     token,
 			ExpiresAt: claims.RegisteredClaims.ExpiresAt.Unix(),

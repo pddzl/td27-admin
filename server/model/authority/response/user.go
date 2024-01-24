@@ -1,15 +1,6 @@
 package response
 
-import (
-	"server/model/base"
-	"time"
-)
-
-type LoginResponse struct {
-	User      base.UserModel `json:"user"` // 用户
-	Token     string         `json:"token"`
-	ExpiresAt int64          `json:"expiresAt"` // 过期时间
-}
+import "time"
 
 type UserResult struct {
 	CreatedAt   time.Time `json:"createdAt"` // 创建时间

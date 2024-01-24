@@ -7,6 +7,7 @@ import (
 
 	"server/global"
 	authorityReq "server/model/authority/request"
+	baseReq "server/model/base/request"
 	commonReq "server/model/common/request"
 	commonRes "server/model/common/response"
 )
@@ -53,7 +54,7 @@ func (ra *RoleApi) AddRole(c *gin.Context) {
 		commonRes.FailWithMessage("添加失败", c)
 		global.TD27_LOG.Error("添加角色失败", zap.Error(err))
 	} else {
-		if err = casbinService.EditCasbin(role.ID, authorityReq.DefaultCasbin()); err != nil {
+		if err = casbinService.EditCasbin(role.ID, baseReq.DefaultCasbin()); err != nil {
 			global.TD27_LOG.Error("更新casbin rule失败", zap.Error(err))
 		}
 		commonRes.OkWithDetailed(role, "添加成功", c)

@@ -8,7 +8,7 @@ import (
 	"os"
 
 	"server/global"
-	"server/model/common/response"
+	commonRes "server/model/common/response"
 	fileMReq "server/model/fileM/request"
 )
 
@@ -26,21 +26,21 @@ type FileApi struct{}
 func (f *FileApi) Upload(c *gin.Context) {
 	file, err := c.FormFile("file")
 	if err != nil {
-		response.FailWithStatusMessage(400, fmt.Sprintf("上传失败：%s", err.Error()), c)
+		commonRes.FailWithStatusMessage(400, fmt.Sprintf("上传失败：%s", err.Error()), c)
 		return
 	}
 
 	// 只允许上传csv文件
 	if file.Header.Get("Content-Type") != "text/csv" {
-		response.FailWithStatusMessage(400, "只允许上传csv文件", c)
+		commonRes.FailWithStatusMessage(400, "只允许上传csv文件", c)
 		return
 	}
 
 	if fullInfo, err := fileService.Upload(file); err != nil {
-		response.FailWithStatusMessage(400, "上传失败", c)
+		commonRes.FailWithStatusMessage(400, "上传失败", c)
 		global.TD27_LOG.Error("上传失败", zap.Error(err))
 	} else {
-		response.OkWithDetailed(fullInfo, "上传成功", c)
+		commonRes.OkWithDetailed(fullInfo, "上传成功", c)
 	}
 }
 
@@ -60,16 +60,16 @@ func (f *FileApi) GetFileList(c *gin.Context) {
 	// 参数校验
 	validate := validator.New()
 	if err := validate.Struct(&params); err != nil {
-		response.FailWithMessage("请求参数错误", c)
+		commonRes.FailWithMessage("请求参数错误", c)
 		global.TD27_LOG.Error("请求参数错误", zap.Error(err))
 		return
 	}
 
 	if list, total, err := fileService.GetFileList(params); err != nil {
-		response.FailWithMessage("获取失败", c)
+		commonRes.FailWithMessage("获取失败", c)
 		global.TD27_LOG.Error("获取失败", zap.Error(err))
 	} else {
-		response.OkWithDetailed(response.PageResult{
+		commonRes.OkWithDetailed(commonRes.PageResult{
 			List:     list,
 			Total:    total,
 			Page:     params.Page,
@@ -95,7 +95,7 @@ func (f *FileApi) Download(c *gin.Context) {
 	// 打开文件
 	_, err := os.Stat(path)
 	if err != nil {
-		response.FailWithMessage(fmt.Sprintf("文件错误：%v", err), c)
+		commonRes.FailWithMessage(fmt.Sprintf("文件错误：%v", err), c)
 		return
 	}
 
@@ -118,9 +118,9 @@ func (f *FileApi) Delete(c *gin.Context) {
 	fileName := c.Query("name")
 
 	if err := fileService.Delete(fileName); err != nil {
-		response.FailWithMessage("删除文件失败", c)
+		commonRes.FailWithMessage("删除文件失败", c)
 		global.TD27_LOG.Error("删除文件失败", zap.Error(err))
 	} else {
-		response.OkWithMessage("删除文件成功", c)
+		commonRes.OkWithMessage("删除文件成功", c)
 	}
 }

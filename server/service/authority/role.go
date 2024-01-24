@@ -10,7 +10,6 @@ import (
 	"server/global"
 	modelAuthority "server/model/authority"
 	authorityReq "server/model/authority/request"
-	modelBase "server/model/base"
 	serviceBase "server/service/base"
 )
 
@@ -39,7 +38,7 @@ func (rs *RoleService) DeleteRole(id uint) (err error) {
 		return fmt.Errorf("查询role -> %v", err)
 	}
 
-	if !errors.Is(global.TD27_DB.Where("role_model_id = ?", id).First(&modelBase.UserModel{}).Error, gorm.ErrRecordNotFound) {
+	if !errors.Is(global.TD27_DB.Where("role_model_id = ?", id).First(&modelAuthority.UserModel{}).Error, gorm.ErrRecordNotFound) {
 		return errors.New("该角色下面还有所属用户")
 	}
 

@@ -10,7 +10,6 @@ import (
 	"server/global"
 	modelAuthority "server/model/authority"
 	authorityReq "server/model/authority/request"
-	modelBase "server/model/base"
 )
 
 type MenuService struct{}
@@ -36,7 +35,7 @@ func getTreeMap(menuListFormat []modelAuthority.MenuModel, menuList []modelAutho
 
 func (ms *MenuService) GetMenus(userId uint) ([]modelAuthority.MenuModel, error) {
 	// 查找用户
-	var userModel modelBase.UserModel
+	var userModel modelAuthority.UserModel
 	err := global.TD27_DB.Where("id = ?", userId).First(&userModel).Error
 	if err != nil {
 		return nil, fmt.Errorf("GetMenus 用户查询 -> %v", err)

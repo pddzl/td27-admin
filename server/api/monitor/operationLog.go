@@ -6,9 +6,9 @@ import (
 	"go.uber.org/zap"
 
 	"server/global"
-	authorityReq "server/model/authority/request"
 	commonReq "server/model/common/request"
 	commonRes "server/model/common/response"
+	monitorReq "server/model/monitor/request"
 )
 
 type OperationLogApi struct{}
@@ -19,11 +19,11 @@ type OperationLogApi struct{}
 // @Security  ApiKeyAuth
 // @accept    application/json
 // @Produce   application/json
-// @Param     data  body      authorityReq.OrSearchParams true "请求参数"
+// @Param     data  body      monitorReq.OrSearchParams true "请求参数"
 // @Success   200   {object}  response.Response{data=response.PageResult{list=[]monitor.OperationLogModel},msg=string}
 // @Router    /opl/getOperationLogList [post]
 func (o *OperationLogApi) GetOperationLogList(c *gin.Context) {
-	var orSp authorityReq.OrSearchParams
+	var orSp monitorReq.OrSearchParams
 	_ = c.ShouldBindJSON(&orSp)
 
 	// 参数校验

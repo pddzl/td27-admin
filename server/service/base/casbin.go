@@ -10,7 +10,7 @@ import (
 	"sync"
 
 	"server/global"
-	systemReq "server/model/authority/request"
+	baseReq "server/model/base/request"
 )
 
 type CasbinService struct{}
@@ -79,7 +79,7 @@ func (cs *CasbinService) ClearCasbin(v int, p ...string) bool {
 }
 
 // EditCasbin 更新casbin rule
-func (cs *CasbinService) EditCasbin(roleId uint, casbinInfos []systemReq.CasbinInfo) (err error) {
+func (cs *CasbinService) EditCasbin(roleId uint, casbinInfos []baseReq.CasbinInfo) (err error) {
 	authorityId := strconv.Itoa(int(roleId))
 	cs.ClearCasbin(0, authorityId)
 	var rules [][]string

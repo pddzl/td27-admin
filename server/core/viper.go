@@ -2,11 +2,11 @@ package core
 
 import (
 	"fmt"
-	"server/core/internal"
-	"server/global"
-
 	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/viper"
+
+	"server/core/internal"
+	"server/global"
 )
 
 func Viper() *viper.Viper {

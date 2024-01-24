@@ -3,10 +3,10 @@ package utils
 import (
 	"github.com/gin-gonic/gin"
 	"server/global"
-	systemReq "server/model/authority/request"
+	baseReq "server/model/base/request"
 )
 
-func GetUserInfo(c *gin.Context) (*systemReq.CustomClaims, error) {
+func GetUserInfo(c *gin.Context) (*baseReq.CustomClaims, error) {
 	claims, exists := c.Get("claims")
 	if !exists {
 		token := c.Request.Header.Get("x-token")
@@ -18,11 +18,11 @@ func GetUserInfo(c *gin.Context) (*systemReq.CustomClaims, error) {
 		}
 		return claims, nil
 	} else {
-		return claims.(*systemReq.CustomClaims), nil
+		return claims.(*baseReq.CustomClaims), nil
 	}
 }
 
-func GetClaims(c *gin.Context) (*systemReq.CustomClaims, error) {
+func GetClaims(c *gin.Context) (*baseReq.CustomClaims, error) {
 	token := c.Request.Header.Get("x-token")
 	j := NewJWT()
 	claims, err := j.ParseToken(token)

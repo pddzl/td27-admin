@@ -23,8 +23,8 @@ func (j *JwtApi) JoinInBlacklist(c *gin.Context) {
 	jwt := modelBase.JwtBlackListModel{Jwt: token}
 	err := jwtService.JoinInBlacklist(jwt)
 	if err != nil {
-		global.TD27_LOG.Error("jwt作废失败", zap.Error(err))
 		commonRes.FailWithMessage("jwt作废失败", c)
+		global.TD27_LOG.Error("jwt作废失败", zap.Error(err))
 		return
 	}
 	commonRes.OkWithMessage("jwt作废成功", c)

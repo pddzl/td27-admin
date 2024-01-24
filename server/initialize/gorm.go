@@ -8,13 +8,13 @@ import (
 	"gorm.io/gorm/logger"
 	"log"
 	"os"
-	"server/model/base"
-	"server/model/monitor"
 	"time"
 
 	"server/global"
-	"server/model/authority"
-	"server/model/fileM"
+	modelAuthority "server/model/authority"
+	modelBase "server/model/base"
+	modelFileM "server/model/fileM"
+	modelMonitor "server/model/monitor"
 )
 
 type writer struct {
@@ -83,15 +83,16 @@ func Gorm() *gorm.DB {
 func RegisterTables(db *gorm.DB) {
 	err := db.AutoMigrate(
 		// 基础
-		base.UserModel{},
-		base.JwtBlackListModel{},
+		modelBase.JwtBlackListModel{},
 		// 权限
-		authority.RoleModel{},
-		authority.MenuModel{},
-		authority.ApiModel{},
-		monitor.OperationLogModel{},
+		modelAuthority.UserModel{},
+		modelAuthority.RoleModel{},
+		modelAuthority.MenuModel{},
+		modelAuthority.ApiModel{},
+		// 监控
+		modelMonitor.OperationLogModel{},
 		// fileM
-		fileM.FileModel{},
+		modelFileM.FileModel{},
 	)
 
 	if err != nil {

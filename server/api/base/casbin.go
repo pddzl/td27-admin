@@ -6,7 +6,7 @@ import (
 	"go.uber.org/zap"
 
 	"server/global"
-	authorityReq "server/model/authority/request"
+	authorityReq "server/model/base/request"
 	commonRes "server/model/common/response"
 )
 

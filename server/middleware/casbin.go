@@ -5,7 +5,7 @@ import (
 	"strconv"
 
 	"server/global"
-	"server/model/common/response"
+	commonRes "server/model/common/response"
 	"server/service"
 	"server/utils"
 )
@@ -28,7 +28,7 @@ func CasbinHandler() gin.HandlerFunc {
 			e := casbinService.Casbin() // 判断策略中是否存在
 			success, _ := e.Enforce(sub, obj, act)
 			if !success {
-				response.FailWithDetailed(gin.H{}, "接口权限不足", c)
+				commonRes.FailWithDetailed(gin.H{}, "接口权限不足", c)
 				global.TD27_LOG.Error("接口权限不足")
 				c.Abort()
 				return
