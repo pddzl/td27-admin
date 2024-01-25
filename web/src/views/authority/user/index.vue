@@ -405,4 +405,3 @@ const switchAction = (id: number, active: boolean) => {
     .catch(() => {})
 }
 </script>
-@/api/authority/role @/api/authority/user

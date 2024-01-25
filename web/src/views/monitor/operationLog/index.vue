@@ -252,4 +252,3 @@ const typeFilter = (effect: number) => {
   }
 }
 </style>
-@/api/monitor/operationRecord

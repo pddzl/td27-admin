@@ -194,4 +194,3 @@ createCode()
   background-size: 100%;
 }
 </style>
-@/api/base/base

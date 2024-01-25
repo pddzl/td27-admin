@@ -107,4 +107,3 @@ const editAuthority = () => {
   width: 80%;
 }
 </style>
-@/api/authority/api @/api/base/casbin

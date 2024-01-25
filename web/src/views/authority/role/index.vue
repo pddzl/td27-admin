@@ -187,4 +187,3 @@ const openDrawer = (row: roleData) => {
   drawer.value = true
 }
 </script>
-@/api/authority/role

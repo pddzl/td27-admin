@@ -323,4 +323,3 @@ const operateAction = (formEl: FormInstance | undefined) => {
   })
 }
 </script>
-@/api/authority/menu

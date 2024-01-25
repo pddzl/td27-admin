@@ -100,4 +100,3 @@ const editRoleMenu = () => {
   width: 80%;
 }
 </style>
-@/api/authority/menu @/api/authority/role

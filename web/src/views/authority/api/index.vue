@@ -348,4 +348,3 @@ const onDelete = async () => {
   }
 }
 </style>
-@/api/authority/api

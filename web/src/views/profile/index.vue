@@ -199,4 +199,3 @@ getCache()
   padding: 20px;
 }
 </style>
-@/api/authority/user
