@@ -5,6 +5,7 @@ import (
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 
+	_ "server/docs"
 	"server/global"
 	"server/middleware"
 	"server/middleware/log"
@@ -25,8 +26,6 @@ func Routers() *gin.Engine {
 
 	global.TD27_LOG.Info("register swagger handler")
 	Router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-
-	// -> 系统管理
 
 	// 公共路由组 不需要鉴权
 	PublicGroup := Router.Group("")
