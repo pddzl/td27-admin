@@ -1,0 +1,1611 @@
+definitions:
+  authority.ApiModel:
+    properties:
+      api_group:
+        description: api组
+        type: string
+      createdAt:
+        description: 创建时间
+        type: string
+      description:
+        description: api中文描述
+        type: string
+      id:
+        description: 主键ID
+        type: integer
+      method:
+        description: 方法:创建POST(默认)|查看GET|更新PUT|删除DELETE
+        type: string
+      path:
+        description: api路径
+        type: string
+      updatedAt:
+        description: 更新时间
+        type: string
+    required:
+    - api_group
+    - description
+    - method
+    - path
+    type: object
+  authority.ApiTree:
+    properties:
+      apiGroup:
+        type: string
+      children:
+        items:
+          $ref: '#/definitions/authority.Children'
+        type: array
+    type: object
+  authority.Children:
+    properties:
+      apiGroup:
+        description: for 前端el-tree label (path + description)
+        type: string
+      description:
+        type: string
+      key:
+        description: for 前端el-tree node-key (path + method)
+        type: string
+      method:
+        type: string
+      path:
+        type: string
+    type: object
+  authority.MenuModel:
+    properties:
+      children:
+        items:
+          $ref: '#/definitions/authority.MenuModel'
+        type: array
+      component:
+        description: 前端组件
+        type: string
+      id:
+        description: 主键ID
+        type: integer
+      meta:
+        allOf:
+        - $ref: '#/definitions/authority.Meta'
+        description: 元数据
+      name:
+        description: 路由名称
+        type: string
+      path:
+        description: 路由路径
+        type: string
+      pid:
+        description: 父菜单ID
+        type: integer
+      redirect:
+        description: 重定向
+        type: string
+      sort:
+        description: 排序
+        type: integer
+    type: object
+  authority.Meta:
+    properties:
+      affix:
+        description: 是否固定
+        type: boolean
+      alwaysShow:
+        description: 是否一直显示根路由
+        type: boolean
+      elIcon:
+        description: element-plus图标
+        type: string
+      hidden:
+        description: 菜单是否隐藏
+        type: boolean
+      keepAlive:
+        type: boolean
+      svgIcon:
+        description: svg图标
+        type: string
+      title:
+        description: 菜单名
+        type: string
+    type: object
+  authority.RoleModel:
+    properties:
+      createdAt:
+        description: 创建时间
+        type: string
+      id:
+        description: 主键ID
+        type: integer
+      menus:
+        description: Users    []*UserModel `json:"users"`
+        items:
+          $ref: '#/definitions/authority.MenuModel'
+        type: array
+      roleName:
+        type: string
+      updatedAt:
+        description: 更新时间
+        type: string
+    type: object
+  authority.UserModel:
+    properties:
+      active:
+        description: 是否活跃
+        type: boolean
+      createdAt:
+        description: 创建时间
+        type: string
+      email:
+        description: 邮箱
+        type: string
+      id:
+        description: 主键ID
+        type: integer
+      phone:
+        description: 手机号
+        type: string
+      roleId:
+        description: 角色ID
+        type: integer
+      updatedAt:
+        description: 更新时间
+        type: string
+      username:
+        description: 用户名
+        type: string
+    type: object
+  fileM.FileModel:
+    properties:
+      createdAt:
+        description: 创建时间
+        type: string
+      fileName:
+        type: string
+      fullPath:
+        type: string
+      id:
+        description: 主键ID
+        type: integer
+      mime:
+        type: string
+      updatedAt:
+        description: 更新时间
+        type: string
+    type: object
+  monitor.OperationLogModel:
+    properties:
+      createdAt:
+        description: 创建时间
+        type: string
+      id:
+        description: 主键ID
+        type: integer
+      ip:
+        description: 请求ip
+        type: string
+      method:
+        description: 请求方法
+        type: string
+      path:
+        description: 请求路径
+        type: string
+      reqParam:
+        description: 请求参数
+        type: string
+      respData:
+        description: 响应数据
+        type: string
+      respTime:
+        description: 响应时间
+        type: integer
+      status:
+        description: 请求状态
+        type: integer
+      updatedAt:
+        description: 更新时间
+        type: string
+      userAgent:
+        description: http userAgent
+        type: string
+      userID:
+        description: 用户id
+        type: integer
+      userName:
+        description: 用户名称
+        type: string
+    type: object
+  request.AddUser:
+    properties:
+      active:
+        description: 是否活跃
+        type: boolean
+      email:
+        description: 邮箱
+        type: string
+      password:
+        description: 密码
+        type: string
+      phone:
+        description: Phone    string `json:"phone" validate:"omitempty,regexp=^[1][0-9]{10}$"`
+          // 手机号
+        type: string
+      roleId:
+        description: 角色ID
+        type: integer
+      username:
+        description: 用户名
+        type: string
+    required:
+    - password
+    - roleId
+    - username
+    type: object
+  request.ApiSearchParams:
+    properties:
+      api_group:
+        description: API分组
+        type: string
+      desc:
+        description: 排序方式:升序false(默认)|降序true
+        type: boolean
+      description:
+        description: 描述
+        type: string
+      method:
+        description: 请求方法
+        enum:
+        - GET
+        - POST
+        - DELETE
+        - PUT
+        type: string
+      orderKey:
+        description: 排序
+        type: string
+      page:
+        description: 页码
+        type: integer
+      pageSize:
+        description: 每页大小
+        type: integer
+      path:
+        description: 路径
+        type: string
+    required:
+    - page
+    - pageSize
+    type: object
+  request.CId:
+    properties:
+      id:
+        description: 主键ID
+        type: integer
+    required:
+    - id
+    type: object
+  request.CIds:
+    properties:
+      ids:
+        items:
+          type: integer
+        type: array
+    required:
+    - ids
+    type: object
+  request.CaptchaResponse:
+    properties:
+      captchaId:
+        type: string
+      captchaLength:
+        type: integer
+      picPath:
+        type: string
+    type: object
+  request.CasbinInfo:
+    properties:
+      method:
+        description: 方法
+        type: string
+      path:
+        description: 路径
+        type: string
+    type: object
+  request.EditApi:
+    properties:
+      api_group:
+        description: API分组
+        type: string
+      description:
+        description: 描述
+        type: string
+      id:
+        description: api ID
+        type: integer
+      method:
+        description: 请求方法
+        enum:
+        - GET
+        - POST
+        - DELETE
+        - PUT
+        type: string
+      path:
+        description: 路径
+        type: string
+    required:
+    - id
+    type: object
+  request.EditMenuReq:
+    properties:
+      component:
+        description: 前端组件
+        type: string
+      id:
+        description: 菜单ID
+        type: integer
+      meta:
+        $ref: '#/definitions/request.meta'
+      name:
+        description: 名称
+        type: string
+      path:
+        description: 路径
+        type: string
+      pid:
+        description: 默认0 根目录
+        type: integer
+      redirect:
+        description: 重定向
+        type: string
+      sort:
+        description: 排序
+        type: integer
+    required:
+    - component
+    - id
+    - path
+    - sort
+    type: object
+  request.EditRole:
+    properties:
+      id:
+        description: 角色ID
+        type: integer
+      roleName:
+        description: 角色名称
+        type: string
+    required:
+    - id
+    - roleName
+    type: object
+  request.EditRoleMenu:
+    properties:
+      ids:
+        description: 菜单ID
+        items:
+          type: integer
+        type: array
+      roleId:
+        description: 角色ID
+        type: integer
+    type: object
+  request.EditUser:
+    properties:
+      active:
+        description: 是否活跃
+        type: boolean
+      email:
+        description: 邮箱
+        type: string
+      id:
+        description: 用户ID
+        type: integer
+      phone:
+        description: 手机号
+        type: string
+      roleId:
+        description: 角色ID
+        type: integer
+      username:
+        description: 用户名
+        type: string
+    required:
+    - id
+    - roleId
+    - username
+    type: object
+  request.FileSearchParams:
+    properties:
+      desc:
+        description: 排序方式:升序false(默认)|降序true
+        type: boolean
+      name:
+        type: string
+      orderKey:
+        description: 排序
+        type: string
+      page:
+        description: 页码
+        type: integer
+      pageSize:
+        description: 每页大小
+        type: integer
+    required:
+    - page
+    - pageSize
+    type: object
+  request.Login:
+    properties:
+      captcha:
+        description: 验证码
+        type: string
+      captchaId:
+        description: 验证码ID
+        type: string
+      password:
+        description: 密码
+        type: string
+      username:
+        description: 用户名
+        type: string
+    required:
+    - captcha
+    - captchaId
+    - password
+    - username
+    type: object
+  request.ModifyPass:
+    properties:
+      id:
+        description: 用户ID
+        type: integer
+      newPassword:
+        description: 新密码
+        type: string
+      oldPassword:
+        description: 旧密码
+        type: string
+    required:
+    - id
+    - newPassword
+    - oldPassword
+    type: object
+  request.OrSearchParams:
+    properties:
+      asc:
+        description: 排序方式:升序true|降序true(默认)
+        type: boolean
+      method:
+        description: 请求方法
+        type: string
+      page:
+        description: 页码
+        type: integer
+      pageSize:
+        description: 每页大小
+        type: integer
+      path:
+        description: 请求路径
+        type: string
+      status:
+        description: http code
+        type: integer
+    required:
+    - page
+    - pageSize
+    type: object
+  request.PageInfo:
+    properties:
+      page:
+        description: 页码
+        type: integer
+      pageSize:
+        description: 每页大小
+        type: integer
+    required:
+    - page
+    - pageSize
+    type: object
+  request.ReqCasbin:
+    properties:
+      casbinInfos:
+        items:
+          $ref: '#/definitions/request.CasbinInfo'
+        type: array
+      roleId:
+        description: 角色ID
+        type: integer
+    required:
+    - roleId
+    type: object
+  request.Role:
+    properties:
+      roleName:
+        description: 角色名称
+        type: string
+    required:
+    - roleName
+    type: object
+  request.SwitchActive:
+    properties:
+      active:
+        description: 是否启用
+        type: boolean
+      id:
+        description: 用户ID
+        type: integer
+    required:
+    - id
+    type: object
+  request.meta:
+    properties:
+      affix:
+        description: 组件固定
+        type: boolean
+      alwaysShow:
+        description: 是否一直显示根路由
+        type: boolean
+      hidden:
+        description: 隐藏菜单
+        type: boolean
+      icon:
+        description: element图标
+        type: string
+      keepAlive:
+        description: 组件缓存
+        type: boolean
+      title:
+        description: 菜单名
+        type: string
+    type: object
+  response.ApiTree:
+    properties:
+      checkedKey:
+        items:
+          type: string
+        type: array
+      list: {}
+    type: object
+  response.LoginResponse:
+    properties:
+      expiresAt:
+        description: 过期时间
+        type: integer
+      token:
+        type: string
+      user:
+        allOf:
+        - $ref: '#/definitions/authority.UserModel'
+        description: 用户
+    type: object
+  response.Menu:
+    properties:
+      list: {}
+      menuIds:
+        items:
+          type: integer
+        type: array
+    type: object
+  response.PageResult:
+    properties:
+      list: {}
+      page:
+        type: integer
+      pageSize:
+        type: integer
+      total:
+        type: integer
+    type: object
+  response.Response:
+    properties:
+      code:
+        type: integer
+      data: {}
+      msg:
+        type: string
+    type: object
+  response.UserResult:
+    properties:
+      active:
+        description: 是否活跃
+        type: boolean
+      createdAt:
+        description: 创建时间
+        type: string
+      email:
+        description: 邮箱
+        type: string
+      id:
+        description: 用户ID
+        type: integer
+      phone:
+        description: 手机号
+        type: string
+      role:
+        description: 角色名
+        type: string
+      roleId:
+        description: 角色ID
+        type: integer
+      username:
+        description: 用户名
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /api/addApi:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 请求参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/authority.ApiModel'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/authority.ApiModel'
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 添加api
+      tags:
+      - ApiApi
+  /api/addRole:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 请求参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/request.Role'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/authority.RoleModel'
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 添加角色
+      tags:
+      - RoleApi
+  /api/deleteApi:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 请求参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/request.CId'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 删除api
+      tags:
+      - ApiApi
+  /api/deleteApiById:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 请求参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/request.CIds'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 批量删除api
+      tags:
+      - ApiApi
+  /api/deleteRole:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 请求参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/request.CId'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 删除角色
+      tags:
+      - RoleApi
+  /api/editApi:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 请求参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/request.EditApi'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 编辑api
+      tags:
+      - ApiApi
+  /api/editRole:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 请求参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/request.EditRole'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 编辑角色
+      tags:
+      - RoleApi
+  /api/editRoleMenu:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 请求参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/request.EditRoleMenu'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 编辑用户菜单
+      tags:
+      - RoleApi
+  /api/getApis:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 请求参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/request.ApiSearchParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  allOf:
+                  - $ref: '#/definitions/response.PageResult'
+                  - properties:
+                      list:
+                        items:
+                          $ref: '#/definitions/authority.ApiModel'
+                        type: array
+                    type: object
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 分页获取api
+      tags:
+      - ApiApi
+  /api/getElTreeApis:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 请求参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/request.CId'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  allOf:
+                  - $ref: '#/definitions/response.ApiTree'
+                  - properties:
+                      checkedKey:
+                        items:
+                          type: string
+                        type: array
+                      list:
+                        items:
+                          $ref: '#/definitions/authority.ApiTree'
+                        type: array
+                    type: object
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 格式化列出所有api
+      tags:
+      - ApiApi
+  /casbin/editCasbin:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 请求参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/request.ReqCasbin'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 编辑casbin
+      tags:
+      - CasbinApi
+  /file/delete:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: 文件名
+        in: query
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 删除文件
+      tags:
+      - FileApi
+  /file/download:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: 文件名
+        in: query
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/octet-stream
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: file
+      security:
+      - ApiKeyAuth: []
+      summary: 下载文件
+      tags:
+      - FileApi
+  /file/getFileList:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 请求参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/request.FileSearchParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  allOf:
+                  - $ref: '#/definitions/response.PageResult'
+                  - properties:
+                      list:
+                        items:
+                          $ref: '#/definitions/fileM.FileModel'
+                        type: array
+                    type: object
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 分页获取文件信息
+      tags:
+      - FileApi
+  /file/upload:
+    post:
+      consumes:
+      - multipart/form-data
+      parameters:
+      - description: The file to upload
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 上传文件
+      tags:
+      - FileApi
+  /jwt/jsonInBlacklist:
+    post:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: jwt加入黑名单
+      tags:
+      - JwtApi
+  /logReg/captcha:
+    post:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/request.CaptchaResponse'
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 生成验证码
+      tags:
+      - LogRegApi
+  /logReg/login:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 请求参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/request.Login'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/response.LoginResponse'
+                msg:
+                  type: string
+              type: object
+      summary: 用户登录
+      tags:
+      - LogRegApi
+  /menu/addMenu:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 请求参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/request.EditMenuReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 添加菜单
+      tags:
+      - MenuApi
+  /menu/deleteMenu:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 请求参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/request.CId'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 删除菜单
+      tags:
+      - MenuApi
+  /menu/editMenu:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 请求参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/request.EditMenuReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 编辑菜单
+      tags:
+      - MenuApi
+  /menu/getElTreeMenus:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 请求参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/request.CId'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  allOf:
+                  - $ref: '#/definitions/response.Menu'
+                  - properties:
+                      list:
+                        items:
+                          $ref: '#/definitions/authority.MenuModel'
+                        type: array
+                      menuIds:
+                        items:
+                          type: integer
+                        type: array
+                    type: object
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 获取菜单树
+      tags:
+      - MenuApi
+  /menu/getMenus:
+    post:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/authority.MenuModel'
+                  type: array
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 获取用户菜单
+      tags:
+      - MenuApi
+  /opl/deleteOperationLog:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 请求参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/request.CId'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 删除操作记录
+      tags:
+      - OperationLogApi
+  /opl/deleteOperationLogByIds:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 请求参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/request.CIds'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 批量删除操作记录
+      tags:
+      - OperationLogApi
+  /opl/getOperationLogList:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 请求参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/request.OrSearchParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  allOf:
+                  - $ref: '#/definitions/response.PageResult'
+                  - properties:
+                      list:
+                        items:
+                          $ref: '#/definitions/monitor.OperationLogModel'
+                        type: array
+                    type: object
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 分页获取操作记录
+      tags:
+      - OperationLogApi
+  /role/getRoles:
+    post:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/authority.RoleModel'
+                  type: array
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 获取所有角色
+      tags:
+      - RoleApi
+  /user/addUser:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 请求参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/request.AddUser'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 添加用户
+      tags:
+      - UserApi
+  /user/deleteUser:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 请求参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/request.CId'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 删除用户
+      tags:
+      - UserApi
+  /user/editUser:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 请求参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/request.EditUser'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 编辑用户
+      tags:
+      - UserApi
+  /user/getUserInfo:
+    post:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 获取用户信息
+      tags:
+      - UserApi
+  /user/getUsers:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 请求参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/request.PageInfo'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  allOf:
+                  - $ref: '#/definitions/response.PageResult'
+                  - properties:
+                      list:
+                        items:
+                          $ref: '#/definitions/response.UserResult'
+                        type: array
+                    type: object
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 分页获取用户
+      tags:
+      - UserApi
+  /user/modifyPass:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 请求参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/request.ModifyPass'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 修改用户密码
+      tags:
+      - UserApi
+  /user/switchActive:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 请求参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/request.SwitchActive'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 切换启用状态
+      tags:
+      - UserApi
+swagger: "2.0"

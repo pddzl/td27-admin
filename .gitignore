@@ -24,7 +24,6 @@ yarn-error.log*
 
 /server/log/
 /server/resource/upload
-/server/docs/*
 
 *.iml
 
