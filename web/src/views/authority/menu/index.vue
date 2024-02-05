@@ -37,7 +37,13 @@
         </el-table>
       </div>
     </el-card>
-    <el-dialog v-model="dialogVisible" :title="dialogTitle" :before-close="handleClose" :close-on-click-modal="false">
+    <el-dialog
+      v-model="dialogVisible"
+      :title="dialogTitle"
+      :before-close="handleClose"
+      :close-on-click-modal="false"
+      :draggable="true"
+    >
       <warning-bar title="新增菜单，需要在角色管理内配置权限才可使用" />
       <el-form
         ref="formRef"
