@@ -15,6 +15,7 @@ import (
 	modelBase "server/model/base"
 	modelFileM "server/model/fileM"
 	modelMonitor "server/model/monitor"
+	modelSysTool "server/model/sysTool"
 )
 
 type writer struct {
@@ -93,6 +94,8 @@ func RegisterTables(db *gorm.DB) {
 		modelMonitor.OperationLogModel{},
 		// fileM
 		modelFileM.FileModel{},
+		// 系统工具
+		modelSysTool.CronModel{},
 	)
 
 	if err != nil {

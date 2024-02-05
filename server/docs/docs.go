@@ -613,6 +613,280 @@ const docTemplate = `{
                 }
             }
         },
+        "/cron/addCron": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "CronApi"
+                ],
+                "summary": "添加cron",
+                "parameters": [
+                    {
+                        "description": "名称，方法，cron表达式，策略，开关，额外参数，备注（可选）",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/sysTool.CronModel"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/sysTool.CronModel"
+                                        },
+                                        "msg": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/cron/deleteCron": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "CronApi"
+                ],
+                "summary": "删除cron",
+                "parameters": [
+                    {
+                        "description": "id",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.CId"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "msg": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/cron/editCron": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "CronApi"
+                ],
+                "summary": "编辑cron",
+                "parameters": [
+                    {
+                        "description": "id（必须），名称，方法，cron表达式，策略，开关，额外参数，备注",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.CronReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/sysTool.CronModel"
+                                        },
+                                        "msg": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/cron/getCronList": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "CronApi"
+                ],
+                "summary": "分页获取cron",
+                "parameters": [
+                    {
+                        "description": "page（可选）, pageSize（可选）",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.PageInfo"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/definitions/response.PageResult"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "list": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "$ref": "#/definitions/sysTool.CronModel"
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        "msg": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/cron/switchOpen": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "CronApi"
+                ],
+                "summary": "开关cron",
+                "parameters": [
+                    {
+                        "description": "id, open",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.SwitchReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "msg": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/file/delete": {
             "get": {
                 "security": [
@@ -2203,6 +2477,56 @@ const docTemplate = `{
                 }
             }
         },
+        "request.ClearTable": {
+            "type": "object",
+            "properties": {
+                "compareField": {
+                    "type": "string"
+                },
+                "interval": {
+                    "type": "string"
+                },
+                "tableName": {
+                    "type": "string"
+                }
+            }
+        },
+        "request.CronReq": {
+            "type": "object",
+            "required": [
+                "id"
+            ],
+            "properties": {
+                "comment": {
+                    "type": "string"
+                },
+                "expression": {
+                    "type": "string"
+                },
+                "extraParams": {
+                    "$ref": "#/definitions/request.ExtraParams"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "method": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "open": {
+                    "type": "boolean"
+                },
+                "strategy": {
+                    "type": "string",
+                    "enum": [
+                        "always",
+                        "once"
+                    ]
+                }
+            }
+        },
         "request.EditApi": {
             "type": "object",
             "required": [
@@ -2343,6 +2667,22 @@ const docTemplate = `{
                 "username": {
                     "description": "用户名",
                     "type": "string"
+                }
+            }
+        },
+        "request.ExtraParams": {
+            "type": "object",
+            "properties": {
+                "command": {
+                    "description": "for shell",
+                    "type": "string"
+                },
+                "tableInfo": {
+                    "description": "for clearTable",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/request.ClearTable"
+                    }
                 }
             }
         },
@@ -2519,6 +2859,20 @@ const docTemplate = `{
                 }
             }
         },
+        "request.SwitchReq": {
+            "type": "object",
+            "required": [
+                "id"
+            ],
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "open": {
+                    "type": "boolean"
+                }
+            }
+        },
         "request.meta": {
             "type": "object",
             "properties": {
@@ -2653,6 +3007,86 @@ const docTemplate = `{
                 "username": {
                     "description": "用户名",
                     "type": "string"
+                }
+            }
+        },
+        "sysTool.ClearTable": {
+            "type": "object",
+            "properties": {
+                "compareField": {
+                    "type": "string"
+                },
+                "interval": {
+                    "type": "string"
+                },
+                "tableName": {
+                    "type": "string"
+                }
+            }
+        },
+        "sysTool.CronModel": {
+            "type": "object",
+            "required": [
+                "expression",
+                "method",
+                "name"
+            ],
+            "properties": {
+                "comment": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "description": "创建时间",
+                    "type": "string"
+                },
+                "entryId": {
+                    "type": "integer"
+                },
+                "expression": {
+                    "type": "string"
+                },
+                "extraParams": {
+                    "$ref": "#/definitions/sysTool.ExtraParams"
+                },
+                "id": {
+                    "description": "主键ID",
+                    "type": "integer"
+                },
+                "method": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "open": {
+                    "type": "boolean"
+                },
+                "strategy": {
+                    "type": "string",
+                    "enum": [
+                        "always",
+                        "once"
+                    ]
+                },
+                "updatedAt": {
+                    "description": "更新时间",
+                    "type": "string"
+                }
+            }
+        },
+        "sysTool.ExtraParams": {
+            "type": "object",
+            "properties": {
+                "command": {
+                    "description": "for shell",
+                    "type": "string"
+                },
+                "tableInfo": {
+                    "description": "for clearTable",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/sysTool.ClearTable"
+                    }
                 }
             }
         }

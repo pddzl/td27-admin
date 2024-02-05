@@ -309,6 +309,39 @@ definitions:
         description: 路径
         type: string
     type: object
+  request.ClearTable:
+    properties:
+      compareField:
+        type: string
+      interval:
+        type: string
+      tableName:
+        type: string
+    type: object
+  request.CronReq:
+    properties:
+      comment:
+        type: string
+      expression:
+        type: string
+      extraParams:
+        $ref: '#/definitions/request.ExtraParams'
+      id:
+        type: integer
+      method:
+        type: string
+      name:
+        type: string
+      open:
+        type: boolean
+      strategy:
+        enum:
+        - always
+        - once
+        type: string
+    required:
+    - id
+    type: object
   request.EditApi:
     properties:
       api_group:
@@ -412,6 +445,17 @@ definitions:
     - id
     - roleId
     - username
+    type: object
+  request.ExtraParams:
+    properties:
+      command:
+        description: for shell
+        type: string
+      tableInfo:
+        description: for clearTable
+        items:
+          $ref: '#/definitions/request.ClearTable'
+        type: array
     type: object
   request.FileSearchParams:
     properties:
@@ -536,6 +580,15 @@ definitions:
     required:
     - id
     type: object
+  request.SwitchReq:
+    properties:
+      id:
+        type: integer
+      open:
+        type: boolean
+    required:
+    - id
+    type: object
   request.meta:
     properties:
       affix:
@@ -629,6 +682,61 @@ definitions:
       username:
         description: 用户名
         type: string
+    type: object
+  sysTool.ClearTable:
+    properties:
+      compareField:
+        type: string
+      interval:
+        type: string
+      tableName:
+        type: string
+    type: object
+  sysTool.CronModel:
+    properties:
+      comment:
+        type: string
+      createdAt:
+        description: 创建时间
+        type: string
+      entryId:
+        type: integer
+      expression:
+        type: string
+      extraParams:
+        $ref: '#/definitions/sysTool.ExtraParams'
+      id:
+        description: 主键ID
+        type: integer
+      method:
+        type: string
+      name:
+        type: string
+      open:
+        type: boolean
+      strategy:
+        enum:
+        - always
+        - once
+        type: string
+      updatedAt:
+        description: 更新时间
+        type: string
+    required:
+    - expression
+    - method
+    - name
+    type: object
+  sysTool.ExtraParams:
+    properties:
+      command:
+        description: for shell
+        type: string
+      tableInfo:
+        description: for clearTable
+        items:
+          $ref: '#/definitions/sysTool.ClearTable'
+        type: array
     type: object
 info:
   contact: {}
@@ -967,6 +1075,159 @@ paths:
       summary: 编辑casbin
       tags:
       - CasbinApi
+  /cron/addCron:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 名称，方法，cron表达式，策略，开关，额外参数，备注（可选）
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/sysTool.CronModel'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/sysTool.CronModel'
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 添加cron
+      tags:
+      - CronApi
+  /cron/deleteCron:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: id
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/request.CId'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 删除cron
+      tags:
+      - CronApi
+  /cron/editCron:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: id（必须），名称，方法，cron表达式，策略，开关，额外参数，备注
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/request.CronReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/sysTool.CronModel'
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 编辑cron
+      tags:
+      - CronApi
+  /cron/getCronList:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: page（可选）, pageSize（可选）
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/request.PageInfo'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  allOf:
+                  - $ref: '#/definitions/response.PageResult'
+                  - properties:
+                      list:
+                        items:
+                          $ref: '#/definitions/sysTool.CronModel'
+                        type: array
+                    type: object
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 分页获取cron
+      tags:
+      - CronApi
+  /cron/switchOpen:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: id, open
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/request.SwitchReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 开关cron
+      tags:
+      - CronApi
   /file/delete:
     get:
       consumes:

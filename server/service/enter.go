@@ -5,6 +5,7 @@ import (
 	"server/service/base"
 	"server/service/fileM"
 	"server/service/monitor"
+	"server/service/sysTool"
 )
 
 type ServiceGroup struct {
@@ -12,6 +13,7 @@ type ServiceGroup struct {
 	Authority authority.ServiceGroup
 	FileM     fileM.ServiceGroup
 	Monitor   monitor.ServiceGroup
+	SysTool   sysTool.ServiceGroup
 }
 
 var ServiceGroupApp = new(ServiceGroup)

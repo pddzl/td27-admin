@@ -49,6 +49,8 @@ func Routers() *gin.Engine {
 	fileMRouter := router.RouterGroupApp.FileM
 	// -> 系统监控
 	monitorRouter := router.RouterGroupApp.Monitor
+	// -> 系统工具
+	sysToolRouter := router.RouterGroupApp.SysTool
 
 	// 需要认证的路由
 	PrivateGroup := Router.Group("")
@@ -66,6 +68,8 @@ func Routers() *gin.Engine {
 		monitorRouter.InitOperationLogRouter(PrivateGroup) // 操作日志
 		// 文件管理
 		fileMRouter.InitFileRouter(PrivateGroup)
+		// 系统工具
+		sysToolRouter.InitCronRouter(PrivateGroup)
 	}
 
 	global.TD27_LOG.Info("router register success")

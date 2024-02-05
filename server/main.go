@@ -13,7 +13,8 @@ func main() {
 	global.TD27_VP = core.Viper() // 初始化viper
 	global.TD27_LOG = core.Zap()  // 初始化zap日志
 	zap.ReplaceGlobals(global.TD27_LOG)
-	global.TD27_DB = initialize.Gorm() // gorm连接数据库
+	global.TD27_DB = initialize.Gorm()       // gorm连接数据库
+	global.TD27_CRON = initialize.InitCron() // 初始化cron
 	// 清理数据库
 	initialize.Crontab()
 	if global.TD27_DB == nil {
