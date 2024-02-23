@@ -39,7 +39,7 @@ mysql:
   config: 'charset=utf8&parseTime=true'
   db-name: 'td27'
   username: 'root'
-  password: 'td27admin'
+  password: 'bank2023'
   max-idle-conns: 10
   max-open-conns: 100
   log-mode: false
@@ -76,7 +76,7 @@ cors:
 
 # crontab; clear table data
 crontab:
-  open: true
+  open: false
   spec: "@daily"
   objects:
     - tableName: jwt_blacklists
