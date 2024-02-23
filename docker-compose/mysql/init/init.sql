@@ -5,9 +5,9 @@
 # https://sequel-ace.com/
 # https://github.com/Sequel-Ace/Sequel-Ace
 #
-# Host: 127.0.0.1 (MySQL 8.3.0)
+# Host: 127.0.0.1 (MySQL 8.0.28)
 # Database: td27
-# Generation Time: 2024-02-23 09:05:10 +0000
+# Generation Time: 2024-01-24 09:02:38 +0000
 # ************************************************************
 
 
@@ -30,10 +30,10 @@ CREATE TABLE `authority_api` (
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
   `deleted_at` datetime DEFAULT NULL,
-  `path` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'api路径',
-  `description` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'api中文描述',
-  `api_group` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'api组',
-  `method` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'POST' COMMENT '方法',
+  `path` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'api路径',
+  `description` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'api中文描述',
+  `api_group` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'api组',
+  `method` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'POST' COMMENT '方法',
   PRIMARY KEY (`id`),
   KEY `idx_sys_api_deleted_at` (`deleted_at`),
   KEY `idx_authority_api_deleted_at` (`deleted_at`)
@@ -77,12 +77,7 @@ VALUES
 	(31,'2023-08-27 06:05:00','2023-08-27 06:05:00',NULL,'/file/upload','文件上传','file','POST'),
 	(32,'2023-08-27 06:06:43','2023-08-27 06:06:43',NULL,'/file/getFileList','分页获取文件信息','file','POST'),
 	(33,'2024-01-04 03:10:15','2024-01-04 03:10:41',NULL,'/file/download','下载文件','file','GET'),
-	(34,'2024-01-04 03:16:04','2024-01-04 03:16:04',NULL,'/file/delete','删除文件','file','GET'),
-	(35,'2024-02-23 08:31:57','2024-02-23 08:31:57',NULL,'/cron/getCronList','分页获取cron','cron','POST'),
-	(36,'2024-02-23 08:33:56','2024-02-23 08:33:56',NULL,'/cron/addCron','添加cron','cron','POST'),
-	(37,'2024-02-23 08:34:25','2024-02-23 08:34:25',NULL,'/cron/deleteCron','删除cron','cron','POST'),
-	(38,'2024-02-23 08:34:50','2024-02-23 08:34:50',NULL,'/cron/editCron','编辑cron','cron','POST'),
-	(39,'2024-02-23 08:35:21','2024-02-23 08:35:21',NULL,'/cron/switchOpen','cron开关','cron','POST');
+	(34,'2024-01-04 03:16:04','2024-01-04 03:16:04',NULL,'/file/delete','删除文件','file','GET');
 
 /*!40000 ALTER TABLE `authority_api` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -99,10 +94,10 @@ CREATE TABLE `authority_menu` (
   `updated_at` datetime DEFAULT NULL,
   `deleted_at` datetime DEFAULT NULL,
   `pid` bigint unsigned DEFAULT NULL,
-  `name` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `path` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `redirect` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `component` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `path` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `redirect` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `component` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
   `meta` json DEFAULT NULL,
   `sort` bigint unsigned NOT NULL,
   PRIMARY KEY (`id`),
@@ -117,7 +112,7 @@ LOCK TABLES `authority_menu` WRITE;
 INSERT INTO `authority_menu` (`id`, `created_at`, `updated_at`, `deleted_at`, `pid`, `name`, `path`, `redirect`, `component`, `meta`, `sort`)
 VALUES
 	(1,NULL,'2024-01-22 07:32:30',NULL,0,'Authority','/authority','/authority/user','Layout','{\"title\": \"权限管理\", \"svgIcon\": \"lock\"}',1),
-	(2,NULL,'2024-02-05 09:38:41',NULL,1,'User','user','','authority/user/index.vue','{\"title\": \"用户管理\"}',1),
+	(2,NULL,'2023-06-28 08:11:56',NULL,1,'User','user','','authority/user/index.vue','{\"title\": \"用户管理\"}',1),
 	(3,NULL,'2023-06-28 08:12:06',NULL,1,'Role','role','','authority/role/index.vue','{\"title\": \"角色管理\"}',2),
 	(4,NULL,'2023-06-28 08:12:16',NULL,1,'Menu','menu','','authority/menu/index.vue','{\"title\": \"菜单管理\"}',3),
 	(5,'2023-03-07 01:50:48','2023-06-28 08:11:38',NULL,1,'Api','api','','authority/api/index.vue','{\"title\": \"接口管理\"}',4),
@@ -127,10 +122,8 @@ VALUES
 	(9,'2023-03-13 06:14:27','2023-06-28 08:43:02',NULL,7,'Cenu1-2','cenu1-2','','cenu/cenu1/cenu1-2/index.vue','{\"title\": \"cenu1-2\"}',2),
 	(10,'2023-08-26 08:57:01','2023-08-26 09:02:58',NULL,0,'FileM','/fileM','/fileM/file','Layout','{\"title\": \"文件管理\", \"svgIcon\": \"file\", \"alwaysShow\": true}',3),
 	(11,'2023-08-26 08:58:51','2023-08-26 08:58:51',NULL,10,'File','/fileM/file','','fileM/file/index.vue','{\"title\": \"文件\"}',1),
-	(12,'2024-01-19 07:47:49','2024-02-05 09:56:43',NULL,0,'Monitor','/monitor','/monitor/operationLog','Layout','{\"title\": \"系统监控\", \"svgIcon\": \"monitor\", \"alwaysShow\": true}',5),
-	(13,'2023-03-07 01:50:48','2024-01-19 07:48:52',NULL,12,'OperationLog','operationLog','','monitor/operationLog/index.vue','{\"title\": \"操作日志\"}',1),
-	(14,'2024-02-05 09:56:33','2024-02-05 09:56:33',NULL,0,'SysTool','/systool','/systool/cron','Layout','{\"title\": \"系统工具\", \"svgIcon\": \"config\", \"alwaysShow\": true}',4),
-	(15,'2024-02-06 10:00:00','2024-02-06 10:00:00',NULL,14,'Cron','cron','','sysTool/cron/index.vue','{\"title\": \"定时任务\"}',1);
+	(12,'2024-01-19 07:47:49','2024-01-19 09:36:45',NULL,0,'Monitor','/monitor','/monitor/operationLog','Layout','{\"title\": \"系统监控\", \"svgIcon\": \"monitor\", \"alwaysShow\": true}',4),
+	(13,'2023-03-07 01:50:48','2024-01-19 07:48:52',NULL,12,'OperationLog','operationLog','','monitor/operationLog/index.vue','{\"title\": \"操作日志\"}',1);
 
 /*!40000 ALTER TABLE `authority_menu` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -146,7 +139,7 @@ CREATE TABLE `authority_role` (
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
   `deleted_at` datetime DEFAULT NULL,
-  `role_name` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `role_name` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `role_name` (`role_name`),
   KEY `idx_sys_role_deleted_at` (`deleted_at`),
@@ -158,7 +151,7 @@ LOCK TABLES `authority_role` WRITE;
 
 INSERT INTO `authority_role` (`id`, `created_at`, `updated_at`, `deleted_at`, `role_name`)
 VALUES
-	(1,NULL,'2024-02-06 10:00:12',NULL,'root');
+	(1,NULL,'2024-01-22 02:48:11',NULL,'root');
 
 /*!40000 ALTER TABLE `authority_role` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -174,10 +167,10 @@ CREATE TABLE `authority_user` (
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
   `deleted_at` datetime DEFAULT NULL,
-  `username` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '用户名',
-  `password` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '密码',
-  `phone` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '手机号',
-  `email` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '邮箱',
+  `username` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '用户名',
+  `password` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '密码',
+  `phone` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '手机号',
+  `email` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '邮箱',
   `active` tinyint(1) DEFAULT NULL,
   `role_model_id` bigint unsigned DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -211,7 +204,7 @@ CREATE TABLE `base_jwtBlacklist` (
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
   `deleted_at` datetime DEFAULT NULL,
-  `jwt` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci COMMENT 'jwt',
+  `jwt` text COLLATE utf8mb4_unicode_ci COMMENT 'jwt',
   PRIMARY KEY (`id`),
   KEY `idx_base_jwtBlacklist_deleted_at` (`deleted_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -225,13 +218,13 @@ DROP TABLE IF EXISTS `casbin_rule`;
 
 CREATE TABLE `casbin_rule` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `ptype` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `v0` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `v1` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `v2` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `v3` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `v4` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `v5` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `ptype` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `v0` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `v1` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `v2` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `v3` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `v4` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `v5` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `idx_casbin_rule` (`ptype`,`v0`,`v1`,`v2`,`v3`,`v4`,`v5`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -241,45 +234,40 @@ LOCK TABLES `casbin_rule` WRITE;
 
 INSERT INTO `casbin_rule` (`id`, `ptype`, `v0`, `v1`, `v2`, `v3`, `v4`, `v5`)
 VALUES
-	(56,'p','1','/api/addApi','POST','','',''),
-	(58,'p','1','/api/deleteApi','POST','','',''),
-	(61,'p','1','/api/deleteApiById','POST','','',''),
-	(59,'p','1','/api/editApi','POST','','',''),
-	(57,'p','1','/api/getApis','POST','','',''),
-	(60,'p','1','/api/getElTreeApis','POST','','',''),
-	(38,'p','1','/casbin/editCasbin','POST','','',''),
-	(70,'p','1','/cron/addCron','POST','','',''),
-	(71,'p','1','/cron/deleteCron','POST','','',''),
-	(72,'p','1','/cron/editCron','POST','','',''),
-	(69,'p','1','/cron/getCronList','POST','','',''),
-	(73,'p','1','/cron/switchOpen','POST','','',''),
-	(68,'p','1','/file/delete','GET','','',''),
-	(67,'p','1','/file/download','GET','','',''),
-	(66,'p','1','/file/getFileList','POST','','',''),
-	(65,'p','1','/file/upload','POST','','',''),
-	(37,'p','1','/jwt/joinInBlacklist','POST','','',''),
-	(35,'p','1','/logReg/captcha','POST','','',''),
-	(36,'p','1','/logReg/login','POST','','',''),
-	(52,'p','1','/menu/addMenu','POST','','',''),
-	(54,'p','1','/menu/deleteMenu','POST','','',''),
-	(53,'p','1','/menu/editMenu','POST','','',''),
-	(55,'p','1','/menu/getElTreeMenus','POST','','',''),
-	(51,'p','1','/menu/getMenus','GET','','',''),
-	(63,'p','1','/opl/deleteOpl','POST','','',''),
-	(64,'p','1','/opl/deleteOplByIds','POST','','',''),
-	(62,'p','1','/opl/getOplList','POST','','',''),
-	(47,'p','1','/role/addRole','POST','','',''),
-	(48,'p','1','/role/deleteRole','POST','','',''),
-	(49,'p','1','/role/editRole','POST','','',''),
-	(50,'p','1','/role/editRoleMenu','POST','','',''),
-	(46,'p','1','/role/getRoles','POST','','',''),
-	(42,'p','1','/user/addUser','POST','','',''),
-	(41,'p','1','/user/deleteUser','POST','','',''),
-	(43,'p','1','/user/editUser','POST','','',''),
-	(39,'p','1','/user/getUserInfo','GET','','',''),
-	(40,'p','1','/user/getUsers','POST','','',''),
-	(44,'p','1','/user/modifyPass','POST','','',''),
-	(45,'p','1','/user/switchActive','POST','','','');
+	(1,'p','1','/logReg/captcha','POST','','',''),
+	(2,'p','1','/logReg/login','POST','','',''),
+	(3,'p','1','/jwt/joinInBlacklist','POST','','',''),
+	(4,'p','1','/casbin/editCasbin','POST','','',''),
+	(5,'p','1','/user/addUser','POST','','',''),
+	(6,'p','1','/user/deleteUser','POST','','',''),
+	(7,'p','1','/user/editUser','POST','','',''),
+	(8,'p','1','/user/getUserInfo','GET','','',''),
+	(9,'p','1','/user/getUsers','POST','','',''),
+	(10,'p','1','/user/modifyPass','POST','','',''),
+	(11,'p','1','/user/switchActive','POST','','',''),
+	(12,'p','1','/role/addRole','POST','','',''),
+	(13,'p','1','/role/deleteRole','POST','','',''),
+	(14,'p','1','/role/editRole','POST','','',''),
+	(15,'p','1','/role/editRoleMenu','POST','','',''),
+	(16,'p','1','/role/getRoles','POST','','',''),
+	(17,'p','1','/menu/addMenu','POST','','',''),
+	(18,'p','1','/menu/deleteMenu','POST','','',''),
+	(19,'p','1','/menu/editMenu','POST','','',''),
+	(20,'p','1','/menu/getElTreeMenus','POST','','',''),
+	(21,'p','1','/menu/getMenus','GET','','',''),
+	(22,'p','1','/api/addApi','POST','','',''),
+	(23,'p','1','/api/deleteApi','POST','','',''),
+	(24,'p','1','/api/deleteApiById','POST','','',''),
+	(25,'p','1','/api/editApi','POST','','',''),
+	(26,'p','1','/api/getApis','POST','','',''),
+	(27,'p','1','/api/getElTreeApis','POST','','',''),
+	(28,'p','1','/opl/deleteOpl','POST','','',''),
+	(29,'p','1','/opl/deleteOplByIds','POST','','',''),
+	(30,'p','1','/opl/getOplList','POST','','',''),
+	(31,'p','1','/file/delete','GET','','',''),
+	(32,'p','1','/file/download','GET','','',''),
+	(33,'p','1','/file/getFileList','POST','','',''),
+	(34,'p','1','/file/upload','POST','','','');
 
 /*!40000 ALTER TABLE `casbin_rule` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -295,9 +283,9 @@ CREATE TABLE `fileM_file` (
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
   `deleted_at` datetime DEFAULT NULL,
-  `file_name` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '文件名',
-  `full_path` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '文件完整路径',
-  `mime` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '文件类型',
+  `file_name` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '文件名',
+  `full_path` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '文件完整路径',
+  `mime` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '文件类型',
   PRIMARY KEY (`id`),
   KEY `idx_fileM_file_deleted_at` (`deleted_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -314,16 +302,16 @@ CREATE TABLE `monitor_operationLog` (
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
   `deleted_at` datetime DEFAULT NULL,
-  `ip` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '请求ip',
-  `method` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '请求方法',
-  `path` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '请求路径',
+  `ip` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '请求ip',
+  `method` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '请求方法',
+  `path` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '请求路径',
   `status` bigint DEFAULT NULL COMMENT '请求状态',
-  `user_agent` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `req_param` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci COMMENT '请求Body',
-  `resp_data` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci COMMENT '响应数据',
+  `user_agent` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `req_param` text COLLATE utf8mb4_unicode_ci COMMENT '请求Body',
+  `resp_data` mediumtext COLLATE utf8mb4_unicode_ci COMMENT '响应数据',
   `resp_time` bigint DEFAULT NULL,
   `user_id` bigint unsigned DEFAULT NULL COMMENT '用户id',
-  `user_name` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '用户名称',
+  `user_name` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '用户名称',
   PRIMARY KEY (`id`),
   KEY `idx_monitor_operationLog_deleted_at` (`deleted_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -358,38 +346,10 @@ VALUES
 	(10,1),
 	(11,1),
 	(12,1),
-	(13,1),
-	(14,1),
-	(15,1);
+	(13,1);
 
 /*!40000 ALTER TABLE `role_menus` ENABLE KEYS */;
 UNLOCK TABLES;
-
-
-# Dump of table sysTool_cron
-# ------------------------------------------------------------
-
-DROP TABLE IF EXISTS `sysTool_cron`;
-
-CREATE TABLE `sysTool_cron` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `created_at` datetime DEFAULT NULL,
-  `updated_at` datetime DEFAULT NULL,
-  `deleted_at` datetime DEFAULT NULL,
-  `name` varchar(191) DEFAULT NULL COMMENT '任务名称',
-  `method` varchar(191) NOT NULL COMMENT '任务方法',
-  `expression` varchar(191) NOT NULL COMMENT '表达式',
-  `strategy` enum('always','once') DEFAULT 'always' COMMENT '执行策略',
-  `open` tinyint(1) DEFAULT NULL COMMENT '活跃状态',
-  `extraParams` json DEFAULT NULL COMMENT '额外参数',
-  `entryId` bigint DEFAULT NULL COMMENT 'cron ID',
-  `comment` varchar(191) DEFAULT NULL COMMENT '备注',
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `method` (`method`),
-  UNIQUE KEY `name` (`name`),
-  KEY `idx_sysTool_cron_deleted_at` (`deleted_at`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
 
 
 
