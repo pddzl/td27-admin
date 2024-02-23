@@ -20,3 +20,11 @@ interface PageInfo {
   page: number
   pageSize: number
 }
+
+/** get list */
+interface ApiListData<T> {
+  list: T
+  total: number
+  page: number
+  pageSize: number
+}

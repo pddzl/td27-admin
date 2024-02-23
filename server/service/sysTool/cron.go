@@ -29,7 +29,7 @@ func (cs *CronService) GetCronList(pageInfo commonReq.PageInfo) (cronModelList [
 	// 分页
 	limit := pageInfo.PageSize
 	offset := pageInfo.PageSize * (pageInfo.Page - 1)
-	if limit > 0 {
+	if pageInfo.PageSize > 0 && pageInfo.Page > 0 {
 		db = db.Limit(limit).Offset(offset)
 	}
 	err = db.Find(&cronModelList).Error
@@ -123,6 +123,7 @@ func (cs *CronService) SwitchOpen(id uint, open bool) (err error) {
 			entryId, err := utils.AddJob(&cronModel)
 			if err != nil {
 				global.TD27_LOG.Error("Add cron", zap.Error(err))
+				return err
 			}
 			return global.TD27_DB.Model(&cronModel).Updates(map[string]interface{}{"open": true, "entryId": entryId}).Error
 		}

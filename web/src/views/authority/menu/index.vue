@@ -13,7 +13,11 @@
         <el-table :data="tableData" row-key="id">
           <el-table-column prop="id" label="ID" align="center" />
           <el-table-column prop="pid" label="父节点" align="center" />
-          <el-table-column prop="meta.title" label="展示名称" align="center" />
+          <el-table-column prop="meta.title" label="展示名称" align="center">
+            <template #default="scope">
+              <el-tag :effect="scope.row.pid === 0 ? 'light' : 'plain'">{{ scope.row.meta.title }}</el-tag>
+            </template>
+          </el-table-column>
           <el-table-column prop="name" label="路由名称" align="center" />
           <el-table-column prop="path" label="路由路径" width="130" align="center" />
           <el-table-column prop="meta.hidden" label="是否隐藏" align="center">
