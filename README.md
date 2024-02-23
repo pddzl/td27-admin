@@ -78,7 +78,7 @@ go build -o server main.go
 ./server
 ```
 
-**<u>如果选择手动部署，需要创建数据库（td27）并导入初始化数据。sql文件位置（./docker-compose/mysql/init.sql）</u>**
+**<u>如果选择手动部署，需要创建数据库（td27）并导入初始化数据。sql文件位置（./docker-compose/mysql/init/init.sql）</u>**
 
 ## swagger
 
