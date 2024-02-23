@@ -11,7 +11,13 @@
           </el-select>
         </el-form-item>
         <el-form-item prop="group" label="状态值">
-          <el-input-number v-model="searchFormData.status" :min="0" :max="600" placeholder="状态值" />
+          <el-input-number
+            v-model="searchFormData.status"
+            :min="0"
+            :max="600"
+            controls-position="right"
+            placeholder="状态值"
+          />
         </el-form-item>
         <el-form-item>
           <el-button type="primary" icon="Search" @click="handleSearch">查询</el-button>
@@ -230,17 +236,14 @@ const deleteByIdsFunc = async () => {
 }
 
 const typeFilter = (effect: number) => {
-  const structure: Record<string, "success" | "info" | "warning" | "danger" | ""> = {
+  const structure: Record<string, "success" | "info" | "warning" | "danger"> = {
     2: "success",
+    3: "success",
     4: "warning",
     5: "danger"
   }
   const key = String(effect)[0]
-  if (key === "3") {
-    return ""
-  } else {
-    return structure[key] || "info"
-  }
+  return structure[key] || "info"
 }
 </script>
 

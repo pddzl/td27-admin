@@ -11,8 +11,8 @@ dependencies:
     specifier: 1.11.10
     version: registry.npmmirror.com/dayjs@1.11.10
   element-plus:
-    specifier: 2.5.6
-    version: 2.5.6(vue@3.4.5)
+    specifier: 2.4.4
+    version: 2.4.4(vue@3.4.5)
   lodash-es:
     specifier: 4.17.21
     version: 4.17.21
@@ -1518,8 +1518,8 @@ packages:
       domhandler: 5.0.3
     dev: true
 
-  /element-plus@2.5.6(vue@3.4.5):
-    resolution: {integrity: sha512-zctKTiyIDmcnMp3K5WG1hglgraW9EbiCLiIDVtaMCS5mPMl2fRKdS0vOFGnECIq9taFoxnyoDwxHD81nv0B4RA==}
+  /element-plus@2.4.4(vue@3.4.5):
+    resolution: {integrity: sha512-TlKubXJgxwhER0dw+8ULn9hr9kZjraV4R6Q/eidwWUwCKxwXYPBGmMKsZ/85tlxlhMYbcLZd/YZh6G3QkHX4fg==}
     peerDependencies:
       vue: ^3.2.0
     dependencies:
