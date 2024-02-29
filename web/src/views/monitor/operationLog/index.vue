@@ -6,7 +6,7 @@
           <el-input v-model="searchFormData.path" placeholder="路径" />
         </el-form-item>
         <el-form-item prop="method" label="方法">
-          <el-select v-model="searchFormData.method" placeholder="方法" clearable>
+          <el-select v-model="searchFormData.method" placeholder="方法" clearable style="width: 100px;">
             <el-option v-for="item in methodOptions" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
