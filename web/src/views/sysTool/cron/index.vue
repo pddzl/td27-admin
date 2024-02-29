@@ -88,12 +88,12 @@
           </el-select>
         </el-form-item>
         <el-form-item label="参数" prop="extraParams" required>
-          <div v-if="opFormData.method === 'clearTable'">
+          <div v-if="opFormData.method === 'clearTable'" style="width: 100%">
             <el-row
-              :gutter="10"
               v-for="(item, key) in opFormData.extraParams.tableInfo"
               :key="key"
               style="margin-bottom: 5px"
+              justify="space-between"
             >
               <el-col :span="7">
                 <el-input v-model="item.tableName" placeholder="表名称" />
@@ -108,7 +108,7 @@
             </el-row>
             <el-button type="primary" plain :icon="Plus" @click="addTableInfo" style="width: 100%" />
           </div>
-          <div v-else-if="opFormData.method === 'shell'" style="width: 100%">
+          <div v-else style="width: 100%">
             <el-input v-model="opFormData.extraParams.command" />
           </div>
         </el-form-item>
