@@ -15,8 +15,7 @@ func main() {
 	zap.ReplaceGlobals(global.TD27_LOG)
 	global.TD27_DB = initialize.Gorm()       // gorm连接数据库
 	global.TD27_CRON = initialize.InitCron() // 初始化cron
-	// 清理数据库
-	initialize.Crontab()
+	initialize.CheckCron()                   // start cron entry, if exists
 	if global.TD27_DB == nil {
 		global.TD27_LOG.Error("mysql连接失败，退出程序")
 		os.Exit(127)

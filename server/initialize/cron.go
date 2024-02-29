@@ -6,11 +6,12 @@ import (
 
 	"server/config"
 	"server/global"
+	modelSysTool "server/model/sysTool"
 	"server/utils"
 )
 
 // Crontab 添加计划任务
-func Crontab() {
+func crontab() {
 	if global.TD27_CONFIG.Crontab.Open {
 		ct := cron.New()
 		for index := range global.TD27_CONFIG.Crontab.Objects {
@@ -33,7 +34,23 @@ func Crontab() {
 
 // InitCron 初始化Cron
 func InitCron() *cron.Cron {
+	// 配置文件方式cron
+	crontab()
+	// 页面方式配置
 	instance := cron.New(cron.WithSeconds()) // 支持秒
 	instance.Start()                         // 启动cron
 	return instance
+}
+
+func CheckCron() {
+	var cronModelList []modelSysTool.CronModel
+	global.TD27_DB.Where("open = ?", 1).Find(&cronModelList)
+	for _, cronModel := range cronModelList {
+		entryId, err := utils.AddJob(&cronModel)
+		if err != nil {
+			global.TD27_LOG.Error("CRON", zap.Error(err))
+		} else {
+			global.TD27_DB.Model(cronModel).Update("entryId", entryId)
+		}
+	}
 }
