@@ -6,7 +6,7 @@
           <el-input v-model="searchFormData.path" placeholder="路径" />
         </el-form-item>
         <el-form-item prop="method" label="方法">
-          <el-select v-model="searchFormData.method" placeholder="方法" :clearable="true">
+          <el-select v-model="searchFormData.method" placeholder="方法" clearable>
             <el-option v-for="item in methodOptions" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
@@ -112,7 +112,7 @@
 </template>
 
 <script lang="ts" setup>
-import { reactive, ref, h } from "vue"
+import { reactive, ref } from "vue"
 import { usePagination } from "@/hooks/usePagination"
 import { type OrData, getOrListApi, deleteOrApi, deleteOrByIdsApi } from "@/api/monitor/operationLog"
 import { formatDateTime } from "@/utils/index"
@@ -124,13 +124,13 @@ defineOptions({
   name: "OperationRecord"
 })
 
-ElNotification({
-  title: "提示",
-  type: "warning",
-  message: h("p", { style: "color: teal" }, "操作日志默认保存90天，如需调整请修改配置文件。谢谢"),
-  duration: 5000,
-  position: "bottom-right"
-})
+// ElNotification({
+//   title: "提示",
+//   type: "warning",
+//   message: h("p", { style: "color: teal" }, "操作日志默认保存90天，如需调整请修改配置文件。谢谢"),
+//   duration: 5000,
+//   position: "bottom-right"
+// })
 
 const { paginationData, changeCurrentPage, changePageSize } = usePagination()
 
