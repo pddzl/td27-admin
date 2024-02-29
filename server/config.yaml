@@ -76,12 +76,12 @@ cors:
 
 # crontab; clear table data
 crontab:
-  open: true
+  open: false
   spec: "@daily"
   objects:
-    - tableName: jwt_blacklists
+    - tableName: base_jwtBlackList
       compareField: created_at
       interval: 168h
-    - tableName: sys_operation_record
+    - tableName: monitor_operationLog
       compareField: created_at
       interval: 2160h

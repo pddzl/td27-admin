@@ -6,12 +6,6 @@ import (
 	"time"
 )
 
-//type ClearTable struct {
-//	TableName    string `json:"tableName"`
-//	CompareField string `json:"compareField"`
-//	Interval     string `json:"interval"`
-//}
-
 type ClearTableSlice struct {
 	TableInfo []ClearTable `json:"tableInfo"`
 }
@@ -31,7 +25,7 @@ func (c *ClearTableSlice) Run() {
 			global.TD27_LOG.Error("parse duration < 0")
 			return
 		}
-		err = global.TD27_DB.Exec(fmt.Sprintf("DELETE FROM %s WHERE %s < ?", v.TableName, v.CompareField), time.Now().Add(-duration)).Error
+		err = global.TD27_DB.Debug().Exec(fmt.Sprintf("DELETE FROM %s WHERE %s < ?", v.TableName, v.CompareField), time.Now().Add(-duration)).Error
 		if err != nil {
 			global.TD27_LOG.Error(fmt.Sprintf("exec err: %v", err))
 			return

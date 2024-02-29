@@ -74,7 +74,7 @@
         />
       </div>
     </el-card>
-    <el-dialog v-model="dialogVisible" :title="dialogTitle" :before-close="handleClose" width="38%" destroy-on-close>
+    <el-dialog v-model="dialogVisible" :title="dialogTitle" :before-close="handleClose" width="35%" destroy-on-close>
       <el-form ref="formRef" :model="opFormData" :rules="addFormRules" label-width="80px">
         <el-form-item label="名称" prop="name">
           <el-input v-model="opFormData.name" />
@@ -83,11 +83,11 @@
           <el-input v-model="opFormData.expression" placeholder="second / min / hour / day / mon / week" />
         </el-form-item>
         <el-form-item label="方法" prop="method">
-          <el-select v-model="opFormData.method" placeholder="请选择方法" :clearable="true" style="width: 100%">
+          <el-select v-model="opFormData.method" placeholder="请选择方法" clearable style="width: 100%">
             <el-option v-for="item in methodOptions" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
-        <el-form-item label="参数" prop="extraParams">
+        <el-form-item label="参数" prop="extraParams" required>
           <div v-if="opFormData.method === 'clearTable'">
             <el-row
               :gutter="10"
@@ -107,6 +107,9 @@
               <el-button type="danger" plain :icon="Delete" @click="removeTableInfo(item)" circle v-if="key !== 0" />
             </el-row>
             <el-button type="primary" plain :icon="Plus" @click="addTableInfo" style="width: 100%" />
+          </div>
+          <div v-else-if="opFormData.method === 'shell'" style="width: 100%">
+            <el-input v-model="opFormData.extraParams.command" />
           </div>
         </el-form-item>
         <el-form-item label="策略" prop="strategy">
@@ -377,6 +380,7 @@ const switchAction = (id: number, open: boolean) => {
 <style lang="scss" scoped>
 .search-wrapper {
   margin-bottom: 20px;
+
   :deep(.el-card__body) {
     padding-bottom: 2px;
   }
