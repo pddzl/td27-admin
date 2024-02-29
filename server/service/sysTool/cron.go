@@ -87,10 +87,16 @@ func (cs *CronService) EditCron(cronReq *sysToolReq.CronReq) (*modelSysTool.Cron
 	cronModel.Expression = cronReq.Expression
 	cronModel.Strategy = cronReq.Strategy
 	// params 拼接
-	for _, v := range cronModel.ExtraParams.TableInfo {
-		cronModel.ExtraParams.TableInfo = append(cronModel.ExtraParams.TableInfo, v)
+	var extraParams modelSysTool.ExtraParams
+	for _, v := range cronReq.ExtraParams.TableInfo {
+		var clearTable modelSysTool.ClearTable
+		clearTable.TableName = v.TableName
+		clearTable.CompareField = v.CompareField
+		clearTable.Interval = v.Interval
+		extraParams.TableInfo = append(extraParams.TableInfo, clearTable)
 	}
-	cronModel.ExtraParams.Command = cronReq.ExtraParams.Command
+	extraParams.Command = cronReq.ExtraParams.Command
+	cronModel.ExtraParams = extraParams
 	cronModel.Comment = cronReq.Comment
 	if cronReq.Open {
 		//utils.IsContain(utils.GetEntries(), cronModel.EntryId)
