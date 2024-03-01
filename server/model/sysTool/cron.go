@@ -11,10 +11,20 @@ import (
 	"server/global"
 )
 
+type Method struct {
+	ClearTable string
+	Shell      string
+}
+
+var CronMethod = Method{
+	ClearTable: "clearTable",
+	Shell:      "shell",
+}
+
 type CronModel struct {
 	global.TD27_MODEL
 	Name        string      `json:"name" gorm:"column:name;unique;comment:任务名称" validate:"required"`
-	Method      string      `json:"method" gorm:"column:method;unique;not null;comment:任务方法" validate:"required"`
+	Method      string      `json:"method" gorm:"column:method;not null;comment:任务方法" validate:"required"`
 	Expression  string      `json:"expression" gorm:"column:expression;not null;comment:表达式" validate:"required"`
 	Strategy    string      `json:"strategy" gorm:"column:strategy;type:enum('always', 'once');default:always;comment:执行策略" validate:"omitempty,oneof=always once"`
 	Open        bool        `json:"open" gorm:"column:open;comment:活跃状态"`

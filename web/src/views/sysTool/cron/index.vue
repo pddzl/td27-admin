@@ -83,7 +83,13 @@
           <el-input v-model="opFormData.expression" placeholder="second / min / hour / day / mon / week" />
         </el-form-item>
         <el-form-item label="方法" prop="method">
-          <el-select v-model="opFormData.method" placeholder="请选择方法" clearable style="width: 100%">
+          <el-select
+            v-model="opFormData.method"
+            placeholder="请选择方法"
+            clearable
+            style="width: 100%"
+            @change="changeMethod(opFormData.method)"
+          >
             <el-option v-for="item in methodOptions" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
@@ -104,7 +110,14 @@
               <el-col :span="7">
                 <el-input v-model="item.interval" placeholder="时间间隔" />
               </el-col>
-              <el-button type="danger" plain :icon="Delete" @click="removeTableInfo(item)" circle v-if="key !== 0" />
+              <el-button
+                type="danger"
+                plain
+                :icon="Delete"
+                @click="removeTableInfo(item)"
+                circle
+                :disabled="key === 0"
+              />
             </el-row>
             <el-button type="primary" plain :icon="Plus" @click="addTableInfo" style="width: 100%" />
           </div>
@@ -148,7 +161,8 @@ import {
   switchCronApi,
   deleteCronApi,
   deleteCronByIds,
-  editCronApi
+  editCronApi,
+  METHOD
 } from "@/api/sysTool/cron"
 import { strategyFilter } from "./filter"
 
@@ -210,7 +224,7 @@ const opFormData = reactive({
   method: "",
   expression: "",
   extraParams: {
-    tableInfo: [{ tableName: "", compareField: "", interval: "" }],
+    tableInfo: [] as TableInfo[],
     command: ""
   },
   strategy: "always",
@@ -261,6 +275,29 @@ const closeDialog = () => {
 
 const operateAction = (formEl: FormInstance | undefined) => {
   if (!formEl) return
+  // 判断参数为空
+  let empty
+  if (opFormData.method === METHOD.ClearTable) {
+    for (const element of opFormData.extraParams.tableInfo) {
+      if (!element.tableName || !element.compareField || !element.interval) {
+        empty = true
+        break
+      }
+    }
+  } else if (opFormData.method === METHOD.Shell) {
+    if (!opFormData.extraParams.command) {
+      empty = true
+    }
+  }
+  if (empty) {
+    ElNotification({
+      title: "告警",
+      message: "参数不能为空",
+      type: "warning"
+    })
+    return
+  }
+
   formEl.validate(async (valid) => {
     if (valid) {
       if (oKind === "Add") {
@@ -269,17 +306,18 @@ const operateAction = (formEl: FormInstance | undefined) => {
           ElMessage({ type: "success", message: res.msg })
           tableData.value.push(res.data)
         }
-      } else if (oKind === "Edit") {
-        const res = await editCronApi({ id: activeRow.ID, ...opFormData })
-        if (res.code === 0) {
-          ElMessage({ type: "success", message: res.msg })
-          // 修改对应数据
-          const index = tableData.value.indexOf(activeRow)
-          tableData.value.splice(index, 1, res.data)
-        }
       }
-      closeDialog()
+    } else if (oKind === "Edit") {
+      const res = await editCronApi({ id: activeRow.ID, ...opFormData })
+      if (res.code === 0) {
+        ElMessage({ type: "success", message: res.msg })
+        // 修改对应数据
+        const index = tableData.value.indexOf(activeRow)
+        tableData.value.splice(index, 1, res.data)
+      }
     }
+    // 关闭对话框
+    closeDialog()
   })
 }
 
@@ -375,6 +413,15 @@ const switchAction = (row: CronData) => {
         return reject(false)
       })
   })
+}
+
+const changeMethod = (method: string) => {
+  if (method === "clearTable") {
+    opFormData.extraParams.tableInfo = [{ tableName: "", compareField: "", interval: "" }]
+    opFormData.extraParams.command = ""
+  } else {
+    opFormData.extraParams.tableInfo = []
+  }
 }
 </script>
 

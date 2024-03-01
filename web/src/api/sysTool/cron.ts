@@ -1,5 +1,10 @@
 import { request } from "@/utils/service"
 
+export const METHOD = {
+  ClearTable: "clearTable",
+  Shell: "shell"
+}
+
 export interface TableInfo {
   tableName: string
   compareField: string
