@@ -4,6 +4,7 @@ import (
 	"database/sql/driver"
 	"encoding/json"
 	"fmt"
+	"github.com/robfig/cron/v3"
 	"go.uber.org/zap"
 	"time"
 
@@ -65,5 +66,10 @@ func (cm *CronModel) Run() {
 		}
 	default:
 		global.TD27_LOG.Error("unsupport method")
+	}
+	if cm.Strategy == "once" {
+		global.TD27_LOG.Info("[CRON]", zap.String(cm.Name, "stop"))
+		global.TD27_CRON.Remove(cron.EntryID(cm.EntryId))
+		global.TD27_DB.Model(cm).Updates(map[string]interface{}{"open": false, "entryId": 0})
 	}
 }
