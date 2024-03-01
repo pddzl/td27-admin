@@ -360,7 +360,7 @@ const switchAction = (row: CronData) => {
     switchCronApi({ id: row.ID, open: !row.open })
       .then((res) => {
         if (res.code === 0) {
-          if (!open) {
+          if (!row.open) {
             ElMessage({ type: "success", message: "开启成功" })
           } else {
             ElMessage({ type: "success", message: "关闭成功" })
