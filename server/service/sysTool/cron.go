@@ -119,25 +119,27 @@ func (cs *CronService) EditCron(cronReq *sysToolReq.CronReq) (*modelSysTool.Cron
 }
 
 // SwitchOpen 切换cron活跃状态
-func (cs *CronService) SwitchOpen(id uint, open bool) (err error) {
+func (cs *CronService) SwitchOpen(id uint, open bool) (resId int, err error) {
 	var cronModel modelSysTool.CronModel
 	if errors.Is(global.TD27_DB.Where("id = ?", id).First(&cronModel).Error, gorm.ErrRecordNotFound) {
-		return errors.New("记录未找到")
+		return 0, errors.New("记录未找到")
 	}
 
 	// 判断cron是否已经运行
 	if open && !utils.IsContain(utils.GetEntries(), cronModel.EntryId) {
 		entryId, err := global.TD27_CRON.AddJob(cronModel.Expression, &cronModel)
 		if err != nil {
-			return err
+			return cronModel.EntryId, err
 		} else {
 			err = global.TD27_DB.Model(&cronModel).Updates(map[string]interface{}{"open": true, "entryId": entryId}).Error
 		}
+		resId = int(entryId)
 	} else {
 		if cronModel.EntryId != 0 {
 			global.TD27_CRON.Remove(cron.EntryID(cronModel.EntryId))
 		}
 		err = global.TD27_DB.Model(&cronModel).Updates(map[string]interface{}{"open": false, "entryId": 0}).Error
+		resId = 0
 	}
 
 	return

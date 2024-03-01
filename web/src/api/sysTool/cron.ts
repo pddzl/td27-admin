@@ -58,7 +58,7 @@ export function addCronApi(data: AddCronData) {
 
 // 切换cron
 export function switchCronApi(data: { id: number; open: boolean }) {
-  return request<ApiResponseData<null>>({
+  return request<ApiResponseData<{ entryId: number }>>({
     url: "/cron/switchOpen",
     method: "post",
     data

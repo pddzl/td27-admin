@@ -162,7 +162,7 @@ func (st *CronApi) EditCron(c *gin.Context) {
 // @accept    application/json
 // @Produce   application/json
 // @Param     data  body      sysToolReq.SwitchReq true  "id, open"
-// @Success   200   {object}  commonRes.Response{msg=string}
+// @Success   200   {object}  commonRes.Response{data=map[string]int, msg=string}
 // @Router    /cron/switchOpen [post]
 func (st *CronApi) SwitchOpen(c *gin.Context) {
 	var switchReq sysToolReq.SwitchReq
@@ -175,10 +175,10 @@ func (st *CronApi) SwitchOpen(c *gin.Context) {
 		return
 	}
 
-	if err := cronService.SwitchOpen(switchReq.Id, switchReq.Open); err != nil {
+	if entryId, err := cronService.SwitchOpen(switchReq.Id, switchReq.Open); err != nil {
 		commonRes.FailWithMessage("切换失败", c)
 		global.TD27_LOG.Error("切换失败", zap.Error(err))
 	} else {
-		commonRes.OkWithMessage("切换成功", c)
+		commonRes.OkWithDetailed(gin.H{"entryId": entryId}, "切换成功", c)
 	}
 }

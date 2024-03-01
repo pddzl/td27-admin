@@ -48,7 +48,7 @@
                 :inactive-value="false"
                 active-text="开启"
                 inactive-text="关闭"
-                :before-change="() => switchAction(scope.row.ID, scope.row.open)"
+                :before-change="() => switchAction(scope.row)"
               />
             </template>
           </el-table-column>
@@ -355,9 +355,9 @@ const removeTableInfo = (item: TableInfo) => {
   }
 }
 
-const switchAction = (id: number, open: boolean) => {
+const switchAction = (row: CronData) => {
   return new Promise<boolean>((resolve, reject) => {
-    switchCronApi({ id: id, open: !open })
+    switchCronApi({ id: row.ID, open: !row.open })
       .then((res) => {
         if (res.code === 0) {
           if (!open) {
@@ -365,6 +365,7 @@ const switchAction = (id: number, open: boolean) => {
           } else {
             ElMessage({ type: "success", message: "关闭成功" })
           }
+          row.entryId = res.data.entryId
           return resolve(true)
         } else {
           return reject(false)
