@@ -270,9 +270,6 @@ definitions:
       path:
         description: 路径
         type: string
-    required:
-    - page
-    - pageSize
     type: object
   request.CId:
     properties:
@@ -340,7 +337,10 @@ definitions:
         - once
         type: string
     required:
+    - expression
     - id
+    - method
+    - name
     type: object
   request.EditApi:
     properties:
@@ -473,9 +473,6 @@ definitions:
       pageSize:
         description: 每页大小
         type: integer
-    required:
-    - page
-    - pageSize
     type: object
   request.Login:
     properties:
@@ -533,9 +530,6 @@ definitions:
       status:
         description: http code
         type: integer
-    required:
-    - page
-    - pageSize
     type: object
   request.PageInfo:
     properties:
@@ -545,9 +539,6 @@ definitions:
       pageSize:
         description: 每页大小
         type: integer
-    required:
-    - page
-    - pageSize
     type: object
   request.ReqCasbin:
     properties:
@@ -1220,8 +1211,12 @@ paths:
             allOf:
             - $ref: '#/definitions/response.Response'
             - properties:
-                msg:
+                ' msg':
                   type: string
+                data:
+                  additionalProperties:
+                    type: integer
+                  type: object
               type: object
       security:
       - ApiKeyAuth: []

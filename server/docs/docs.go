@@ -876,8 +876,14 @@ const docTemplate = `{
                                 {
                                     "type": "object",
                                     "properties": {
-                                        "msg": {
+                                        " msg": {
                                             "type": "string"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "additionalProperties": {
+                                                "type": "integer"
+                                            }
                                         }
                                     }
                                 }
@@ -2379,10 +2385,6 @@ const docTemplate = `{
         },
         "request.ApiSearchParams": {
             "type": "object",
-            "required": [
-                "page",
-                "pageSize"
-            ],
             "properties": {
                 "api_group": {
                     "description": "API分组",
@@ -2494,7 +2496,10 @@ const docTemplate = `{
         "request.CronReq": {
             "type": "object",
             "required": [
-                "id"
+                "expression",
+                "id",
+                "method",
+                "name"
             ],
             "properties": {
                 "comment": {
@@ -2688,10 +2693,6 @@ const docTemplate = `{
         },
         "request.FileSearchParams": {
             "type": "object",
-            "required": [
-                "page",
-                "pageSize"
-            ],
             "properties": {
                 "desc": {
                     "description": "排序方式:升序false(默认)|降序true",
@@ -2765,10 +2766,6 @@ const docTemplate = `{
         },
         "request.OrSearchParams": {
             "type": "object",
-            "required": [
-                "page",
-                "pageSize"
-            ],
             "properties": {
                 "asc": {
                     "description": "排序方式:升序true|降序true(默认)",
@@ -2798,10 +2795,6 @@ const docTemplate = `{
         },
         "request.PageInfo": {
             "type": "object",
-            "required": [
-                "page",
-                "pageSize"
-            ],
             "properties": {
                 "page": {
                     "description": "页码",
