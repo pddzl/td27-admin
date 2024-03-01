@@ -46,7 +46,7 @@ func CheckCron() {
 	var cronModelList []modelSysTool.CronModel
 	global.TD27_DB.Where("open = ?", 1).Find(&cronModelList)
 	for _, cronModel := range cronModelList {
-		entryId, err := utils.AddJob(&cronModel)
+		entryId, err := global.TD27_CRON.AddJob(cronModel.Expression, &cronModel)
 		if err != nil {
 			global.TD27_LOG.Error("CRON", zap.Error(err))
 		} else {

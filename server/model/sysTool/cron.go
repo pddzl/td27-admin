@@ -3,6 +3,10 @@ package sysTool
 import (
 	"database/sql/driver"
 	"encoding/json"
+	"fmt"
+	"go.uber.org/zap"
+	"time"
+
 	"server/global"
 )
 
@@ -40,4 +44,26 @@ type ClearTable struct {
 
 func (cm *CronModel) TableName() string {
 	return "sysTool_cron"
+}
+
+func (cm *CronModel) Run() {
+	global.TD27_LOG.Info("[CRON]", zap.String("START", cm.Method))
+	switch cm.Method {
+	case "clearTable":
+		for _, v := range cm.ExtraParams.TableInfo {
+			duration, err := time.ParseDuration(v.Interval)
+			if err != nil {
+				global.TD27_LOG.Error(fmt.Sprintf("parse duration err: %v", err))
+			}
+			if duration < 0 {
+				global.TD27_LOG.Error("parse duration < 0")
+			}
+			err = global.TD27_DB.Debug().Exec(fmt.Sprintf("DELETE FROM %s WHERE %s < ?", v.TableName, v.CompareField), time.Now().Add(-duration)).Error
+			if err != nil {
+				global.TD27_LOG.Error(fmt.Sprintf("delete err: %v", err))
+			}
+		}
+	default:
+		global.TD27_LOG.Error("unsupport method")
+	}
 }

@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/robfig/cron/v3"
-	"go.uber.org/zap"
 	"gorm.io/gorm"
 
 	"server/global"
@@ -40,11 +39,11 @@ func (cs *CronService) GetCronList(pageInfo commonReq.PageInfo) (cronModelList [
 func (cs *CronService) AddCron(cronModel *modelSysTool.CronModel) (*modelSysTool.CronModel, error) {
 	// 开启cron
 	if cronModel.Open {
-		entryId, err := utils.AddJob(cronModel)
+		entryId, err := global.TD27_CRON.AddJob(cronModel.Expression, cronModel)
 		if err != nil {
 			return nil, err
 		} else {
-			cronModel.EntryId = entryId
+			cronModel.EntryId = int(entryId)
 		}
 	}
 	err := global.TD27_DB.Create(cronModel).Error
@@ -97,22 +96,23 @@ func (cs *CronService) EditCron(cronReq *sysToolReq.CronReq) (*modelSysTool.Cron
 	}
 	extraParams.Command = cronReq.ExtraParams.Command
 	cronModel.ExtraParams = extraParams
-	cronModel.Open = cronReq.Open
 	cronModel.Comment = cronReq.Comment
 	if cronReq.Open {
-		if utils.IsContain(utils.GetEntries(), cronModel.EntryId) {
-			global.TD27_CRON.Remove(cron.EntryID(cronModel.EntryId))
+		if !utils.IsContain(utils.GetEntries(), cronModel.EntryId) {
+			entryId, err := global.TD27_CRON.AddJob(cronModel.Expression, &cronModel)
+			if err != nil {
+				return nil, err
+			} else {
+				cronModel.Open = true
+				cronModel.EntryId = int(entryId)
+			}
 		}
-		entryId, err := utils.AddJob(&cronModel)
-		if err != nil {
-			global.TD27_LOG.Error("Add cron", zap.Error(err))
-		}
-		cronModel.EntryId = entryId
 	} else {
 		if cronModel.EntryId != 0 {
 			global.TD27_CRON.Remove(cron.EntryID(cronModel.EntryId))
 			cronModel.EntryId = 0
 		}
+		cronModel.Open = false
 	}
 	err := global.TD27_DB.Save(&cronModel).Error
 	return &cronModel, err
@@ -125,16 +125,13 @@ func (cs *CronService) SwitchOpen(id uint, open bool) (err error) {
 		return errors.New("记录未找到")
 	}
 
-	if open {
-		// 判断cron是否已经运行
-		if !utils.IsContain(utils.GetEntries(), cronModel.EntryId) {
-			entryId, err := utils.AddJob(&cronModel)
-			if err != nil {
-				global.TD27_LOG.Error("Add cron", zap.Error(err))
-			}
-			err = global.TD27_DB.Model(&cronModel).Updates(map[string]interface{}{"open": true, "entryId": entryId}).Error
+	// 判断cron是否已经运行
+	if open && !utils.IsContain(utils.GetEntries(), cronModel.EntryId) {
+		entryId, err := global.TD27_CRON.AddJob(cronModel.Expression, &cronModel)
+		if err != nil {
+			return err
 		} else {
-			err = global.TD27_DB.Model(&cronModel).Update("open", true).Error
+			err = global.TD27_DB.Model(&cronModel).Updates(map[string]interface{}{"open": true, "entryId": entryId}).Error
 		}
 	} else {
 		if cronModel.EntryId != 0 {
