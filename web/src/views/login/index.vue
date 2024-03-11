@@ -142,6 +142,7 @@ createCode()
     top: 50%;
     transform: translate(-50%, -60%);
     width: 480px;
+    max-width: 90%;
     overflow: hidden;
     .p1 {
       text-align: center;

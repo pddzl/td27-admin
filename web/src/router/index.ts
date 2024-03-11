@@ -17,7 +17,7 @@ export const constantRoutes: RouteRecordRaw[] = [
     },
     children: [
       {
-        path: "/redirect/:path(.*)",
+        path: ":path(.*)",
         component: () => import("@/views/redirect/index.vue")
       }
     ]
