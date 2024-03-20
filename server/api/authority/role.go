@@ -2,7 +2,6 @@ package authority
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
 	"go.uber.org/zap"
 
 	"server/global"
@@ -40,13 +39,8 @@ func (ra *RoleApi) GetRoles(c *gin.Context) {
 // @Router    /api/addRole [post]
 func (ra *RoleApi) AddRole(c *gin.Context) {
 	var roleReq authorityReq.Role
-	_ = c.ShouldBindJSON(&roleReq)
-
-	// 参数校验
-	validate := validator.New()
-	if err := validate.Struct(&roleReq); err != nil {
-		commonRes.FailWithMessage("请求参数错误", c)
-		global.TD27_LOG.Error("请求参数错误", zap.Error(err))
+	if err := c.ShouldBindJSON(&roleReq); err != nil {
+		commonRes.FailWithMessage(err.Error(), c)
 		return
 	}
 
@@ -72,13 +66,8 @@ func (ra *RoleApi) AddRole(c *gin.Context) {
 // @Router    /api/deleteRole [post]
 func (ra *RoleApi) DeleteRole(c *gin.Context) {
 	var cId commonReq.CId
-	_ = c.ShouldBindJSON(&cId)
-
-	// 参数校验
-	validate := validator.New()
-	if err := validate.Struct(&cId); err != nil {
-		commonRes.FailWithMessage("请求参数错误", c)
-		global.TD27_LOG.Error("请求参数错误", zap.Error(err))
+	if err := c.ShouldBindJSON(&cId); err != nil {
+		commonRes.FailWithMessage(err.Error(), c)
 		return
 	}
 
@@ -101,13 +90,8 @@ func (ra *RoleApi) DeleteRole(c *gin.Context) {
 // @Router    /api/editRole [post]
 func (ra *RoleApi) EditRole(c *gin.Context) {
 	var eRole authorityReq.EditRole
-	_ = c.ShouldBindJSON(&eRole)
-
-	// 参数校验
-	validate := validator.New()
-	if err := validate.Struct(&eRole); err != nil {
-		commonRes.FailWithMessage("请求参数错误", c)
-		global.TD27_LOG.Error("请求参数错误", zap.Error(err))
+	if err := c.ShouldBindJSON(&eRole); err != nil {
+		commonRes.FailWithMessage(err.Error(), c)
 		return
 	}
 
@@ -130,13 +114,8 @@ func (ra *RoleApi) EditRole(c *gin.Context) {
 // @Router    /api/editRoleMenu [post]
 func (ra *RoleApi) EditRoleMenu(c *gin.Context) {
 	var editRE authorityReq.EditRoleMenu
-	_ = c.ShouldBindJSON(&editRE)
-
-	// 参数校验
-	validate := validator.New()
-	if err := validate.Struct(&editRE); err != nil {
-		commonRes.FailWithMessage("请求参数错误", c)
-		global.TD27_LOG.Error("请求参数错误", zap.Error(err))
+	if err := c.ShouldBindJSON(&editRE); err != nil {
+		commonRes.FailWithMessage(err.Error(), c)
 		return
 	}
 
