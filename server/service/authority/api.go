@@ -17,14 +17,14 @@ import (
 type ApiService struct{}
 
 // AddApi 添加api
-func (a *ApiService) AddApi(api modelAuthority.ApiModel) (*modelAuthority.ApiModel, error) {
+func (a *ApiService) AddApi(api *modelAuthority.ApiModel) (*modelAuthority.ApiModel, error) {
 	if !errors.Is(global.TD27_DB.Where("path = ? AND method = ?", api.Path, api.Method).First(&modelAuthority.ApiModel{}).Error, gorm.ErrRecordNotFound) {
 		return nil, errors.New("存在相同api")
 	}
 
 	err := global.TD27_DB.Create(&api).Error
 
-	return &api, err
+	return api, err
 }
 
 // GetApis 获取所有api

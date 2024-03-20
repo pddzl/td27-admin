@@ -55,8 +55,8 @@ func Fail(c *gin.Context) {
 	Result(ERROR_RES, map[string]interface{}{}, "操作失败", c)
 }
 
-func FailReq(c *gin.Context) {
-	ResultStatus(http.StatusBadRequest, ERROR_REQ, map[string]interface{}{}, "请求参数错误", c)
+func FailReq(message string, c *gin.Context) {
+	Result(ERROR_REQ, map[string]interface{}{}, message, c)
 }
 
 func FailWithMessage(message string, c *gin.Context) {

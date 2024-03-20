@@ -26,18 +26,13 @@ type ApiApi struct{}
 // @Router    /api/addApi [post]
 func (a *ApiApi) AddApi(c *gin.Context) {
 	var apiReq modelAuthority.ApiModel
-	_ = c.ShouldBindJSON(&apiReq)
-
-	// 参数校验
-	validate := validator.New()
-	if err := validate.Struct(&apiReq); err != nil {
-		commonRes.FailWithMessage("请求参数错误", c)
-		global.TD27_LOG.Error("请求参数错误", zap.Error(err))
+	if err := c.ShouldBindJSON(&apiReq); err != nil {
+		commonRes.FailReq(err.Error(), c)
 		return
 	}
 
-	if instance, err := apiService.AddApi(apiReq); err != nil {
-		commonRes.FailWithMessage("添加失败", c)
+	if instance, err := apiService.AddApi(&apiReq); err != nil {
+		commonRes.Fail(c)
 		global.TD27_LOG.Error("添加失败", zap.Error(err))
 	} else {
 		commonRes.OkWithDetailed(instance, "添加成功", c)
@@ -55,18 +50,13 @@ func (a *ApiApi) AddApi(c *gin.Context) {
 // @Router    /api/getApis [post]
 func (a *ApiApi) GetApis(c *gin.Context) {
 	var apiSp authorityReq.ApiSearchParams
-	_ = c.ShouldBindJSON(&apiSp)
-
-	// 参数校验
-	validate := validator.New()
-	if err := validate.Struct(&apiSp); err != nil {
-		commonRes.FailWithMessage("请求参数错误", c)
-		global.TD27_LOG.Error("请求参数错误", zap.Error(err))
+	if err := c.ShouldBindJSON(&apiSp); err != nil {
+		commonRes.FailReq(err.Error(), c)
 		return
 	}
 
 	if list, total, err := apiService.GetApis(apiSp); err != nil {
-		commonRes.FailWithMessage("获取失败", c)
+		commonRes.Fail(c)
 		global.TD27_LOG.Error("获取失败", zap.Error(err))
 	} else {
 		commonRes.OkWithDetailed(commonRes.PageResult{
@@ -89,21 +79,16 @@ func (a *ApiApi) GetApis(c *gin.Context) {
 // @Router    /api/deleteApi [post]
 func (a *ApiApi) DeleteApi(c *gin.Context) {
 	var cId commonReq.CId
-	_ = c.ShouldBindJSON(&cId)
-
-	// 参数校验
-	validate := validator.New()
-	if err := validate.Struct(&cId); err != nil {
-		commonRes.FailWithMessage("请求参数错误", c)
-		global.TD27_LOG.Error("请求参数错误", zap.Error(err))
+	if err := c.ShouldBindJSON(&cId); err != nil {
+		commonRes.FailReq(err.Error(), c)
 		return
 	}
 
 	if err := apiService.DeleteApi(cId.ID); err != nil {
-		commonRes.FailWithMessage("删除失败", c)
+		commonRes.Fail(c)
 		global.TD27_LOG.Error("删除失败", zap.Error(err))
 	} else {
-		commonRes.OkWithMessage("删除成功", c)
+		commonRes.Ok(c)
 	}
 }
 
@@ -118,21 +103,16 @@ func (a *ApiApi) DeleteApi(c *gin.Context) {
 // @Router    /api/deleteApiById [post]
 func (a *ApiApi) DeleteApiById(c *gin.Context) {
 	var cIds commonReq.CIds
-	_ = c.ShouldBindJSON(&cIds)
-
-	// 校验字段
-	validate := validator.New()
-	if err := validate.Struct(&cIds); err != nil {
-		commonRes.FailWithMessage(err.Error(), c)
-		global.TD27_LOG.Error("请求参数错误", zap.Error(err))
+	if err := c.ShouldBindJSON(&cIds); err != nil {
+		commonRes.FailReq(err.Error(), c)
 		return
 	}
 
 	if err := apiService.DeleteApiById(cIds.Ids); err != nil {
-		commonRes.FailWithMessage("批量删除失败", c)
+		commonRes.Fail(c)
 		global.TD27_LOG.Error("批量删除失败", zap.Error(err))
 	} else {
-		commonRes.OkWithMessage("批量删除成功", c)
+		commonRes.Ok(c)
 	}
 }
 
