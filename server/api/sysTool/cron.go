@@ -2,7 +2,6 @@ package sysTool
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
 	"go.uber.org/zap"
 
 	"server/global"
@@ -25,13 +24,8 @@ type CronApi struct{}
 // @Router    /cron/getCronList [post]
 func (st *CronApi) GetCronList(c *gin.Context) {
 	var pageInfo commonReq.PageInfo
-	_ = c.ShouldBindJSON(&pageInfo)
-
-	// 参数校验
-	validate := validator.New()
-	if err := validate.Struct(&pageInfo); err != nil {
-		commonRes.FailWithMessage("请求参数错误", c)
-		global.TD27_LOG.Error("请求参数错误", zap.Error(err))
+	if err := c.ShouldBindJSON(&pageInfo); err != nil {
+		commonRes.FailWithMessage(err.Error(), c)
 		return
 	}
 
@@ -59,13 +53,8 @@ func (st *CronApi) GetCronList(c *gin.Context) {
 // @Router    /cron/addCron [post]
 func (st *CronApi) AddCron(c *gin.Context) {
 	var cronModel modelSysTool.CronModel
-	_ = c.ShouldBindJSON(&cronModel)
-
-	// 参数校验
-	validate := validator.New()
-	if err := validate.Struct(&cronModel); err != nil {
-		commonRes.FailWithMessage("请求参数错误", c)
-		global.TD27_LOG.Error("请求参数错误", zap.Error(err))
+	if err := c.ShouldBindJSON(&cronModel); err != nil {
+		commonRes.FailWithMessage(err.Error(), c)
 		return
 	}
 
@@ -88,13 +77,8 @@ func (st *CronApi) AddCron(c *gin.Context) {
 // @Router    /cron/deleteCron [post]
 func (st *CronApi) DeleteCron(c *gin.Context) {
 	var cId commonReq.CId
-	_ = c.ShouldBindJSON(&cId)
-
-	// 参数校验
-	validate := validator.New()
-	if err := validate.Struct(&cId); err != nil {
-		commonRes.FailWithMessage("请求参数错误", c)
-		global.TD27_LOG.Error("请求参数错误", zap.Error(err))
+	if err := c.ShouldBindJSON(&cId); err != nil {
+		commonRes.FailWithMessage(err.Error(), c)
 		return
 	}
 
@@ -109,11 +93,7 @@ func (st *CronApi) DeleteCron(c *gin.Context) {
 // DeleteCronByIds 批量删除cron
 func (st *CronApi) DeleteCronByIds(c *gin.Context) {
 	var cIds commonReq.CIds
-	_ = c.ShouldBindJSON(&cIds)
-
-	// 校验字段
-	validate := validator.New()
-	if err := validate.Struct(&cIds); err != nil {
+	if err := c.ShouldBindJSON(&cIds); err != nil {
 		commonRes.FailWithMessage(err.Error(), c)
 		return
 	}
@@ -137,13 +117,8 @@ func (st *CronApi) DeleteCronByIds(c *gin.Context) {
 // @Router    /cron/editCron [post]
 func (st *CronApi) EditCron(c *gin.Context) {
 	var cronReq sysToolReq.CronReq
-	_ = c.ShouldBindJSON(&cronReq)
-
-	// 参数校验
-	validate := validator.New()
-	if err := validate.Struct(&cronReq); err != nil {
-		commonRes.FailWithMessage("请求参数错误", c)
-		global.TD27_LOG.Error("请求参数错误", zap.Error(err))
+	if err := c.ShouldBindJSON(&cronReq); err != nil {
+		commonRes.FailWithMessage(err.Error(), c)
 		return
 	}
 
@@ -166,11 +141,7 @@ func (st *CronApi) EditCron(c *gin.Context) {
 // @Router    /cron/switchOpen [post]
 func (st *CronApi) SwitchOpen(c *gin.Context) {
 	var switchReq sysToolReq.SwitchReq
-	_ = c.ShouldBindJSON(&switchReq)
-
-	// 校验字段
-	validate := validator.New()
-	if err := validate.Struct(&switchReq); err != nil {
+	if err := c.ShouldBindJSON(&switchReq); err != nil {
 		commonRes.FailWithMessage(err.Error(), c)
 		return
 	}
