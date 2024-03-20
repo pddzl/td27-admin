@@ -2,7 +2,6 @@ package authority
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
 	"go.uber.org/zap"
 
 	"server/global"
@@ -49,13 +48,8 @@ func (ma *MenuApi) GetMenus(c *gin.Context) {
 // @Router    /menu/addMenu [post]
 func (ma *MenuApi) AddMenu(c *gin.Context) {
 	var menuReq authorityReq.Menu
-	_ = c.ShouldBindJSON(&menuReq)
-
-	// 参数校验
-	validate := validator.New()
-	if err := validate.Struct(&menuReq); err != nil {
-		commonRes.FailWithMessage("请求参数错误", c)
-		global.TD27_LOG.Error("请求参数错误", zap.Error(err))
+	if err := c.ShouldBindJSON(&menuReq); err != nil {
+		commonRes.FailWithMessage(err.Error(), c)
 		return
 	}
 
@@ -77,13 +71,8 @@ func (ma *MenuApi) AddMenu(c *gin.Context) {
 // @Router    /menu/editMenu [post]
 func (ma *MenuApi) EditMenu(c *gin.Context) {
 	var editMenuReq authorityReq.EditMenuReq
-	_ = c.ShouldBindJSON(&editMenuReq)
-
-	// 参数校验
-	validate := validator.New()
-	if err := validate.Struct(&editMenuReq); err != nil {
-		commonRes.FailWithMessage("请求参数错误", c)
-		global.TD27_LOG.Error("请求参数错误", zap.Error(err))
+	if err := c.ShouldBindJSON(&editMenuReq); err != nil {
+		commonRes.FailWithMessage(err.Error(), c)
 		return
 	}
 
@@ -106,13 +95,8 @@ func (ma *MenuApi) EditMenu(c *gin.Context) {
 // @Router    /menu/deleteMenu [post]
 func (ma *MenuApi) DeleteMenu(c *gin.Context) {
 	var cId commonReq.CId
-	_ = c.ShouldBindJSON(&cId)
-
-	// 参数校验
-	validate := validator.New()
-	if err := validate.Struct(&cId); err != nil {
-		commonRes.FailWithMessage("请求参数错误", c)
-		global.TD27_LOG.Error("请求参数错误", zap.Error(err))
+	if err := c.ShouldBindJSON(&cId); err != nil {
+		commonRes.FailWithMessage(err.Error(), c)
 		return
 	}
 
@@ -135,13 +119,8 @@ func (ma *MenuApi) DeleteMenu(c *gin.Context) {
 // @Router    /menu/getElTreeMenus [post]
 func (ma *MenuApi) GetElTreeMenus(c *gin.Context) {
 	var cId commonReq.CId
-	_ = c.ShouldBindJSON(&cId)
-
-	// 参数校验
-	validate := validator.New()
-	if err := validate.Struct(&cId); err != nil {
-		commonRes.FailWithMessage("请求参数错误", c)
-		global.TD27_LOG.Error("请求参数错误", zap.Error(err))
+	if err := c.ShouldBindJSON(&cId); err != nil {
+		commonRes.FailWithMessage(err.Error(), c)
 		return
 	}
 

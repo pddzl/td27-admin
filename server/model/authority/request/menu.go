@@ -1,12 +1,12 @@
 package request
 
 type Menu struct {
-	Pid       uint   `json:"pid"`                           // 默认0 根目录
-	Name      string `json:"name"`                          // 名称
-	Path      string `json:"path" validate:"required"`      // 路径
-	Redirect  string `json:"redirect"`                      // 重定向
-	Component string `json:"component" validate:"required"` // 前端组件
-	Sort      uint   `json:"sort" validate:"required"`      // 排序
+	Pid       uint   `json:"pid"`                          // 默认0 根目录
+	Name      string `json:"name"`                         // 名称
+	Path      string `json:"path" binding:"required"`      // 路径
+	Redirect  string `json:"redirect"`                     // 重定向
+	Component string `json:"component" binding:"required"` // 前端组件
+	Sort      uint   `json:"sort" binding:"required"`      // 排序
 	Meta      meta   `json:"meta"`
 }
 
@@ -20,7 +20,7 @@ type meta struct {
 }
 
 type EditMenuReq struct {
-	Id uint `json:"id" validate:"required"` // 菜单ID
+	Id uint `json:"id" binding:"required"` // 菜单ID
 	Menu
 }
 
