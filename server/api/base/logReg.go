@@ -3,7 +3,6 @@ package base
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/mojocn/base64Captcha"
 	"github.com/redis/go-redis/v9"
@@ -61,13 +60,8 @@ func (ba *LogRegApi) Captcha(c *gin.Context) {
 // @Router   /logReg/login [post]
 func (ba *LogRegApi) Login(c *gin.Context) {
 	var login baseReq.Login
-	_ = c.ShouldBindJSON(&login)
-
-	// 参数校验
-	validate := validator.New()
-	if err := validate.Struct(&login); err != nil {
-		commonRes.FailWithMessage("请求参数错误", c)
-		global.TD27_LOG.Error("请求参数错误", zap.Error(err))
+	if err := c.ShouldBindJSON(&login); err != nil {
+		commonRes.FailWithMessage(err.Error(), c)
 		return
 	}
 

@@ -2,7 +2,6 @@ package base
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
 	"go.uber.org/zap"
 
 	"server/global"
@@ -23,13 +22,8 @@ type CasbinApi struct{}
 // @Router    /casbin/editCasbin [post]
 func (ca *CasbinApi) EditCasbin(c *gin.Context) {
 	var reqCasbin authorityReq.ReqCasbin
-	_ = c.ShouldBindJSON(&reqCasbin)
-
-	// 参数校验
-	validate := validator.New()
-	if err := validate.Struct(&reqCasbin); err != nil {
-		commonRes.FailWithMessage("请求参数错误", c)
-		global.TD27_LOG.Error("请求参数错误", zap.Error(err))
+	if err := c.ShouldBindJSON(&reqCasbin); err != nil {
+		commonRes.FailWithMessage(err.Error(), c)
 		return
 	}
 
