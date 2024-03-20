@@ -3,7 +3,6 @@ package fileM
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
 	"go.uber.org/zap"
 	"os"
 
@@ -55,13 +54,8 @@ func (f *FileApi) Upload(c *gin.Context) {
 // @Router    /file/getFileList [post]
 func (f *FileApi) GetFileList(c *gin.Context) {
 	var params fileMReq.FileSearchParams
-	_ = c.ShouldBindJSON(&params)
-
-	// 参数校验
-	validate := validator.New()
-	if err := validate.Struct(&params); err != nil {
-		commonRes.FailWithMessage("请求参数错误", c)
-		global.TD27_LOG.Error("请求参数错误", zap.Error(err))
+	if err := c.ShouldBindJSON(&params); err != nil {
+		commonRes.FailWithMessage(err.Error(), c)
 		return
 	}
 
