@@ -2,7 +2,6 @@ package authority
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
 	"go.uber.org/zap"
 
 	"server/global"
@@ -46,7 +45,10 @@ func (ua *UserApi) GetUserInfo(c *gin.Context) {
 // @Router    /user/getUsers [post]
 func (ua *UserApi) GetUsers(c *gin.Context) {
 	var pageInfo commonReq.PageInfo
-	_ = c.ShouldBindJSON(&pageInfo)
+	if err := c.ShouldBindJSON(&pageInfo); err != nil {
+		commonRes.FailWithMessage(err.Error(), c)
+		return
+	}
 
 	if list, total, err := userService.GetUsers(pageInfo); err != nil {
 		commonRes.FailWithMessage("获取失败", c)
@@ -72,13 +74,8 @@ func (ua *UserApi) GetUsers(c *gin.Context) {
 // @Router    /user/deleteUser [post]
 func (ua *UserApi) DeleteUser(c *gin.Context) {
 	var cId commonReq.CId
-	_ = c.ShouldBindJSON(&cId)
-
-	// 参数校验
-	validate := validator.New()
-	if err := validate.Struct(&cId); err != nil {
-		commonRes.FailWithMessage("请求参数错误", c)
-		global.TD27_LOG.Error("请求参数错误", zap.Error(err))
+	if err := c.ShouldBindJSON(&cId); err != nil {
+		commonRes.FailWithMessage(err.Error(), c)
 		return
 	}
 
@@ -101,13 +98,8 @@ func (ua *UserApi) DeleteUser(c *gin.Context) {
 // @Router    /user/addUser [post]
 func (ua *UserApi) AddUser(c *gin.Context) {
 	var addUser authorityReq.AddUser
-	_ = c.ShouldBindJSON(&addUser)
-
-	// 参数校验
-	validate := validator.New()
-	if err := validate.Struct(&addUser); err != nil {
-		commonRes.FailWithMessage("请求参数错误", c)
-		global.TD27_LOG.Error("请求参数错误", zap.Error(err))
+	if err := c.ShouldBindJSON(&addUser); err != nil {
+		commonRes.FailWithMessage(err.Error(), c)
 		return
 	}
 
@@ -130,13 +122,8 @@ func (ua *UserApi) AddUser(c *gin.Context) {
 // @Router    /user/editUser [post]
 func (ua *UserApi) EditUser(c *gin.Context) {
 	var editUser authorityReq.EditUser
-	_ = c.ShouldBindJSON(&editUser)
-
-	// 参数校验
-	validate := validator.New()
-	if err := validate.Struct(&editUser); err != nil {
-		commonRes.FailWithMessage("请求参数错误", c)
-		global.TD27_LOG.Error("请求参数错误", zap.Error(err))
+	if err := c.ShouldBindJSON(&editUser); err != nil {
+		commonRes.FailWithMessage(err.Error(), c)
 		return
 	}
 
@@ -159,13 +146,8 @@ func (ua *UserApi) EditUser(c *gin.Context) {
 // @Router    /user/modifyPass [post]
 func (ua *UserApi) ModifyPass(c *gin.Context) {
 	var mp authorityReq.ModifyPass
-	_ = c.ShouldBindJSON(&mp)
-
-	// 参数校验
-	validate := validator.New()
-	if err := validate.Struct(&mp); err != nil {
-		commonRes.FailWithMessage("请求参数错误", c)
-		global.TD27_LOG.Error("请求参数错误", zap.Error(err))
+	if err := c.ShouldBindJSON(&mp); err != nil {
+		commonRes.FailWithMessage(err.Error(), c)
 		return
 	}
 
@@ -188,13 +170,8 @@ func (ua *UserApi) ModifyPass(c *gin.Context) {
 // @Router    /user/switchActive [post]
 func (ua *UserApi) SwitchActive(c *gin.Context) {
 	var sa authorityReq.SwitchActive
-	_ = c.ShouldBindJSON(&sa)
-
-	// 参数校验
-	validate := validator.New()
-	if err := validate.Struct(&sa); err != nil {
-		commonRes.FailWithMessage("请求参数错误", c)
-		global.TD27_LOG.Error("请求参数错误", zap.Error(err))
+	if err := c.ShouldBindJSON(&sa); err != nil {
+		commonRes.FailWithMessage(err.Error(), c)
 		return
 	}
 
