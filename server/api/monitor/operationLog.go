@@ -2,7 +2,6 @@ package monitor
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
 	"go.uber.org/zap"
 
 	"server/global"
@@ -24,13 +23,8 @@ type OperationLogApi struct{}
 // @Router    /opl/getOperationLogList [post]
 func (o *OperationLogApi) GetOperationLogList(c *gin.Context) {
 	var orSp monitorReq.OrSearchParams
-	_ = c.ShouldBindJSON(&orSp)
-
-	// 参数校验
-	validate := validator.New()
-	if err := validate.Struct(&orSp); err != nil {
-		commonRes.FailWithMessage("请求参数错误", c)
-		global.TD27_LOG.Error("请求参数错误", zap.Error(err))
+	if err := c.ShouldBindJSON(&orSp); err != nil {
+		commonRes.FailWithMessage(err.Error(), c)
 		return
 	}
 
@@ -58,13 +52,8 @@ func (o *OperationLogApi) GetOperationLogList(c *gin.Context) {
 // @Router    /opl/deleteOperationLog [post]
 func (o *OperationLogApi) DeleteOperationLog(c *gin.Context) {
 	var cId commonReq.CId
-	_ = c.ShouldBindJSON(&cId)
-
-	// 参数校验
-	validate := validator.New()
-	if err := validate.Struct(&cId); err != nil {
-		commonRes.FailWithMessage("请求参数错误", c)
-		global.TD27_LOG.Error("请求参数错误", zap.Error(err))
+	if err := c.ShouldBindJSON(&cId); err != nil {
+		commonRes.FailWithMessage(err.Error(), c)
 		return
 	}
 
@@ -87,13 +76,8 @@ func (o *OperationLogApi) DeleteOperationLog(c *gin.Context) {
 // @Router    /opl/deleteOperationLogByIds [post]
 func (o *OperationLogApi) DeleteOperationLogByIds(c *gin.Context) {
 	var cIds commonReq.CIds
-	_ = c.ShouldBindJSON(&cIds)
-
-	// 参数校验
-	validate := validator.New()
-	if err := validate.Struct(&cIds); err != nil {
-		commonRes.FailWithMessage("请求参数错误", c)
-		global.TD27_LOG.Error("请求参数错误", zap.Error(err))
+	if err := c.ShouldBindJSON(&cIds); err != nil {
+		commonRes.FailWithMessage(err.Error(), c)
 		return
 	}
 
