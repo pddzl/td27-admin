@@ -3,6 +3,7 @@ package authority
 import (
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
+	modelAuthority "server/model/authority"
 
 	"server/global"
 	authorityReq "server/model/authority/request"
@@ -93,18 +94,18 @@ func (ua *UserApi) DeleteUser(c *gin.Context) {
 // @Security  ApiKeyAuth
 // @accept    application/json
 // @Produce   application/json
-// @Param     data  body      authorityReq.AddUser true "请求参数"
+// @Param     data  body      modelAuthority.UserModel true "请求参数"
 // @Success   200   {object}  response.Response{msg=string}
 // @Router    /user/addUser [post]
 func (ua *UserApi) AddUser(c *gin.Context) {
-	var addUser authorityReq.AddUser
-	if err := c.ShouldBindJSON(&addUser); err != nil {
+	var userModel modelAuthority.UserModel
+	if err := c.ShouldBindJSON(&userModel); err != nil {
 		commonRes.FailWithMessage(err.Error(), c)
 		return
 	}
 
-	if err := userService.AddUser(addUser); err != nil {
-		commonRes.FailWithMessage("添加失败", c)
+	if err := userService.AddUser(&userModel); err != nil {
+		commonRes.Fail(c)
 		global.TD27_LOG.Error("添加失败", zap.Error(err))
 	} else {
 		commonRes.OkWithMessage("添加成功", c)
@@ -117,21 +118,21 @@ func (ua *UserApi) AddUser(c *gin.Context) {
 // @Security  ApiKeyAuth
 // @accept    application/json
 // @Produce   application/json
-// @Param     data  body      authorityReq.EditUser true "请求参数"
+// @Param     data  body      modelAuthority.UserModel true "请求参数"
 // @Success   200   {object}  response.Response{msg=string}
 // @Router    /user/editUser [post]
 func (ua *UserApi) EditUser(c *gin.Context) {
-	var editUser authorityReq.EditUser
-	if err := c.ShouldBindJSON(&editUser); err != nil {
+	var userModel modelAuthority.UserModel
+	if err := c.ShouldBindJSON(&userModel); err != nil {
 		commonRes.FailWithMessage(err.Error(), c)
 		return
 	}
 
-	if user, err := userService.EditUser(editUser); err != nil {
-		commonRes.FailWithMessage("编辑失败", c)
+	if err := userService.EditUser(&userModel); err != nil {
+		commonRes.Fail(c)
 		global.TD27_LOG.Error("编辑失败", zap.Error(err))
 	} else {
-		commonRes.OkWithDetailed(user, "编辑成功", c)
+		commonRes.Ok(c)
 	}
 }
 
@@ -151,7 +152,7 @@ func (ua *UserApi) ModifyPass(c *gin.Context) {
 		return
 	}
 
-	if err := userService.ModifyPass(mp); err != nil {
+	if err := userService.ModifyPass(&mp); err != nil {
 		commonRes.FailWithMessage("修改失败", c)
 		global.TD27_LOG.Error("修改失败", zap.Error(err))
 	} else {
@@ -175,7 +176,7 @@ func (ua *UserApi) SwitchActive(c *gin.Context) {
 		return
 	}
 
-	if err := userService.SwitchActive(sa); err != nil {
+	if err := userService.SwitchActive(&sa); err != nil {
 		commonRes.FailWithMessage("切换失败", c)
 		global.TD27_LOG.Error("切换失败", zap.Error(err))
 	} else {

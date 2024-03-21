@@ -98,7 +98,7 @@ func (st *CronApi) DeleteCronByIds(c *gin.Context) {
 		return
 	}
 
-	if err := cronService.DeleteCronByIds(cIds.Ids); err != nil {
+	if err := cronService.DeleteCronByIds(cIds.IDs); err != nil {
 		commonRes.FailWithMessage("批量删除失败", c)
 		global.TD27_LOG.Error("批量删除失败", zap.Error(err))
 	} else {

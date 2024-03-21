@@ -295,7 +295,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.EditApi"
+                            "$ref": "#/definitions/authority.ApiModel"
                         }
                     }
                 ],
@@ -1716,7 +1716,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.AddUser"
+                            "$ref": "#/definitions/authority.UserModel"
                         }
                     }
                 ],
@@ -1816,7 +1816,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.EditUser"
+                            "$ref": "#/definitions/authority.UserModel"
                         }
                     }
                 ],
@@ -2136,6 +2136,10 @@ const docTemplate = `{
                     "description": "前端组件",
                     "type": "string"
                 },
+                "createdAt": {
+                    "description": "创建时间",
+                    "type": "string"
+                },
                 "id": {
                     "description": "主键ID",
                     "type": "integer"
@@ -2167,6 +2171,10 @@ const docTemplate = `{
                 "sort": {
                     "description": "排序",
                     "type": "integer"
+                },
+                "updatedAt": {
+                    "description": "更新时间",
+                    "type": "string"
                 }
             }
         },
@@ -2231,6 +2239,10 @@ const docTemplate = `{
         },
         "authority.UserModel": {
             "type": "object",
+            "required": [
+                "roleId",
+                "username"
+            ],
             "properties": {
                 "active": {
                     "description": "是否活跃",
@@ -2345,40 +2357,6 @@ const docTemplate = `{
                 },
                 "userName": {
                     "description": "用户名称",
-                    "type": "string"
-                }
-            }
-        },
-        "request.AddUser": {
-            "type": "object",
-            "required": [
-                "password",
-                "roleId",
-                "username"
-            ],
-            "properties": {
-                "active": {
-                    "description": "是否活跃",
-                    "type": "boolean"
-                },
-                "email": {
-                    "description": "邮箱",
-                    "type": "string"
-                },
-                "password": {
-                    "description": "密码",
-                    "type": "string"
-                },
-                "phone": {
-                    "description": "Phone    string ` + "`" + `json:\"phone\" validate:\"omitempty,regexp=^[1][0-9]{10}$\"` + "`" + ` // 手机号",
-                    "type": "string"
-                },
-                "roleId": {
-                    "description": "角色ID",
-                    "type": "integer"
-                },
-                "username": {
-                    "description": "用户名",
                     "type": "string"
                 }
             }
@@ -2532,40 +2510,6 @@ const docTemplate = `{
                 }
             }
         },
-        "request.EditApi": {
-            "type": "object",
-            "required": [
-                "id"
-            ],
-            "properties": {
-                "api_group": {
-                    "description": "API分组",
-                    "type": "string"
-                },
-                "description": {
-                    "description": "描述",
-                    "type": "string"
-                },
-                "id": {
-                    "description": "api ID",
-                    "type": "integer"
-                },
-                "method": {
-                    "description": "请求方法",
-                    "type": "string",
-                    "enum": [
-                        "GET",
-                        "POST",
-                        "DELETE",
-                        "PUT"
-                    ]
-                },
-                "path": {
-                    "description": "路径",
-                    "type": "string"
-                }
-            }
-        },
         "request.EditMenuReq": {
             "type": "object",
             "required": [
@@ -2638,40 +2582,6 @@ const docTemplate = `{
                 "roleId": {
                     "description": "角色ID",
                     "type": "integer"
-                }
-            }
-        },
-        "request.EditUser": {
-            "type": "object",
-            "required": [
-                "id",
-                "roleId",
-                "username"
-            ],
-            "properties": {
-                "active": {
-                    "description": "是否活跃",
-                    "type": "boolean"
-                },
-                "email": {
-                    "description": "邮箱",
-                    "type": "string"
-                },
-                "id": {
-                    "description": "用户ID",
-                    "type": "integer"
-                },
-                "phone": {
-                    "description": "手机号",
-                    "type": "string"
-                },
-                "roleId": {
-                    "description": "角色ID",
-                    "type": "integer"
-                },
-                "username": {
-                    "description": "用户名",
-                    "type": "string"
                 }
             }
         },

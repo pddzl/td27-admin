@@ -2,7 +2,6 @@ package authority
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
 	"go.uber.org/zap"
 
 	"server/global"
@@ -108,7 +107,7 @@ func (a *ApiApi) DeleteApiById(c *gin.Context) {
 		return
 	}
 
-	if err := apiService.DeleteApiById(cIds.Ids); err != nil {
+	if err := apiService.DeleteApiById(cIds.IDs); err != nil {
 		commonRes.Fail(c)
 		global.TD27_LOG.Error("批量删除失败", zap.Error(err))
 	} else {
@@ -122,26 +121,21 @@ func (a *ApiApi) DeleteApiById(c *gin.Context) {
 // @Security  ApiKeyAuth
 // @accept    application/json
 // @Produce   application/json
-// @Param     data  body      authorityReq.EditApi true "请求参数"
+// @Param     data  body      modelAuthority.ApiModel true "请求参数"
 // @Success   200   {object}  response.Response{msg=string}
 // @Router    /api/editApi [post]
 func (a *ApiApi) EditApi(c *gin.Context) {
-	var eApi authorityReq.EditApi
-	_ = c.ShouldBindJSON(&eApi)
-
-	// 参数校验
-	validate := validator.New()
-	if err := validate.Struct(&eApi); err != nil {
-		commonRes.FailWithMessage("请求参数错误", c)
-		global.TD27_LOG.Error("请求参数错误", zap.Error(err))
+	var apiModel modelAuthority.ApiModel
+	if err := c.ShouldBindJSON(&apiModel); err != nil {
+		commonRes.FailReq(err.Error(), c)
 		return
 	}
 
-	if err := apiService.EditApi(eApi); err != nil {
-		commonRes.FailWithMessage("编辑失败", c)
+	if err := apiService.EditApi(&apiModel); err != nil {
+		commonRes.Fail(c)
 		global.TD27_LOG.Error("编辑失败", zap.Error(err))
 	} else {
-		commonRes.OkWithMessage("编辑成功", c)
+		commonRes.Ok(c)
 	}
 }
 
@@ -156,13 +150,8 @@ func (a *ApiApi) EditApi(c *gin.Context) {
 // @Router    /api/getElTreeApis [post]
 func (a *ApiApi) GetElTreeApis(c *gin.Context) {
 	var cId commonReq.CId
-	_ = c.ShouldBindJSON(&cId)
-
-	// 参数校验
-	validate := validator.New()
-	if err := validate.Struct(&cId); err != nil {
-		commonRes.FailWithMessage("请求参数错误", c)
-		global.TD27_LOG.Error("请求参数错误", zap.Error(err))
+	if err := c.ShouldBindJSON(&cId); err != nil {
+		commonRes.FailReq(err.Error(), c)
 		return
 	}
 

@@ -54,7 +54,7 @@ func (ma *MenuApi) AddMenu(c *gin.Context) {
 	}
 
 	if ok := menuService.AddMenu(menuReq); !ok {
-		commonRes.FailWithMessage("添加失败", c)
+		commonRes.Fail(c)
 	} else {
 		commonRes.OkWithMessage("添加成功", c)
 	}

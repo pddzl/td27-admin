@@ -1,8 +1,9 @@
 package authority
 
 import (
+	"errors"
 	"fmt"
-	"go.uber.org/zap"
+	"gorm.io/gorm"
 
 	"server/global"
 	modelAuthority "server/model/authority"
@@ -48,89 +49,47 @@ func (us *UserService) DeleteUser(id uint) (err error) {
 }
 
 // AddUser 添加用户
-func (us *UserService) AddUser(user authorityReq.AddUser) (err error) {
-	err = global.TD27_DB.Where("id = ?", user.RoleModelID).First(&modelAuthority.RoleModel{}).Error
-	if err != nil {
-		global.TD27_LOG.Error("添加用户 -> 查询role", zap.Error(err))
-		return err
+func (us *UserService) AddUser(instance *modelAuthority.UserModel) (err error) {
+	if errors.Is(global.TD27_DB.Where("id = ?", instance.RoleModelID).First(&modelAuthority.RoleModel{}).Error, gorm.ErrRecordNotFound) {
+		return errors.New("角色不存在")
 	}
 
-	var userModel modelAuthority.UserModel
-	userModel.Username = user.Username
-	userModel.Password = utils.MD5V([]byte(user.Password))
-	userModel.Phone = user.Phone
-	userModel.Email = user.Email
-	userModel.Active = user.Active
-	userModel.RoleModelID = user.RoleModelID
+	instance.Password = utils.MD5V([]byte(instance.Password))
 
-	return global.TD27_DB.Create(&userModel).Error
+	return global.TD27_DB.Create(instance).Error
 }
 
 // EditUser 编辑用户
-func (us *UserService) EditUser(user authorityReq.EditUser) (*authorityRes.UserResult, error) {
-	var userModel modelAuthority.UserModel
-	var userResult authorityRes.UserResult
+func (us *UserService) EditUser(instance *modelAuthority.UserModel) (err error) {
 	// 用户是否存在
-	err := global.TD27_DB.Where("id = ?", user.Id).First(&userModel).Error
-	if err != nil {
-		global.TD27_LOG.Error("编辑用户 -> 查询Id", zap.Error(err))
-		return nil, err
+	if errors.Is(global.TD27_DB.Where("id = ?", instance.ID).First(&modelAuthority.UserModel{}).Error, gorm.ErrRecordNotFound) {
+		return errors.New("记录不存在")
 	}
 
 	// 角色是否存在
-	var roleModel modelAuthority.RoleModel
-	err = global.TD27_DB.Where("id = ?", user.RoleModelID).First(&roleModel).Error
-	if err != nil {
-		global.TD27_LOG.Error("编辑用户 -> 查询role", zap.Error(err))
-		return nil, err
+	if errors.Is(global.TD27_DB.Where("id = ?", instance.RoleModelID).First(&modelAuthority.RoleModel{}).Error, gorm.ErrRecordNotFound) {
+		return errors.New("角色不存在")
 	}
 
-	updateV := make(map[string]interface{}, 5)
-	updateV["username"] = user.Username
-	updateV["active"] = user.Active
-	updateV["role_model_id"] = user.RoleModelID
-	updateV["phone"] = user.Phone
-	updateV["email"] = user.Email
-
-	err = global.TD27_DB.Model(&userModel).Updates(updateV).Error
-	if err != nil {
-		global.TD27_LOG.Error("编辑用户 -> update", zap.Error(err))
-		return nil, err
-	}
-
-	userResult.ID = userModel.ID
-	userResult.Username = userModel.Username
-	userResult.Phone = userModel.Phone
-	userResult.Email = userModel.Email
-	userResult.Active = userModel.Active
-	userResult.RoleName = roleModel.RoleName
-	userResult.RoleModelID = userModel.RoleModelID
-
-	return &userResult, nil
+	return global.TD27_DB.Omit("created_at").Save(instance).Error
 }
 
 // ModifyPass 修改用户密码
-func (us *UserService) ModifyPass(mp authorityReq.ModifyPass) (err error) {
+func (us *UserService) ModifyPass(mp *authorityReq.ModifyPass) (err error) {
 	var userModel modelAuthority.UserModel
-	err = global.TD27_DB.Where("id = ? and password = ?", mp.Id, utils.MD5V([]byte(mp.OldPassword))).First(&userModel).Error
-	if err != nil {
-		global.TD27_LOG.Error("修改用户密码 -> 查询用户", zap.Error(err))
-		return err
+	if errors.Is(global.TD27_DB.Where("id = ? and password = ?", mp.ID, utils.MD5V([]byte(mp.OldPassword))).First(&userModel).Error, gorm.ErrRecordNotFound) {
+		return errors.New("记录不存在")
 	}
+
 	return global.TD27_DB.Model(&userModel).Update("password", utils.MD5V([]byte(mp.NewPassword))).Error
 }
 
 // SwitchActive 切换启用状态
-func (us *UserService) SwitchActive(sa authorityReq.SwitchActive) (err error) {
+func (us *UserService) SwitchActive(sa *authorityReq.SwitchActive) (err error) {
 	var userModel modelAuthority.UserModel
-	err = global.TD27_DB.Where("id = ?", sa.Id).First(&userModel).Error
-	if err != nil {
-		global.TD27_LOG.Error("切换启用状态 -> 查询用户", zap.Error(err))
-		return err
+	if errors.Is(global.TD27_DB.Where("id = ?", sa.ID).First(&userModel).Error, gorm.ErrRecordNotFound) {
+		return errors.New("记录不存在")
 	}
-	if sa.Active {
-		return global.TD27_DB.Model(&userModel).Update("active", true).Error
-	} else {
-		return global.TD27_DB.Model(&userModel).Update("active", false).Error
-	}
+
+	return global.TD27_DB.Model(&userModel).Update("active", sa.Active).Error
 }

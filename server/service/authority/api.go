@@ -174,23 +174,22 @@ func (a *ApiService) DeleteApiById(ids []uint) (err error) {
 }
 
 // EditApi 编辑api
-func (a *ApiService) EditApi(eApi authorityReq.EditApi) (err error) {
-	var oldApiModel modelAuthority.ApiModel
-	err = global.TD27_DB.Where("id = ?", eApi.Id).First(&oldApiModel).Error
-	if err != nil {
-		return errors.New("editApi: id不存在")
+func (a *ApiService) EditApi(instance *modelAuthority.ApiModel) (err error) {
+	var apiModel modelAuthority.ApiModel
+	if errors.Is(global.TD27_DB.Where("id = ?", instance.ID).First(&apiModel).Error, gorm.ErrRecordNotFound) {
+		return errors.New("记录不存在")
 	}
 
-	if oldApiModel.Path != eApi.Path || oldApiModel.Method != eApi.Method {
-		if !errors.Is(global.TD27_DB.Where("path = ? AND method = ?", eApi.Path, eApi.Method).First(&modelAuthority.ApiModel{}).Error, gorm.ErrRecordNotFound) {
-			return errors.New("editApi: 存在相同接口")
+	if apiModel.Path != instance.Path || apiModel.Method != instance.Method {
+		if !errors.Is(global.TD27_DB.Where("path = ? AND method = ?", instance.Path, instance.Method).First(&modelAuthority.ApiModel{}).Error, gorm.ErrRecordNotFound) {
+			return errors.New("存在相同接口")
 		}
 	}
 
-	err = serviceBase.CasbinServiceApp.UpdateCasbinApi(oldApiModel.Path, eApi.Path, oldApiModel.Method, eApi.Method)
+	err = serviceBase.CasbinServiceApp.UpdateCasbinApi(apiModel.Path, apiModel.Path, apiModel.Method, apiModel.Method)
 	if err != nil {
-		return fmt.Errorf("editApi: 更新casbin rule -> %v", err)
+		return fmt.Errorf("更新casbin rule err: %v", err)
 	}
 
-	return global.TD27_DB.Model(&oldApiModel).Updates(map[string]interface{}{"path": eApi.Path, "method": eApi.Method, "api_group": eApi.ApiGroup, "description": eApi.Description}).Error
+	return global.TD27_DB.Omit("created_at").Save(instance).Error
 }

@@ -61,6 +61,9 @@ definitions:
       component:
         description: 前端组件
         type: string
+      createdAt:
+        description: 创建时间
+        type: string
       id:
         description: 主键ID
         type: integer
@@ -83,6 +86,9 @@ definitions:
       sort:
         description: 排序
         type: integer
+      updatedAt:
+        description: 更新时间
+        type: string
     type: object
   authority.Meta:
     properties:
@@ -152,6 +158,9 @@ definitions:
       username:
         description: 用户名
         type: string
+    required:
+    - roleId
+    - username
     type: object
   fileM.FileModel:
     properties:
@@ -212,32 +221,6 @@ definitions:
       userName:
         description: 用户名称
         type: string
-    type: object
-  request.AddUser:
-    properties:
-      active:
-        description: 是否活跃
-        type: boolean
-      email:
-        description: 邮箱
-        type: string
-      password:
-        description: 密码
-        type: string
-      phone:
-        description: Phone    string `json:"phone" validate:"omitempty,regexp=^[1][0-9]{10}$"`
-          // 手机号
-        type: string
-      roleId:
-        description: 角色ID
-        type: integer
-      username:
-        description: 用户名
-        type: string
-    required:
-    - password
-    - roleId
-    - username
     type: object
   request.ApiSearchParams:
     properties:
@@ -342,31 +325,6 @@ definitions:
     - method
     - name
     type: object
-  request.EditApi:
-    properties:
-      api_group:
-        description: API分组
-        type: string
-      description:
-        description: 描述
-        type: string
-      id:
-        description: api ID
-        type: integer
-      method:
-        description: 请求方法
-        enum:
-        - GET
-        - POST
-        - DELETE
-        - PUT
-        type: string
-      path:
-        description: 路径
-        type: string
-    required:
-    - id
-    type: object
   request.EditMenuReq:
     properties:
       component:
@@ -420,31 +378,6 @@ definitions:
       roleId:
         description: 角色ID
         type: integer
-    type: object
-  request.EditUser:
-    properties:
-      active:
-        description: 是否活跃
-        type: boolean
-      email:
-        description: 邮箱
-        type: string
-      id:
-        description: 用户ID
-        type: integer
-      phone:
-        description: 手机号
-        type: string
-      roleId:
-        description: 角色ID
-        type: integer
-      username:
-        description: 用户名
-        type: string
-    required:
-    - id
-    - roleId
-    - username
     type: object
   request.ExtraParams:
     properties:
@@ -886,7 +819,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/request.EditApi'
+          $ref: '#/definitions/authority.ApiModel'
       produces:
       - application/json
       responses:
@@ -1678,7 +1611,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/request.AddUser'
+          $ref: '#/definitions/authority.UserModel'
       produces:
       - application/json
       responses:
@@ -1734,7 +1667,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/request.EditUser'
+          $ref: '#/definitions/authority.UserModel'
       produces:
       - application/json
       responses:

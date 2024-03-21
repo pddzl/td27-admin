@@ -81,7 +81,7 @@ func (o *OperationLogApi) DeleteOperationLogByIds(c *gin.Context) {
 		return
 	}
 
-	if err := operationLogService.DeleteOperationLogByIds(cIds.Ids); err != nil {
+	if err := operationLogService.DeleteOperationLogByIds(cIds.IDs); err != nil {
 		commonRes.FailWithMessage("删除失败", c)
 		global.TD27_LOG.Error("删除失败", zap.Error(err))
 	} else {
