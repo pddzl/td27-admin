@@ -35,9 +35,9 @@
           <el-table-column prop="fileName" label="名称" />
           <!-- <el-table-column prop="fullPath" label="路径" /> -->
           <el-table-column prop="mime" label="MIME" />
-          <el-table-column prop="CreatedAt" label="创建时间" width="200">
+          <el-table-column prop="createdAt" label="创建时间" width="200">
             <template #default="scope">
-              {{ formatDateTime(scope.row.CreatedAt) }}
+              {{ formatDateTime(scope.row.createdAt) }}
             </template>
           </el-table-column>
           <el-table-column label="操作" width="200px" fixed="right">

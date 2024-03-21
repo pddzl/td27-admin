@@ -2,7 +2,7 @@ import { request } from "@/utils/service"
 
 export interface OrData {
   ID: number
-  CreatedAt: string
+  createdAt: string
   ip: string
   method: string
   path: string

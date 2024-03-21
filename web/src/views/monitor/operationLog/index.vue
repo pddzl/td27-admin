@@ -6,7 +6,7 @@
           <el-input v-model="searchFormData.path" placeholder="路径" />
         </el-form-item>
         <el-form-item prop="method" label="方法">
-          <el-select v-model="searchFormData.method" placeholder="方法" clearable style="width: 100px;">
+          <el-select v-model="searchFormData.method" placeholder="方法" clearable style="width: 100px">
             <el-option v-for="item in methodOptions" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
@@ -74,9 +74,9 @@
           </el-table-column>
           <el-table-column prop="method" label="请求方法" />
           <el-table-column prop="respTime" label="响应时间(ms)" min-width="120" />
-          <el-table-column prop="CreatedAt" label="创建时间" min-width="180">
+          <el-table-column prop="createdAt" label="创建时间" min-width="180">
             <template #default="scope">
-              {{ formatDateTime(scope.row.CreatedAt) }}
+              {{ formatDateTime(scope.row.createdAt) }}
             </template>
           </el-table-column>
           <el-table-column label="操作" fixed="right" min-width="100">

@@ -26,8 +26,8 @@ interface AddCronData {
 
 export interface CronData {
   ID: number
-  CreatedAt: string
-  UpdatedAt: string
+  createdAt: string
+  updatedAt: string
   name: string
   method: string
   expression: string
