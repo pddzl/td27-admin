@@ -10,6 +10,7 @@ import (
 	"server/global"
 	modelAuthority "server/model/authority"
 	authorityReq "server/model/authority/request"
+	baseReq "server/model/base/request"
 	serviceBase "server/service/base"
 )
 
@@ -22,20 +23,22 @@ func (rs *RoleService) GetRoles() ([]modelAuthority.RoleModel, error) {
 	return roleList, err
 }
 
-func (rs *RoleService) AddRole(roleName string) (*modelAuthority.RoleModel, error) {
-	var roleModel modelAuthority.RoleModel
-	roleModel.RoleName = roleName
-	return &roleModel, global.TD27_DB.Create(&roleModel).Error
+func (rs *RoleService) AddRole(instance *modelAuthority.RoleModel) (*modelAuthority.RoleModel, error) {
+	err := global.TD27_DB.Create(instance).Error
+	if err != nil {
+		if err = serviceBase.CasbinServiceApp.EditCasbin(instance.ID, baseReq.DefaultCasbin()); err != nil {
+			global.TD27_LOG.Error("更新casbin rule失败", zap.Error(err))
+		}
+	}
+	return instance, err
 
 }
 
 // DeleteRole 删除角色
 func (rs *RoleService) DeleteRole(id uint) (err error) {
 	var roleModel modelAuthority.RoleModel
-
-	err = global.TD27_DB.Where("id = ?", id).First(&roleModel).Error
-	if err != nil {
-		return fmt.Errorf("查询role -> %v", err)
+	if errors.Is(global.TD27_DB.Where("id = ?", id).First(&roleModel).Error, gorm.ErrRecordNotFound) {
+		return errors.New("记录不存在")
 	}
 
 	if !errors.Is(global.TD27_DB.Where("role_model_id = ?", id).First(&modelAuthority.UserModel{}).Error, gorm.ErrRecordNotFound) {
@@ -44,13 +47,13 @@ func (rs *RoleService) DeleteRole(id uint) (err error) {
 
 	err = global.TD27_DB.Unscoped().Delete(&roleModel).Error
 	if err != nil {
-		return fmt.Errorf("删除role -> %v", err)
+		return fmt.Errorf("删除role err: %v", err)
 	}
 
 	// 清空menus关联
 	err = global.TD27_DB.Model(&roleModel).Association("Menus").Clear()
 	if err != nil {
-		return fmt.Errorf("删除role关联menus -> %v", err)
+		return fmt.Errorf("删除role关联menus err: %v", err)
 	}
 
 	// 删除对应casbin rule
@@ -65,9 +68,8 @@ func (rs *RoleService) DeleteRole(id uint) (err error) {
 // EditRole 编辑用户
 func (rs *RoleService) EditRole(eRole authorityReq.EditRole) (err error) {
 	var roleModel modelAuthority.RoleModel
-	err = global.TD27_DB.Where("id = ?", eRole.ID).First(&roleModel).Error
-	if err != nil {
-		global.TD27_LOG.Error("查询角色", zap.Error(err))
+	if errors.Is(global.TD27_DB.Where("id = ?", eRole.ID).First(&roleModel).Error, gorm.ErrRecordNotFound) {
+		return errors.New("记录不存在")
 	}
 
 	return global.TD27_DB.Model(&roleModel).Update("role_name", eRole.RoleName).Error
@@ -75,17 +77,15 @@ func (rs *RoleService) EditRole(eRole authorityReq.EditRole) (err error) {
 
 // EditRoleMenu 编辑用户menu
 func (rs *RoleService) EditRoleMenu(roleId uint, ids []uint) (err error) {
+	var roleModel modelAuthority.RoleModel
+	if errors.Is(global.TD27_DB.Where("id = ?", roleId).First(&roleModel).Error, gorm.ErrRecordNotFound) {
+		return errors.New("记录不存在")
+	}
+
 	var menuModel []modelAuthority.MenuModel
 	err = global.TD27_DB.Where("id in ?", ids).Find(&menuModel).Error
 	if err != nil {
 		global.TD27_LOG.Error("EditRoleMenu 查询menu", zap.Error(err))
-		return err
-	}
-
-	var roleModel modelAuthority.RoleModel
-	err = global.TD27_DB.Where("id = ?", roleId).First(&roleModel).Error
-	if err != nil {
-		global.TD27_LOG.Error("EditRoleMenu 查询role", zap.Error(err))
 		return err
 	}
 

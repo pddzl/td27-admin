@@ -49,7 +49,7 @@ func (ma *MenuApi) GetMenus(c *gin.Context) {
 func (ma *MenuApi) AddMenu(c *gin.Context) {
 	var menuReq authorityReq.Menu
 	if err := c.ShouldBindJSON(&menuReq); err != nil {
-		commonRes.FailWithMessage(err.Error(), c)
+		commonRes.FailReq(err.Error(), c)
 		return
 	}
 
@@ -72,7 +72,7 @@ func (ma *MenuApi) AddMenu(c *gin.Context) {
 func (ma *MenuApi) EditMenu(c *gin.Context) {
 	var editMenuReq authorityReq.EditMenuReq
 	if err := c.ShouldBindJSON(&editMenuReq); err != nil {
-		commonRes.FailWithMessage(err.Error(), c)
+		commonRes.FailReq(err.Error(), c)
 		return
 	}
 
@@ -96,7 +96,7 @@ func (ma *MenuApi) EditMenu(c *gin.Context) {
 func (ma *MenuApi) DeleteMenu(c *gin.Context) {
 	var cId commonReq.CId
 	if err := c.ShouldBindJSON(&cId); err != nil {
-		commonRes.FailWithMessage(err.Error(), c)
+		commonRes.FailReq(err.Error(), c)
 		return
 	}
 
@@ -120,12 +120,11 @@ func (ma *MenuApi) DeleteMenu(c *gin.Context) {
 func (ma *MenuApi) GetElTreeMenus(c *gin.Context) {
 	var cId commonReq.CId
 	if err := c.ShouldBindJSON(&cId); err != nil {
-		commonRes.FailWithMessage(err.Error(), c)
+		commonRes.FailReq(err.Error(), c)
 		return
 	}
 
-	list, ids, err := menuService.GetElTreeMenus(cId.ID)
-	if err != nil {
+	if list, ids, err := menuService.GetElTreeMenus(cId.ID); err != nil {
 		commonRes.FailWithMessage("获取失败", c)
 		global.TD27_LOG.Error("获取失败!", zap.Error(err))
 	} else {

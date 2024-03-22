@@ -61,7 +61,7 @@ func (ba *LogRegApi) Captcha(c *gin.Context) {
 func (ba *LogRegApi) Login(c *gin.Context) {
 	var login baseReq.Login
 	if err := c.ShouldBindJSON(&login); err != nil {
-		commonRes.FailWithMessage(err.Error(), c)
+		commonRes.FailReq(err.Error(), c)
 		return
 	}
 

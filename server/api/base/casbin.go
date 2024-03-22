@@ -23,14 +23,14 @@ type CasbinApi struct{}
 func (ca *CasbinApi) EditCasbin(c *gin.Context) {
 	var reqCasbin authorityReq.ReqCasbin
 	if err := c.ShouldBindJSON(&reqCasbin); err != nil {
-		commonRes.FailWithMessage(err.Error(), c)
+		commonRes.FailReq(err.Error(), c)
 		return
 	}
 
 	if err := casbinService.EditCasbin(reqCasbin.RoleId, reqCasbin.CasbinInfos); err != nil {
-		commonRes.FailWithMessage("更新失败", c)
+		commonRes.Fail(c)
 		global.TD27_LOG.Error("更新失败", zap.Error(err))
 	} else {
-		commonRes.OkWithMessage("更新成功", c)
+		commonRes.Ok(c)
 	}
 }

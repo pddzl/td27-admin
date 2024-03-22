@@ -25,7 +25,7 @@ type CronApi struct{}
 func (st *CronApi) GetCronList(c *gin.Context) {
 	var pageInfo commonReq.PageInfo
 	if err := c.ShouldBindJSON(&pageInfo); err != nil {
-		commonRes.FailWithMessage(err.Error(), c)
+		commonRes.FailReq(err.Error(), c)
 		return
 	}
 
@@ -54,12 +54,12 @@ func (st *CronApi) GetCronList(c *gin.Context) {
 func (st *CronApi) AddCron(c *gin.Context) {
 	var cronModel modelSysTool.CronModel
 	if err := c.ShouldBindJSON(&cronModel); err != nil {
-		commonRes.FailWithMessage(err.Error(), c)
+		commonRes.FailReq(err.Error(), c)
 		return
 	}
 
 	if cron, err := cronService.AddCron(&cronModel); err != nil {
-		commonRes.FailWithMessage(err.Error(), c)
+		commonRes.FailWithMessage("创建失败", c)
 		global.TD27_LOG.Error("创建失败", zap.Error(err))
 	} else {
 		commonRes.OkWithDetailed(cron, "创建成功", c)
@@ -78,7 +78,7 @@ func (st *CronApi) AddCron(c *gin.Context) {
 func (st *CronApi) DeleteCron(c *gin.Context) {
 	var cId commonReq.CId
 	if err := c.ShouldBindJSON(&cId); err != nil {
-		commonRes.FailWithMessage(err.Error(), c)
+		commonRes.FailReq(err.Error(), c)
 		return
 	}
 
@@ -94,7 +94,7 @@ func (st *CronApi) DeleteCron(c *gin.Context) {
 func (st *CronApi) DeleteCronByIds(c *gin.Context) {
 	var cIds commonReq.CIds
 	if err := c.ShouldBindJSON(&cIds); err != nil {
-		commonRes.FailWithMessage(err.Error(), c)
+		commonRes.FailReq(err.Error(), c)
 		return
 	}
 
@@ -112,21 +112,21 @@ func (st *CronApi) DeleteCronByIds(c *gin.Context) {
 // @Security  ApiKeyAuth
 // @accept    application/json
 // @Produce   application/json
-// @Param     data  body      sysToolReq.CronReq true  "id（必须），名称，方法，cron表达式，策略，开关，额外参数，备注"
+// @Param     data  body      modelSysTool.CronModel true  "id（必须），名称，方法，cron表达式，策略，开关，额外参数，备注"
 // @Success   200   {object}  commonRes.Response{msg=string,data=modelSysTool.CronModel}
 // @Router    /cron/editCron [post]
 func (st *CronApi) EditCron(c *gin.Context) {
-	var cronReq sysToolReq.CronReq
-	if err := c.ShouldBindJSON(&cronReq); err != nil {
-		commonRes.FailWithMessage(err.Error(), c)
+	var cronModel modelSysTool.CronModel
+	if err := c.ShouldBindJSON(&cronModel); err != nil {
+		commonRes.FailReq(err.Error(), c)
 		return
 	}
 
-	if cron, err := cronService.EditCron(&cronReq); err != nil {
+	if err := cronService.EditCron(&cronModel); err != nil {
 		commonRes.FailWithMessage(err.Error(), c)
 		global.TD27_LOG.Error("编辑失败", zap.Error(err))
 	} else {
-		commonRes.OkWithDetailed(cron, "编辑成功", c)
+		commonRes.OkWithMessage("编辑成功", c)
 	}
 }
 
@@ -142,11 +142,11 @@ func (st *CronApi) EditCron(c *gin.Context) {
 func (st *CronApi) SwitchOpen(c *gin.Context) {
 	var switchReq sysToolReq.SwitchReq
 	if err := c.ShouldBindJSON(&switchReq); err != nil {
-		commonRes.FailWithMessage(err.Error(), c)
+		commonRes.FailReq(err.Error(), c)
 		return
 	}
 
-	if entryId, err := cronService.SwitchOpen(switchReq.Id, switchReq.Open); err != nil {
+	if entryId, err := cronService.SwitchOpen(switchReq.ID, switchReq.Open); err != nil {
 		commonRes.FailWithMessage("切换失败", c)
 		global.TD27_LOG.Error("切换失败", zap.Error(err))
 	} else {

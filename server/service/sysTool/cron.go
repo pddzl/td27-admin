@@ -9,7 +9,6 @@ import (
 	"server/global"
 	commonReq "server/model/common/request"
 	modelSysTool "server/model/sysTool"
-	sysToolReq "server/model/sysTool/request"
 	"server/utils"
 )
 
@@ -75,47 +74,42 @@ func (cs *CronService) DeleteCronByIds(ids []uint) error {
 }
 
 // EditCron 编辑cron
-func (cs *CronService) EditCron(cronReq *sysToolReq.CronReq) (*modelSysTool.CronModel, error) {
-	var cronModel modelSysTool.CronModel
-	if errors.Is(global.TD27_DB.Where("id = ?", cronReq.ID).First(&cronModel).Error, gorm.ErrRecordNotFound) {
-		return nil, errors.New("记录未找到")
+func (cs *CronService) EditCron(instance *modelSysTool.CronModel) (err error) {
+	if errors.Is(global.TD27_DB.Where("id = ?", instance.ID).First(&modelSysTool.CronModel{}).Error, gorm.ErrRecordNotFound) {
+		return errors.New("记录不存在")
 	}
-	// 拼接
-	cronModel.Name = cronReq.Name
-	cronModel.Method = cronReq.Method
-	cronModel.Expression = cronReq.Expression
-	cronModel.Strategy = cronReq.Strategy
+
 	// params 拼接
 	var extraParams modelSysTool.ExtraParams
-	for _, v := range cronReq.ExtraParams.TableInfo {
+	for _, v := range instance.ExtraParams.TableInfo {
 		var clearTable modelSysTool.ClearTable
 		clearTable.TableName = v.TableName
 		clearTable.CompareField = v.CompareField
 		clearTable.Interval = v.Interval
 		extraParams.TableInfo = append(extraParams.TableInfo, clearTable)
 	}
-	extraParams.Command = cronReq.ExtraParams.Command
-	cronModel.ExtraParams = extraParams
-	cronModel.Comment = cronReq.Comment
-	if cronReq.Open {
-		if !utils.IsContain(utils.GetEntries(), cronModel.EntryId) {
-			entryId, err := global.TD27_CRON.AddJob(cronModel.Expression, &cronModel)
+	instance.ExtraParams = extraParams
+
+	if instance.Open {
+		if !utils.IsContain(utils.GetEntries(), instance.EntryId) {
+			entryId, err := global.TD27_CRON.AddJob(instance.Expression, instance)
 			if err != nil {
-				return nil, err
+				return err
 			} else {
-				cronModel.Open = true
-				cronModel.EntryId = int(entryId)
+				instance.Open = true
+				instance.EntryId = int(entryId)
 			}
 		}
 	} else {
-		if cronModel.EntryId != 0 {
-			global.TD27_CRON.Remove(cron.EntryID(cronModel.EntryId))
-			cronModel.EntryId = 0
+		if instance.EntryId != 0 {
+			global.TD27_CRON.Remove(cron.EntryID(instance.EntryId))
+			instance.EntryId = 0
 		}
-		cronModel.Open = false
+		instance.Open = false
 	}
-	err := global.TD27_DB.Save(&cronModel).Error
-	return &cronModel, err
+	err = global.TD27_DB.Omit("created_at").Save(instance).Error
+
+	return err
 }
 
 // SwitchOpen 切换cron活跃状态

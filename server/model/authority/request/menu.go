@@ -20,7 +20,7 @@ type meta struct {
 }
 
 type EditMenuReq struct {
-	Id uint `json:"id" binding:"required"` // 菜单ID
+	ID uint `json:"id" binding:"required"` // 菜单ID
 	Menu
 }
 

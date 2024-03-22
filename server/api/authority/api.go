@@ -24,13 +24,13 @@ type ApiApi struct{}
 // @Success   200   {object}  response.Response{data=modelAuthority.ApiModel,msg=string}
 // @Router    /api/addApi [post]
 func (a *ApiApi) AddApi(c *gin.Context) {
-	var apiReq modelAuthority.ApiModel
-	if err := c.ShouldBindJSON(&apiReq); err != nil {
+	var apiModel modelAuthority.ApiModel
+	if err := c.ShouldBindJSON(&apiModel); err != nil {
 		commonRes.FailReq(err.Error(), c)
 		return
 	}
 
-	if instance, err := apiService.AddApi(&apiReq); err != nil {
+	if instance, err := apiService.AddApi(&apiModel); err != nil {
 		commonRes.Fail(c)
 		global.TD27_LOG.Error("添加失败", zap.Error(err))
 	} else {
@@ -55,7 +55,7 @@ func (a *ApiApi) GetApis(c *gin.Context) {
 	}
 
 	if list, total, err := apiService.GetApis(apiSp); err != nil {
-		commonRes.Fail(c)
+		commonRes.FailWithMessage("获取失败", c)
 		global.TD27_LOG.Error("获取失败", zap.Error(err))
 	} else {
 		commonRes.OkWithDetailed(commonRes.PageResult{

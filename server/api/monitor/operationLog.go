@@ -24,7 +24,7 @@ type OperationLogApi struct{}
 func (o *OperationLogApi) GetOperationLogList(c *gin.Context) {
 	var orSp monitorReq.OrSearchParams
 	if err := c.ShouldBindJSON(&orSp); err != nil {
-		commonRes.FailWithMessage(err.Error(), c)
+		commonRes.FailReq(err.Error(), c)
 		return
 	}
 
@@ -53,7 +53,7 @@ func (o *OperationLogApi) GetOperationLogList(c *gin.Context) {
 func (o *OperationLogApi) DeleteOperationLog(c *gin.Context) {
 	var cId commonReq.CId
 	if err := c.ShouldBindJSON(&cId); err != nil {
-		commonRes.FailWithMessage(err.Error(), c)
+		commonRes.FailReq(err.Error(), c)
 		return
 	}
 
@@ -77,7 +77,7 @@ func (o *OperationLogApi) DeleteOperationLog(c *gin.Context) {
 func (o *OperationLogApi) DeleteOperationLogByIds(c *gin.Context) {
 	var cIds commonReq.CIds
 	if err := c.ShouldBindJSON(&cIds); err != nil {
-		commonRes.FailWithMessage(err.Error(), c)
+		commonRes.FailReq(err.Error(), c)
 		return
 	}
 

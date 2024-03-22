@@ -26,7 +26,7 @@ type CronModel struct {
 	Name        string      `json:"name" gorm:"column:name;unique;comment:任务名称" binding:"required"`
 	Method      string      `json:"method" gorm:"column:method;not null;comment:任务方法" binding:"required"`
 	Expression  string      `json:"expression" gorm:"column:expression;not null;comment:表达式" binding:"required"`
-	Strategy    string      `json:"strategy" gorm:"column:strategy;type:enum('always', 'once');default:always;comment:执行策略" binding:"omitempty,oneof=always once"`
+	Strategy    string      `json:"strategy" gorm:"column:strategy;type:enum('always','once');default:always;comment:执行策略" binding:"omitempty,oneof=always once"`
 	Open        bool        `json:"open" gorm:"column:open;comment:活跃状态"`
 	ExtraParams ExtraParams `json:"extraParams" gorm:"column:extraParams;type:json;comment:额外参数"`
 	EntryId     int         `json:"entryId" gorm:"column:entryId;comment:cron ID"`

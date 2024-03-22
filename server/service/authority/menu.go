@@ -111,7 +111,7 @@ func (ms *MenuService) EditMenu(menuRaw authorityReq.EditMenuReq) (err error) {
 	var menuModel modelAuthority.MenuModel
 	var metaData modelAuthority.Meta
 
-	if errors.Is(global.TD27_DB.Where("id = ?", menuRaw.Id).First(&menuModel).Error, gorm.ErrRecordNotFound) {
+	if errors.Is(global.TD27_DB.Where("id = ?", menuRaw.ID).First(&menuModel).Error, gorm.ErrRecordNotFound) {
 		return errors.New("菜单不存在")
 	}
 

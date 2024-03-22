@@ -22,7 +22,7 @@ func (a *ApiService) AddApi(api *modelAuthority.ApiModel) (*modelAuthority.ApiMo
 		return nil, errors.New("存在相同api")
 	}
 
-	err := global.TD27_DB.Create(&api).Error
+	err := global.TD27_DB.Create(api).Error
 
 	return api, err
 }

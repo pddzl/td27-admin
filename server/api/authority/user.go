@@ -3,9 +3,9 @@ package authority
 import (
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
-	modelAuthority "server/model/authority"
 
 	"server/global"
+	modelAuthority "server/model/authority"
 	authorityReq "server/model/authority/request"
 	commonReq "server/model/common/request"
 	commonRes "server/model/common/response"
@@ -25,11 +25,11 @@ func (ua *UserApi) GetUserInfo(c *gin.Context) {
 	userInfo, err := utils.GetUserInfo(c)
 	if err != nil {
 		commonRes.FailWithMessage("获取失败", c)
-		global.TD27_LOG.Error("获取失败!", zap.Error(err))
 	}
 
 	if user, err := userService.GetUserInfo(userInfo.ID); err != nil {
 		commonRes.FailWithMessage("获取失败", c)
+		global.TD27_LOG.Error("获取失败", zap.Error(err))
 	} else {
 		commonRes.OkWithDetailed(user, "获取成功", c)
 	}
@@ -47,7 +47,7 @@ func (ua *UserApi) GetUserInfo(c *gin.Context) {
 func (ua *UserApi) GetUsers(c *gin.Context) {
 	var pageInfo commonReq.PageInfo
 	if err := c.ShouldBindJSON(&pageInfo); err != nil {
-		commonRes.FailWithMessage(err.Error(), c)
+		commonRes.FailReq(err.Error(), c)
 		return
 	}
 
@@ -76,15 +76,15 @@ func (ua *UserApi) GetUsers(c *gin.Context) {
 func (ua *UserApi) DeleteUser(c *gin.Context) {
 	var cId commonReq.CId
 	if err := c.ShouldBindJSON(&cId); err != nil {
-		commonRes.FailWithMessage(err.Error(), c)
+		commonRes.FailReq(err.Error(), c)
 		return
 	}
 
 	if err := userService.DeleteUser(cId.ID); err != nil {
-		commonRes.FailWithMessage("删除失败", c)
+		commonRes.Fail(c)
 		global.TD27_LOG.Error("删除失败", zap.Error(err))
 	} else {
-		commonRes.OkWithMessage("删除成功", c)
+		commonRes.Ok(c)
 	}
 }
 
@@ -100,15 +100,15 @@ func (ua *UserApi) DeleteUser(c *gin.Context) {
 func (ua *UserApi) AddUser(c *gin.Context) {
 	var userModel modelAuthority.UserModel
 	if err := c.ShouldBindJSON(&userModel); err != nil {
-		commonRes.FailWithMessage(err.Error(), c)
+		commonRes.FailReq(err.Error(), c)
 		return
 	}
 
 	if err := userService.AddUser(&userModel); err != nil {
-		commonRes.Fail(c)
+		commonRes.FailWithMessage("添加失败", c)
 		global.TD27_LOG.Error("添加失败", zap.Error(err))
 	} else {
-		commonRes.OkWithMessage("添加成功", c)
+		commonRes.Ok(c)
 	}
 }
 
@@ -124,7 +124,7 @@ func (ua *UserApi) AddUser(c *gin.Context) {
 func (ua *UserApi) EditUser(c *gin.Context) {
 	var userModel modelAuthority.UserModel
 	if err := c.ShouldBindJSON(&userModel); err != nil {
-		commonRes.FailWithMessage(err.Error(), c)
+		commonRes.FailReq(err.Error(), c)
 		return
 	}
 
@@ -148,15 +148,15 @@ func (ua *UserApi) EditUser(c *gin.Context) {
 func (ua *UserApi) ModifyPass(c *gin.Context) {
 	var mp authorityReq.ModifyPass
 	if err := c.ShouldBindJSON(&mp); err != nil {
-		commonRes.FailWithMessage(err.Error(), c)
+		commonRes.FailReq(err.Error(), c)
 		return
 	}
 
 	if err := userService.ModifyPass(&mp); err != nil {
-		commonRes.FailWithMessage("修改失败", c)
+		commonRes.Fail(c)
 		global.TD27_LOG.Error("修改失败", zap.Error(err))
 	} else {
-		commonRes.OkWithMessage("修改成功", c)
+		commonRes.Ok(c)
 	}
 }
 
@@ -172,14 +172,14 @@ func (ua *UserApi) ModifyPass(c *gin.Context) {
 func (ua *UserApi) SwitchActive(c *gin.Context) {
 	var sa authorityReq.SwitchActive
 	if err := c.ShouldBindJSON(&sa); err != nil {
-		commonRes.FailWithMessage(err.Error(), c)
+		commonRes.FailReq(err.Error(), c)
 		return
 	}
 
 	if err := userService.SwitchActive(&sa); err != nil {
-		commonRes.FailWithMessage("切换失败", c)
+		commonRes.Fail(c)
 		global.TD27_LOG.Error("切换失败", zap.Error(err))
 	} else {
-		commonRes.OkWithMessage("切换成功", c)
+		commonRes.Ok(c)
 	}
 }
