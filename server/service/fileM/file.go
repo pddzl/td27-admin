@@ -74,7 +74,7 @@ func (fs *FileService) GetFileList(params fileMReq.FileSearchParams) ([]modelFil
 			var orderStr string
 			// 设置有效排序key 防止sql注入
 			orderMap := make(map[string]bool, 1)
-			orderMap["ID"] = true
+			orderMap["id"] = true
 			if orderMap[params.OrderKey] {
 				if params.Desc {
 					orderStr = params.OrderKey + " desc"

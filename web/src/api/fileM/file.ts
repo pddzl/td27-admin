@@ -6,24 +6,20 @@ interface reqFiles extends PageInfo {
   desc?: boolean
 }
 
-export interface FileData {
-  ID: number
+interface fileData {
   fileName: string
   fullPath: string
   mime: string
-  createdAt: string
 }
 
-export interface FileDataPageInfo {
-  list: FileData[]
-  total: number
-  page: number
-  pageSize: number
-}
+export interface fileDataModel extends fileData, Td27Model {}
+
+// List
+export type fileListData = ListData<fileDataModel[]>
 
 // 分页获取文件信息
 export function getFileListApi(data: reqFiles) {
-  return request<ApiResponseData<FileDataPageInfo>>({
+  return request<ApiResponseData<fileListData>>({
     url: "/file/getFileList",
     method: "post",
     data

@@ -31,16 +31,16 @@
       </div>
       <div class="table-wrapper">
         <el-table :data="tableData" @sort-change="handleSortChange">
-          <el-table-column prop="ID" label="ID" sortable="custom" width="80" />
-          <el-table-column prop="fileName" label="名称" />
+          <el-table-column prop="id" label="ID" sortable="custom" />
+          <el-table-column prop="fileName" label="名称" min-width="200" />
           <!-- <el-table-column prop="fullPath" label="路径" /> -->
           <el-table-column prop="mime" label="MIME" />
-          <el-table-column prop="createdAt" label="创建时间" width="200">
+          <el-table-column prop="createdAt" label="创建时间">
             <template #default="scope">
               {{ formatDateTime(scope.row.createdAt) }}
             </template>
           </el-table-column>
-          <el-table-column label="操作" width="200px" fixed="right">
+          <el-table-column label="操作" width="180px" fixed="right" align="center">
             <template #default="scope">
               <el-button type="primary" text icon="Download" size="small" @click="handleDownload(scope.row.fileName)"
                 >下载</el-button
@@ -71,7 +71,7 @@ import { reactive, ref } from "vue"
 import { ElMessage, ElMessageBox, type UploadProps } from "element-plus"
 import { useUserStoreHook } from "@/store/modules/user"
 import { usePagination } from "@/hooks/usePagination"
-import { type FileData, getFileListApi, downloadApi, deleteApi } from "@/api/fileM/file"
+import { type fileDataModel, getFileListApi, downloadApi, deleteApi } from "@/api/fileM/file"
 import { formatDateTime } from "@/utils/index"
 
 defineOptions({
@@ -82,7 +82,7 @@ const { paginationData, changeCurrentPage, changePageSize } = usePagination()
 
 const path = ref(import.meta.env.VITE_BASE_API)
 
-const uploadSuccess = (res: ApiResponseData<FileData>) => {
+const uploadSuccess = (res: ApiResponseData<fileDataModel>) => {
   if (res.code === 0) {
     tableData.value.push(res.data)
     ElMessage.success("上传成功")
@@ -131,7 +131,7 @@ const handleSortChange = (column: any) => {
 }
 
 const loading = ref(false)
-const tableData = ref<FileData[]>([])
+const tableData = ref<fileDataModel[]>([])
 
 const getTableData = async () => {
   loading.value = true
@@ -182,7 +182,7 @@ const handleDownload = (fileName: string) => {
 }
 
 // 删除文件
-const handleDelete = (row: FileData) => {
+const handleDelete = (row: fileDataModel) => {
   ElMessageBox.confirm("此操作将永久删除该文件, 是否继续?", "提示", {
     confirmButtonText: "确定",
     cancelButtonText: "取消",

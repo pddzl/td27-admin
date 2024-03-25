@@ -62,7 +62,7 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="ID" label="ID" width="60" />
+          <el-table-column prop="id" label="ID" width="60" />
           <el-table-column prop="userName" label="用户" />
           <el-table-column prop="ip" label="IP" width="120" />
           <!-- <el-table-column prop="userAgent" label="UserAgent" min-width="140" /> -->
@@ -114,7 +114,7 @@
 <script lang="ts" setup>
 import { reactive, ref } from "vue"
 import { usePagination } from "@/hooks/usePagination"
-import { type OrData, getOrListApi, deleteOrApi, deleteOrByIdsApi } from "@/api/monitor/operationLog"
+import { type orDataModel, getOrListApi, deleteOrApi, deleteOrByIdsApi } from "@/api/monitor/operationLog"
 import { formatDateTime } from "@/utils/index"
 import VueJsonPretty from "vue-json-pretty"
 import "vue-json-pretty/lib/styles.css"
@@ -160,7 +160,7 @@ const resetSearch = () => {
   searchFormData.status = 0
 }
 
-const tableData = ref<OrData[]>([])
+const tableData = ref<orDataModel[]>([])
 
 const getTableData = async () => {
   loading.value = true
@@ -195,8 +195,8 @@ const handleCurrentChange = (value: number) => {
 }
 
 // 删除操作记录
-const deleteOrFunc = (row: OrData) => {
-  deleteOrApi({ id: row.ID }).then((res) => {
+const deleteOrFunc = (row: orDataModel) => {
+  deleteOrApi({ id: row.id }).then((res) => {
     if (res.code === 0) {
       ElMessage({ type: "success", message: res.msg })
       const index = tableData.value.indexOf(row)
@@ -206,8 +206,8 @@ const deleteOrFunc = (row: OrData) => {
 }
 
 // 批量删除
-const multipleSelection = ref<OrData[]>([])
-const handleSelectionChange = (val: OrData[]) => {
+const multipleSelection = ref<orDataModel[]>([])
+const handleSelectionChange = (val: orDataModel[]) => {
   multipleSelection.value = val
 }
 
@@ -215,7 +215,7 @@ const deleteByIdsFunc = async () => {
   const ids: number[] = []
   multipleSelection.value &&
     multipleSelection.value.forEach((item) => {
-      ids.push(item.ID)
+      ids.push(item.id)
     })
   if (ids.length === 0) {
     ElNotification({

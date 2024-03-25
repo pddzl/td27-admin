@@ -1,8 +1,6 @@
 import { request } from "@/utils/service"
 
-export interface OrData {
-  ID: number
-  createdAt: string
+interface orData {
   ip: string
   method: string
   path: string
@@ -14,12 +12,10 @@ export interface OrData {
   userName: string
 }
 
-export interface OrDataPageInfo {
-  list: OrData[]
-  total: number
-  page: number
-  pageSize: number
-}
+export interface orDataModel extends orData, Td27Model {}
+
+// 数据结构 - List
+type orListData = ListData<orDataModel[]>
 
 interface reqOrList extends PageInfo {
   path?: string
@@ -30,7 +26,7 @@ interface reqOrList extends PageInfo {
 
 // 分页获取操作记录
 export function getOrListApi(data: reqOrList) {
-  return request<ApiResponseData<OrDataPageInfo>>({
+  return request<ApiResponseData<orListData>>({
     url: "/opl/getOplList",
     method: "post",
     data
