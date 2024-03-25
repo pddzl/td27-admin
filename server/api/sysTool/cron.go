@@ -122,11 +122,11 @@ func (st *CronApi) EditCron(c *gin.Context) {
 		return
 	}
 
-	if err := cronService.EditCron(&cronModel); err != nil {
+	if instance, err := cronService.EditCron(&cronModel); err != nil {
 		commonRes.FailWithMessage(err.Error(), c)
 		global.TD27_LOG.Error("编辑失败", zap.Error(err))
 	} else {
-		commonRes.OkWithMessage("编辑成功", c)
+		commonRes.OkWithDetailed(instance, "编辑成功", c)
 	}
 }
 

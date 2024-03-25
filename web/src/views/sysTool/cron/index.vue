@@ -32,14 +32,14 @@
       <div class="table-wrapper">
         <el-table :data="tableData" @selection-change="handleSelectionChange">
           <el-table-column type="selection" width="40" />
-          <el-table-column prop="ID" label="ID" />
+          <el-table-column prop="id" label="ID" />
           <el-table-column prop="name" label="名称" />
           <el-table-column prop="strategy" label="策略">
             <template #default="scope">
               <el-tag type="success">{{ strategyFilter(scope.row.strategy) }}</el-tag>
             </template>
           </el-table-column>
-          <el-table-column prop="open" label="状态" sortable="custom">
+          <el-table-column prop="open" label="状态">
             <template #default="scope">
               <el-switch
                 v-model="scope.row.open"
@@ -53,7 +53,7 @@
             </template>
           </el-table-column>
           <el-table-column prop="entryId" label="Cron ID" />
-          <el-table-column label="操作">
+          <el-table-column label="操作" align="center" fixed="right" min-width="120">
             <template #default="scope">
               <el-button type="primary" text icon="Edit" size="small" @click="editDialog(scope.row)">编辑</el-button>
               <el-button type="danger" text icon="Delete" size="small" @click="handleDelete(scope.row)">删除</el-button>
@@ -127,8 +127,8 @@
         </el-form-item>
         <el-form-item label="策略" prop="strategy">
           <el-radio-group v-model="opFormData.strategy">
-            <el-radio-button label="always">重复执行</el-radio-button>
-            <el-radio-button label="once">执行一次</el-radio-button>
+            <el-radio-button label="重复执行" value="always" />
+            <el-radio-button label="执行一次" value="once" />
           </el-radio-group>
         </el-form-item>
         <el-form-item label="状态" prop="open">
@@ -155,7 +155,7 @@ import { type FormInstance, type FormRules, ElMessage, ElMessageBox, ElNotificat
 import { usePagination } from "@/hooks/usePagination"
 import {
   type TableInfo,
-  type CronData,
+  type cronDataModel,
   getCronListApi,
   addCronApi,
   switchCronApi,
@@ -179,7 +179,7 @@ const methodOptions = [
   { value: "shell", label: "SHELL" }
 ]
 
-const tableData = ref<CronData[]>([])
+const tableData = ref<cronDataModel[]>([])
 
 const getTableData = async () => {
   loading.value = true
@@ -212,8 +212,8 @@ const handleCurrentChange = (value: number) => {
 
 const ids = ref<number[]>([])
 const taskIds = ref("") // for csv
-const handleSelectionChange = (val: CronData[]) => {
-  ids.value = val.map((item) => item.ID)
+const handleSelectionChange = (val: cronDataModel[]) => {
+  ids.value = val.map((item) => item.id)
   taskIds.value = ids.value.join(",")
 }
 
@@ -298,38 +298,40 @@ const operateAction = (formEl: FormInstance | undefined) => {
     return
   }
 
-  formEl.validate(async (valid) => {
-    if (valid) {
-      if (oKind === "Add") {
-        const res = await addCronApi({ ...opFormData })
-        if (res.code === 0) {
-          ElMessage({ type: "success", message: res.msg })
-          tableData.value.push(res.data)
+  formEl
+    .validate(async (valid) => {
+      if (valid) {
+        if (oKind === "Add") {
+          const res = await addCronApi({ ...opFormData })
+          if (res.code === 0) {
+            ElMessage({ type: "success", message: res.msg })
+            tableData.value.push(res.data)
+          }
+        } else if (oKind === "Edit") {
+          const res = await editCronApi({ id: activeRow.id, ...opFormData })
+          if (res.code === 0) {
+            ElMessage({ type: "success", message: res.msg })
+            // 修改对应数据
+            const index = tableData.value.indexOf(activeRow)
+            tableData.value.splice(index, 1, res.data)
+          }
         }
+        // 关闭对话框
+        closeDialog()
       }
-    } else if (oKind === "Edit") {
-      const res = await editCronApi({ id: activeRow.ID, ...opFormData })
-      if (res.code === 0) {
-        ElMessage({ type: "success", message: res.msg })
-        // 修改对应数据
-        const index = tableData.value.indexOf(activeRow)
-        tableData.value.splice(index, 1, res.data)
-      }
-    }
-    // 关闭对话框
-    closeDialog()
-  })
+    })
+    .catch(() => {})
 }
 
 // 删除cron
-const handleDelete = (row: CronData) => {
+const handleDelete = (row: cronDataModel) => {
   ElMessageBox.confirm("此操作将永久删除该定时任务, 是否继续?", "提示", {
     confirmButtonText: "确定",
     cancelButtonText: "取消",
     type: "warning"
   })
     .then(() => {
-      deleteCronApi({ id: row.ID }).then((res) => {
+      deleteCronApi({ id: row.id }).then((res) => {
         if (res.code === 0) {
           ElMessage({ type: "success", message: res.msg })
           const index = tableData.value.indexOf(row)
@@ -341,7 +343,7 @@ const handleDelete = (row: CronData) => {
 }
 
 // 编辑dialog
-let activeRow: CronData
+let activeRow: cronDataModel
 const editDialog = (row: any) => {
   dialogTitle.value = "编辑Cron"
   oKind = operationKind.Edit
@@ -393,9 +395,9 @@ const removeTableInfo = (item: TableInfo) => {
   }
 }
 
-const switchAction = (row: CronData) => {
+const switchAction = (row: cronDataModel) => {
   return new Promise<boolean>((resolve, reject) => {
-    switchCronApi({ id: row.ID, open: !row.open })
+    switchCronApi({ id: row.id, open: !row.open })
       .then((res) => {
         if (res.code === 0) {
           if (!row.open) {

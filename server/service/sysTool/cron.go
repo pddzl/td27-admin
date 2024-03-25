@@ -27,7 +27,7 @@ func (cs *CronService) GetCronList(pageInfo commonReq.PageInfo) (cronModelList [
 	// 分页
 	limit := pageInfo.PageSize
 	offset := pageInfo.PageSize * (pageInfo.Page - 1)
-	if pageInfo.PageSize > 0 && pageInfo.Page > 0 {
+	if pageInfo.PageSize >= 0 && pageInfo.Page > 0 {
 		db = db.Limit(limit).Offset(offset)
 	}
 	err = db.Find(&cronModelList).Error
@@ -74,9 +74,9 @@ func (cs *CronService) DeleteCronByIds(ids []uint) error {
 }
 
 // EditCron 编辑cron
-func (cs *CronService) EditCron(instance *modelSysTool.CronModel) (err error) {
+func (cs *CronService) EditCron(instance *modelSysTool.CronModel) (*modelSysTool.CronModel, error) {
 	if errors.Is(global.TD27_DB.Where("id = ?", instance.ID).First(&modelSysTool.CronModel{}).Error, gorm.ErrRecordNotFound) {
-		return errors.New("记录不存在")
+		return nil, errors.New("记录不存在")
 	}
 
 	// params 拼接
@@ -94,7 +94,7 @@ func (cs *CronService) EditCron(instance *modelSysTool.CronModel) (err error) {
 		if !utils.IsContain(utils.GetEntries(), instance.EntryId) {
 			entryId, err := global.TD27_CRON.AddJob(instance.Expression, instance)
 			if err != nil {
-				return err
+				return nil, err
 			} else {
 				instance.Open = true
 				instance.EntryId = int(entryId)
@@ -107,9 +107,9 @@ func (cs *CronService) EditCron(instance *modelSysTool.CronModel) (err error) {
 		}
 		instance.Open = false
 	}
-	err = global.TD27_DB.Omit("created_at").Save(instance).Error
+	err := global.TD27_DB.Omit("created_at").Save(instance).Error
 
-	return err
+	return instance, err
 }
 
 // SwitchOpen 切换cron活跃状态
