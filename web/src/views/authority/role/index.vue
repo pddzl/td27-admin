@@ -13,8 +13,8 @@
       </div>
       <div class="table-wrapper">
         <el-table :data="tableData">
-          <el-table-column prop="ID" label="ID" />
-          <el-table-column prop="roleName" label="名称" align="center" />
+          <el-table-column prop="id" label="ID" />
+          <el-table-column prop="roleName" label="名称" />
           <el-table-column fixed="right" label="操作" align="center">
             <template #default="scope">
               <el-button type="primary" text icon="Setting" size="small" @click="openDrawer(scope.row)"
@@ -71,7 +71,7 @@
 <script lang="ts" setup>
 import { ref, reactive } from "vue"
 import { type FormInstance, type FormRules, ElMessage, ElMessageBox } from "element-plus"
-import { type roleData, getRolesApi, addRoleApi, deleteRoleApi, editRoleApi } from "@/api/authority/role"
+import { type roleDataModel, getRolesApi, addRoleApi, deleteRoleApi, editRoleApi } from "@/api/authority/role"
 import Menus from "./components/menus.vue"
 import Apis from "./components/apis.vue"
 
@@ -80,8 +80,8 @@ defineOptions({
 })
 
 const loading = ref<boolean>(false)
-const tableData = ref<roleData[]>([])
-let activeRow: roleData
+const tableData = ref<roleDataModel[]>([])
+let activeRow: roleDataModel
 
 const getTableData = async () => {
   loading.value = true
@@ -120,7 +120,7 @@ const addDialog = () => {
   dialogVisible.value = true
 }
 
-const editDialog = (row: roleData) => {
+const editDialog = (row: roleDataModel) => {
   kind.value = "Edit"
   title.value = "编辑角色"
   activeRow = row
@@ -141,15 +141,15 @@ const operateAction = (formEl: FormInstance | undefined) => {
         const res = await addRoleApi({ roleName: formData.roleName })
         if (res.code === 0) {
           ElMessage({ type: "success", message: res.msg })
-          const tempData: roleData = {
-            ID: res.data.ID,
-            roleName: res.data.roleName,
-            menus: []
-          }
-          tableData.value.push(tempData)
+          // const tempData = {
+          //   id: res.data.id,
+          //   roleName: res.data.roleName,
+          //   menus: []
+          // }
+          tableData.value.push(res.data)
         }
       } else if (kind.value === "Edit") {
-        const res = await editRoleApi({ id: activeRow.ID, roleName: formData.roleName })
+        const res = await editRoleApi({ id: activeRow.id, roleName: formData.roleName })
         if (res.code === 0) {
           ElMessage({ type: "success", message: res.msg })
           const index = tableData.value.indexOf(activeRow)
@@ -161,7 +161,7 @@ const operateAction = (formEl: FormInstance | undefined) => {
   })
 }
 
-const deleteRoleAction = (row: roleData) => {
+const deleteRoleAction = (row: roleDataModel) => {
   ElMessageBox.confirm("此操作将永久删除该角色, 是否继续?", "提示", {
     confirmButtonText: "确定",
     cancelButtonText: "取消",
@@ -169,7 +169,7 @@ const deleteRoleAction = (row: roleData) => {
   })
     .then(() => {
       const index = tableData.value.indexOf(row)
-      deleteRoleApi({ id: row.ID }).then((res) => {
+      deleteRoleApi({ id: row.id }).then((res) => {
         if (res.code === 0) {
           ElMessage({ type: "success", message: res.msg })
           tableData.value.splice(index, 1)
@@ -182,8 +182,8 @@ const deleteRoleAction = (row: roleData) => {
 // 角色设置
 const drawer = ref(false)
 let activeId: number
-const openDrawer = (row: roleData) => {
-  activeId = row.ID
+const openDrawer = (row: roleDataModel) => {
+  activeId = row.id
   drawer.value = true
 }
 </script>

@@ -1,7 +1,6 @@
 import { request } from "@/utils/service"
 
-export interface MenusData {
-  id: number
+export interface MenuData {
   pid: number
   name: string
   path: string
@@ -17,36 +16,23 @@ export interface MenusData {
     keepAlive?: boolean
     alwaysShow?: boolean
   }
-  children?: MenusData[]
+  children?: MenuData[]
 }
 
-type MenusResponseData = ApiResponseData<MenusData[]>
+export interface MenuDataModel extends MenuData, Td27Model {}
+
+// List
+// export type MenuListData = ListData<MenuDataModel[]>
 
 // 获取动态路由
 export function getMenus() {
-  return request<MenusResponseData>({
+  return request<ApiResponseData<MenuDataModel[]>>({
     url: "/menu/getMenus",
     method: "get"
   })
 }
 
-interface reqMenu {
-  pid: number
-  name?: string
-  path: string
-  redirect?: string
-  component: string
-  sort: number
-  meta: {
-    hidden?: boolean
-    title?: string
-    icon?: string
-    affix?: boolean
-    keepAlive?: boolean
-  }
-}
-
-export function addMenuApi(data: reqMenu) {
+export function addMenuApi(data: MenuData) {
   return request<ApiResponseData<null>>({
     url: "menu/addMenu",
     method: "post",
@@ -54,11 +40,7 @@ export function addMenuApi(data: reqMenu) {
   })
 }
 
-interface editReq extends reqMenu {
-  id: number
-}
-
-export function editMenuApi(data: editReq) {
+export function editMenuApi(data: MenuData & CId) {
   return request<ApiResponseData<null>>({
     url: "menu/editMenu",
     method: "post",
@@ -66,7 +48,7 @@ export function editMenuApi(data: editReq) {
   })
 }
 
-export function deleteMenuApi(data: reqId) {
+export function deleteMenuApi(data: CId) {
   return request<ApiResponseData<null>>({
     url: "menu/deleteMenu",
     method: "post",
@@ -75,11 +57,11 @@ export function deleteMenuApi(data: reqId) {
 }
 
 interface allMenus {
-  list: MenusData[]
+  list: MenuData[]
   menuIds: number[]
 }
 
-export function getElTreeMenusApi(data: reqId) {
+export function getElTreeMenusApi(data: CId) {
   return request<ApiResponseData<allMenus>>({
     url: "menu/getElTreeMenus",
     method: "post",

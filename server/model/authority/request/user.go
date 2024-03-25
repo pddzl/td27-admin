@@ -10,14 +10,14 @@ package request
 //	RoleModelID uint   `json:"roleId" binding:"required"` // 角色ID
 //}
 
-//type EditUser struct {
-//	Id          uint   `json:"id" binding:"required"`       // 用户ID
-//	Username    string `json:"username" binding:"required"` // 用户名
-//	Phone       string `json:"phone"`                       // 手机号
-//	Email       string `json:"email"`                       // 邮箱
-//	Active      bool   `json:"active"`                      // 是否活跃
-//	RoleModelID uint   `json:"roleId" binding:"required"`   // 角色ID
-//}
+type EditUser struct {
+	ID          uint   `json:"id" binding:"required"`       // 用户ID
+	Username    string `json:"username" binding:"required"` // 用户名
+	Phone       string `json:"phone"`                       // 手机号
+	Email       string `json:"email"`                       // 邮箱
+	Active      bool   `json:"active"`                      // 是否活跃
+	RoleModelID uint   `json:"roleId" binding:"required"`   // 角色ID
+}
 
 type ModifyPass struct {
 	ID          uint   `json:"id" binding:"required"`          // 用户ID

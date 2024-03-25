@@ -38,7 +38,7 @@ export function getOrListApi(data: reqOrList) {
 }
 
 // 删除操作记录
-export function deleteOrApi(data: reqId) {
+export function deleteOrApi(data: CId) {
   return request<ApiResponseData<null>>({
     url: "/opl/deleteOpl",
     method: "post",
@@ -47,7 +47,7 @@ export function deleteOrApi(data: reqId) {
 }
 
 // 批量删除操作记录
-export function deleteOrByIdsApi(data: reqIds) {
+export function deleteOrByIdsApi(data: CIds) {
   return request<ApiResponseData<null>>({
     url: "/opl/deleteOplByIds",
     method: "post",

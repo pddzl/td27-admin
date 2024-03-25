@@ -1,26 +1,20 @@
 import { request } from "@/utils/service"
 
-export interface ApiDataBase {
+interface ApiData {
   path: string
-  api_group: string
+  apiGroup: string
   method: string
   description: string
 }
 
-export interface ApiData extends ApiDataBase {
-  ID: number
-}
+export interface ApiDataModel extends ApiData, Td27Model {}
 
-export interface ApiDataPageInfo {
-  list: ApiData[]
-  total: number
-  page: number
-  pageSize: number
-}
+// 数据结构 - List
+export type ApiListData = ListData<ApiDataModel[]>
 
 interface reqApis extends PageInfo {
   path?: string
-  api_group?: string
+  apiGroup?: string
   method?: string
   description?: string
   orderKey?: string
@@ -29,7 +23,7 @@ interface reqApis extends PageInfo {
 
 // 获取所有api 分页
 export function getApisApi(data: reqApis) {
-  return request<ApiResponseData<ApiDataPageInfo>>({
+  return request<ApiResponseData<ApiListData>>({
     url: "/api/getApis",
     method: "post",
     data
@@ -38,14 +32,14 @@ export function getApisApi(data: reqApis) {
 
 interface children {
   key: string
-  api_group: string
+  apiGroup: string
   path: string
   method: string
   description: string
 }
 
 export interface ApiTreeData {
-  api_group: string
+  apiGroup: string
   children: children[]
 }
 
@@ -55,7 +49,7 @@ interface ApiTreeAll {
 }
 
 // 获取所有api 不分页
-export function getElTreeApisApi(data: reqId) {
+export function getElTreeApisApi(data: CId) {
   return request<ApiResponseData<ApiTreeAll>>({
     url: "/api/getElTreeApis",
     method: "post",
@@ -64,8 +58,8 @@ export function getElTreeApisApi(data: reqId) {
 }
 
 // 添加api
-export function addApiApi(data: ApiDataBase) {
-  return request<ApiResponseData<ApiData>>({
+export function addApiApi(data: ApiData) {
+  return request<ApiResponseData<ApiDataModel>>({
     url: "/api/addApi",
     method: "post",
     data
@@ -73,7 +67,7 @@ export function addApiApi(data: ApiDataBase) {
 }
 
 // 删除api
-export function deleteApiApi(data: reqId) {
+export function deleteApiApi(data: CId) {
   return request<ApiResponseData<null>>({
     url: "/api/deleteApi",
     method: "post",
@@ -82,7 +76,7 @@ export function deleteApiApi(data: reqId) {
 }
 
 // 批量删除api
-export const deleteApiByIdApi = (data: { ids: number[] }) => {
+export const deleteApiByIdApi = (data: CIds) => {
   return request<ApiResponseData<null>>({
     url: "/api/deleteApiById",
     method: "post",
@@ -90,12 +84,8 @@ export const deleteApiByIdApi = (data: { ids: number[] }) => {
   })
 }
 
-interface reqEdit extends ApiDataBase {
-  id: number
-}
-
 // 编辑api
-export function editApiApi(data: reqEdit) {
+export function editApiApi(data: ApiData & CId) {
   return request<ApiResponseData<null>>({
     url: "/api/editApi",
     method: "post",

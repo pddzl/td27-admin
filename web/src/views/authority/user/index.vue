@@ -13,16 +13,16 @@
       </div>
       <div class="table-wrapper">
         <el-table :data="tableData">
-          <el-table-column prop="ID" label="ID" width="80" />
-          <el-table-column prop="username" label="用户名" align="center" />
-          <el-table-column prop="phone" label="手机号" align="center" />
-          <el-table-column prop="email" label="邮箱" align="center" />
-          <el-table-column prop="role" label="角色" align="center">
+          <el-table-column prop="id" label="ID" />
+          <el-table-column prop="username" label="用户名" />
+          <el-table-column prop="phone" label="手机号" />
+          <el-table-column prop="email" label="邮箱" />
+          <el-table-column prop="roleName" label="角色">
             <template #default="scope">
-              <el-tag type="success">{{ scope.row.role }}</el-tag>
+              <el-tag type="success">{{ scope.row.roleName }}</el-tag>
             </template>
           </el-table-column>
-          <el-table-column prop="active" label="状态" align="center">
+          <el-table-column prop="active" label="状态">
             <template #default="scope">
               <el-switch
                 v-model="scope.row.active"
@@ -138,7 +138,7 @@
 import { ref, reactive } from "vue"
 import { type FormInstance, type FormRules, ElMessage, ElMessageBox } from "element-plus"
 import {
-  type UsersResponse,
+  type userDataModel,
   getUsersApi,
   deleteUserApi,
   addUserApi,
@@ -157,8 +157,8 @@ defineOptions({
 const loading = ref<boolean>(false)
 const { paginationData, changeCurrentPage, changePageSize } = usePagination()
 
-const tableData = ref<UsersResponse[]>([])
-let activeRow: UsersResponse
+const tableData = ref<userDataModel[]>([])
+let activeRow: userDataModel
 
 const getTableData = async () => {
   loading.value = true
@@ -223,7 +223,7 @@ const mpCloseDialog = () => {
   mpDialogVisible.value = false
 }
 
-const modifyDialog = (row: UsersResponse) => {
+const modifyDialog = (row: userDataModel) => {
   activeRow = row
   mpDialogVisible.value = true
 }
@@ -233,7 +233,7 @@ const mpOperateAction = (formEl: FormInstance | undefined) => {
   formEl.validate(async (valid) => {
     if (valid) {
       await modifyPassApi({
-        id: activeRow.ID,
+        id: activeRow.id,
         oldPassword: mpFormData.oldPassword,
         newPassword: mpFormData.newPassword
       })
@@ -315,7 +315,7 @@ const operateAction = (formEl: FormInstance | undefined) => {
         }
       } else if (kind.value === "Edit") {
         const res = await editUserApi({
-          id: activeRow.ID,
+          id: activeRow.id,
           username: formData.username,
           phone: formData.phone,
           email: formData.email,
@@ -334,7 +334,7 @@ const operateAction = (formEl: FormInstance | undefined) => {
   })
 }
 
-const deleteUserAction = (row: UsersResponse) => {
+const deleteUserAction = (row: userDataModel) => {
   ElMessageBox.confirm("此操作将永久删除该用户, 是否继续?", "提示", {
     confirmButtonText: "确定",
     cancelButtonText: "取消",
@@ -342,7 +342,7 @@ const deleteUserAction = (row: UsersResponse) => {
   })
     .then(() => {
       const index = tableData.value.indexOf(row)
-      deleteUserApi({ id: row.ID }).then((res) => {
+      deleteUserApi({ id: row.id }).then((res) => {
         if (res.code === 0) {
           ElMessage({ type: "success", message: res.msg })
           tableData.value.splice(index, 1)
@@ -372,13 +372,13 @@ const getRoleOption = async () => {
   const res = await getRolesApi()
   if (res.code === 0) {
     res.data.forEach((element) => {
-      roleOptions.push({ ID: String(element.ID), roleName: element.roleName })
+      roleOptions.push({ ID: String(element.id), roleName: element.roleName })
     })
   }
 }
 getRoleOption()
 
-const editDialog = (row: UsersResponse) => {
+const editDialog = (row: userDataModel) => {
   activeRow = row
   formData.username = row.username
   formData.phone = row.phone

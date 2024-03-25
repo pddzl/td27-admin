@@ -6,7 +6,7 @@
           <el-input v-model="searchFormData.path" placeholder="路径" />
         </el-form-item>
         <el-form-item prop="group" label="API组">
-          <el-input v-model="searchFormData.api_group" placeholder="API组" />
+          <el-input v-model="searchFormData.apiGroup" placeholder="API组" />
         </el-form-item>
         <el-form-item prop="method" label="方法">
           <el-select v-model="searchFormData.method" placeholder="方法" clearable style="width: 100px">
@@ -53,10 +53,10 @@
       </div>
       <div class="table-wrapper">
         <el-table :data="tableData" @sort-change="handleSortChange" @selection-change="handleSelectionChange">
-          <el-table-column type="selection" width="40" />
-          <el-table-column prop="ID" label="ID" />
+          <el-table-column type="selection" width="60" />
+          <el-table-column prop="id" label="ID" width="80" />
           <el-table-column prop="path" label="路径" sortable="custom" />
-          <el-table-column prop="api_group" label="分组" sortable="custom" />
+          <el-table-column prop="apiGroup" label="分组" sortable="custom" />
           <el-table-column prop="method" label="请求方法" sortable="custom" />
           <el-table-column prop="description" label="描述" />
           <el-table-column label="操作">
@@ -93,8 +93,8 @@
             <el-option v-for="item in methodOptions" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
-        <el-form-item label="API分组" prop="api_group">
-          <el-input v-model="opFormData.api_group" />
+        <el-form-item label="API分组" prop="apiGroup">
+          <el-input v-model="opFormData.apiGroup" />
         </el-form-item>
         <el-form-item label="API描述" prop="description">
           <el-input v-model="opFormData.description" />
@@ -114,7 +114,14 @@
 import { reactive, ref } from "vue"
 import { type FormInstance, type FormRules, ElMessage, ElMessageBox, ElNotification } from "element-plus"
 import { usePagination } from "@/hooks/usePagination"
-import { type ApiData, getApisApi, addApiApi, deleteApiApi, deleteApiByIdApi, editApiApi } from "@/api/authority/api"
+import {
+  type ApiDataModel,
+  getApisApi,
+  addApiApi,
+  deleteApiApi,
+  deleteApiByIdApi,
+  editApiApi
+} from "@/api/authority/api"
 import WarningBar from "@/components/WarningBar/warningBar.vue"
 
 defineOptions({
@@ -126,7 +133,7 @@ const { paginationData, changeCurrentPage, changePageSize } = usePagination()
 const loading = ref(false)
 const searchFormData = reactive({
   path: "",
-  api_group: "",
+  apiGroup: "",
   method: "",
   description: "",
   orderKey: "",
@@ -149,21 +156,21 @@ const handleSearch = () => {
 
 const resetSearch = () => {
   searchFormData.path = ""
-  searchFormData.api_group = ""
+  searchFormData.apiGroup = ""
   searchFormData.method = ""
   searchFormData.description = ""
   searchFormData.orderKey = ""
   searchFormData.desc = false
 }
 
-const tableData = ref<ApiData[]>([])
+const tableData = ref<ApiDataModel[]>([])
 
 const getTableData = async () => {
   loading.value = true
   try {
     const res = await getApisApi({
       path: searchFormData.path || undefined,
-      api_group: searchFormData.api_group || undefined,
+      apiGroup: searchFormData.apiGroup || undefined,
       method: searchFormData.method || undefined,
       description: searchFormData.description || undefined,
       orderKey: searchFormData.orderKey || undefined,
@@ -195,8 +202,8 @@ const handleCurrentChange = (value: number) => {
 
 const ids = ref<number[]>([])
 const taskIds = ref("") // for csv
-const handleSelectionChange = (val: ApiData[]) => {
-  ids.value = val.map((item) => item.ID)
+const handleSelectionChange = (val: ApiDataModel[]) => {
+  ids.value = val.map((item) => item.id)
   taskIds.value = ids.value.join(",")
 }
 
@@ -215,7 +222,7 @@ const handleSortChange = (column: any) => {
 const formRef = ref<FormInstance>()
 const opFormData = reactive({
   path: "",
-  api_group: "",
+  apiGroup: "",
   method: "",
   description: ""
 })
@@ -228,7 +235,7 @@ enum operationKind {
 let oKind: operationKind
 const addFormRules: FormRules = reactive({
   path: [{ required: true, trigger: "blur", message: "路径不能为空" }],
-  api_group: [{ required: true, trigger: "blur", message: "分组不能为空" }],
+  apiGroup: [{ required: true, trigger: "blur", message: "分组不能为空" }],
   method: [{ required: true, trigger: "change", message: "方法不能为空" }],
   description: [{ required: true, trigger: "blur", message: "描述不能为空" }]
 })
@@ -236,7 +243,7 @@ const addFormRules: FormRules = reactive({
 const initForm = () => {
   formRef.value?.resetFields()
   opFormData.path = ""
-  opFormData.api_group = ""
+  opFormData.apiGroup = ""
   opFormData.method = ""
   opFormData.description = ""
 }
@@ -270,12 +277,12 @@ const operateAction = (formEl: FormInstance | undefined) => {
           tableData.value.push(res.data)
         }
       } else if (oKind === "Edit") {
-        const res = await editApiApi({ id: activeRow.ID, ...opFormData })
+        const res = await editApiApi({ id: activeRow.id, ...opFormData })
         if (res.code === 0) {
           ElMessage({ type: "success", message: res.msg })
           // 修改对应数据
           const index = tableData.value.indexOf(activeRow)
-          tableData.value[index].api_group = opFormData.api_group
+          tableData.value[index].apiGroup = opFormData.apiGroup
           tableData.value[index].path = opFormData.path
           tableData.value[index].description = opFormData.description
           tableData.value[index].method = opFormData.method
@@ -287,14 +294,14 @@ const operateAction = (formEl: FormInstance | undefined) => {
 }
 
 // 删除api
-const handleDeleteApi = (row: ApiData) => {
+const handleDeleteApi = (row: ApiDataModel) => {
   ElMessageBox.confirm("此操作将永久删除所有角色下该api, 是否继续?", "提示", {
     confirmButtonText: "确定",
     cancelButtonText: "取消",
     type: "warning"
   })
     .then(() => {
-      deleteApiApi({ id: row.ID }).then((res) => {
+      deleteApiApi({ id: row.id }).then((res) => {
         if (res.code === 0) {
           ElMessage({ type: "success", message: res.msg })
           const index = tableData.value.indexOf(row)
@@ -306,11 +313,11 @@ const handleDeleteApi = (row: ApiData) => {
 }
 
 // 编辑dialog
-let activeRow: ApiData
-const editDialog = (row: ApiData) => {
+let activeRow: ApiDataModel
+const editDialog = (row: ApiDataModel) => {
   dialogTitle.value = "编辑接口"
   oKind = operationKind.Edit
-  opFormData.api_group = row.api_group
+  opFormData.apiGroup = row.apiGroup
   opFormData.description = row.description
   opFormData.method = row.method
   opFormData.path = row.path

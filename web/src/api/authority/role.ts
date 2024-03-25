@@ -1,36 +1,34 @@
 import { request } from "@/utils/service"
-import { type MenusData } from "./menu"
+import { type MenuData } from "./menu"
 
-export interface roleData {
-  ID: number
+interface roleData {
   roleName: string
-  menus: MenusData[]
+  menus?: MenuData[]
 }
 
-type RoleResponseData = ApiResponseData<roleData[]>
+export interface roleDataModel extends roleData, Td27Model {}
+
+// List
+// export type roleListData = ListData<roleDataModel[]>
 
 /** 获取用户详情 */
 export function getRolesApi() {
-  return request<RoleResponseData>({
+  return request<ApiResponseData<roleDataModel[]>>({
     url: "/role/getRoles",
     method: "post",
     data: {}
   })
 }
 
-export interface reqRole {
-  roleName: string
-}
-
-export function addRoleApi(data: reqRole) {
-  return request<ApiResponseData<roleData>>({
+export function addRoleApi(data: roleData) {
+  return request<ApiResponseData<roleDataModel>>({
     url: "/role/addRole",
     method: "post",
     data: data
   })
 }
 
-export function deleteRoleApi(data: reqId) {
+export function deleteRoleApi(data: CId) {
   return request<ApiResponseData<null>>({
     url: "/role/deleteRole",
     method: "post",
@@ -38,12 +36,7 @@ export function deleteRoleApi(data: reqId) {
   })
 }
 
-interface reqEditRole {
-  id: number
-  roleName: string
-}
-
-export function editRoleApi(data: reqEditRole) {
+export function editRoleApi(data: roleData & CId) {
   return request<ApiResponseData<null>>({
     url: "/role/editRole",
     method: "post",
@@ -51,12 +44,7 @@ export function editRoleApi(data: reqEditRole) {
   })
 }
 
-interface reqEditRE {
-  roleId: number
-  ids: number[]
-}
-
-export function editRoleMenuApi(data: reqEditRE) {
+export function editRoleMenuApi(data: { roleId: number } & CIds) {
   return request<ApiResponseData<null>>({
     url: "/role/editRoleMenu",
     method: "post",

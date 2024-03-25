@@ -1,38 +1,31 @@
 import { request } from "@/utils/service"
 
-// type UserInfoResponseData = ApiResponseData<{ username: string; roles: string[] }>
-
-/** 获取用户详情 */
-export function getUserInfoApi() {
-  return request<ApiResponseData<UsersResponse>>({
-    url: "/user/getUserInfo",
-    method: "get"
-  })
-}
-
-export interface UsersResponse {
-  createdAt: string
-  ID: number
+interface userData {
   username: string
   phone: string
   email: string
   active: boolean
   roleId: number
-  role: string
 }
 
-export interface UsersResponsePageInfo {
-  list: UsersResponse[]
-  total: number
-  page: number
-  pageSize: number
+export interface userDataModel extends userData, Td27Model {
+  roleName: string
 }
 
-type UsersResponseData = ApiResponseData<UsersResponsePageInfo>
+// 数据结构 - List
+export type userListData = ListData<userDataModel[]>
+
+/** 获取用户详情 */
+export function getUserInfoApi() {
+  return request<ApiResponseData<userDataModel>>({
+    url: "/user/getUserInfo",
+    method: "get"
+  })
+}
 
 /** 获取所有用户 */
 export function getUsersApi(data: PageInfo) {
-  return request<UsersResponseData>({
+  return request<ApiResponseData<userListData>>({
     url: "/user/getUsers",
     method: "post",
     data: data
@@ -40,7 +33,7 @@ export function getUsersApi(data: PageInfo) {
 }
 
 // 删除用户
-export function deleteUserApi(data: reqId) {
+export function deleteUserApi(data: CId) {
   return request<ApiResponseData<null>>({
     url: "/user/deleteUser",
     method: "post",
@@ -48,17 +41,8 @@ export function deleteUserApi(data: reqId) {
   })
 }
 
-export interface reqUser {
-  username: string
-  password: string
-  phone: string
-  email: string
-  active: boolean
-  roleId: number
-}
-
 // 添加用户
-export function addUserApi(data: reqUser) {
+export function addUserApi(data: userData & { password: string }) {
   return request<ApiResponseData<null>>({
     url: "/user/addUser",
     method: "post",
@@ -66,18 +50,9 @@ export function addUserApi(data: reqUser) {
   })
 }
 
-interface reqEditUser {
-  id: number
-  username: string
-  phone: string
-  email: string
-  active: boolean
-  roleId: number
-}
-
 // 编辑用户
-export function editUserApi(data: reqEditUser) {
-  return request<ApiResponseData<UsersResponse>>({
+export function editUserApi(data: userData & CId) {
+  return request<ApiResponseData<userDataModel>>({
     url: "/user/editUser",
     method: "post",
     data
@@ -86,12 +61,11 @@ export function editUserApi(data: reqEditUser) {
 
 // 修改用户密码
 interface reqModifyPass {
-  id: number
   oldPassword: string
   newPassword: string
 }
 
-export function modifyPassApi(data: reqModifyPass) {
+export function modifyPassApi(data: reqModifyPass & CId) {
   return request<ApiResponseData<null>>({
     url: "/user/modifyPass",
     method: "post",
@@ -100,12 +74,7 @@ export function modifyPassApi(data: reqModifyPass) {
 }
 
 // 切换用户状态
-interface reqSwitchActive {
-  id: number
-  active: boolean
-}
-
-export function SwitchActiveApi(data: reqSwitchActive) {
+export function SwitchActiveApi(data: { active: boolean } & CId) {
   return request<ApiResponseData<null>>({
     url: "/user/switchActive",
     method: "post",

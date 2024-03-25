@@ -11,24 +11,24 @@
       </div>
       <div class="table-wrapper">
         <el-table :data="tableData" row-key="id">
-          <el-table-column prop="id" label="ID" align="center" />
-          <el-table-column prop="pid" label="父节点" align="center" />
-          <el-table-column prop="meta.title" label="展示名称" align="center">
+          <el-table-column prop="id" label="ID" />
+          <el-table-column prop="pid" label="父节点" />
+          <el-table-column prop="meta.title" label="展示名称">
             <template #default="scope">
               <el-tag :effect="scope.row.pid === 0 ? 'light' : 'plain'">{{ scope.row.meta.title }}</el-tag>
             </template>
           </el-table-column>
-          <el-table-column prop="name" label="路由名称" align="center" />
-          <el-table-column prop="path" label="路由路径" width="130" align="center" />
-          <el-table-column prop="meta.hidden" label="是否隐藏" align="center">
+          <el-table-column prop="name" label="路由名称" />
+          <el-table-column prop="path" label="路由路径" />
+          <el-table-column prop="meta.hidden" label="是否隐藏">
             <template #default="scope">
               <el-tag v-if="!scope.row.meta.hidden" type="success" effect="plain">显示</el-tag>
               <el-tag v-else type="warning" effect="plain">隐藏</el-tag>
             </template>
           </el-table-column>
-          <el-table-column prop="sort" label="排序" width="80" align="center" />
-          <el-table-column prop="component" label="组件路径" min-width="180" align="center" />
-          <el-table-column fixed="right" label="操作" width="180" align="center">
+          <el-table-column prop="sort" label="排序" />
+          <el-table-column prop="component" label="组件路径" min-width="180" />
+          <el-table-column fixed="right" label="操作" align="center" min-width="180">
             <template #default="scope">
               <el-button type="primary" text icon="Edit" size="small" @click="editMenuDialog(scope.row)"
                 >编辑</el-button
@@ -126,7 +126,7 @@
 <script lang="ts" setup>
 import { ref, reactive } from "vue"
 import { ElMessage, ElMessageBox, type FormInstance, type FormRules, type CascaderOption } from "element-plus"
-import { type MenusData, getMenus, addMenuApi, editMenuApi, deleteMenuApi } from "@/api/authority/menu"
+import { type MenuDataModel, getMenus, addMenuApi, editMenuApi, deleteMenuApi } from "@/api/authority/menu"
 import WarningBar from "@/components/WarningBar/warningBar.vue"
 import icon from "./icon.vue"
 
@@ -137,7 +137,7 @@ defineOptions({
 const loading = ref<boolean>(false)
 const dialogVisible = ref<boolean>(false)
 
-const tableData = ref<MenusData[]>([])
+const tableData = ref<MenuDataModel[]>([])
 const getTableData = async () => {
   loading.value = true
   const res = await getMenus()
@@ -198,7 +198,7 @@ const addMenuDialog = () => {
 }
 
 let activeRowId: number
-const editMenuDialog = (row: MenusData) => {
+const editMenuDialog = (row: MenuDataModel) => {
   dialogTitle.value = "编辑菜单"
   setOptions()
   oKind = operationKind.Edit
@@ -228,7 +228,7 @@ const editMenuDialog = (row: MenusData) => {
   dialogVisible.value = true
 }
 
-const deleteMenuAction = (row: MenusData) => {
+const deleteMenuAction = (row: MenuDataModel) => {
   ElMessageBox.confirm("此操作将永久删除所有角色下该菜单, 是否继续?", "提示", {
     confirmButtonText: "确定",
     cancelButtonText: "取消",
@@ -301,13 +301,13 @@ const operateAction = (formEl: FormInstance | undefined) => {
     if (valid) {
       const tempMenu = {
         pid: formData.pid,
-        name: formData.name || undefined,
+        name: formData.name,
         path: formData.path,
         component: formData.component,
         sort: formData.sort,
         redirect: formData.redirect || undefined,
         meta: {
-          title: formData.meta.title || undefined,
+          title: formData.meta.title,
           icon: formData.meta.icon || undefined,
           hidden: formData.meta.hidden || undefined,
           affix: formData.meta.affix || undefined,

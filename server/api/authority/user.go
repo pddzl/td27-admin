@@ -122,17 +122,17 @@ func (ua *UserApi) AddUser(c *gin.Context) {
 // @Success   200   {object}  response.Response{msg=string}
 // @Router    /user/editUser [post]
 func (ua *UserApi) EditUser(c *gin.Context) {
-	var userModel modelAuthority.UserModel
-	if err := c.ShouldBindJSON(&userModel); err != nil {
+	var editUser authorityReq.EditUser
+	if err := c.ShouldBindJSON(&editUser); err != nil {
 		commonRes.FailReq(err.Error(), c)
 		return
 	}
 
-	if err := userService.EditUser(&userModel); err != nil {
+	if instance, err := userService.EditUser(&editUser); err != nil {
 		commonRes.Fail(c)
 		global.TD27_LOG.Error("编辑失败", zap.Error(err))
 	} else {
-		commonRes.Ok(c)
+		commonRes.OkWithDetailed(instance, "编辑成功", c)
 	}
 }
 

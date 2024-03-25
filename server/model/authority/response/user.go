@@ -1,14 +1,8 @@
 package response
 
-import "time"
+import "server/model/authority"
 
 type UserResult struct {
-	CreatedAt   time.Time `json:"createdAt"` // 创建时间
-	ID          uint      // 用户ID
-	Username    string    `json:"username"` // 用户名
-	Phone       string    `json:"phone"`    // 手机号
-	Email       string    `json:"email"`    // 邮箱
-	Active      bool      `json:"active"`   // 是否活跃
-	RoleModelID uint      `json:"roleId"`   // 角色ID
-	RoleName    string    `json:"role"`     // 角色名
+	authority.UserModel
+	RoleName string `json:"roleName"` // 角色名
 }
