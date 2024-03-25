@@ -95,7 +95,7 @@ func (us *UserService) EditUser(instance *authorityReq.EditUser) (*authorityRes.
 func (us *UserService) ModifyPass(mp *authorityReq.ModifyPass) (err error) {
 	var userModel modelAuthority.UserModel
 	if errors.Is(global.TD27_DB.Where("id = ? and password = ?", mp.ID, utils.MD5V([]byte(mp.OldPassword))).First(&userModel).Error, gorm.ErrRecordNotFound) {
-		return errors.New("记录不存在")
+		return errors.New("旧密码错误")
 	}
 
 	return global.TD27_DB.Model(&userModel).Update("password", utils.MD5V([]byte(mp.NewPassword))).Error

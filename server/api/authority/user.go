@@ -153,7 +153,7 @@ func (ua *UserApi) ModifyPass(c *gin.Context) {
 	}
 
 	if err := userService.ModifyPass(&mp); err != nil {
-		commonRes.Fail(c)
+		commonRes.FailWithMessage(err.Error(), c)
 		global.TD27_LOG.Error("修改失败", zap.Error(err))
 	} else {
 		commonRes.Ok(c)
