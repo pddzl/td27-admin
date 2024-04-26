@@ -29,7 +29,7 @@ const show = ref(false)
 .handle-button {
   width: 48px;
   height: 48px;
-  background-color: var(--base-rightpanel-button-bg-color);
+  background-color: var(--v3-rightpanel-button-bg-color);
   position: fixed;
   top: v-bind(buttonTopCss);
   right: 0;
@@ -37,7 +37,7 @@ const show = ref(false)
   z-index: 10;
   cursor: pointer;
   pointer-events: auto;
-  color: #fff;
+  color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;

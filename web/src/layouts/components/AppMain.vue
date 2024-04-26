@@ -33,7 +33,6 @@ const settingsStore = useSettingsStore()
 
 .app-main {
   width: 100%;
-  background-color: var(--base-body-bg-color);
   display: flex;
 }
 

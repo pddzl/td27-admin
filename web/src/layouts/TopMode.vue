@@ -40,20 +40,20 @@ $transition-time: 0.35s;
   z-index: 1002;
   width: 100%;
   .logo {
-    width: var(--base-sidebar-width);
+    width: var(--v3-sidebar-width);
   }
   .content {
     display: flex;
     .navigation-bar {
       flex: 1;
-      background: transparent;
     }
   }
 }
 
 .layout-header {
-  background-color: var(--base-header-bg-color);
-  box-shadow: var(--el-box-shadow-lighter);
+  background-color: var(--v3-header-bg-color);
+  box-shadow: var(--v3-header-box-shadow);
+  border-bottom: var(--v3-header-border-bottom);
 }
 
 .main-container {
@@ -62,14 +62,14 @@ $transition-time: 0.35s;
 
 .app-main {
   transition: padding-left $transition-time;
-  padding-top: var(--base-navigationbar-height);
+  padding-top: var(--v3-navigationbar-height);
   height: 100vh;
   overflow: auto;
 }
 
 .hasTagsView {
   .app-main {
-    padding-top: var(--base-header-height);
+    padding-top: var(--v3-header-height);
   }
 }
 </style>

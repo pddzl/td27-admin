@@ -1,15 +1,8 @@
 /** 自定义 Element Plus 样式 */
 
-// 表格
-.el-table {
-  // 表头
-  th.el-table__cell {
-    background-color: var(--el-fill-color-light) !important;
-  }
-  // 行元素
-  tr {
-    background-color: transparent;
-  }
+// 卡片
+.el-card {
+  background-color: var(--el-bg-color);
 }
 
 // 分页
@@ -23,33 +16,5 @@
     .btn-next {
       display: none !important;
     }
-  }
-}
-
-// 对话框
-.el-dialog {
-  padding: 12px;
-  .el-dialog__body {
-      padding: 12px 6px;
-  }
-  .el-dialog__header {
-      .el-dialog__title {
-          font-size: 14px;
-          font-weight: 500;
-      }
-      padding: 2px 20px 12px 20px;
-      border-bottom: 1px solid #E4E4E4;
-  }
-  .el-dialog__footer {
-      padding: 0 16px 16px 0;
-      .dialog-footer {
-          .el-button {
-              padding-left: 24px;
-              padding-right: 24px;
-          }
-          // .el-button+.el-button {
-          //     margin-left: 30px;
-          // }
-      }
   }
 }

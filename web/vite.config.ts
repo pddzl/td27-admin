@@ -5,8 +5,8 @@ import { createSvgIconsPlugin } from "vite-plugin-svg-icons"
 import svgLoader from "vite-svg-loader"
 
 /** 配置项文档：https://cn.vitejs.dev/config */
-export default (configEnv: ConfigEnv): UserConfigExport => {
-  const viteEnv = loadEnv(configEnv.mode, process.cwd()) as ImportMetaEnv
+export default ({ mode }: ConfigEnv): UserConfigExport => {
+  const viteEnv = loadEnv(mode, process.cwd()) as ImportMetaEnv
   const { VITE_PUBLIC_PATH, VITE_CLI_PORT, VITE_BASE_API, VITE_BASE_PATH, VITE_SERVER_PORT } = viteEnv
   return {
     /** 打包时根据实际情况修改 base */
@@ -64,14 +64,17 @@ export default (configEnv: ConfigEnv): UserConfigExport => {
       }
     },
     /** 混淆器 */
-    esbuild: {
-      /** 打包时移除 console.log */
-      pure: ["console.log"],
-      /** 打包时移除 debugger */
-      drop: ["debugger"],
-      /** 打包时移除所有注释 */
-      legalComments: "none"
-    },
+    esbuild:
+      mode === "development"
+        ? undefined
+        : {
+            /** 打包时移除 console.log */
+            pure: ["console.log"],
+            /** 打包时移除 debugger */
+            drop: ["debugger"],
+            /** 打包时移除所有注释 */
+            legalComments: "none"
+          },
     /** Vite 插件 */
     plugins: [
       vue(),

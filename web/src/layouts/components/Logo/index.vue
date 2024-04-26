@@ -1,6 +1,5 @@
 <script lang="ts" setup>
-import { storeToRefs } from "pinia"
-import { useSettingsStore } from "@/store/modules/settings"
+import { useLayoutMode } from "@/hooks/useLayoutMode"
 import logo from "@/assets/layouts/logo.png?url"
 import logoText1 from "@/assets/layouts/logo-text-1.png?url"
 import logoText2 from "@/assets/layouts/logo-text-2.png?url"
@@ -13,18 +12,17 @@ const props = withDefaults(defineProps<Props>(), {
   collapse: true
 })
 
-const settingsStore = useSettingsStore()
-const { layoutMode } = storeToRefs(settingsStore)
+const { isLeft, isTop } = useLayoutMode()
 </script>
 
 <template>
-  <div class="layout-logo-container" :class="{ collapse: props.collapse, 'layout-mode-top': layoutMode === 'top' }">
+  <div class="layout-logo-container" :class="{ collapse: props.collapse, 'layout-mode-top': isTop }">
     <transition name="layout-logo-fade">
       <router-link v-if="props.collapse" key="collapse" to="/">
         <img :src="logo" class="layout-logo" />
       </router-link>
       <router-link v-else key="expand" to="/">
-        <img :src="layoutMode !== 'left' ? logoText2 : logoText1" class="layout-logo-text" />
+        <img :src="!isLeft ? logoText2 : logoText1" class="layout-logo-text" />
       </router-link>
     </transition>
   </div>
@@ -34,9 +32,8 @@ const { layoutMode } = storeToRefs(settingsStore)
 .layout-logo-container {
   position: relative;
   width: 100%;
-  height: var(--base-header-height);
-  line-height: var(--base-header-height);
-  background-color: transparent;
+  height: var(--v3-header-height);
+  line-height: var(--v3-header-height);
   text-align: center;
   overflow: hidden;
   .layout-logo {
@@ -49,8 +46,8 @@ const { layoutMode } = storeToRefs(settingsStore)
 }
 
 .layout-mode-top {
-  height: var(--base-navigationbar-height);
-  line-height: var(--base-navigationbar-height);
+  height: var(--v3-navigationbar-height);
+  line-height: var(--v3-navigationbar-height);
 }
 
 .collapse {

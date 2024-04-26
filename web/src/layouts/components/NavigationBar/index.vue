@@ -86,9 +86,9 @@ const toPersonal = () => {
 
 <style lang="scss" scoped>
 .navigation-bar {
-  height: var(--base-navigationbar-height);
+  height: var(--v3-navigationbar-height);
   overflow: hidden;
-  background: var(--base-header-bg-color);
+  color: var(--v3-navigationbar-text-color);
   display: flex;
   justify-content: space-between;
   .hamburger {
@@ -115,7 +115,7 @@ const toPersonal = () => {
     :deep(.el-sub-menu) {
       &.is-active {
         .el-sub-menu__title {
-          color: var(--el-menu-active-color) !important;
+          color: var(--el-color-primary) !important;
         }
       }
     }
@@ -125,7 +125,6 @@ const toPersonal = () => {
     height: 100%;
     display: flex;
     align-items: center;
-    color: #606266;
     .right-menu-item {
       padding: 0 10px;
       cursor: pointer;

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, watchEffect } from "vue"
+import { watchEffect } from "vue"
 import { storeToRefs } from "pinia"
 import { useSettingsStore } from "@/store/modules/settings"
 import useResize from "./hooks/useResize"
@@ -22,7 +22,7 @@ const settingsStore = useSettingsStore()
 const { showSettings, showTagsView, showWatermark } = storeToRefs(settingsStore)
 
 //#region 隐藏标签栏时删除其高度，是为了让 Logo 组件高度和 Header 区域高度始终一致
-const cssVariableName = "--base-tagsview-height"
+const cssVariableName = "--v3-tagsview-height"
 const v3TagsviewHeight = getCssVariableValue(cssVariableName)
 watchEffect(() => {
   showTagsView.value
