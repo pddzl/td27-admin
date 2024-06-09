@@ -25,7 +25,7 @@ rotateLogs:
 
 # system configuration
 system:
-  env: 'production' # Change to "develop" to skip authentication for development mode
+  env: 'prod' # prod 生产环境、dev 开发环境
   host: '0.0.0.0'
   port: 8888
   stack: true

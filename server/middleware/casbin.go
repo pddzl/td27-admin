@@ -17,7 +17,7 @@ var (
 // CasbinHandler 拦截器
 func CasbinHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		if global.TD27_CONFIG.System.Env != "develop" {
+		if global.TD27_CONFIG.System.Env != "dev" {
 			waitUse, _ := utils.GetClaims(c)
 			//获取请求的PATH
 			obj := c.Request.URL.Path
