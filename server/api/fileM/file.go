@@ -84,7 +84,7 @@ func (f *FileApi) GetFileList(c *gin.Context) {
 func (f *FileApi) Download(c *gin.Context) {
 	fileName := c.Query("name")
 
-	path := fmt.Sprintf("%s/%s", global.TD27_CONFIG.System.Upload, fileName)
+	path := fmt.Sprintf("%s/%s", global.TD27_CONFIG.File.Upload, fileName)
 
 	// 打开文件
 	_, err := os.Stat(path)

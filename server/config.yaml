@@ -30,7 +30,12 @@ system:
   port: 8888
   stack: true
   use-multipoint: false
-  upload: './resource/upload' # 上传目录
+
+file:
+  upload: './resource/upload' # 本地上传目录
+
+router:
+  prefix: "" # 全局路由前缀
 
 # mysql configuration
 mysql:

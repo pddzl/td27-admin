@@ -23,7 +23,7 @@ func (fs *FileService) Upload(file *multipart.FileHeader) (*modelFileM.FileModel
 	fileName, fileExt := utils.GetFileAndExt(file.Filename)
 	// 转换后的文件名
 	transformName := fmt.Sprintf("%s_%s%s", fileName, uuid.New(), fileExt)
-	fullPath := fmt.Sprintf("%s/%s", global.TD27_CONFIG.System.Upload, transformName)
+	fullPath := fmt.Sprintf("%s/%s", global.TD27_CONFIG.File.Upload, transformName)
 	uploadModel.FileName = transformName
 	uploadModel.FullPath = fullPath
 
@@ -97,7 +97,7 @@ func (fs *FileService) GetFileList(params fileMReq.FileSearchParams) ([]modelFil
 // Delete 删除文件
 func (fs *FileService) Delete(fileName string) (err error) {
 	// 物理删除
-	err = os.Remove(fmt.Sprintf("%s/%s", global.TD27_CONFIG.System.Upload, fileName))
+	err = os.Remove(fmt.Sprintf("%s/%s", global.TD27_CONFIG.File.Upload, fileName))
 
 	// 删除数据库记录
 	if err == nil {

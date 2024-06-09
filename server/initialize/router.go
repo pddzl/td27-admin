@@ -28,7 +28,7 @@ func Routers() *gin.Engine {
 	Router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	// 公共路由组 不需要鉴权
-	PublicGroup := Router.Group("")
+	PublicGroup := Router.Group(global.TD27_CONFIG.Router.Prefix)
 	{
 		// 健康监测
 		PublicGroup.GET("/health", func(c *gin.Context) {
@@ -53,7 +53,7 @@ func Routers() *gin.Engine {
 	sysToolRouter := router.RouterGroupApp.SysTool
 
 	// 需要认证的路由
-	PrivateGroup := Router.Group("")
+	PrivateGroup := Router.Group(global.TD27_CONFIG.Router.Prefix)
 	PrivateGroup.Use(middleware.JWTAuth()).Use(middleware.CasbinHandler())
 	{
 		// 基础
