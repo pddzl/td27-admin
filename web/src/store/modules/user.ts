@@ -41,12 +41,12 @@ export const useUserStore = defineStore("user", () => {
     const res = await getUserInfoApi()
     if (res.code === 0) {
       username.value = res.data.username
-      userInfo.id = res.data.ID
+      userInfo.id = res.data.id
       userInfo.createdAt = res.data.createdAt
       userInfo.username = res.data.username
       userInfo.phone = res.data.phone
       userInfo.email = res.data.email
-      userInfo.role = res.data.role
+      userInfo.role = res.data.roleName
       userInfo.roleId = res.data.roleId
     }
   }
