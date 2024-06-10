@@ -130,12 +130,11 @@ func (ba *LogRegApi) LogOut(c *gin.Context) {
 	claims, err := j.ParseToken(token)
 	if err != nil {
 		global.TD27_LOG.Error("登出解析token失败", zap.Error(err))
-		commonRes.FailWithMessage("登出失败", c)
-	}
-	global.TD27_REDIS.Del(context.Background(), claims.Username)
-	if err != nil {
-		global.TD27_LOG.Error("登出写入token失败", zap.Error(err))
-		commonRes.FailWithMessage("登出失败", c)
+	} else {
+		global.TD27_REDIS.Del(context.Background(), claims.Username)
+		if err != nil {
+			global.TD27_LOG.Error("登出写入token失败", zap.Error(err))
+		}
 	}
 
 	commonRes.OkWithMessage("登出失败", c)
