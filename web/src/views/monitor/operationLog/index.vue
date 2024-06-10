@@ -44,7 +44,7 @@
         </div>
       </div>
       <div class="table-wrapper">
-        <el-table :data="tableData" style="width: 100%" row-key="ID" @selection-change="handleSelectionChange">
+        <el-table :data="tableData" style="width: 100%" row-key="id" @selection-change="handleSelectionChange">
           <el-table-column type="selection" width="40" />
           <el-table-column type="expand">
             <template #default="props">
