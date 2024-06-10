@@ -48,7 +48,7 @@ func (ra *RoleApi) AddRole(c *gin.Context) {
 		commonRes.Fail(c)
 		global.TD27_LOG.Error("添加角色失败", zap.Error(err))
 	} else {
-		commonRes.OkWithDetailed(role, "添加成功", c)
+		commonRes.OkWithDetailed(role, "添加角色成功", c)
 	}
 }
 

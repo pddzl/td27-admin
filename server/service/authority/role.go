@@ -25,7 +25,7 @@ func (rs *RoleService) GetRoles() ([]modelAuthority.RoleModel, error) {
 
 func (rs *RoleService) AddRole(instance *modelAuthority.RoleModel) (*modelAuthority.RoleModel, error) {
 	err := global.TD27_DB.Create(instance).Error
-	if err != nil {
+	if err == nil {
 		if err = serviceBase.CasbinServiceApp.EditCasbin(instance.ID, baseReq.DefaultCasbin()); err != nil {
 			global.TD27_LOG.Error("更新casbin rule失败", zap.Error(err))
 		}
