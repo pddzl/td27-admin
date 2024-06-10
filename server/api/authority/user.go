@@ -136,7 +136,7 @@ func (ua *UserApi) AddUser(c *gin.Context) {
 // @Security  ApiKeyAuth
 // @accept    application/json
 // @Produce   application/json
-// @Param     data  body      modelAuthority.UserModel true "请求参数"
+// @Param     data  body      authorityReq.EditUser true "请求参数"
 // @Success   200   {object}  response.Response{msg=string}
 // @Router    /user/editUser [post]
 func (ua *UserApi) EditUser(c *gin.Context) {

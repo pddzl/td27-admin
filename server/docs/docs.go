@@ -92,7 +92,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.Role"
+                            "$ref": "#/definitions/authority.RoleModel"
                         }
                     }
                 ],
@@ -740,7 +740,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.CronReq"
+                            "$ref": "#/definitions/sysTool.CronModel"
                         }
                     }
                 ],
@@ -1093,42 +1093,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/jwt/jsonInBlacklist": {
-            "post": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "JwtApi"
-                ],
-                "summary": "jwt加入黑名单",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/response.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "msg": {
-                                            "type": "string"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            }
-        },
         "/logReg/captcha": {
             "post": {
                 "security": [
@@ -1205,6 +1169,40 @@ const docTemplate = `{
                                         "data": {
                                             "$ref": "#/definitions/response.LoginResponse"
                                         },
+                                        "msg": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/logReg/logout": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "LogRegApi"
+                ],
+                "summary": "用户登出",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
                                         "msg": {
                                             "type": "string"
                                         }
@@ -1716,7 +1714,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/authority.UserModel"
+                            "$ref": "#/definitions/request.AddUser"
                         }
                     }
                 ],
@@ -1816,7 +1814,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/authority.UserModel"
+                            "$ref": "#/definitions/request.EditUser"
                         }
                     }
                 ],
@@ -2051,13 +2049,13 @@ const docTemplate = `{
         "authority.ApiModel": {
             "type": "object",
             "required": [
-                "api_group",
+                "apiGroup",
                 "description",
                 "method",
                 "path"
             ],
             "properties": {
-                "api_group": {
+                "apiGroup": {
                     "description": "api组",
                     "type": "string"
                 },
@@ -2212,6 +2210,9 @@ const docTemplate = `{
         },
         "authority.RoleModel": {
             "type": "object",
+            "required": [
+                "roleName"
+            ],
             "properties": {
                 "createdAt": {
                     "description": "创建时间",
@@ -2361,6 +2362,40 @@ const docTemplate = `{
                 }
             }
         },
+        "request.AddUser": {
+            "type": "object",
+            "required": [
+                "password",
+                "roleId",
+                "username"
+            ],
+            "properties": {
+                "active": {
+                    "description": "是否活跃",
+                    "type": "boolean"
+                },
+                "email": {
+                    "description": "邮箱",
+                    "type": "string"
+                },
+                "password": {
+                    "description": "密码",
+                    "type": "string"
+                },
+                "phone": {
+                    "description": "手机号",
+                    "type": "string"
+                },
+                "roleId": {
+                    "description": "角色ID",
+                    "type": "integer"
+                },
+                "username": {
+                    "description": "用户名",
+                    "type": "string"
+                }
+            }
+        },
         "request.ApiSearchParams": {
             "type": "object",
             "properties": {
@@ -2457,59 +2492,6 @@ const docTemplate = `{
                 }
             }
         },
-        "request.ClearTable": {
-            "type": "object",
-            "properties": {
-                "compareField": {
-                    "type": "string"
-                },
-                "interval": {
-                    "type": "string"
-                },
-                "tableName": {
-                    "type": "string"
-                }
-            }
-        },
-        "request.CronReq": {
-            "type": "object",
-            "required": [
-                "expression",
-                "id",
-                "method",
-                "name"
-            ],
-            "properties": {
-                "comment": {
-                    "type": "string"
-                },
-                "expression": {
-                    "type": "string"
-                },
-                "extraParams": {
-                    "$ref": "#/definitions/request.ExtraParams"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "method": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "open": {
-                    "type": "boolean"
-                },
-                "strategy": {
-                    "type": "string",
-                    "enum": [
-                        "always",
-                        "once"
-                    ]
-                }
-            }
-        },
         "request.EditMenuReq": {
             "type": "object",
             "required": [
@@ -2585,19 +2567,37 @@ const docTemplate = `{
                 }
             }
         },
-        "request.ExtraParams": {
+        "request.EditUser": {
             "type": "object",
+            "required": [
+                "id",
+                "roleId",
+                "username"
+            ],
             "properties": {
-                "command": {
-                    "description": "for shell",
+                "active": {
+                    "description": "是否活跃",
+                    "type": "boolean"
+                },
+                "email": {
+                    "description": "邮箱",
                     "type": "string"
                 },
-                "tableInfo": {
-                    "description": "for clearTable",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/request.ClearTable"
-                    }
+                "id": {
+                    "description": "用户ID",
+                    "type": "integer"
+                },
+                "phone": {
+                    "description": "手机号",
+                    "type": "string"
+                },
+                "roleId": {
+                    "description": "角色ID",
+                    "type": "integer"
+                },
+                "username": {
+                    "description": "用户名",
+                    "type": "string"
                 }
             }
         },
@@ -2734,18 +2734,6 @@ const docTemplate = `{
                 }
             }
         },
-        "request.Role": {
-            "type": "object",
-            "required": [
-                "roleName"
-            ],
-            "properties": {
-                "roleName": {
-                    "description": "角色名称",
-                    "type": "string"
-                }
-            }
-        },
         "request.SwitchActive": {
             "type": "object",
             "required": [
@@ -2878,6 +2866,10 @@ const docTemplate = `{
         },
         "response.UserResult": {
             "type": "object",
+            "required": [
+                "roleId",
+                "username"
+            ],
             "properties": {
                 "active": {
                     "description": "是否活跃",
@@ -2892,20 +2884,24 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
-                    "description": "用户ID",
+                    "description": "主键ID",
                     "type": "integer"
                 },
                 "phone": {
                     "description": "手机号",
                     "type": "string"
                 },
-                "role": {
-                    "description": "角色名",
-                    "type": "string"
-                },
                 "roleId": {
                     "description": "角色ID",
                     "type": "integer"
+                },
+                "roleName": {
+                    "description": "角色名",
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "description": "更新时间",
+                    "type": "string"
                 },
                 "username": {
                     "description": "用户名",

@@ -1,7 +1,7 @@
 definitions:
   authority.ApiModel:
     properties:
-      api_group:
+      apiGroup:
         description: api组
         type: string
       createdAt:
@@ -23,7 +23,7 @@ definitions:
         description: 更新时间
         type: string
     required:
-    - api_group
+    - apiGroup
     - description
     - method
     - path
@@ -131,6 +131,8 @@ definitions:
       updatedAt:
         description: 更新时间
         type: string
+    required:
+    - roleName
     type: object
   authority.UserModel:
     properties:
@@ -222,6 +224,31 @@ definitions:
         description: 用户名称
         type: string
     type: object
+  request.AddUser:
+    properties:
+      active:
+        description: 是否活跃
+        type: boolean
+      email:
+        description: 邮箱
+        type: string
+      password:
+        description: 密码
+        type: string
+      phone:
+        description: 手机号
+        type: string
+      roleId:
+        description: 角色ID
+        type: integer
+      username:
+        description: 用户名
+        type: string
+    required:
+    - password
+    - roleId
+    - username
+    type: object
   request.ApiSearchParams:
     properties:
       api_group:
@@ -289,42 +316,6 @@ definitions:
         description: 路径
         type: string
     type: object
-  request.ClearTable:
-    properties:
-      compareField:
-        type: string
-      interval:
-        type: string
-      tableName:
-        type: string
-    type: object
-  request.CronReq:
-    properties:
-      comment:
-        type: string
-      expression:
-        type: string
-      extraParams:
-        $ref: '#/definitions/request.ExtraParams'
-      id:
-        type: integer
-      method:
-        type: string
-      name:
-        type: string
-      open:
-        type: boolean
-      strategy:
-        enum:
-        - always
-        - once
-        type: string
-    required:
-    - expression
-    - id
-    - method
-    - name
-    type: object
   request.EditMenuReq:
     properties:
       component:
@@ -379,16 +370,30 @@ definitions:
         description: 角色ID
         type: integer
     type: object
-  request.ExtraParams:
+  request.EditUser:
     properties:
-      command:
-        description: for shell
+      active:
+        description: 是否活跃
+        type: boolean
+      email:
+        description: 邮箱
         type: string
-      tableInfo:
-        description: for clearTable
-        items:
-          $ref: '#/definitions/request.ClearTable'
-        type: array
+      id:
+        description: 用户ID
+        type: integer
+      phone:
+        description: 手机号
+        type: string
+      roleId:
+        description: 角色ID
+        type: integer
+      username:
+        description: 用户名
+        type: string
+    required:
+    - id
+    - roleId
+    - username
     type: object
   request.FileSearchParams:
     properties:
@@ -484,14 +489,6 @@ definitions:
         type: integer
     required:
     - roleId
-    type: object
-  request.Role:
-    properties:
-      roleName:
-        description: 角色名称
-        type: string
-    required:
-    - roleName
     type: object
   request.SwitchActive:
     properties:
@@ -592,20 +589,26 @@ definitions:
         description: 邮箱
         type: string
       id:
-        description: 用户ID
+        description: 主键ID
         type: integer
       phone:
         description: 手机号
         type: string
-      role:
-        description: 角色名
-        type: string
       roleId:
         description: 角色ID
         type: integer
+      roleName:
+        description: 角色名
+        type: string
+      updatedAt:
+        description: 更新时间
+        type: string
       username:
         description: 用户名
         type: string
+    required:
+    - roleId
+    - username
     type: object
   sysTool.ClearTable:
     properties:
@@ -705,7 +708,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/request.Role'
+          $ref: '#/definitions/authority.RoleModel'
       produces:
       - application/json
       responses:
@@ -1067,7 +1070,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/request.CronReq'
+          $ref: '#/definitions/sysTool.CronModel'
       produces:
       - application/json
       responses:
@@ -1269,25 +1272,6 @@ paths:
       summary: 上传文件
       tags:
       - FileApi
-  /jwt/jsonInBlacklist:
-    post:
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/response.Response'
-            - properties:
-                msg:
-                  type: string
-              type: object
-      security:
-      - ApiKeyAuth: []
-      summary: jwt加入黑名单
-      tags:
-      - JwtApi
   /logReg/captcha:
     post:
       produces:
@@ -1335,6 +1319,25 @@ paths:
                   type: string
               type: object
       summary: 用户登录
+      tags:
+      - LogRegApi
+  /logReg/logout:
+    post:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                msg:
+                  type: string
+              type: object
+      summary: 用户登出
       tags:
       - LogRegApi
   /menu/addMenu:
@@ -1611,7 +1614,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/authority.UserModel'
+          $ref: '#/definitions/request.AddUser'
       produces:
       - application/json
       responses:
@@ -1667,7 +1670,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/authority.UserModel'
+          $ref: '#/definitions/request.EditUser'
       produces:
       - application/json
       responses:
