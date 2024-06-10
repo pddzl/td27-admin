@@ -14,10 +14,6 @@ import (
 )
 
 func RunServer() {
-	if global.TD27_CONFIG.System.UseMultipoint {
-		initialize.Redis()
-	}
-
 	addr := fmt.Sprintf("%s:%d", global.TD27_CONFIG.System.Host, global.TD27_CONFIG.System.Port)
 	router := initialize.Routers()
 	srv := http.Server{

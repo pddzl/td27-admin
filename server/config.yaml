@@ -29,7 +29,6 @@ system:
   host: '0.0.0.0'
   port: 8888
   stack: true
-  use-multipoint: false
 
 file:
   upload: './resource/upload' # 本地上传目录

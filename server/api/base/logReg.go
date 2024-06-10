@@ -1,25 +1,22 @@
 package base
 
 import (
+	"context"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/mojocn/base64Captcha"
-	"github.com/redis/go-redis/v9"
 	"go.uber.org/zap"
 	"time"
 
 	"server/global"
 	modelAuthority "server/model/authority"
-	modelBase "server/model/base"
 	baseReq "server/model/base/request"
 	baseRes "server/model/base/response"
 	commonRes "server/model/common/response"
 	"server/utils"
 )
 
-// 当开启多服务器部署时，替换下面的配置，使用redis共享存储验证码
-// var store = captcha.NewDefaultRedisStore()
 var store = base64Captcha.DefaultMemStore
 
 type LogRegApi struct{}
@@ -104,48 +101,42 @@ func tokenNext(c *gin.Context, user *modelAuthority.UserModel) {
 		return
 	}
 
-	// 是否开启多点登录
-	// true: 只允许账号单点登录，后续登录的会挤掉前面的
-	// false: 允许账号多点登录
-	if !global.TD27_CONFIG.System.UseMultipoint {
-		commonRes.OkWithDetailed(baseRes.LoginResponse{
-			User:      *user,
-			Token:     token,
-			ExpiresAt: claims.RegisteredClaims.ExpiresAt.Unix(),
-		}, "登录成功", c)
+	// token写入redis，后续鉴权使用
+	if err := jwtService.SetRedisJWT(user.Username, token); err != nil {
+		commonRes.FailWithMessage("设置登录状态失败", c)
+		global.TD27_LOG.Error("设置登录状态失败", zap.Error(err))
 		return
 	}
 
-	if jwtStr, err := jwtService.GetRedisJWT(user.Username); err == redis.Nil {
-		if err := jwtService.SetRedisJWT(user.Username, token); err != nil {
-			commonRes.FailWithMessage("设置登录状态失败", c)
-			global.TD27_LOG.Error("设置登录状态失败", zap.Error(err))
-			return
-		}
+	// 登录成功
+	commonRes.OkWithDetailed(baseRes.LoginResponse{
+		User:      *user,
+		Token:     token,
+		ExpiresAt: claims.RegisteredClaims.ExpiresAt.Unix(),
+	}, "登录成功", c)
+}
 
-		commonRes.OkWithDetailed(baseRes.LoginResponse{
-			User:      *user,
-			Token:     token,
-			ExpiresAt: claims.RegisteredClaims.ExpiresAt.Unix(),
-		}, "登录成功", c)
-	} else if err != nil {
-		commonRes.FailWithMessage("设置登录状态失败", c)
-		global.TD27_LOG.Error("设置登录状态失败!", zap.Error(err))
-	} else {
-		var blackJWT modelBase.JwtBlackListModel
-		blackJWT.Jwt = jwtStr
-		if err = jwtService.JoinInBlacklist(blackJWT); err != nil {
-			commonRes.FailWithMessage("jwt作废失败", c)
-			return
-		}
-		if err = jwtService.SetRedisJWT(user.Username, token); err != nil {
-			commonRes.FailWithMessage("设置登录状态失败", c)
-			return
-		}
-		commonRes.OkWithDetailed(baseRes.LoginResponse{
-			User:      *user,
-			Token:     token,
-			ExpiresAt: claims.RegisteredClaims.ExpiresAt.Unix(),
-		}, "登录成功", c)
+// LogOut
+// @Tags     LogRegApi
+// @Summary  用户登出
+// @accept    application/json
+// @Produce   application/json
+// @Success  200   {object}  response.Response{msg=string}
+// @Router   /logReg/logout [post]
+func (ba *LogRegApi) LogOut(c *gin.Context) {
+	token := c.Request.Header.Get("x-token")
+	j := utils.NewJWT()
+	// parseToken 解析token包含的信息
+	claims, err := j.ParseToken(token)
+	if err != nil {
+		global.TD27_LOG.Error("登出解析token失败", zap.Error(err))
+		commonRes.FailWithMessage("登出失败", c)
 	}
+	global.TD27_REDIS.Del(context.Background(), claims.Username)
+	if err != nil {
+		global.TD27_LOG.Error("登出写入token失败", zap.Error(err))
+		commonRes.FailWithMessage("登出失败", c)
+	}
+
+	commonRes.OkWithMessage("登出失败", c)
 }
