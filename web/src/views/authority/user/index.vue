@@ -31,7 +31,7 @@
                 :inactive-value="false"
                 active-text="启用"
                 inactive-text="禁用"
-                @change="switchAction(scope.row.ID, scope.row.active)"
+                @change="switchAction(scope.row.id, scope.row.active)"
                 :disabled="scope.row.username === 'admin' && scope.row.role === 'root'"
               />
             </template>
