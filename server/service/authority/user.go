@@ -48,14 +48,20 @@ func (us *UserService) DeleteUser(id uint) (err error) {
 }
 
 // AddUser 添加用户
-func (us *UserService) AddUser(instance *modelAuthority.UserModel) (err error) {
+func (us *UserService) AddUser(instance *authorityReq.AddUser) (err error) {
 	if errors.Is(global.TD27_DB.Where("id = ?", instance.RoleModelID).First(&modelAuthority.RoleModel{}).Error, gorm.ErrRecordNotFound) {
 		return errors.New("角色不存在")
 	}
 
-	instance.Password = utils.MD5V([]byte(instance.Password))
+	var userModel modelAuthority.UserModel
+	userModel.Username = instance.Username
+	userModel.Password = utils.MD5V([]byte(instance.Password))
+	userModel.Phone = instance.Phone
+	userModel.Email = instance.Email
+	userModel.Active = instance.Active
+	userModel.RoleModelID = instance.RoleModelID
 
-	return global.TD27_DB.Create(instance).Error
+	return global.TD27_DB.Create(&userModel).Error
 }
 
 // EditUser 编辑用户

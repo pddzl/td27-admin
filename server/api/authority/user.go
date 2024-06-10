@@ -2,10 +2,11 @@ package authority
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
+	"github.com/go-playground/validator/v10"
 	"go.uber.org/zap"
 
 	"server/global"
-	modelAuthority "server/model/authority"
 	authorityReq "server/model/authority/request"
 	commonReq "server/model/common/request"
 	commonRes "server/model/common/response"
@@ -94,17 +95,34 @@ func (ua *UserApi) DeleteUser(c *gin.Context) {
 // @Security  ApiKeyAuth
 // @accept    application/json
 // @Produce   application/json
-// @Param     data  body      modelAuthority.UserModel true "请求参数"
+// @Param     data  body      authorityReq.AddUser true "请求参数"
 // @Success   200   {object}  response.Response{msg=string}
 // @Router    /user/addUser [post]
 func (ua *UserApi) AddUser(c *gin.Context) {
-	var userModel modelAuthority.UserModel
-	if err := c.ShouldBindJSON(&userModel); err != nil {
+	// 注册自定义校验函数
+	validate := validator.New()
+	err := validate.RegisterValidation("phone", authorityReq.PhoneValidation)
+	if err != nil {
 		commonRes.FailReq(err.Error(), c)
 		return
 	}
 
-	if err := userService.AddUser(&userModel); err != nil {
+	// 使用 Gin 的验证器替换为自定义验证器
+	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
+		err = v.RegisterValidation("phone", authorityReq.PhoneValidation)
+		if err != nil {
+			commonRes.FailReq(err.Error(), c)
+			return
+		}
+	}
+
+	var addUser authorityReq.AddUser
+	if err := c.ShouldBindJSON(&addUser); err != nil {
+		commonRes.FailReq(err.Error(), c)
+		return
+	}
+
+	if err := userService.AddUser(&addUser); err != nil {
 		commonRes.FailWithMessage("添加失败", c)
 		global.TD27_LOG.Error("添加失败", zap.Error(err))
 	} else {
@@ -122,6 +140,23 @@ func (ua *UserApi) AddUser(c *gin.Context) {
 // @Success   200   {object}  response.Response{msg=string}
 // @Router    /user/editUser [post]
 func (ua *UserApi) EditUser(c *gin.Context) {
+	// 注册自定义校验函数
+	validate := validator.New()
+	err := validate.RegisterValidation("phone", authorityReq.PhoneValidation)
+	if err != nil {
+		commonRes.FailReq(err.Error(), c)
+		return
+	}
+
+	// 使用 Gin 的验证器替换为自定义验证器
+	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
+		err = v.RegisterValidation("phone", authorityReq.PhoneValidation)
+		if err != nil {
+			commonRes.FailReq(err.Error(), c)
+			return
+		}
+	}
+
 	var editUser authorityReq.EditUser
 	if err := c.ShouldBindJSON(&editUser); err != nil {
 		commonRes.FailReq(err.Error(), c)
