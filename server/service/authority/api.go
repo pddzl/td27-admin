@@ -109,7 +109,7 @@ func (a *ApiService) GetElTreeApis(roleId uint) (list []modelAuthority.ApiTree, 
 			tPath = sPath[1]
 		}
 		children.Key = fmt.Sprintf("%s,%s", model.Path, model.Method)
-		children.ApiGroup = fmt.Sprintf("%s -> %s", tPath, model.Description)
+		children.ApiGroup = fmt.Sprintf("%s | %s", tPath, model.Description)
 		children.Path = model.Path
 		children.Method = model.Method
 		children.Description = model.Description
