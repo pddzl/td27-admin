@@ -14,10 +14,10 @@ func DefaultCasbin() []CasbinInfo {
 	return []CasbinInfo{
 		{Path: "/logReg/captcha", Method: "POST"},
 		{Path: "/logReg/login", Method: "POST"},
+		{Path: "/logReg/logout", Method: "POST"},
 		{Path: "/user/getUserInfo", Method: "GET"},
 		{Path: "/user/editUser", Method: "POST"},
 		{Path: "/user/modifyPass", Method: "POST"},
-		{Path: "/jwt/joinInBlacklist", Method: "POST"},
 		{Path: "/menu/getMenus", Method: "GET"},
 	}
 }

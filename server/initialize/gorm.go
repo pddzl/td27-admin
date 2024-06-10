@@ -12,7 +12,6 @@ import (
 
 	"server/global"
 	modelAuthority "server/model/authority"
-	modelBase "server/model/base"
 	modelFileM "server/model/fileM"
 	modelMonitor "server/model/monitor"
 	modelSysTool "server/model/sysTool"
@@ -83,8 +82,6 @@ func Gorm() *gorm.DB {
 // RegisterTables 初始化数据库表
 func RegisterTables(db *gorm.DB) {
 	err := db.AutoMigrate(
-		// 基础
-		modelBase.JwtBlackListModel{},
 		// 权限
 		modelAuthority.UserModel{},
 		modelAuthority.RoleModel{},

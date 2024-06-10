@@ -278,8 +278,8 @@ const formData = reactive({
 const formRules: FormRules = reactive({
   username: [{ required: true, trigger: "blur", message: "请填写用户名" }],
   password: [{ required: true, trigger: "blur", message: "请填写密码" }],
-  phone: [{ validator: useValidatePhone, trigger: "blur" }],
-  email: [{ validator: useValidateEmail, trigger: "blur" }],
+  // phone: [{ validator: useValidatePhone, trigger: "blur" }],
+  // email: [{ validator: useValidateEmail, trigger: "blur" }],
   roleId: [{ required: true, trigger: "change", message: "请选择角色" }]
 })
 const kind = ref("")

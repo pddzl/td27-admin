@@ -29,3 +29,12 @@ export function loginApi(data: LoginRequestData) {
     data
   })
 }
+
+// 登出
+export function logoutApi() {
+  return request<ApiResponseData<null>>({
+    url: "/logReg/logout",
+    method: "post",
+    data: {}
+  })
+}

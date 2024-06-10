@@ -36,7 +36,7 @@ function createService() {
           default:
             if (apiData.data && apiData.data.reload) {
               useUserStoreHook().logout()
-              router.push({ name: "Login", replace: true })
+              router.push({ path: "login", replace: true })
             }
             // 不是正确的 Code
             ElMessage.error(apiData.msg || "Error")

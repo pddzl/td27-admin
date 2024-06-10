@@ -14,6 +14,7 @@ func (br *LogRegRouter) InitLogRegRouter(Router *gin.RouterGroup) (R gin.IRouter
 	{
 		logRegRouter.POST("captcha", logRegApi.Captcha)
 		logRegRouter.POST("login", logRegApi.Login)
+		logRegRouter.POST("logout", logRegApi.LogOut)
 	}
 
 	return logRegRouter

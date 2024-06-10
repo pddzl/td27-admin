@@ -7,7 +7,6 @@ import (
 type ApiGroup struct {
 	LogRegApi
 	CasbinApi
-	JwtApi
 }
 
 var (

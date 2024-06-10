@@ -58,7 +58,6 @@ func Routers() *gin.Engine {
 	{
 		// 基础
 		baseRouter.InitCasbinRouter(PrivateGroup)
-		baseRouter.InitJwtRouter(PrivateGroup)
 		// 鉴权管理
 		authorityRouter.InitUserRouter(PrivateGroup) // 用户
 		authorityRouter.InitRoleRouter(PrivateGroup) // 角色

@@ -49,7 +49,7 @@ import Screenfull from "@/components/Screenfull/index.vue"
 import SearchMenu from "@/components/SearchMenu/index.vue"
 import { useDevice } from "@/hooks/useDevice"
 import { useLayoutMode } from "@/hooks/useLayoutMode"
-import { joinInBlacklistApi } from "@/api/base/jwt"
+import { logoutApi } from "@/api/base/logReg"
 import { useTheme } from "@/hooks/useTheme"
 
 const { isMobile } = useDevice()
@@ -69,7 +69,7 @@ const toggleSidebar = () => {
 /** 登出 */
 const logout = () => {
   // token加入黑名单
-  joinInBlacklistApi()
+  logoutApi()
     .then(() => {
       userStore.logout()
       // 背景色重置

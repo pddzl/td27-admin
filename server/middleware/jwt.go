@@ -4,13 +4,11 @@ import (
 	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
-	"go.uber.org/zap"
 	"strconv"
 	"time"
 
 	"server/global"
 	modelAuthority "server/model/authority"
-	modelBase "server/model/base"
 	commonRes "server/model/common/response"
 	"server/service"
 	"server/utils"
@@ -27,11 +25,7 @@ func JWTAuth() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-		if jwtService.IsBlacklist(token) {
-			commonRes.FailWithDetailed(gin.H{"reload": true}, "您的帐户异地登陆或令牌失效", c)
-			c.Abort()
-			return
-		}
+
 		j := utils.NewJWT()
 		// parseToken 解析token包含的信息
 		claims, err := j.ParseToken(token)
@@ -46,7 +40,15 @@ func JWTAuth() gin.HandlerFunc {
 			return
 		}
 
-		// 已登录用户被管理员删除
+		// x-token与redis存的token做对比
+		redisJwtToken, err := jwtService.GetRedisJWT(claims.Username)
+		if redisJwtToken != token {
+			commonRes.FailWithDetailed(gin.H{"reload": true}, "您的帐户异地登陆或令牌失效", c)
+			c.Abort()
+			return
+		}
+
+		// 用户是否存在
 		var userModel modelAuthority.UserModel
 		err = global.TD27_DB.Where("id = ?", claims.ID).First(&userModel).Error
 		if err != nil {
@@ -56,7 +58,7 @@ func JWTAuth() gin.HandlerFunc {
 			return
 		}
 
-		// 已登录用户被管理员禁用
+		// 已登录用户是否禁用
 		if !userModel.Active {
 			commonRes.FailWithMessage("用户被禁用", c)
 			c.Abort()
@@ -70,16 +72,6 @@ func JWTAuth() gin.HandlerFunc {
 			newClaims, _ := j.ParseToken(newToken)
 			c.Header("new-token", newToken)
 			c.Header("new-expires-at", strconv.FormatInt(newClaims.ExpiresAt.Unix(), 10))
-			if global.TD27_CONFIG.System.UseMultipoint {
-				RedisJwtToken, err := jwtService.GetRedisJWT(newClaims.Username)
-				if err != nil {
-					global.TD27_LOG.Error("get redis jwt failed", zap.Error(err))
-				} else { // 当之前的取成功时才进行拉黑操作
-					_ = jwtService.JoinInBlacklist(modelBase.JwtBlackListModel{Jwt: RedisJwtToken})
-				}
-				// 无论如何都要记录当前的活跃状态
-				_ = jwtService.SetRedisJWT(newToken, newClaims.Username)
-			}
 		}
 		c.Set("claims", claims)
 		c.Next()
