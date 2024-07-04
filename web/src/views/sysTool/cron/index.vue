@@ -429,8 +429,7 @@ const changeMethod = (method: string) => {
 
 <style lang="scss" scoped>
 .search-wrapper {
-  margin-bottom: 20px;
-
+  margin-bottom: 5px;
   :deep(.el-card__body) {
     padding-bottom: 2px;
   }
