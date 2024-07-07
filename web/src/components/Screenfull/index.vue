@@ -27,9 +27,9 @@ const isFullscreen = ref<boolean>(false)
 const fullscreenTips = computed(() => {
   return isFullscreen.value ? props.exitTips : props.openTips
 })
-// const fullscreenSvgName = computed(() => {
-//   return isFullscreen.value ? "fullscreen-exit" : "fullscreen"
-// })
+const fullscreenSvgName = computed(() => {
+  return isFullscreen.value ? "fullscreen-exit" : "fullscreen"
+})
 const handleFullscreenClick = () => {
   const dom = document.querySelector(props.element) || undefined
   screenfull.isEnabled ? screenfull.toggle(dom) : ElMessage.warning("您的浏览器无法工作")
@@ -77,8 +77,9 @@ const handleContentFullClick = () => {
   <div>
     <!-- 全屏 -->
     <el-tooltip v-if="!content" effect="dark" :content="fullscreenTips" placement="bottom">
-      <!-- <SvgIcon :name="fullscreenSvgName" @click="handleFullscreenClick" /> -->
-      <el-button :icon="FullScreen" @click="handleFullscreenClick" circle />
+      <el-button circle>
+        <SvgIcon :name="fullscreenSvgName" @click="handleFullscreenClick" />
+      </el-button>
     </el-tooltip>
     <!-- 内容区 -->
     <el-dropdown v-else :disabled="isFullscreen">

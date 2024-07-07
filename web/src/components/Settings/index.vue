@@ -28,7 +28,7 @@ import { useSettingsStore } from "@/store/modules/settings"
 import { useLayoutMode } from "@/hooks/useLayoutMode"
 import { resetConfigLayout } from "@/utils"
 import { Setting, Refresh } from "@element-plus/icons-vue"
-import SelectLayoutMode from "@/layouts/components/Settings/SelectLayoutMode.vue"
+import SelectLayoutMode from "./SelectLayoutMode.vue"
 
 const show = ref(false)
 
