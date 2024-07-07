@@ -15,9 +15,9 @@
       <ThemeSwitch v-if="showThemeSwitch" class="right-menu-item" />
       <el-dropdown class="right-menu-item">
         <div class="right-menu-avatar">
-          <el-avatar :icon="UserFilled" :size="30" />
+          <el-avatar :src="fish" :size="30" />
           <span>{{ userStore.username }}</span>
-          <el-icon><arrow-down /></el-icon>
+          <el-icon style="margin-left: 5px"><arrow-down /></el-icon>
         </div>
         <template #dropdown>
           <el-dropdown-menu>
@@ -41,7 +41,6 @@ import { storeToRefs } from "pinia"
 import { useAppStore } from "@/store/modules/app"
 import { useSettingsStore } from "@/store/modules/settings"
 import { useUserStore } from "@/store/modules/user"
-import { UserFilled } from "@element-plus/icons-vue"
 import Hamburger from "../Hamburger/index.vue"
 import Breadcrumb from "../Breadcrumb/index.vue"
 import Sidebar from "../Sidebar/index.vue"
@@ -53,6 +52,7 @@ import { useDevice } from "@/hooks/useDevice"
 import { useLayoutMode } from "@/hooks/useLayoutMode"
 import { logoutApi } from "@/api/base/logReg"
 import { useTheme } from "@/hooks/useTheme"
+import fish from "@/assets/fish.png?url"
 
 const { isMobile } = useDevice()
 const { isTop } = useLayoutMode()
