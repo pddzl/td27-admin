@@ -2,7 +2,6 @@
 import { computed, ref, watchEffect } from "vue"
 import { ElMessage } from "element-plus"
 import screenfull from "screenfull"
-import { FullScreen } from "@element-plus/icons-vue"
 
 interface Props {
   /** 全屏的元素，默认是 html */
