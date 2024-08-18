@@ -118,16 +118,12 @@ docker-compose -f docker-compose/docker-compose.yml up -d
     <td><img src="./img/p2.png"/></td>
   </tr>
   <tr>
-    <td><img src="./img/p3.png"/></td>
-    <td><img src="./img/menu-add.png"/></td>
+    <td><img src="./img/menu.png"/></td>
+    <td><img src="./img/multi-menu.png"/></td>
   </tr>
   <tr>
-    <td><img src="./img/p4.png"/></td>
-    <td><img src="./img/p5.png"/></td>
-  </tr>
-<tr>
-    <td><img src="./img/p6.png"/></td>
-    <td><img src="./img/file.png"/></td>
+    <td><img src="./img/api.png"/></td>
+    <td><img src="./img/oplog.png"/></td>
   </tr>
 </table>
 
