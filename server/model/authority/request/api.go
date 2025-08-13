@@ -4,7 +4,7 @@ import "server/model/common/request"
 
 type apiStruct struct {
 	Path        string `json:"path"`                                                 // 路径
-	ApiGroup    string `json:"api_group"`                                            // API分组
+	ApiGroup    string `json:"apiGroup"`                                             // API分组
 	Method      string `json:"method" binding:"omitempty,oneof=GET POST DELETE PUT"` // 请求方法
 	Description string `json:"description"`                                          // 描述
 }

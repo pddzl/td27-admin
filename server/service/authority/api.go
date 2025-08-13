@@ -47,7 +47,7 @@ func (a *ApiService) GetApis(apiSp authorityReq.ApiSearchParams) ([]modelAuthori
 	}
 
 	if apiSp.ApiGroup != "" {
-		db = db.Where("api_group = ?", apiSp.ApiGroup)
+		db = db.Where("api_group LIKE ?", "%"+apiSp.ApiGroup+"%")
 	}
 
 	var total int64
