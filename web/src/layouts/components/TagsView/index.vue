@@ -1,46 +1,53 @@
 <script lang="ts" setup>
-import { getCurrentInstance, onMounted, ref, watch } from "vue"
-import { type RouteLocationNormalizedLoaded, type RouteRecordRaw, RouterLink, useRoute, useRouter } from "vue-router"
-import { type TagView, useTagsViewStore } from "@/store/modules/tags-view"
-import { usePermissionStore } from "@/store/modules/permission"
-import { useRouteListener } from "@/hooks/useRouteListener"
-import path from "path-browserify"
-import ScrollPane from "./ScrollPane.vue"
+import type { RouteLocationNormalizedGeneric, RouteRecordRaw, RouterLink } from "vue-router"
+import type { TagView } from "@/pinia/stores/tags-view"
+import { useRouteListener } from "@@/composables/useRouteListener"
 import { Close } from "@element-plus/icons-vue"
+import path from "path-browserify"
+import { usePermissionStore } from "@/pinia/stores/permission"
+import { useTagsViewStore } from "@/pinia/stores/tags-view"
+import ScrollPane from "./ScrollPane.vue"
 
-const instance = getCurrentInstance()
 const router = useRouter()
+
 const route = useRoute()
+
 const tagsViewStore = useTagsViewStore()
+
 const permissionStore = usePermissionStore()
+
 const { listenerRouteChange } = useRouteListener()
 
 /** 标签页组件元素的引用数组 */
-const tagRefs = ref<InstanceType<typeof RouterLink>[]>([])
+const tagRefs = useTemplateRef<InstanceType<typeof RouterLink>[]>("tagRefs")
 
 /** 右键菜单的状态 */
 const visible = ref(false)
+
 /** 右键菜单的 top 位置 */
 const top = ref(0)
+
 /** 右键菜单的 left 位置 */
 const left = ref(0)
+
 /** 当前正在右键操作的标签页 */
 const selectedTag = ref<TagView>({})
+
 /** 固定的标签页 */
 let affixTags: TagView[] = []
 
 /** 判断标签页是否激活 */
-const isActive = (tag: TagView) => {
+function isActive(tag: TagView) {
   return tag.path === route.path
 }
 
 /** 判断标签页是否固定 */
-const isAffix = (tag: TagView) => {
+function isAffix(tag: TagView) {
   return tag.meta?.affix
 }
 
 /** 筛选出固定标签页 */
-const filterAffixTags = (routes: RouteRecordRaw[], basePath = "/") => {
+function filterAffixTags(routes: RouteRecordRaw[], basePath = "/") {
   const tags: TagView[] = []
   routes.forEach((route) => {
     if (isAffix(route)) {
@@ -61,7 +68,7 @@ const filterAffixTags = (routes: RouteRecordRaw[], basePath = "/") => {
 }
 
 /** 初始化标签页 */
-const initTags = () => {
+function initTags() {
   affixTags = filterAffixTags(permissionStore.routes)
   for (const tag of affixTags) {
     // 必须含有 name 属性
@@ -70,7 +77,7 @@ const initTags = () => {
 }
 
 /** 添加标签页 */
-const addTags = (route: RouteLocationNormalizedLoaded) => {
+function addTags(route: RouteLocationNormalizedGeneric) {
   if (route.name) {
     tagsViewStore.addVisitedView(route)
     tagsViewStore.addCachedView(route)
@@ -78,20 +85,20 @@ const addTags = (route: RouteLocationNormalizedLoaded) => {
 }
 
 /** 刷新当前正在右键操作的标签页 */
-const refreshSelectedTag = (view: TagView) => {
+function refreshSelectedTag(view: TagView) {
   tagsViewStore.delCachedView(view)
-  router.replace({ path: "/redirect" + view.path, query: view.query })
+  router.replace({ path: `/redirect${view.path}`, query: view.query })
 }
 
 /** 关闭当前正在右键操作的标签页 */
-const closeSelectedTag = (view: TagView) => {
+function closeSelectedTag(view: TagView) {
   tagsViewStore.delVisitedView(view)
   tagsViewStore.delCachedView(view)
   isActive(view) && toLastView(tagsViewStore.visitedViews, view)
 }
 
 /** 关闭其他标签页 */
-const closeOthersTags = () => {
+function closeOthersTags() {
   const fullPath = selectedTag.value.fullPath
   if (fullPath !== route.path && fullPath !== undefined) {
     router.push(fullPath)
@@ -101,15 +108,15 @@ const closeOthersTags = () => {
 }
 
 /** 关闭所有标签页 */
-const closeAllTags = (view: TagView) => {
+function closeAllTags(view: TagView) {
   tagsViewStore.delAllVisitedViews()
   tagsViewStore.delAllCachedViews()
-  if (affixTags.some((tag) => tag.path === route.path)) return
+  if (affixTags.some(tag => tag.path === route.path)) return
   toLastView(tagsViewStore.visitedViews, view)
 }
 
 /** 跳转到最后一个标签页 */
-const toLastView = (visitedViews: TagView[], view: TagView) => {
+function toLastView(visitedViews: TagView[], view: TagView) {
   const latestView = visitedViews.slice(-1)[0]
   const fullPath = latestView?.fullPath
   if (fullPath !== undefined) {
@@ -118,7 +125,7 @@ const toLastView = (visitedViews: TagView[], view: TagView) => {
     // 如果 TagsView 全部被关闭了，则默认重定向到主页
     if (view.name === "Dashboard") {
       // 重新加载主页
-      router.push({ path: "/redirect" + view.path, query: view.query })
+      router.push({ path: `/redirect${view.path}`, query: view.query })
     } else {
       router.push("/")
     }
@@ -126,16 +133,14 @@ const toLastView = (visitedViews: TagView[], view: TagView) => {
 }
 
 /** 打开右键菜单面板 */
-const openMenu = (tag: TagView, e: MouseEvent) => {
-  const menuMinWidth = 105
-  // 当前组件距离浏览器左端的距离
-  const offsetLeft = instance!.proxy!.$el.getBoundingClientRect().left
-  // 当前组件宽度
-  const offsetWidth = instance!.proxy!.$el.offsetWidth
+function openMenu(tag: TagView, e: MouseEvent) {
+  const menuMinWidth = 100
+  // 当前页面宽度
+  const offsetWidth = document.body.offsetWidth
   // 面板的最大左边距
   const maxLeft = offsetWidth - menuMinWidth
   // 面板距离鼠标指针的距离
-  const left15 = e.clientX - offsetLeft + 15
+  const left15 = e.clientX + 10
   left.value = left15 > maxLeft ? maxLeft : left15
   top.value = e.clientY
   // 显示面板
@@ -145,7 +150,7 @@ const openMenu = (tag: TagView, e: MouseEvent) => {
 }
 
 /** 关闭右键菜单面板 */
-const closeMenu = () => {
+function closeMenu() {
   visible.value = false
 }
 
@@ -153,22 +158,21 @@ watch(visible, (value) => {
   value ? document.body.addEventListener("click", closeMenu) : document.body.removeEventListener("click", closeMenu)
 })
 
-onMounted(() => {
-  initTags()
-  /** 监听路由变化 */
-  listenerRouteChange(async (route) => {
-    addTags(route)
-  }, true)
-})
+initTags()
+
+// 监听路由变化
+listenerRouteChange((route) => {
+  addTags(route)
+}, true)
 </script>
 
 <template>
   <div class="tags-view-container">
     <ScrollPane class="tags-view-wrapper" :tag-refs="tagRefs">
       <router-link
-        ref="tagRefs"
         v-for="tag in tagsViewStore.visitedViews"
         :key="tag.path"
+        ref="tagRefs"
         :class="{ active: isActive(tag) }"
         class="tags-view-item"
         :to="{ path: tag.path, query: tag.query }"
@@ -181,11 +185,19 @@ onMounted(() => {
         </el-icon>
       </router-link>
     </ScrollPane>
-    <ul v-show="visible" class="contextmenu" :style="{ left: left + 'px', top: top + 'px' }">
-      <li @click="refreshSelectedTag(selectedTag)">刷新</li>
-      <li v-if="!isAffix(selectedTag)" @click="closeSelectedTag(selectedTag)">关闭</li>
-      <li @click="closeOthersTags">关闭其它</li>
-      <li @click="closeAllTags(selectedTag)">关闭所有</li>
+    <ul v-show="visible" class="contextmenu" :style="{ left: `${left}px`, top: `${top}px` }">
+      <li @click="refreshSelectedTag(selectedTag)">
+        刷新
+      </li>
+      <li v-if="!isAffix(selectedTag)" @click="closeSelectedTag(selectedTag)">
+        关闭
+      </li>
+      <li @click="closeOthersTags">
+        关闭其它
+      </li>
+      <li @click="closeAllTags(selectedTag)">
+        关闭所有
+      </li>
     </ul>
   </div>
 </template>
@@ -198,7 +210,9 @@ onMounted(() => {
   overflow: hidden;
   .tags-view-wrapper {
     .tags-view-item {
-      display: inline-block;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       position: relative;
       cursor: pointer;
       height: 26px;
@@ -217,12 +231,13 @@ onMounted(() => {
         margin-right: 5px;
       }
       &.active {
-        color: var(--v3-tagsview-tag-active-bg-color);
+        background-color: var(--v3-tagsview-tag-active-bg-color);
+        color: var(--v3-tagsview-tag-active-text-color);
         border-color: var(--v3-tagsview-tag-active-border-color);
       }
       .el-icon {
-        margin-bottom: 1.5px;
-        vertical-align: middle;
+        margin-left: 5px;
+        margin-right: 1px;
         border-radius: 50%;
         &:hover {
           background-color: var(--v3-tagsview-tag-icon-hover-bg-color);
@@ -234,7 +249,7 @@ onMounted(() => {
   .contextmenu {
     margin: 0;
     z-index: 3000;
-    position: absolute;
+    position: fixed;
     list-style-type: none;
     padding: 5px 0;
     border-radius: 4px;

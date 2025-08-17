@@ -1,3 +1,42 @@
+<script lang="ts" setup>
+import Notify from "@@/components/Notify/index.vue"
+import Screenfull from "@@/components/Screenfull/index.vue"
+import SearchMenu from "@@/components/SearchMenu/index.vue"
+import ThemeSwitch from "@@/components/ThemeSwitch/index.vue"
+import { useDevice } from "@@/composables/useDevice"
+import { useLayoutMode } from "@@/composables/useLayoutMode"
+import { UserFilled } from "@element-plus/icons-vue"
+import { useAppStore } from "@/pinia/stores/app"
+import { useSettingsStore } from "@/pinia/stores/settings"
+import { useUserStore } from "@/pinia/stores/user"
+import { Breadcrumb, Hamburger, Sidebar } from "../index"
+
+const { isMobile } = useDevice()
+
+const { isTop } = useLayoutMode()
+
+const router = useRouter()
+
+const appStore = useAppStore()
+
+const userStore = useUserStore()
+
+const settingsStore = useSettingsStore()
+
+const { showNotify, showThemeSwitch, showScreenfull, showSearchMenu } = storeToRefs(settingsStore)
+
+/** 切换侧边栏 */
+function toggleSidebar() {
+  appStore.toggleSidebar(false)
+}
+
+/** 登出 */
+function logout() {
+  userStore.logout()
+  router.push("/login")
+}
+</script>
+
 <template>
   <div class="navigation-bar">
     <Hamburger
@@ -9,24 +48,25 @@
     <Breadcrumb v-if="!isTop || isMobile" class="breadcrumb" />
     <Sidebar v-if="isTop && !isMobile" class="sidebar" />
     <div class="right-menu">
-      <Settings v-if="showSettings" class="right-menu-item" />
       <SearchMenu v-if="showSearchMenu" class="right-menu-item" />
       <Screenfull v-if="showScreenfull" class="right-menu-item" />
       <ThemeSwitch v-if="showThemeSwitch" class="right-menu-item" />
-      <el-dropdown class="right-menu-item">
-        <div class="right-menu-avatar">
-          <el-avatar :src="fish" :size="30" />
+      <Notify v-if="showNotify" class="right-menu-item" />
+      <el-dropdown>
+        <div class="right-menu-item user">
+          <el-avatar :icon="UserFilled" :size="30" />
           <span>{{ userStore.username }}</span>
-          <el-icon style="margin-left: 5px"><arrow-down /></el-icon>
         </div>
         <template #dropdown>
           <el-dropdown-menu>
-            <a target="_blank" href="https://github.com/pddzl/td27-admin">
+            <a target="_blank" href="https://github.com/un-pany/v3-admin-vite">
               <el-dropdown-item>GitHub</el-dropdown-item>
             </a>
-            <el-dropdown-item @click="toPersonal">个人中心</el-dropdown-item>
+            <a target="_blank" href="https://gitee.com/un-pany/v3-admin-vite">
+              <el-dropdown-item>Gitee</el-dropdown-item>
+            </a>
             <el-dropdown-item divided @click="logout">
-              <span style="display: block">退出登录</span>
+              退出登录
             </el-dropdown-item>
           </el-dropdown-menu>
         </template>
@@ -34,57 +74,6 @@
     </div>
   </div>
 </template>
-
-<script lang="ts" setup>
-import { useRouter } from "vue-router"
-import { storeToRefs } from "pinia"
-import { useAppStore } from "@/store/modules/app"
-import { useSettingsStore } from "@/store/modules/settings"
-import { useUserStore } from "@/store/modules/user"
-import Hamburger from "../Hamburger/index.vue"
-import Breadcrumb from "../Breadcrumb/index.vue"
-import Sidebar from "../Sidebar/index.vue"
-import ThemeSwitch from "@/components/ThemeSwitch/index.vue"
-import Screenfull from "@/components/Screenfull/index.vue"
-import SearchMenu from "@/components/SearchMenu/index.vue"
-import Settings from "@/components/Settings/index.vue"
-import { useDevice } from "@/hooks/useDevice"
-import { useLayoutMode } from "@/hooks/useLayoutMode"
-import { logoutApi } from "@/api/base/logReg"
-import { useTheme } from "@/hooks/useTheme"
-import fish from "@/assets/fish.png?url"
-
-const { isMobile } = useDevice()
-const { isTop } = useLayoutMode()
-const router = useRouter()
-const appStore = useAppStore()
-const userStore = useUserStore()
-const settingsStore = useSettingsStore()
-const { showSettings, showThemeSwitch, showScreenfull, showSearchMenu } = storeToRefs(settingsStore)
-const { setTheme } = useTheme()
-
-/** 切换侧边栏 */
-const toggleSidebar = () => {
-  appStore.toggleSidebar(false)
-}
-
-/** 登出 */
-const logout = () => {
-  // token加入黑名单
-  logoutApi()
-    .then(() => {
-      userStore.logout()
-      // 背景色重置
-      setTheme("normal")
-      router.push("/login")
-    })
-    .catch(() => {})
-}
-
-const toPersonal = () => {
-  router.push({ name: "Profile" })
-}
-</script>
 
 <style lang="scss" scoped>
 .navigation-bar {
@@ -117,7 +106,7 @@ const toPersonal = () => {
     :deep(.el-sub-menu) {
       &.is-active {
         .el-sub-menu__title {
-          color: var(--el-color-primary) !important;
+          color: var(--el-color-primary);
         }
       }
     }
@@ -127,18 +116,21 @@ const toPersonal = () => {
     height: 100%;
     display: flex;
     align-items: center;
-    .right-menu-item {
-      padding: 0 10px;
+    &-item {
+      margin: 0 10px;
       cursor: pointer;
-      .right-menu-avatar {
-        display: flex;
-        align-items: center;
-        .el-avatar {
-          margin-right: 10px;
-        }
-        span {
-          font-size: 16px;
-        }
+      &:last-child {
+        margin-left: 20px;
+      }
+    }
+    .user {
+      display: flex;
+      align-items: center;
+      .el-avatar {
+        margin-right: 10px;
+      }
+      span {
+        font-size: 16px;
       }
     }
   }

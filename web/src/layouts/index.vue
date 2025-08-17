@@ -1,36 +1,39 @@
 <script lang="ts" setup>
-import { watchEffect } from "vue"
-import { storeToRefs } from "pinia"
-import { useSettingsStore } from "@/store/modules/settings"
-import useResize from "./hooks/useResize"
-import { useWatermark } from "@/hooks/useWatermark"
-import { useDevice } from "@/hooks/useDevice"
-import { useLayoutMode } from "@/hooks/useLayoutMode"
-import LeftMode from "./LeftMode.vue"
-import TopMode from "./TopMode.vue"
-import LeftTopMode from "./LeftTopMode.vue"
-import { getCssVariableValue, setCssVariableValue } from "@/utils"
+import { useDevice } from "@@/composables/useDevice"
+import { useLayoutMode } from "@@/composables/useLayoutMode"
+import { useWatermark } from "@@/composables/useWatermark"
+import { getCssVar, setCssVar } from "@@/utils/css"
+import { useSettingsStore } from "@/pinia/stores/settings"
+import { RightPanel, Settings } from "./components"
+import { useResize } from "./composables/useResize"
+import LeftMode from "./modes/LeftMode.vue"
+import LeftTopMode from "./modes/LeftTopMode.vue"
+import TopMode from "./modes/TopMode.vue"
 
-/** Layout 布局响应式 */
+// Layout 布局响应式
 useResize()
 
 const { setWatermark, clearWatermark } = useWatermark()
+
 const { isMobile } = useDevice()
+
 const { isLeft, isTop, isLeftTop } = useLayoutMode()
+
 const settingsStore = useSettingsStore()
-const { showTagsView, showWatermark } = storeToRefs(settingsStore)
 
-//#region 隐藏标签栏时删除其高度，是为了让 Logo 组件高度和 Header 区域高度始终一致
-const cssVariableName = "--v3-tagsview-height"
-const v3TagsviewHeight = getCssVariableValue(cssVariableName)
+const { showSettings, showTagsView, showWatermark } = storeToRefs(settingsStore)
+
+// #region 隐藏标签栏时删除其高度，是为了让 Logo 组件高度和 Header 区域高度始终一致
+const cssVarName = "--v3-tagsview-height"
+
+const v3TagsviewHeight = getCssVar(cssVarName)
+
 watchEffect(() => {
-  showTagsView.value
-    ? setCssVariableValue(cssVariableName, v3TagsviewHeight)
-    : setCssVariableValue(cssVariableName, "0px")
+  showTagsView.value ? setCssVar(cssVarName, v3TagsviewHeight) : setCssVar(cssVarName, "0px")
 })
-//#endregion
+// #endregion
 
-/** 开启或关闭系统水印 */
+// 开启或关闭系统水印
 watchEffect(() => {
   showWatermark.value ? setWatermark(import.meta.env.VITE_APP_TITLE) : clearWatermark()
 })
@@ -44,15 +47,9 @@ watchEffect(() => {
     <TopMode v-else-if="isTop" />
     <!-- 混合模式 -->
     <LeftTopMode v-else-if="isLeftTop" />
+    <!-- 右侧设置面板 -->
+    <RightPanel v-if="showSettings">
+      <Settings />
+    </RightPanel>
   </div>
 </template>
-
-<style lang="scss" scoped>
-.showGreyMode {
-  filter: grayscale(1);
-}
-
-.showColorWeakness {
-  filter: invert(0.8);
-}
-</style>
