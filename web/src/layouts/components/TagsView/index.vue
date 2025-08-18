@@ -4,7 +4,7 @@ import type { TagView } from "@/pinia/stores/tags-view"
 import { useRouteListener } from "@@/composables/useRouteListener"
 import { Close } from "@element-plus/icons-vue"
 import path from "path-browserify"
-import { usePermissionStore } from "@/pinia/stores/permission"
+import { usePermissionStore } from "@/pinia/stores/permission_n"
 import { useTagsViewStore } from "@/pinia/stores/tags-view"
 import ScrollPane from "./ScrollPane.vue"
 

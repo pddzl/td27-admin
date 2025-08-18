@@ -4,7 +4,7 @@ import type { ThemeName } from "@@/composables/useTheme"
 import type { SidebarClosed, SidebarOpened } from "@@/constants/app-key"
 import type { LayoutsConfig } from "@/layouts/config"
 import type { TagView } from "@/pinia/stores/tags-view"
-import { CacheKey } from "@@/constants/cache-key"
+import { CacheKey } from "@@/constants/cache-key_n"
 
 // #region 系统布局配置
 export function getLayoutsConfig() {

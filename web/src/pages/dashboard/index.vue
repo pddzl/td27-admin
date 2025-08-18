@@ -1,14 +1,13 @@
-<template>
-  <div class="app-container center">
-    <el-empty description="Welcome" />
-  </div>
-</template>
+<script lang="ts" setup>
+import { useUserStore } from "@/pinia/stores/user_n"
+import Admin from "./components/Admin.vue"
+import Editor from "./components/Editor.vue"
 
-<style lang="scss" scoped>
-.center {
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-</style>
+const userStore = useUserStore()
+
+const isAdmin = userStore.userInfo.username === "admin"
+</script>
+
+<template>
+  <component :is="isAdmin ? Admin : Editor" />
+</template>

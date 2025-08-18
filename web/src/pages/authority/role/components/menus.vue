@@ -1,11 +1,74 @@
+<script lang="ts" setup>
+import type { ElTree as ELTree1 } from "element-plus"
+import type { MenuData } from "@/api/authority/menu"
+import { ElMessage } from "element-plus"
+import { ref, watch } from "vue"
+import { getElTreeMenusApi } from "@/api/authority/menu"
+import { editRoleMenuApi } from "@/api/authority/role"
+
+const props = defineProps({
+  id: {
+    type: Number,
+    default: 0
+  }
+})
+
+const filterText = ref("")
+const treeRef = ref<InstanceType<typeof ELTree1>>()
+
+function filterNode(value: string, data: any) {
+  if (!value) return true
+  return data.meta.title.includes(value)
+}
+
+watch(filterText, (val) => {
+  treeRef.value!.filter(val)
+})
+
+const menuDefaultProps = {
+  children: "children",
+  label(data: any) {
+    return data.meta.title
+  }
+}
+
+const menuIds = ref<number[]>([])
+// const menuIds = [2, 3, 4, 7, 8]
+const menuTreeData = ref<MenuData[]>([])
+function getTreeData(id: number) {
+  getElTreeMenusApi({ id })
+    .then((res) => {
+      menuTreeData.value = res.data.list
+      menuIds.value = res.data.menuIds
+    })
+    .catch(() => {})
+}
+getTreeData(props.id)
+
+function editRoleMenu() {
+  editRoleMenuApi({
+    roleId: props.id,
+    ids: [...(treeRef.value?.getCheckedKeys() as number[]), ...(treeRef.value?.getHalfCheckedKeys() as number[])]
+  })
+    .then((res) => {
+      if (res.code === 0) {
+        ElMessage({ type: "success", message: res.msg })
+      }
+    })
+    .catch(() => {})
+}
+</script>
+
 <template>
   <div>
     <div class="clearfix">
       <el-input v-model="filterText" class="fitler" placeholder="筛选" />
-      <el-button type="primary" class="button" @click="editRoleMenu">更新</el-button>
+      <el-button type="primary" class="button" @click="editRoleMenu">
+        更新
+      </el-button>
     </div>
     <div class="tree-content">
-      <el-tree
+      <ElTree
         ref="treeRef"
         :data="menuTreeData"
         :default-checked-keys="menuIds"
@@ -19,65 +82,6 @@
     </div>
   </div>
 </template>
-
-<script lang="ts" setup>
-import { ref, watch } from "vue"
-import { ElMessage, ElTree } from "element-plus"
-import { type MenusData, getElTreeMenusApi } from "@/api/authority/menu"
-import { editRoleMenuApi } from "@/api/authority/role"
-
-const props = defineProps({
-  id: {
-    type: Number,
-    default: 0
-  }
-})
-
-const filterText = ref("")
-const treeRef = ref<InstanceType<typeof ElTree>>()
-
-const filterNode = (value: string, data: any) => {
-  if (!value) return true
-  return data.meta.title.includes(value)
-}
-
-watch(filterText, (val) => {
-  treeRef.value!.filter(val)
-})
-
-const menuDefaultProps = {
-  children: "children",
-  label: function (data: any) {
-    return data.meta.title
-  }
-}
-
-const menuIds = ref<number[]>([])
-// const menuIds = [2, 3, 4, 7, 8]
-const menuTreeData = ref<MenusData[]>([])
-const getTreeData = (id: number) => {
-  getElTreeMenusApi({ id: id })
-    .then((res) => {
-      menuTreeData.value = res.data.list
-      menuIds.value = res.data.menuIds
-    })
-    .catch(() => {})
-}
-getTreeData(props.id)
-
-const editRoleMenu = () => {
-  editRoleMenuApi({
-    roleId: props.id,
-    ids: [...(treeRef.value?.getCheckedKeys() as number[]), ...(treeRef.value?.getHalfCheckedKeys() as number[])]
-  })
-    .then((res) => {
-      if (res.code === 0) {
-        ElMessage({ type: "success", message: res.msg })
-      }
-    })
-    .catch(() => {})
-}
-</script>
 
 <style lang="scss" scoped>
 .button {

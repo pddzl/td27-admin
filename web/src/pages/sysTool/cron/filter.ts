@@ -3,6 +3,6 @@ const strategyMap: Record<string, string> = {
   once: "执行一次"
 }
 
-export const strategyFilter = (strategy: string) => {
+export function strategyFilter(strategy: string) {
   return strategyMap[strategy] || "未知"
 }

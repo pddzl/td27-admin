@@ -1,11 +1,82 @@
+<script lang="ts" setup>
+import type { ElTree as ElTree1 } from "element-plus"
+import type { ApiTreeData } from "@/api/authority/api"
+import type { CasbinInfo } from "@/api/base/casbin"
+import { ElMessage } from "element-plus"
+import { ref, watch } from "vue"
+import { getElTreeApisApi } from "@/api/authority/api"
+import { editCasbinApi } from "@/api/base/casbin"
+
+const props = defineProps({
+  id: {
+    type: Number,
+    default: 0
+  }
+})
+
+const filterText = ref("")
+const treeRef = ref<InstanceType<typeof ElTree1>>()
+
+function filterNode(value: string, data: any) {
+  if (!value) return true
+  return data.apiGroup.includes(value)
+}
+
+watch(filterText, (val) => {
+  treeRef.value!.filter(val)
+})
+
+const apiDefaultProps = {
+  children: "children",
+  label(data: any) {
+    return data.apiGroup
+  }
+}
+
+const apiIds = ref<string[]>()
+// const apiIds = ["/base/login,POST"]
+const apisTreeData = ref<ApiTreeData[]>([])
+function getTreeData() {
+  getElTreeApisApi({ id: props.id })
+    .then((res) => {
+      apisTreeData.value = res.data.list
+      apiIds.value = res.data.checkedKey
+    })
+    .catch(() => {})
+}
+getTreeData()
+
+function editAuthority() {
+  const casbinInfos: CasbinInfo[] = []
+  for (const item of treeRef.value?.getCheckedNodes() as any[]) {
+    if (item.path && item.method) {
+      const casbinInfo: CasbinInfo = {
+        path: item.path,
+        method: item.method
+      }
+      casbinInfos.push(casbinInfo)
+    }
+  }
+  editCasbinApi({ roleId: props.id, casbinInfos })
+    .then((res) => {
+      if (res.code === 0) {
+        ElMessage({ type: "success", message: res.msg })
+      }
+    })
+    .catch(() => {})
+}
+</script>
+
 <template>
   <div>
     <div class="clearfix">
       <el-input v-model="filterText" class="fitler" placeholder="筛选" />
-      <el-button type="primary" class="button" @click="editAuthority">更新</el-button>
+      <el-button type="primary" class="button" @click="editAuthority">
+        更新
+      </el-button>
     </div>
     <div class="tree-content">
-      <el-tree
+      <ElTree
         ref="treeRef"
         :data="apisTreeData"
         :default-checked-keys="apiIds"
@@ -19,72 +90,6 @@
     </div>
   </div>
 </template>
-
-<script lang="ts" setup>
-import { ref, watch } from "vue"
-import { ElMessage, ElTree } from "element-plus"
-import { type ApiTreeData, getElTreeApisApi } from "@/api/authority/api"
-import { type CasbinInfo, editCasbinApi } from "@/api/base/casbin"
-
-const props = defineProps({
-  id: {
-    type: Number,
-    default: 0
-  }
-})
-
-const filterText = ref("")
-const treeRef = ref<InstanceType<typeof ElTree>>()
-
-const filterNode = (value: string, data: any) => {
-  if (!value) return true
-  return data.apiGroup.includes(value)
-}
-
-watch(filterText, (val) => {
-  treeRef.value!.filter(val)
-})
-
-const apiDefaultProps = {
-  children: "children",
-  label: function (data: any) {
-    return data.apiGroup
-  }
-}
-
-const apiIds = ref<string[]>()
-// const apiIds = ["/base/login,POST"]
-const apisTreeData = ref<ApiTreeData[]>([])
-const getTreeData = () => {
-  getElTreeApisApi({ id: props.id })
-    .then((res) => {
-      apisTreeData.value = res.data.list
-      apiIds.value = res.data.checkedKey
-    })
-    .catch(() => {})
-}
-getTreeData()
-
-const editAuthority = () => {
-  const casbinInfos: CasbinInfo[] = []
-  for (const item of treeRef.value?.getCheckedNodes() as any[]) {
-    if (item.path && item.method) {
-      const casbinInfo: CasbinInfo = {
-        path: item.path,
-        method: item.method
-      }
-      casbinInfos.push(casbinInfo)
-    }
-  }
-  editCasbinApi({ roleId: props.id, casbinInfos: casbinInfos })
-    .then((res) => {
-      if (res.code === 0) {
-        ElMessage({ type: "success", message: res.msg })
-      }
-    })
-    .catch(() => {})
-}
-</script>
 
 <style lang="scss" scoped>
 .button {

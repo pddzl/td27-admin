@@ -1,26 +1,28 @@
+/* eslint-disable perfectionist/sort-imports */
+
 // core
-import { createApp } from "vue"
+import { pinia } from "@/pinia"
+import { router } from "@/router/index_n"
+import { installPlugins } from "@/plugins/index_n"
 import App from "@/App.vue"
-import store from "@/store"
-import router from "@/router"
-import "@/permission"
-// load
-import { loadSvg } from "@/icons"
-import { loadPlugins } from "@/plugins"
 // css
 import "normalize.css"
-import "element-plus/dist/index.css"
+import "nprogress/nprogress.css"
 import "element-plus/theme-chalk/dark/css-vars.css"
-import "@/styles/index.scss"
+import "vxe-table/lib/style.css"
+import "@@/assets/styles/index.scss"
+// import "virtual:uno.css"
 
+// 创建应用实例
 const app = createApp(App)
 
-/** 加载插件 */
-loadPlugins(app)
-/** 加载全局 SVG */
-loadSvg(app)
+// 安装插件（全局组件、自定义指令等）
+installPlugins(app)
 
-app.use(store).use(router)
+// 安装 pinia 和 router
+app.use(pinia).use(router)
+
+// router 准备就绪后挂载应用
 router.isReady().then(() => {
   app.mount("#app")
 })

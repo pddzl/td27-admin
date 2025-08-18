@@ -8,7 +8,7 @@ import { useLayoutMode } from "@@/composables/useLayoutMode"
 import { UserFilled } from "@element-plus/icons-vue"
 import { useAppStore } from "@/pinia/stores/app"
 import { useSettingsStore } from "@/pinia/stores/settings"
-import { useUserStore } from "@/pinia/stores/user"
+import { useUserStore } from "@/pinia/stores/user_n"
 import { Breadcrumb, Hamburger, Sidebar } from "../index"
 
 const { isMobile } = useDevice()
@@ -35,6 +35,10 @@ function logout() {
   userStore.logout()
   router.push("/login")
 }
+
+function toPersonal() {
+  router.push({ name: "Profile" })
+}
 </script>
 
 <template>
@@ -59,12 +63,12 @@ function logout() {
         </div>
         <template #dropdown>
           <el-dropdown-menu>
-            <a target="_blank" href="https://github.com/un-pany/v3-admin-vite">
+            <a target="_blank" href="https://github.com/pddzl/td27-admin">
               <el-dropdown-item>GitHub</el-dropdown-item>
             </a>
-            <a target="_blank" href="https://gitee.com/un-pany/v3-admin-vite">
-              <el-dropdown-item>Gitee</el-dropdown-item>
-            </a>
+            <el-dropdown-item @click="toPersonal">
+              个人中心
+            </el-dropdown-item>
             <el-dropdown-item divided @click="logout">
               退出登录
             </el-dropdown-item>

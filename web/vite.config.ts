@@ -1,5 +1,3 @@
-/// <reference types="vitest/config" />
-
 import { resolve } from "node:path"
 import vue from "@vitejs/plugin-vue"
 import AutoImport from "unplugin-auto-import/vite"
@@ -16,8 +14,6 @@ export default defineConfig(({ mode }) => {
     process.cwd(),
     ""
   ) as ImportMetaEnv
-  // const viteEnv = loadEnv(mode, process.cwd()) as ImportMetaEnv
-  // const { VITE_PUBLIC_PATH, VITE_CLI_PORT, VITE_BASE_API, VITE_BASE_PATH, VITE_SERVER_PORT } = viteEnv
   return {
     // 开发或打包构建时用到的公共基础路径
     base: VITE_PUBLIC_PATH,
@@ -47,7 +43,7 @@ export default defineConfig(({ mode }) => {
           ws: false,
           // 是否允许跨域
           changeOrigin: true,
-          rewrite: (path) => path.replace(VITE_BASE_URL, "")
+          rewrite: path => path.replace(VITE_BASE_URL, "")
         }
       },
       // 是否允许跨域

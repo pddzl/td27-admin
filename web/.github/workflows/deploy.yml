@@ -1,0 +1,35 @@
+name: Build And Deploy v3-admin-vite
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          persist-credentials: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@master
+        with:
+          node-version: 22.16.0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 10.12.1
+
+      - name: Build
+        run: pnpm install && pnpm build
+
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@releases/v3
+        with:
+          ACCESS_TOKEN: ${{ secrets.V3_ADMIN_VITE }}
+          BRANCH: gh-pages
+          FOLDER: dist

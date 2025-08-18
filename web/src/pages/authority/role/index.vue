@@ -1,79 +1,11 @@
-<template>
-  <div class="app-container">
-    <el-card v-loading="loading" shadow="never">
-      <div class="toolbar-wrapper">
-        <div>
-          <el-button type="primary" icon="CirclePlus" @click="addDialog">新增</el-button>
-        </div>
-        <div>
-          <el-tooltip content="刷新" effect="light">
-            <el-button type="primary" icon="RefreshRight" circle plain @click="getTableData" />
-          </el-tooltip>
-        </div>
-      </div>
-      <div class="table-wrapper">
-        <el-table :data="tableData">
-          <el-table-column prop="id" label="ID" />
-          <el-table-column prop="roleName" label="名称" />
-          <el-table-column fixed="right" label="操作" align="center">
-            <template #default="scope">
-              <el-button type="primary" text icon="Setting" size="small" @click="openDrawer(scope.row)"
-                >设置权限</el-button
-              >
-              <el-button type="primary" text icon="Edit" size="small" @click="editDialog(scope.row)">编辑</el-button>
-              <el-button
-                type="danger"
-                text
-                icon="Delete"
-                size="small"
-                @click="deleteRoleAction(scope.row)"
-                :disabled="scope.row.roleName === 'root'"
-                >删除</el-button
-              >
-            </template>
-          </el-table-column>
-        </el-table>
-      </div>
-    </el-card>
-    <el-dialog v-model="dialogVisible" :title="title" :before-close="handleClose" width="30%">
-      <el-form
-        ref="formRef"
-        :model="formData"
-        :rules="formRules"
-        label-width="100px"
-        label-position="left"
-        style="width: 95%; margin-top: 15px"
-      >
-        <el-form-item label="角色名称" prop="roleName">
-          <el-input v-model="formData.roleName" autocomplete="off" />
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <div class="dialog-footer">
-          <el-button @click="closeDialog">取消</el-button>
-          <el-button type="primary" @click="operateAction(formRef)">确认</el-button>
-        </div>
-      </template>
-    </el-dialog>
-    <el-drawer v-if="drawer" v-model="drawer" :with-header="false" size="35%" title="角色配置">
-      <el-tabs type="border-card">
-        <el-tab-pane label="角色菜单">
-          <Menus ref="menus" :id="activeId" />
-        </el-tab-pane>
-        <el-tab-pane label="角色接口">
-          <Apis ref="apis" :id="activeId" />
-        </el-tab-pane>
-      </el-tabs>
-    </el-drawer>
-  </div>
-</template>
-
 <script lang="ts" setup>
-import { ref, reactive } from "vue"
-import { type FormInstance, type FormRules, ElMessage, ElMessageBox } from "element-plus"
-import { type roleDataModel, getRolesApi, addRoleApi, deleteRoleApi, editRoleApi } from "@/api/authority/role"
-import Menus from "./components/menus.vue"
+import type { FormInstance, FormRules } from "element-plus"
+import type { roleDataModel } from "@/api/authority/role"
+import { ElMessage, ElMessageBox } from "element-plus"
+import { reactive, ref } from "vue"
+import { addRoleApi, deleteRoleApi, editRoleApi, getRolesApi } from "@/api/authority/role"
 import Apis from "./components/apis.vue"
+import Menus from "./components/menus.vue"
 
 defineOptions({
   name: "Role"
@@ -83,7 +15,7 @@ const loading = ref<boolean>(false)
 const tableData = ref<roleDataModel[]>([])
 let activeRow: roleDataModel
 
-const getTableData = async () => {
+async function getTableData() {
   loading.value = true
   const res = await getRolesApi()
   if (res.code === 0) {
@@ -93,12 +25,12 @@ const getTableData = async () => {
 }
 getTableData()
 
-const initForm = () => {
+function initForm() {
   formData.roleName = ""
 }
 
 const dialogVisible = ref<boolean>(false)
-const handleClose = (done: Function) => {
+function handleClose(done: () => void) {
   initForm()
   done()
 }
@@ -114,13 +46,13 @@ const formRules: FormRules = reactive({
 
 const kind = ref("")
 const title = ref("")
-const addDialog = () => {
+function addDialog() {
   kind.value = "Add"
   title.value = "新增角色"
   dialogVisible.value = true
 }
 
-const editDialog = (row: roleDataModel) => {
+function editDialog(row: roleDataModel) {
   kind.value = "Edit"
   title.value = "编辑角色"
   activeRow = row
@@ -128,12 +60,12 @@ const editDialog = (row: roleDataModel) => {
   dialogVisible.value = true
 }
 
-const closeDialog = () => {
+function closeDialog() {
   initForm()
   dialogVisible.value = false
 }
 
-const operateAction = (formEl: FormInstance | undefined) => {
+function operateAction(formEl: FormInstance | undefined) {
   if (!formEl) return
   formEl.validate(async (valid) => {
     if (valid) {
@@ -161,7 +93,7 @@ const operateAction = (formEl: FormInstance | undefined) => {
   })
 }
 
-const deleteRoleAction = (row: roleDataModel) => {
+function deleteRoleAction(row: roleDataModel) {
   ElMessageBox.confirm("此操作将永久删除该角色, 是否继续?", "提示", {
     confirmButtonText: "确定",
     cancelButtonText: "取消",
@@ -182,8 +114,87 @@ const deleteRoleAction = (row: roleDataModel) => {
 // 角色设置
 const drawer = ref(false)
 let activeId: number
-const openDrawer = (row: roleDataModel) => {
+function openDrawer(row: roleDataModel) {
   activeId = row.id
   drawer.value = true
 }
 </script>
+
+<template>
+  <div class="app-container">
+    <el-card v-loading="loading" shadow="never">
+      <div class="toolbar-wrapper">
+        <div>
+          <el-button type="primary" icon="CirclePlus" @click="addDialog">
+            新增
+          </el-button>
+        </div>
+        <div>
+          <el-tooltip content="刷新" effect="light">
+            <el-button type="primary" icon="RefreshRight" circle plain @click="getTableData" />
+          </el-tooltip>
+        </div>
+      </div>
+      <div class="table-wrapper">
+        <el-table :data="tableData">
+          <el-table-column prop="id" label="ID" />
+          <el-table-column prop="roleName" label="名称" />
+          <el-table-column fixed="right" label="操作" align="center">
+            <template #default="scope">
+              <el-button type="primary" text icon="Setting" size="small" @click="openDrawer(scope.row)">
+                设置权限
+              </el-button>
+              <el-button type="primary" text icon="Edit" size="small" @click="editDialog(scope.row)">
+                编辑
+              </el-button>
+              <el-button
+                type="danger"
+                text
+                icon="Delete"
+                size="small"
+                @click="deleteRoleAction(scope.row)"
+                :disabled="scope.row.roleName === 'root'"
+              >
+                删除
+              </el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
+    </el-card>
+    <el-dialog v-model="dialogVisible" :title="title" :before-close="handleClose" width="30%">
+      <el-form
+        ref="formRef"
+        :model="formData"
+        :rules="formRules"
+        label-width="100px"
+        label-position="left"
+        style="width: 95%; margin-top: 15px"
+      >
+        <el-form-item label="角色名称" prop="roleName">
+          <el-input v-model="formData.roleName" autocomplete="off" />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button @click="closeDialog">
+            取消
+          </el-button>
+          <el-button type="primary" @click="operateAction(formRef)">
+            确认
+          </el-button>
+        </div>
+      </template>
+    </el-dialog>
+    <el-drawer v-if="drawer" v-model="drawer" :with-header="false" size="35%" title="角色配置">
+      <el-tabs type="border-card">
+        <el-tab-pane label="角色菜单">
+          <Menus :id="activeId" />
+        </el-tab-pane>
+        <el-tab-pane label="角色接口">
+          <Apis :id="activeId" />
+        </el-tab-pane>
+      </el-tabs>
+    </el-drawer>
+  </div>
+</template>

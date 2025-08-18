@@ -31,6 +31,12 @@ interface Td27Model {
   deletedAt: string // 删除时间
 }
 
+interface MongoModel {
+  id: string // 主键ID
+  createdAt: string // 创建时间
+  updatedAt: string // 更新时间
+}
+
 /** get list */
 interface ListData<T> {
   list: T
