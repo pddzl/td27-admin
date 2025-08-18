@@ -3,7 +3,6 @@
     "vue.volar",
     "editorconfig.editorconfig",
     "dbaeumer.vscode-eslint",
-    "antfu.unocss",
     "wiensss.region-highlighter"
   ]
 }
