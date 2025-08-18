@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import type { ElTree as ELTree1 } from "element-plus"
 import type { MenuData } from "@/api/authority/menu"
-import { ElMessage } from "element-plus"
 import { ref, watch } from "vue"
 import { getElTreeMenusApi } from "@/api/authority/menu"
 import { editRoleMenuApi } from "@/api/authority/role"

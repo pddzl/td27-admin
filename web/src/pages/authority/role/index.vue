@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import type { FormInstance, FormRules } from "element-plus"
 import type { roleDataModel } from "@/api/authority/role"
-import { ElMessage, ElMessageBox } from "element-plus"
 import { reactive, ref } from "vue"
 import { addRoleApi, deleteRoleApi, editRoleApi, getRolesApi } from "@/api/authority/role"
 import Apis from "./components/apis.vue"

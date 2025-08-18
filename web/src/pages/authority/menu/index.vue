@@ -2,7 +2,6 @@
 import type { CascaderOption, FormInstance, FormRules } from "element-plus"
 import type { MenuDataModel } from "@/api/authority/menu"
 import WarningBar from "@@/components/WarningBar/warningBar.vue"
-import { ElMessage, ElMessageBox } from "element-plus"
 import { reactive, ref } from "vue"
 import { addMenuApi, deleteMenuApi, editMenuApi, getMenus } from "@/api/authority/menu"
 import icon from "./icon.vue"

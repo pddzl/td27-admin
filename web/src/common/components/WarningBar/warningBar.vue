@@ -32,6 +32,7 @@ function open() {
 
 <style lang="scss" scoped>
 .warning-bar {
+  margin-bottom: 12px;
   background-color: #fff5ed;
   font-size: 14px;
   padding: 6px 14px;
@@ -42,7 +43,6 @@ function open() {
     font-size: 18px;
     color: #ed6a0c;
   }
-  margin-bottom: 12px;
   span {
     line-height: 22px;
     color: #f67207;
