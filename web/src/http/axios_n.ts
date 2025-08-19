@@ -44,8 +44,13 @@ function createInstance() {
           return logout()
         default:
           // 不是正确的 code
-          ElMessage.error(apiData.message || "Error")
-          return Promise.reject(new Error("Error"))
+          // 不是正确的 code
+          if (apiData.data && apiData.data.reload) {
+            useUserStore().logout()
+          }
+          // 不是正确的 Code
+          ElMessage.error(apiData.msg || "Error")
+          return Promise.reject(apiData.msg || "Error")
       }
     },
     (error) => {
