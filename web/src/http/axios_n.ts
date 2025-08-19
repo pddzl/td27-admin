@@ -39,16 +39,13 @@ function createInstance() {
         case 0:
           // 本系统采用 code === 0 来表示没有业务错误
           return apiData
-        case 401:
-          // Token 过期时
-          return logout()
+
         default:
-          // 不是正确的 code
           // 不是正确的 code
           if (apiData.data && apiData.data.reload) {
             useUserStore().logout()
           }
-          // 不是正确的 Code
+
           ElMessage.error(apiData.msg || "Error")
           return Promise.reject(apiData.msg || "Error")
       }
