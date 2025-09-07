@@ -27,6 +27,19 @@ const options = reactive([
 ])
 
 const metaData = ref(props.meta)
+
+function getValidIconName(label: string) {
+  const validNames = ["search", "link", "load", "access", "bug", "config", "dashboard", "file", "fullscreen-exit", "fullscreen", "keyboard-down", "keyboard-enter", "keyboard-esc", "keyboard-up", "lock", "menu", "monitor", "network", "plus", "radar", "setting"]
+  return validNames.includes(label) ? label : "setting" // fallback
+}
+
+// function iconForOption(option: typeof options[0]) {
+//   return computed(() => getValidIconName(option.label))
+// }
+
+function iconForOption(option: typeof options[0]) {
+  return computed(() => getValidIconName(option.label) as "search" | "link" | "load" | "access" | "bug" | "config" | "dashboard" | "file" | "fullscreen-exit" | "fullscreen" | "keyboard-down" | "keyboard-enter" | "keyboard-esc" | "keyboard-up" | "lock" | "menu" | "monitor" | "network" | "plus" | "radar" | "setting")
+}
 </script>
 
 <template>
@@ -51,7 +64,7 @@ const metaData = ref(props.meta)
         :value="item.key"
       >
         <span class="td27-icon" style="padding: 3px 0 0">
-          <SvgIcon :name="item.label" />
+          <SvgIcon :name="iconForOption(item).value" />
         </span>
         <span>{{ item.key }}</span>
       </el-option>
