@@ -5,6 +5,7 @@ import (
 	"server/api/base"
 	"server/api/fileM"
 	"server/api/monitor"
+	"server/api/sysSet"
 	"server/api/sysTool"
 )
 
@@ -14,6 +15,7 @@ type ApiGroup struct {
 	FileM     fileM.ApiGroup
 	Monitor   monitor.ApiGroup
 	SysTool   sysTool.ApiGroup
+	SysSet    sysSet.SysSetGroup
 }
 
 var ApiGroupApp = new(ApiGroup)

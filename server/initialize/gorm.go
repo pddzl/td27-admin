@@ -14,6 +14,7 @@ import (
 	modelAuthority "server/model/authority"
 	modelFileM "server/model/fileM"
 	modelMonitor "server/model/monitor"
+	modelSysSet "server/model/sysSet"
 	modelSysTool "server/model/sysTool"
 )
 
@@ -93,6 +94,9 @@ func RegisterTables(db *gorm.DB) {
 		modelFileM.FileModel{},
 		// 系统工具
 		modelSysTool.CronModel{},
+		// system settings
+		modelSysSet.DictModel{},
+		modelSysSet.DictDetailModel{},
 	)
 
 	if err != nil {

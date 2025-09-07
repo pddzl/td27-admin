@@ -257,11 +257,13 @@ function switchAction(row: cronDataModel) {
           row.entryId = res.data.entryId
           return resolve(true)
         } else {
-          return reject(false)
+          // return reject(false)
+          return reject(new Error("Switch action failed"))
         }
       })
       .catch(() => {
-        return reject(false)
+        // return reject(false)
+        return reject(new Error("Switch action failed"))
       })
   })
 }
