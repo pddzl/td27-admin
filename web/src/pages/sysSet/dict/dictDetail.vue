@@ -54,9 +54,6 @@ const rules = ref({
   ]
 })
 
-const page = ref(1)
-const total = ref(0)
-const pageSize = ref(10)
 const tableData = ref<dictDetailDataModel[]>([])
 
 // 分页
@@ -73,16 +70,14 @@ function handleCurrentChange(value: number) {
 // 查询
 async function getTableData() {
   if (!props.dictId) return
-  const table = await getDictDetailApi({
-    page: page.value,
-    pageSize: pageSize.value,
+  const res = await getDictDetailApi({
+    page: paginationData.currentPage,
+    pageSize: paginationData.pageSize,
     dictId: props.dictId
   })
-  if (table.code === 0) {
-    tableData.value = table.data.list
-    total.value = table.data.total
-    page.value = table.data.page
-    pageSize.value = table.data.pageSize
+  if (res.code === 0) {
+    tableData.value = res.data.list
+    paginationData.total = res.data.total
   }
 }
 
@@ -100,6 +95,7 @@ async function editDictDetailApiFunc(row: dictDetailDataModel) {
   oKind = operationKind.Edit
   formData.label = row.label
   formData.value = row.value
+  formData.sort = row.sort
   dialogVisible.value = true
 }
 
