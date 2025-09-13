@@ -131,19 +131,21 @@ function openDialog() {
 
 <template>
   <div class="app-container">
-    <div style="display: flex !important;     gap: 1rem!important;    padding: .5rem!important;">
-      <div class="first">
-        <div style="display: flex!important;align-items: center!important;justify-content: space-between!important;">
-          <span style="font-weight: 700 !important;">字典列表</span>
+    <div class="flex gap-4 p-2">
+      <div
+        class="flex-none w-52 bg-white text-slate-700 dark:text-slate-400 dark:bg-slate-900 rounded p-4"
+      >
+        <div class="flex justify-between items-center">
+          <span class="text font-bold">字典列表</span>
           <el-button type="primary" @click="openDialog">
             新增
           </el-button>
         </div>
-        <el-scrollbar style="margin-top: 1rem !important;" max-height="calc(100vh - 240px)">
+        <el-scrollbar class="mt-4" max-height="calc(100vh - 240px)">
           <div
             v-for="dictionary in tableData"
             :key="dictionary.id"
-            class="first-1"
+            class="rounded flex justify-between items-center px-2 py-4 cursor-pointer mt-2 hover:bg-blue-50 dark:hover:bg-blue-900 bg-gray-50 dark:bg-gray-800 gap-4"
             :class="
               selectID === dictionary.id
                 ? 'text-active'
@@ -151,8 +153,8 @@ function openDialog() {
             "
             @click="toDetail(dictionary.id)"
           >
-            <span class="max-w-160px truncate">{{ dictionary.chName }}</span>
-            <div style="min-width: 40px!important;">
+            <span class="max-w-[160px] truncate">{{ dictionary.chName }}</span>
+            <div class="min-w-[40px]">
               <el-icon
                 class="text-blue-500"
                 @click.stop="editDictApiFunc(dictionary)"
@@ -169,7 +171,7 @@ function openDialog() {
           </div>
         </el-scrollbar>
       </div>
-      <div class="second">
+      <div class="flex-1 bg-white text-slate-700 dark:text-slate-400 dark:bg-slate-900">
         <DictDetail :dict-id="selectID" />
       </div>
     </div>
@@ -213,66 +215,3 @@ function openDialog() {
     </el-dialog>
   </div>
 </template>
-
-<style lang="scss" scoped>
-.first {
-  // flex: none !important;
-  border-radius: 0.25rem !important;
-  width: 13rem !important;
-  padding: 1rem !important;
-  --tw-bg-opacity: 1 !important;
-  background-color: rgb(255 255 255 / var(--tw-bg-opacity, 1)) !important;
-}
-
-.first-1 {
-  padding-top: 1rem !important;
-  padding-bottom: 1rem !important;
-  padding-left: 0.5rem !important;
-  padding-right: 0.5rem !important;
-  --tw-bg-opacity: 1 !important;
-  background-color: rgb(249 250 251 / var(--tw-bg-opacity, 1)) !important;
-  border-radius: 0.25rem !important;
-  gap: 1rem !important;
-  justify-content: space-between !important;
-  align-items: center !important;
-  display: flex !important;
-  margin-top: 0.5rem !important;
-}
-
-.second {
-  flex: 1 1 0% !important;
-}
-
-.truncate {
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-  white-space: nowrap !important;
-}
-
-.max-w-160px {
-  max-width: 160px !important;
-}
-
-.text-blue-500 {
-  --tw-text-opacity: 1 !important;
-  color: rgb(59 130 246 / var(--tw-text-opacity, 1)) !important;
-}
-
-.text-red-500 {
-  --tw-text-opacity: 1 !important;
-  color: rgb(239 68 68 / var(--tw-text-opacity, 1)) !important;
-}
-
-.ml-2 {
-  margin-left: 0.5rem !important;
-}
-
-.text-slate-700 {
-  --tw-text-opacity: 1 !important;
-  color: rgb(51 65 85 / var(--tw-text-opacity, 1)) !important;
-}
-
-.text-active {
-  color: var(--el-color-primary) !important;
-}
-</style>

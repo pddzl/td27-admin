@@ -1,5 +1,6 @@
 import { resolve } from "node:path"
 import vue from "@vitejs/plugin-vue"
+import UnoCSS from "unocss/vite"
 import AutoImport from "unplugin-auto-import/vite"
 import SvgComponent from "unplugin-svg-component/vite"
 import { ElementPlusResolver } from "unplugin-vue-components/resolvers"
@@ -123,6 +124,8 @@ export default defineConfig(({ mode }) => {
         dts: true,
         dtsDir: resolve(__dirname, "types/auto")
       }),
+      // 原子化 CSS
+      UnoCSS(),
       // 自动按需导入 API
       AutoImport({
         imports: ["vue", "vue-router", "pinia"],
