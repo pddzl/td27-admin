@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { FormInstance } from "element-plus"
+import type { CascaderOption, FormInstance } from "element-plus"
 import type { dictDetailDataModel } from "@/api/sysSet/dictDetail"
 import {
   addDictDetailApi,
@@ -27,7 +27,8 @@ const formData = reactive({
   label: "",
   value: "",
   sort: 0,
-  dictId: props.dictId
+  dictId: props.dictId,
+  parentId: undefined as number | undefined
 })
 
 const rules = ref({
@@ -67,6 +68,28 @@ function handleCurrentChange(value: number) {
   getTableData()
 }
 
+const treeOptions = ref<CascaderOption[]>([])
+
+function mapTreeOptions(list: dictDetailDataModel[]): CascaderOption[] {
+  return list.map(node => ({
+    value: node.id,
+    label: node.label,
+    children: node.children?.length ? mapTreeOptions(node.children) : undefined
+  }))
+}
+
+async function setTreeOptions() {
+  if (!props.dictId) return
+  const res = await getDictDetailApi({
+    page: 1,
+    pageSize: 1000,
+    dictId: props.dictId
+  })
+  if (res.code === 0) {
+    treeOptions.value = mapTreeOptions(res.data.list)
+  }
+}
+
 // 查询
 async function getTableData() {
   if (!props.dictId) return
@@ -80,7 +103,6 @@ async function getTableData() {
     paginationData.total = res.data.total
   }
 }
-
 getTableData()
 
 enum operationKind {
@@ -96,6 +118,7 @@ async function editDictDetailApiFunc(row: dictDetailDataModel) {
   formData.label = row.label
   formData.value = row.value
   formData.sort = row.sort
+  formData.parentId = row.parentId
   dialogVisible.value = true
 }
 
@@ -154,9 +177,17 @@ async function operateAction(formEl: FormInstance | undefined) {
     closeDialog()
   })
 }
-function addDialog() {
+
+function openAddDialog(parent?: dictDetailDataModel) {
   oKind = operationKind.Add
-  formRef.value && formRef.value.clearValidate()
+  formRef.value?.clearValidate()
+
+  formData.label = ""
+  formData.value = ""
+  formData.sort = 0
+  formData.dictId = props.dictId
+  formData.parentId = parent ? parent.id : undefined
+
   dialogVisible.value = true
 }
 
@@ -164,6 +195,7 @@ watch(
   () => props.dictId,
   () => {
     getTableData()
+    setTreeOptions()
   }
 )
 </script>
@@ -172,47 +204,37 @@ watch(
   <div>
     <el-card shadow="never">
       <div class="toolbar-wrapper">
-        <el-button type="primary" icon="plus" @click="addDialog">
+        <el-button type="primary" icon="plus" @click="openAddDialog">
           新增字典项
         </el-button>
       </div>
       <div class="table-wrapper">
         <el-table
-          :data="tableData"
-          style="width: 100%"
-          tooltip-effect="dark"
-          row-key="id"
+          :data="tableData" style="width: 100%" row-key="id" border default-expand-all
+          :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
         >
-          <el-table-column type="selection" width="55" />
-          <el-table-column align="left" label="展示值" prop="label" />
-          <el-table-column align="left" label="字典值" prop="value" />
-          <el-table-column
-            align="left"
-            label="排序标记"
-            prop="sort"
-            width="120"
-          />
-          <el-table-column align="left" label="创建日期" width="180">
+          <el-table-column prop="label" label="展示值" />
+          <el-table-column prop="value" label="字典值" />
+          <el-table-column prop="sort" label="排序标记" />
+          <el-table-column label="创建日期" width="180">
             <template #default="scope">
               {{ formatDateTime(scope.row.createdAt) }}
             </template>
           </el-table-column>
-          <el-table-column align="left" label="操作">
+          <el-table-column label="更新日期" width="180">
             <template #default="scope">
-              <el-button
-                type="primary"
-                link
-                icon="edit"
-                @click="editDictDetailApiFunc(scope.row)"
-              >
+              {{ formatDateTime(scope.row.updatedAt) }}
+            </template>
+          </el-table-column>
+          <el-table-column label="操作" width="260">
+            <template #default="scope">
+              <el-button type="primary" icon="edit" link @click="editDictDetailApiFunc(scope.row)">
                 编辑
               </el-button>
-              <el-button
-                type="danger"
-                link
-                icon="delete"
-                @click="delDictDetailApiFunc(scope.row.id)"
-              >
+              <el-button type="primary" icon="Plus" link @click="openAddDialog(scope.row)">
+                新增子项
+              </el-button>
+              <el-button type="danger" icon="Delete" link @click="delDictDetailApiFunc(scope.row.id)">
                 删除
               </el-button>
             </template>
@@ -221,49 +243,29 @@ watch(
       </div>
       <div class="pager-wrapper">
         <el-pagination
-          background
-          :layout="paginationData.layout"
-          :page-sizes="paginationData.pageSizes"
-          :total="paginationData.total"
-          :page-size="paginationData.pageSize"
-          :current-page="paginationData.currentPage"
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
+          background :layout="paginationData.layout" :page-sizes="paginationData.pageSizes"
+          :total="paginationData.total" :page-size="paginationData.pageSize" :current-page="paginationData.currentPage"
+          @size-change="handleSizeChange" @current-change="handleCurrentChange"
         />
       </div>
     </el-card>
 
-    <el-dialog
-      v-model="dialogVisible"
-      :show-close="false"
-      :before-close="closeDialog"
-      width="600"
-    >
-      <el-form
-        ref="formRef"
-        :model="formData"
-        :rules="rules"
-      >
-        <el-form-item label="展示值" prop="label">
-          <el-input
-            v-model="formData.label"
-            placeholder="请输入展示值"
-            clearable
+    <el-dialog v-model="dialogVisible" :show-close="false" :before-close="closeDialog" width="600">
+      <el-form ref="formRef" :model="formData" :rules="rules">
+        <el-form-item label="父级" prop="parentId">
+          <el-cascader
+            v-model="formData.parentId" style="width: 100%" :options="treeOptions" placeholder="选择父级字典项" clearable
+            :props="{ checkStrictly: true, emitPath: false }"
           />
+        </el-form-item>
+        <el-form-item label="展示值" prop="label">
+          <el-input v-model="formData.label" placeholder="请输入展示值" clearable />
         </el-form-item>
         <el-form-item label="字典值" prop="value">
-          <el-input
-            v-model="formData.value"
-            placeholder="请输入字典值"
-            clearable
-            :disabled="oKind === operationKind.Edit"
-          />
+          <el-input v-model="formData.value" placeholder="请输入字典值" clearable :disabled="oKind === operationKind.Edit" />
         </el-form-item>
         <el-form-item label="排序标记" prop="sort">
-          <el-input-number
-            v-model.number="formData.sort"
-            placeholder="排序标记"
-          />
+          <el-input-number v-model.number="formData.sort" placeholder="排序标记" />
         </el-form-item>
       </el-form>
       <template #footer>

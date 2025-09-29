@@ -10,36 +10,97 @@ import (
 
 type DictDetailService struct{}
 
-func (dds *DictDetailService) GetDictDetail(searchParams sysSetReq.DictDetailSearchParams) ([]modelSysSet.DictDetailModel, int64, error) {
-	limit := searchParams.PageSize
-	offset := searchParams.PageSize * (searchParams.Page - 1)
-	db := global.TD27_DB.Model(&modelSysSet.DictDetailModel{}).Where("dict_id = ?", searchParams.DictID)
-	var dictDetailList []modelSysSet.DictDetailModel
+func (dds *DictDetailService) GetDictDetail(searchParams sysSetReq.DictDetailSearchParams) ([]*modelSysSet.DictDetailModel, int64, error) {
+	var roots []modelSysSet.DictDetailModel
 	var total int64
-	err := db.Count(&total).Error
-	err = db.Limit(limit).Offset(offset).Order("sort").Find(&dictDetailList).Error
-	return dictDetailList, total, err
 
+	// 1. Count total root nodes
+	if err := global.TD27_DB.
+		Model(&modelSysSet.DictDetailModel{}).
+		Where("dict_id = ? AND parent_id IS NULL", searchParams.DictID).
+		Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+
+	// 2. Get paginated root nodes
+	if err := global.TD27_DB.
+		Where("dict_id = ? AND parent_id IS NULL", searchParams.DictID).
+		Order("sort asc").
+		Limit(searchParams.PageSize).
+		Offset((searchParams.Page - 1) * searchParams.PageSize).
+		Find(&roots).Error; err != nil {
+		return nil, 0, err
+	}
+
+	if len(roots) == 0 {
+		return []*modelSysSet.DictDetailModel{}, total, nil
+	}
+
+	// 3. Collect root IDs
+	rootIDs := make([]uint, 0, len(roots))
+	for _, r := range roots {
+		rootIDs = append(rootIDs, r.ID)
+	}
+
+	// 4. Load all descendants for these roots
+	var all []modelSysSet.DictDetailModel
+	if err := global.TD27_DB.
+		Where("dict_id = ? AND parent_id IS NOT NULL", searchParams.DictID).
+		Order("sort asc").
+		Find(&all).Error; err != nil {
+		return nil, 0, err
+	}
+
+	// 5. Build tree
+	m := make(map[uint]*modelSysSet.DictDetailModel)
+	for i := range roots {
+		roots[i].Children = []*modelSysSet.DictDetailModel{}
+		m[roots[i].ID] = &roots[i]
+	}
+	for i := range all {
+		all[i].Children = []*modelSysSet.DictDetailModel{}
+		m[all[i].ID] = &all[i]
+	}
+
+	for i := range all {
+		if all[i].ParentID != nil {
+			if parent, ok := m[uint(*all[i].ParentID)]; ok {
+				parent.Children = append(parent.Children, m[all[i].ID])
+			}
+		}
+	}
+
+	// Convert roots to []*modelSysSet.DictDetailModel
+	result := make([]*modelSysSet.DictDetailModel, 0, len(roots))
+	for i := range roots {
+		result = append(result, &roots[i])
+	}
+
+	return result, total, nil
 }
 
 func (dds *DictDetailService) AddDictDetail(instance *modelSysSet.DictDetailModel) (*modelSysSet.DictDetailModel, error) {
 	var existing modelSysSet.DictDetailModel
 
-	// check duplicate by label
-	if err := global.TD27_DB.Where("dict_id = ? AND label = ?", instance.DictModelID, instance.Label).First(&existing).Error; err == nil {
+	// 🔹 check duplicate by label
+	if err := global.TD27_DB.
+		Where("dict_id = ? AND label = ?", instance.DictModelID, instance.Label).
+		First(&existing).Error; err == nil {
 		return nil, errors.New("duplicate label in the same dict")
 	} else if !errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, err
 	}
 
-	// check duplicate by value
-	if err := global.TD27_DB.Where("dict_id = ? AND value = ?", instance.DictModelID, instance.Value).First(&existing).Error; err == nil {
+	// 🔹 check duplicate by value
+	if err := global.TD27_DB.
+		Where("dict_id = ? AND value = ?", instance.DictModelID, instance.Value).
+		First(&existing).Error; err == nil {
 		return nil, errors.New("duplicate value in the same dict")
 	} else if !errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, err
 	}
 
-	// safe to create
+	// 🔹 create record
 	if err := global.TD27_DB.Create(instance).Error; err != nil {
 		return nil, err
 	}

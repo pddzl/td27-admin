@@ -8,6 +8,9 @@ type DictDetailModel struct {
 	Value       string `json:"value" gorm:"column:value" binding:"required"`
 	Sort        int    `json:"sort" gorm:"column:sort"`
 	DictModelID int    `json:"dictId" gorm:"column:dict_id" binding:"required"`
+	ParentID    *int   `json:"parentId" gorm:"column:parent_id"` // new
+	//Children    []DictDetailModel `json:"children" gorm:"foreignKey:ParentID"`
+	Children []*DictDetailModel `json:"children" gorm:"-"`
 }
 
 func (ddm *DictDetailModel) TableName() string {

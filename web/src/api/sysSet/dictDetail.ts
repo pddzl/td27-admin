@@ -5,6 +5,8 @@ interface dictDetailData {
   value: string
   sort: number
   dictId: number
+  parentId?: number
+  children?: dictDetailDataModel[]
 }
 
 export interface dictDetailDataModel extends dictDetailData, Td27Model {}
