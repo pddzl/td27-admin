@@ -150,6 +150,10 @@ func (dds *DictDetailService) EditDictDetail(instance *modelSysSet.DictDetailMod
 	if err := global.TD27_DB.Model(&existing).Updates(instance).Error; err != nil {
 		return nil, err
 	}
+	if instance.ParentID == nil {
+		// gorm.Updates(instance) won't overwrite the old value with NULL unless you explicitly allow it
+		global.TD27_DB.Model(&existing).UpdateColumn("parent_id", instance.ParentID)
+	}
 
-	return instance, nil
+	return &existing, nil
 }
