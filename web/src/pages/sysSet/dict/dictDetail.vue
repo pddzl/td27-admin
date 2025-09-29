@@ -211,6 +211,11 @@ watch(
         <el-button type="primary" icon="plus" @click="openAddDialog()">
           新增字典项
         </el-button>
+        <div>
+          <el-tooltip content="刷新" effect="light">
+            <el-button type="primary" icon="RefreshRight" circle plain @click="getTableData" />
+          </el-tooltip>
+        </div>
       </div>
       <div class="table-wrapper">
         <el-table
