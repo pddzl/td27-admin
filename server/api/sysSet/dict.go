@@ -16,7 +16,7 @@ func (da *DictApi) GetDict(c *gin.Context) {
 		commonRes.Fail(c)
 		global.TD27_LOG.Error("Get Error", zap.Error(err))
 	} else {
-		commonRes.OkWithDetailed(list, "Get Success", c)
+		commonRes.OkWithDetailed(list, "success", c)
 	}
 }
 
@@ -29,9 +29,9 @@ func (da *DictApi) AddDict(c *gin.Context) {
 
 	if instance, err := dictService.AddDict(&dictModel); err != nil {
 		commonRes.FailWithMessage(err.Error(), c)
-		global.TD27_LOG.Error("Add Error", zap.Error(err))
+		global.TD27_LOG.Error("failed", zap.Error(err))
 	} else {
-		commonRes.OkWithDetailed(instance, "Add Success", c)
+		commonRes.OkWithDetailed(instance, "success", c)
 	}
 }
 
@@ -59,8 +59,8 @@ func (da *DictApi) EditDict(c *gin.Context) {
 
 	if instance, err := dictService.EditDict(&dictModel); err != nil {
 		commonRes.FailWithMessage(err.Error(), c)
-		global.TD27_LOG.Error("Edit Error", zap.Error(err))
+		global.TD27_LOG.Error("edit failed", zap.Error(err))
 	} else {
-		commonRes.OkWithDetailed(instance, "Edit Success", c)
+		commonRes.OkWithDetailed(instance, "success", c)
 	}
 }
