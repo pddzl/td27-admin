@@ -7,6 +7,7 @@ interface dictDetailData {
   dictId: number
   parentId?: number
   children?: dictDetailDataModel[]
+  description: string
 }
 
 export interface dictDetailDataModel extends dictDetailData, Td27Model {}
