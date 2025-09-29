@@ -27,6 +27,14 @@ export function getDictDetailApi(data: reqDictDetail) {
   })
 }
 
+export function getDictDetailFlatApi(data: { dictId: number }) {
+  return request<ApiResponseData<dictDetailListData>>({
+    url: "/dictDetail/getDictDetailFlat",
+    method: "post",
+    data
+  })
+}
+
 export function addDictDetailApi(data: dictDetailData) {
   return request<ApiResponseData<dictDetailDataModel>>({
     url: "/dictDetail/addDictDetail",

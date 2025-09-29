@@ -20,5 +20,6 @@ func (ddr *DictDetailRouter) InitDictDetailRouter(Router *gin.RouterGroup) {
 	}
 	{
 		dictDetailWithoutRouter.POST("getDictDetail", dictDetailApi.GetDictDetail)
+		dictDetailWithoutRouter.POST("getDictDetailFlat", dictDetailApi.GetDictDetailFlat)
 	}
 }

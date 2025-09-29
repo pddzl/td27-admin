@@ -6,3 +6,7 @@ type DictDetailSearchParams struct {
 	request.PageInfo
 	DictID uint `json:"dictID" binding:"required"`
 }
+
+type DictDetailFlatReq struct {
+	DictID uint `json:"dictID" binding:"required"`
+}
