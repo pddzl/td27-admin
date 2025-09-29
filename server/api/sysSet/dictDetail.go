@@ -20,15 +20,15 @@ func (dda *DictDetailApi) GetDictDetail(c *gin.Context) {
 	}
 
 	if list, total, err := dictDetailService.GetDictDetail(ddsParams); err != nil {
-		commonRes.FailWithMessage("Get Failed", c)
-		global.TD27_LOG.Error("Get Failed", zap.Error(err))
+		commonRes.FailWithMessage("failed", c)
+		global.TD27_LOG.Error("get failed", zap.Error(err))
 	} else {
 		commonRes.OkWithDetailed(commonRes.PageResult{
 			List:     list,
 			Total:    total,
 			Page:     ddsParams.Page,
 			PageSize: ddsParams.PageSize,
-		}, "Get Success", c)
+		}, "success", c)
 	}
 }
 
@@ -41,9 +41,9 @@ func (dda *DictDetailApi) AddDictDetail(c *gin.Context) {
 
 	if instance, err := dictDetailService.AddDictDetail(&dictDetailModel); err != nil {
 		commonRes.FailWithMessage(err.Error(), c)
-		global.TD27_LOG.Error("Add Error", zap.Error(err))
+		global.TD27_LOG.Error("add failed", zap.Error(err))
 	} else {
-		commonRes.OkWithDetailed(instance, "Add Success", c)
+		commonRes.OkWithDetailed(instance, "success", c)
 	}
 }
 
@@ -56,7 +56,7 @@ func (dda *DictDetailApi) DelDictDetail(c *gin.Context) {
 
 	if err := dictDetailService.DelDictDetail(cId.ID); err != nil {
 		commonRes.Fail(c)
-		global.TD27_LOG.Error("Delete error", zap.Error(err))
+		global.TD27_LOG.Error("delete failed", zap.Error(err))
 	} else {
 		commonRes.Ok(c)
 	}
@@ -71,8 +71,8 @@ func (dda *DictDetailApi) EditDictDetail(c *gin.Context) {
 
 	if instance, err := dictDetailService.EditDictDetail(&dictDetailModel); err != nil {
 		commonRes.FailWithMessage(err.Error(), c)
-		global.TD27_LOG.Error("Edit Error", zap.Error(err))
+		global.TD27_LOG.Error("edit failed", zap.Error(err))
 	} else {
-		commonRes.OkWithDetailed(instance, "Edit Success", c)
+		commonRes.OkWithDetailed(instance, "success", c)
 	}
 }
