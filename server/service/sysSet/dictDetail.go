@@ -108,17 +108,41 @@ func (dds *DictDetailService) AddDictDetail(instance *modelSysSet.DictDetailMode
 }
 
 func (dds *DictDetailService) DelDictDetail(id uint) (err error) {
-	var dictDetailModel modelSysSet.DictDetailModel
-	if errors.Is(global.TD27_DB.Where("id = ?", id).First(&dictDetailModel).Error, gorm.ErrRecordNotFound) {
-		return errors.New("not exist DictDetail")
+	var dictDetail modelSysSet.DictDetailModel
+	if errors.Is(global.TD27_DB.Where("id = ?", id).First(&dictDetail).Error, gorm.ErrRecordNotFound) {
+		return errors.New("DictDetail not exist")
 	}
 
-	err = global.TD27_DB.Unscoped().Delete(&dictDetailModel).Error
-	if err != nil {
+	// delete children recursively
+	if err = delChildren(id); err != nil {
 		return err
 	}
 
-	return
+	// delete self
+	if err = global.TD27_DB.Unscoped().Delete(&dictDetail).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func delChildren(parentID uint) error {
+	var children []modelSysSet.DictDetailModel
+	if err := global.TD27_DB.Where("parent_id = ?", parentID).Find(&children).Error; err != nil {
+		return err
+	}
+
+	for _, child := range children {
+		// recursive delete
+		if err := delChildren(child.ID); err != nil {
+			return err
+		}
+		if err := global.TD27_DB.Unscoped().Delete(&child).Error; err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func (dds *DictDetailService) EditDictDetail(instance *modelSysSet.DictDetailModel) (*modelSysSet.DictDetailModel, error) {

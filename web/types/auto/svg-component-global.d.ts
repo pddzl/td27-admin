@@ -9,18 +9,18 @@ declare module 'vue' {
   export interface GlobalComponents {
     SvgIcon: import("vue").DefineComponent<{
         name: {
-            type: import("vue").PropType<"access" | "bug" | "config" | "dashboard" | "file" | "fullscreen-exit" | "fullscreen" | "keyboard-down" | "keyboard-enter" | "keyboard-esc" | "keyboard-up" | "link" | "load" | "lock" | "menu" | "monitor" | "network" | "plus" | "search" | "setting">;
+            type: import("vue").PropType<"access" | "bug" | "config" | "dashboard" | "file" | "fullscreen-exit" | "fullscreen" | "keyboard-down" | "keyboard-enter" | "keyboard-esc" | "keyboard-up" | "link" | "load" | "lock" | "menu" | "monitor" | "network" | "plus" | "radar" | "search" | "setting">;
             default: string;
             required: true;
         };
     }, {}, unknown, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, {}, string, import("vue").VNodeProps & import("vue").AllowedComponentProps & import("vue").ComponentCustomProps, Readonly<import("vue").ExtractPropTypes<{
         name: {
-            type: import("vue").PropType<"access" | "bug" | "config" | "dashboard" | "file" | "fullscreen-exit" | "fullscreen" | "keyboard-down" | "keyboard-enter" | "keyboard-esc" | "keyboard-up" | "link" | "load" | "lock" | "menu" | "monitor" | "network" | "plus" | "search" | "setting">;
+            type: import("vue").PropType<"access" | "bug" | "config" | "dashboard" | "file" | "fullscreen-exit" | "fullscreen" | "keyboard-down" | "keyboard-enter" | "keyboard-esc" | "keyboard-up" | "link" | "load" | "lock" | "menu" | "monitor" | "network" | "plus" | "radar" | "search" | "setting">;
             default: string;
             required: true;
         };
     }>>, {
-        name: "access" | "bug" | "config" | "dashboard" | "file" | "fullscreen-exit" | "fullscreen" | "keyboard-down" | "keyboard-enter" | "keyboard-esc" | "keyboard-up" | "link" | "load" | "lock" | "menu" | "monitor" | "network" | "plus" | "search" | "setting";
+        name: "access" | "bug" | "config" | "dashboard" | "file" | "fullscreen-exit" | "fullscreen" | "keyboard-down" | "keyboard-enter" | "keyboard-esc" | "keyboard-up" | "link" | "load" | "lock" | "menu" | "monitor" | "network" | "plus" | "radar" | "search" | "setting";
     }>;
   }
 }

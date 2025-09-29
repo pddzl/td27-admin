@@ -28,7 +28,8 @@ const formData = reactive({
   value: "",
   sort: 0,
   dictId: props.dictId,
-  parentId: undefined as number | undefined
+  parentId: undefined as number | undefined,
+  description: ""
 })
 
 const rules = ref({
@@ -119,6 +120,7 @@ async function editDictDetailApiFunc(row: dictDetailDataModel) {
   formData.value = row.value
   formData.sort = row.sort
   formData.parentId = row.parentId
+  formData.description = row.description
   dialogVisible.value = true
 }
 
@@ -126,6 +128,8 @@ function closeDialog() {
   formData.label = ""
   formData.value = ""
   formData.sort = 0
+  formData.parentId = undefined
+  formData.description = ""
   oKind = operationKind.Add
   dialogVisible.value = false
 }
@@ -167,6 +171,8 @@ async function operateAction(formEl: FormInstance | undefined) {
         res = await editDictDetailApi({ id: activeRow.id, ...formData })
         if (res.code === 0) {
           ElMessage.success(res.msg)
+          // todo
+          // it just make effect in no parent dictDetail
           const index = tableData.value.indexOf(activeRow)
           tableData.value[index] = res.data
         }
@@ -181,13 +187,11 @@ async function operateAction(formEl: FormInstance | undefined) {
 function openAddDialog(parent?: dictDetailDataModel) {
   oKind = operationKind.Add
   formRef.value?.clearValidate()
-
   formData.label = ""
   formData.value = ""
   formData.sort = 0
   formData.dictId = props.dictId
   formData.parentId = parent ? parent.id : undefined
-
   dialogVisible.value = true
 }
 
@@ -204,7 +208,7 @@ watch(
   <div>
     <el-card shadow="never">
       <div class="toolbar-wrapper">
-        <el-button type="primary" icon="plus" @click="openAddDialog">
+        <el-button type="primary" icon="plus" @click="openAddDialog()">
           新增字典项
         </el-button>
       </div>
@@ -216,6 +220,7 @@ watch(
           <el-table-column prop="label" label="展示值" />
           <el-table-column prop="value" label="字典值" />
           <el-table-column prop="sort" label="排序标记" />
+          <el-table-column prop="description" label="描述" />
           <el-table-column label="创建日期" width="180">
             <template #default="scope">
               {{ formatDateTime(scope.row.createdAt) }}
@@ -266,6 +271,9 @@ watch(
         </el-form-item>
         <el-form-item label="排序标记" prop="sort">
           <el-input-number v-model.number="formData.sort" placeholder="排序标记" />
+        </el-form-item>
+        <el-form-item label="描述" prop="description">
+          <el-input type="textarea" v-model="formData.description" placeholder="描述" />
         </el-form-item>
       </el-form>
       <template #footer>
