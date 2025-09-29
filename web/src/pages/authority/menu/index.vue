@@ -19,6 +19,7 @@ async function getTableData() {
   const res = await getMenus()
   if (res.code === 0) {
     tableData.value = res.data
+    setOptions()
   }
   loading.value = false
 }
@@ -68,7 +69,6 @@ let oKind: operationKind
 
 function addMenuDialog() {
   dialogTitle.value = "新增菜单"
-  setOptions()
   oKind = operationKind.Add
   dialogVisible.value = true
 }
@@ -76,7 +76,6 @@ function addMenuDialog() {
 let activeRowId: number
 function editMenuDialog(row: MenuDataModel) {
   dialogTitle.value = "编辑菜单"
-  setOptions()
   oKind = operationKind.Edit
   activeRowId = row.id
   formData.pid = row.pid
