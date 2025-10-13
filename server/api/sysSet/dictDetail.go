@@ -32,6 +32,21 @@ func (dda *DictDetailApi) GetDictDetail(c *gin.Context) {
 	}
 }
 
+func (dda *DictDetailApi) GetDictDetailFlat(c *gin.Context) {
+	var flatReq sysSetReq.DictDetailFlatReq
+	if err := c.ShouldBindJSON(&flatReq); err != nil {
+		commonRes.FailReq(err.Error(), c)
+		return
+	}
+
+	if list, err := dictDetailService.GetDictDetailFlat(flatReq.DictID); err != nil {
+		commonRes.FailWithMessage("failed", c)
+		global.TD27_LOG.Error("get failed", zap.Error(err))
+	} else {
+		commonRes.OkWithDetailed(list, "success", c)
+	}
+}
+
 func (dda *DictDetailApi) AddDictDetail(c *gin.Context) {
 	var dictDetailModel modelSysSet.DictDetailModel
 	if err := c.ShouldBindJSON(&dictDetailModel); err != nil {

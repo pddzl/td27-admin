@@ -79,6 +79,49 @@ func (dds *DictDetailService) GetDictDetail(searchParams sysSetReq.DictDetailSea
 	return result, total, nil
 }
 
+func (dds *DictDetailService) GetDictDetailFlat(dictId uint) ([]*modelSysSet.DictDetailModel, error) {
+	var all []modelSysSet.DictDetailModel
+
+	// Load ALL items (no pagination)
+	if err := global.TD27_DB.
+		Where("dict_id = ?", dictId).
+		Order("sort asc").
+		Find(&all).Error; err != nil {
+		return nil, err
+	}
+
+	if len(all) == 0 {
+		return []*modelSysSet.DictDetailModel{}, nil
+	}
+
+	// Build map[id]node for fast lookup
+	m := make(map[uint]*modelSysSet.DictDetailModel)
+	for i := range all {
+		m[all[i].ID] = &all[i]
+	}
+
+	// Function to build full label recursively
+	var buildLabel func(node *modelSysSet.DictDetailModel) string
+	buildLabel = func(node *modelSysSet.DictDetailModel) string {
+		if node.ParentID == nil {
+			return node.Label
+		}
+		if parent, ok := m[uint(*node.ParentID)]; ok {
+			return buildLabel(parent) + " - " + node.Label
+		}
+		return node.Label
+	}
+
+	// Prepare result slice
+	result := make([]*modelSysSet.DictDetailModel, 0, len(all))
+	for i := range all {
+		all[i].Label = buildLabel(&all[i]) // overwrite label with full path
+		result = append(result, &all[i])
+	}
+
+	return result, nil
+}
+
 func (dds *DictDetailService) AddDictDetail(instance *modelSysSet.DictDetailModel) (*modelSysSet.DictDetailModel, error) {
 	var existing modelSysSet.DictDetailModel
 

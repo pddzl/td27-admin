@@ -5,7 +5,8 @@ import {
   addDictDetailApi,
   delDictDetailApi,
   editDictDetailApi,
-  getDictDetailApi
+  getDictDetailApi,
+  getDictDetailFlatApi
 } from "@/api/sysSet/dictDetail"
 import { usePagination } from "@/common/composables/usePagination_n"
 import { formatDateTime } from "@/common/utils/datetime"
@@ -105,6 +106,17 @@ async function getTableData() {
   }
 }
 getTableData()
+
+async function getTableDataFlat() {
+  if (!props.dictId) return
+  const res = await getDictDetailFlatApi({
+    dictId: props.dictId
+  })
+  if (res.code === 0) {
+    console.log("flat", res.data)
+  }
+}
+getTableDataFlat()
 
 enum operationKind {
   Add = "Add",
@@ -211,6 +223,11 @@ watch(
         <el-button type="primary" icon="plus" @click="openAddDialog()">
           新增字典项
         </el-button>
+        <div>
+          <el-tooltip content="刷新" effect="light">
+            <el-button type="primary" icon="RefreshRight" circle plain @click="getTableData" />
+          </el-tooltip>
+        </div>
       </div>
       <div class="table-wrapper">
         <el-table
