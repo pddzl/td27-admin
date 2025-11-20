@@ -12,17 +12,17 @@ import (
 )
 
 type DictApi struct {
-	DictService *sysSet.DictService
+	dictService *sysSet.DictService
 }
 
 func NewDictApi() *DictApi {
 	return &DictApi{
-		DictService: sysSet.NewDictService(),
+		dictService: sysSet.NewDictService(),
 	}
 }
 
 func (da *DictApi) GetDict(c *gin.Context) {
-	if list, err := da.DictService.GetDict(); err != nil {
+	if list, err := da.dictService.GetDict(); err != nil {
 		response.Fail(c)
 		global.TD27_LOG.Error("Get Error", zap.Error(err))
 	} else {
@@ -37,7 +37,7 @@ func (da *DictApi) AddDict(c *gin.Context) {
 		return
 	}
 
-	if instance, err := da.DictService.AddDict(&dictModel); err != nil {
+	if instance, err := da.dictService.AddDict(&dictModel); err != nil {
 		response.FailWithMessage(err.Error(), c)
 		global.TD27_LOG.Error("failed", zap.Error(err))
 	} else {
@@ -52,7 +52,7 @@ func (da *DictApi) DelDict(c *gin.Context) {
 		return
 	}
 
-	if err := da.DictService.DelDict(cId.ID); err != nil {
+	if err := da.dictService.DelDict(cId.ID); err != nil {
 		response.FailWithMessage(err.Error(), c)
 		global.TD27_LOG.Error("Delete error", zap.Error(err))
 	} else {
@@ -67,7 +67,7 @@ func (da *DictApi) EditDict(c *gin.Context) {
 		return
 	}
 
-	if instance, err := da.DictService.EditDict(&dictModel); err != nil {
+	if instance, err := da.dictService.EditDict(&dictModel); err != nil {
 		response.FailWithMessage(err.Error(), c)
 		global.TD27_LOG.Error("edit failed", zap.Error(err))
 	} else {

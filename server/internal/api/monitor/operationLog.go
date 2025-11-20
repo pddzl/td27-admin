@@ -3,21 +3,21 @@ package monitor
 import (
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
-	
+
 	"server/internal/global"
-	commonReq "server/internal/model/common/request"
+	"server/internal/model/common/request"
 	"server/internal/model/common/response"
 	monitorReq "server/internal/model/entity/monitor/request"
 	serviceMonitor "server/internal/service/monitor"
 )
 
 type OperationLogApi struct {
-	OperationLogService *serviceMonitor.OperationLogService
+	operationLogService *serviceMonitor.OperationLogService
 }
 
 func NewOperationLogApi() *OperationLogApi {
 	return &OperationLogApi{
-		OperationLogService: serviceMonitor.NewOperationLogService(),
+		operationLogService: serviceMonitor.NewOperationLogService(),
 	}
 }
 
@@ -37,7 +37,7 @@ func (oa *OperationLogApi) GetOperationLogList(c *gin.Context) {
 		return
 	}
 
-	if list, total, err := oa.OperationLogService.GetOperationLogList(orSp); err != nil {
+	if list, total, err := oa.operationLogService.GetOperationLogList(orSp); err != nil {
 		response.FailWithMessage("获取失败", c)
 		global.TD27_LOG.Error("获取失败", zap.Error(err))
 	} else {
@@ -60,13 +60,13 @@ func (oa *OperationLogApi) GetOperationLogList(c *gin.Context) {
 // @Success   200   {object}  response.Response{msg=string}
 // @Router    /opl/deleteOperationLog [post]
 func (oa *OperationLogApi) DeleteOperationLog(c *gin.Context) {
-	var cId commonReq.CId
+	var cId request.CId
 	if err := c.ShouldBindJSON(&cId); err != nil {
 		response.FailReq(err.Error(), c)
 		return
 	}
 
-	if err := oa.OperationLogService.DeleteOperationLog(cId.ID); err != nil {
+	if err := oa.operationLogService.DeleteOperationLog(cId.ID); err != nil {
 		response.FailWithMessage("删除失败", c)
 		global.TD27_LOG.Error("删除失败", zap.Error(err))
 	} else {
@@ -84,13 +84,13 @@ func (oa *OperationLogApi) DeleteOperationLog(c *gin.Context) {
 // @Success   200   {object}  response.Response{msg=string}
 // @Router    /opl/deleteOperationLogByIds [post]
 func (oa *OperationLogApi) DeleteOperationLogByIds(c *gin.Context) {
-	var cIds commonReq.CIds
+	var cIds request.CIds
 	if err := c.ShouldBindJSON(&cIds); err != nil {
 		response.FailReq(err.Error(), c)
 		return
 	}
 
-	if err := oa.OperationLogService.DeleteOperationLogByIds(cIds.IDs); err != nil {
+	if err := oa.operationLogService.DeleteOperationLogByIds(cIds.IDs); err != nil {
 		response.FailWithMessage("删除失败", c)
 		global.TD27_LOG.Error("删除失败", zap.Error(err))
 	} else {

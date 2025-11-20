@@ -13,12 +13,12 @@ import (
 )
 
 type DictDetailApi struct {
-	DictDetailService *sysSet.DictDetailService
+	dictDetailService *sysSet.DictDetailService
 }
 
 func NewDictDetailApi() *DictDetailApi {
 	return &DictDetailApi{
-		DictDetailService: sysSet.NewDictDetailService(),
+		dictDetailService: sysSet.NewDictDetailService(),
 	}
 }
 
@@ -29,7 +29,7 @@ func (dda *DictDetailApi) GetDictDetail(c *gin.Context) {
 		return
 	}
 
-	if list, total, err := dda.DictDetailService.GetDictDetail(ddsParams); err != nil {
+	if list, total, err := dda.dictDetailService.GetDictDetail(ddsParams); err != nil {
 		response.FailWithMessage("failed", c)
 		global.TD27_LOG.Error("get failed", zap.Error(err))
 	} else {
@@ -49,7 +49,7 @@ func (dda *DictDetailApi) GetDictDetailFlat(c *gin.Context) {
 		return
 	}
 
-	if list, err := dda.DictDetailService.GetDictDetailFlat(flatReq.DictID); err != nil {
+	if list, err := dda.dictDetailService.GetDictDetailFlat(flatReq.DictID); err != nil {
 		response.FailWithMessage("failed", c)
 		global.TD27_LOG.Error("get failed", zap.Error(err))
 	} else {
@@ -64,7 +64,7 @@ func (dda *DictDetailApi) AddDictDetail(c *gin.Context) {
 		return
 	}
 
-	if instance, err := dda.DictDetailService.AddDictDetail(&dictDetailModel); err != nil {
+	if instance, err := dda.dictDetailService.AddDictDetail(&dictDetailModel); err != nil {
 		response.FailWithMessage(err.Error(), c)
 		global.TD27_LOG.Error("add failed", zap.Error(err))
 	} else {
@@ -79,7 +79,7 @@ func (dda *DictDetailApi) DelDictDetail(c *gin.Context) {
 		return
 	}
 
-	if err := dda.DictDetailService.DelDictDetail(cId.ID); err != nil {
+	if err := dda.dictDetailService.DelDictDetail(cId.ID); err != nil {
 		response.Fail(c)
 		global.TD27_LOG.Error("delete failed", zap.Error(err))
 	} else {
@@ -94,7 +94,7 @@ func (dda *DictDetailApi) EditDictDetail(c *gin.Context) {
 		return
 	}
 
-	if instance, err := dda.DictDetailService.EditDictDetail(&dictDetailModel); err != nil {
+	if instance, err := dda.dictDetailService.EditDictDetail(&dictDetailModel); err != nil {
 		response.FailWithMessage(err.Error(), c)
 		global.TD27_LOG.Error("edit failed", zap.Error(err))
 	} else {
