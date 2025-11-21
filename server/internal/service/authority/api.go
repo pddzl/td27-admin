@@ -5,15 +5,19 @@ import (
 	"fmt"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
+	"strconv"
+	"strings"
+
 	"server/internal/global"
 	modelAuthority "server/internal/model/entity/authority"
 	authorityReq "server/internal/model/entity/authority/request"
-	serviceBase "server/internal/service/base"
-	"strconv"
-	"strings"
 )
 
 type ApiService struct{}
+
+func NewApiService() *ApiService {
+	return &ApiService{}
+}
 
 // AddApi 添加api
 func (a *ApiService) AddApi(api *modelAuthority.ApiModel) (*modelAuthority.ApiModel, error) {
@@ -123,7 +127,7 @@ func (a *ApiService) GetElTreeApis(roleId uint) (list []modelAuthority.ApiTree, 
 	}
 
 	// 前端 el-tree default-checked-keys
-	e := serviceBase.CasbinServiceApp.Casbin()
+	e := casbinService.Casbin()
 	authorityId := strconv.Itoa(int(roleId))
 	cData := e.GetFilteredPolicy(0, authorityId)
 	for _, v := range cData {
@@ -147,7 +151,7 @@ func (a *ApiService) DeleteApi(id uint) (err error) {
 		return err
 	}
 
-	ok := serviceBase.CasbinServiceApp.ClearCasbin(1, apiModel.Path, apiModel.Method)
+	ok := casbinService.ClearCasbin(1, apiModel.Path, apiModel.Method)
 	if !ok {
 		return errors.New(apiModel.Path + ":" + apiModel.Method + "casbin同步清理失败")
 	}
@@ -162,7 +166,7 @@ func (a *ApiService) DeleteApiById(ids []uint) (err error) {
 	// 删除对应casbin条目
 	if err == nil {
 		for _, sysApi := range apis {
-			ok := serviceBase.CasbinServiceApp.ClearCasbin(1, sysApi.Path, sysApi.Method)
+			ok := casbinService.ClearCasbin(1, sysApi.Path, sysApi.Method)
 			if !ok {
 				global.TD27_LOG.Error(fmt.Sprintf("%s:%s casbin同步清理失败", sysApi.Path, sysApi.Method))
 			}
@@ -185,7 +189,7 @@ func (a *ApiService) EditApi(instance *modelAuthority.ApiModel) (err error) {
 		}
 	}
 
-	err = serviceBase.CasbinServiceApp.UpdateCasbinApi(apiModel.Path, apiModel.Path, apiModel.Method, apiModel.Method)
+	err = casbinService.UpdateCasbinApi(apiModel.Path, apiModel.Path, apiModel.Method, apiModel.Method)
 	if err != nil {
 		return fmt.Errorf("更新casbin rule err: %v", err)
 	}

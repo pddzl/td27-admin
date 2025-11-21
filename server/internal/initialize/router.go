@@ -38,21 +38,21 @@ func Routers() *gin.Engine {
 
 	// 路由组
 	// -> 基础
-	baseRouter := router.RouterGroupApp.Base
+	baseRouter := router.NewBaseRouterGroup()
 	{
 		baseRouter.InitLogRegRouter(PublicGroup) // 登录相关
 	}
 
 	// -> 鉴权管理
-	authorityRouter := router.RouterGroupApp.Authority
+	authorityRouter := router.NewAuthorityRouterGroup()
 	// -> 文件管理
-	fileMRouter := router.RouterGroupApp.FileM
+	fileMRouter := router.NewFileMRouterGroup()
 	// -> 系统监控
-	monitorRouter := router.NewMonitorGroup()
+	monitorRouter := router.NewMonitorRouterGroup()
 	// -> 系统工具
-	sysToolRouter := router.NewSysToolGroup()
+	sysToolRouter := router.NewSysToolRouterGroup()
 	// -> system settings
-	sysSetRouter := router.NewSysSetGroup()
+	sysSetRouter := router.NewSysSetRouterGroup()
 
 	// 需要认证的路由
 	PrivateGroup := Router.Group(global.TD27_CONFIG.Router.Prefix)
@@ -77,5 +77,6 @@ func Routers() *gin.Engine {
 	}
 
 	global.TD27_LOG.Info("router register success")
+
 	return Router
 }

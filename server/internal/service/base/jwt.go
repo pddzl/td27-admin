@@ -3,10 +3,15 @@ package base
 import (
 	"context"
 	"server/internal/global"
+	
 	"time"
 )
 
 type JwtService struct{}
+
+func NewJwtService() *JwtService {
+	return &JwtService{}
+}
 
 // GetRedisJWT 获取jwt
 func (jwtService *JwtService) GetRedisJWT(username string) (redisJWT string, err error) {

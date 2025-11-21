@@ -14,6 +14,10 @@ import (
 
 type FileService struct{}
 
+func NewFileService() *FileService {
+	return &FileService{}
+}
+
 // Upload 上传文件
 func (fs *FileService) Upload(file *multipart.FileHeader) (*modelFileM.FileModel, error) {
 	var uploadModel modelFileM.FileModel

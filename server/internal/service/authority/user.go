@@ -4,9 +4,10 @@ import (
 	"errors"
 	"fmt"
 	"gorm.io/gorm"
+
 	"server/internal/global"
-	commonReq "server/internal/model/common/request"
-	authority3 "server/internal/model/entity/authority"
+	"server/internal/model/common/request"
+	modelAuthority "server/internal/model/entity/authority"
 	authorityReq "server/internal/model/entity/authority/request"
 	authorityRes "server/internal/model/entity/authority/response"
 	"server/internal/pkg"
@@ -14,17 +15,21 @@ import (
 
 type UserService struct{}
 
+func NewUserService() *UserService {
+	return &UserService{}
+}
+
 func (us *UserService) GetUserInfo(userId uint) (userResults authorityRes.UserResult, err error) {
 	err = global.TD27_DB.Table("authority_user").Select("authority_user.created_at,authority_user.id,authority_user.username,authority_user.phone,authority_user.email,authority_user.active,authority_user.role_model_id,authority_role.role_name").Joins("inner join authority_role on authority_user.role_model_id = authority_role.id").Where("authority_user.id = ?", userId).Scan(&userResults).Error
 	return
 }
 
 // GetUsers 获取所有用户
-func (us *UserService) GetUsers(pageInfo commonReq.PageInfo) ([]authorityRes.UserResult, int64, error) {
+func (us *UserService) GetUsers(pageInfo request.PageInfo) ([]authorityRes.UserResult, int64, error) {
 	var userResults []authorityRes.UserResult
 	var total int64
 
-	db := global.TD27_DB.Model(&authority3.UserModel{})
+	db := global.TD27_DB.Model(&modelAuthority.UserModel{})
 
 	// 分页
 	err := db.Count(&total).Error
@@ -43,16 +48,16 @@ func (us *UserService) GetUsers(pageInfo commonReq.PageInfo) ([]authorityRes.Use
 
 // DeleteUser 删除用户
 func (us *UserService) DeleteUser(id uint) (err error) {
-	return global.TD27_DB.Where("id = ?", id).Unscoped().Delete(&authority3.UserModel{}).Error
+	return global.TD27_DB.Where("id = ?", id).Unscoped().Delete(&modelAuthority.UserModel{}).Error
 }
 
 // AddUser 添加用户
 func (us *UserService) AddUser(instance *authorityReq.AddUser) (err error) {
-	if errors.Is(global.TD27_DB.Where("id = ?", instance.RoleModelID).First(&authority3.RoleModel{}).Error, gorm.ErrRecordNotFound) {
+	if errors.Is(global.TD27_DB.Where("id = ?", instance.RoleModelID).First(&modelAuthority.RoleModel{}).Error, gorm.ErrRecordNotFound) {
 		return errors.New("角色不存在")
 	}
 
-	var userModel authority3.UserModel
+	var userModel modelAuthority.UserModel
 	userModel.Username = instance.Username
 	userModel.Password = pkg.MD5V([]byte(instance.Password))
 	userModel.Phone = instance.Phone
@@ -65,14 +70,14 @@ func (us *UserService) AddUser(instance *authorityReq.AddUser) (err error) {
 
 // EditUser 编辑用户
 func (us *UserService) EditUser(instance *authorityReq.EditUser) (*authorityRes.UserResult, error) {
-	var userModel authority3.UserModel
+	var userModel modelAuthority.UserModel
 	// 用户是否存在
 	if errors.Is(global.TD27_DB.Where("id = ?", instance.ID).First(&userModel).Error, gorm.ErrRecordNotFound) {
 		return nil, errors.New("记录不存在")
 	}
 
 	// 角色是否存在
-	var roleModel authority3.RoleModel
+	var roleModel modelAuthority.RoleModel
 	if errors.Is(global.TD27_DB.Where("id = ?", instance.RoleModelID).First(&roleModel).Error, gorm.ErrRecordNotFound) {
 		return nil, errors.New("角色不存在")
 	}
@@ -98,7 +103,7 @@ func (us *UserService) EditUser(instance *authorityReq.EditUser) (*authorityRes.
 
 // ModifyPass 修改用户密码
 func (us *UserService) ModifyPass(mp *authorityReq.ModifyPass) (err error) {
-	var userModel authority3.UserModel
+	var userModel modelAuthority.UserModel
 	if errors.Is(global.TD27_DB.Where("id = ? and password = ?", mp.ID, pkg.MD5V([]byte(mp.OldPassword))).First(&userModel).Error, gorm.ErrRecordNotFound) {
 		return errors.New("旧密码错误")
 	}
@@ -108,7 +113,7 @@ func (us *UserService) ModifyPass(mp *authorityReq.ModifyPass) (err error) {
 
 // SwitchActive 切换启用状态
 func (us *UserService) SwitchActive(sa *authorityReq.SwitchActive) (err error) {
-	var userModel authority3.UserModel
+	var userModel modelAuthority.UserModel
 	if errors.Is(global.TD27_DB.Where("id = ?", sa.ID).First(&userModel).Error, gorm.ErrRecordNotFound) {
 		return errors.New("记录不存在")
 	}

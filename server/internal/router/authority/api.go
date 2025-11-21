@@ -2,25 +2,27 @@ package authority
 
 import (
 	"github.com/gin-gonic/gin"
-	"server/internal/api"
+	"server/internal/api/authority"
 	"server/internal/middleware"
 )
 
-type ApiRouter struct{}
+type ApiRouter struct {
+	apiApi *authority.ApiApi
+}
 
-func (u *ApiRouter) InitApiRouter(Router *gin.RouterGroup) {
+func NewApiRouter() *ApiRouter {
+	return &ApiRouter{apiApi: authority.NewApiApi()}
+}
+
+func (ur *ApiRouter) InitApiRouter(Router *gin.RouterGroup) {
+	// record
 	apiRouter := Router.Group("api").Use(middleware.OperationRecord())
+	apiRouter.POST("addApi", ur.apiApi.AddApi)
+	apiRouter.POST("deleteApi", ur.apiApi.DeleteApi)
+	apiRouter.POST("deleteApiById", ur.apiApi.DeleteApiById)
+	apiRouter.POST("editApi", ur.apiApi.EditApi)
+	apiRouter.POST("getElTreeApis", ur.apiApi.GetElTreeApis)
+	// without record
 	apiWithoutRouter := Router.Group("api")
-
-	apiApi := api.ApiGroupApp.Authority.ApiApi
-	{
-		apiRouter.POST("addApi", apiApi.AddApi)
-		apiRouter.POST("deleteApi", apiApi.DeleteApi)
-		apiRouter.POST("deleteApiById", apiApi.DeleteApiById)
-		apiRouter.POST("editApi", apiApi.EditApi)
-		apiRouter.POST("getElTreeApis", apiApi.GetElTreeApis)
-	}
-	{
-		apiWithoutRouter.POST("getApis", apiApi.GetApis)
-	}
+	apiWithoutRouter.POST("getApis", ur.apiApi.GetApis)
 }

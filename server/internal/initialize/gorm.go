@@ -8,13 +8,14 @@ import (
 	"gorm.io/gorm/logger"
 	"log"
 	"os"
+	"time"
+
 	"server/internal/global"
-	authority2 "server/internal/model/entity/authority"
+	modelAuthority "server/internal/model/entity/authority"
 	modelFileM "server/internal/model/entity/fileM"
 	modelMonitor "server/internal/model/entity/monitor"
-	sysSet2 "server/internal/model/entity/sysSet"
+	modelSysSet "server/internal/model/entity/sysSet"
 	modelSysTool "server/internal/model/entity/sysTool"
-	"time"
 )
 
 type writer struct {
@@ -83,10 +84,10 @@ func Gorm() *gorm.DB {
 func RegisterTables(db *gorm.DB) {
 	err := db.AutoMigrate(
 		// 权限
-		authority2.UserModel{},
-		authority2.RoleModel{},
-		authority2.MenuModel{},
-		authority2.ApiModel{},
+		modelAuthority.UserModel{},
+		modelAuthority.RoleModel{},
+		modelAuthority.MenuModel{},
+		modelAuthority.ApiModel{},
 		// 监控
 		modelMonitor.OperationLogModel{},
 		// fileM
@@ -94,8 +95,8 @@ func RegisterTables(db *gorm.DB) {
 		// 系统工具
 		modelSysTool.CronModel{},
 		// system settings
-		sysSet2.DictModel{},
-		sysSet2.DictDetailModel{},
+		modelSysSet.DictModel{},
+		modelSysSet.DictDetailModel{},
 	)
 
 	if err != nil {

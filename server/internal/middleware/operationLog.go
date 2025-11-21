@@ -8,16 +8,17 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+
 	"server/internal/global"
 	modelMonitor "server/internal/model/entity/monitor"
 	"server/internal/pkg"
-	"server/internal/service"
+	"server/internal/service/monitor"
 	"strings"
 	"time"
 )
 
 var (
-	operationLogService = service.ServiceGroupApp.Monitor.OperationLogService
+	operationLogService = monitor.NewOperationLogService()
 )
 
 type responseProxyWriter struct {

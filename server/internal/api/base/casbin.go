@@ -3,12 +3,20 @@ package base
 import (
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
+
 	"server/internal/global"
-	commonRes "server/internal/model/common/response"
+	"server/internal/model/common/response"
 	authorityReq "server/internal/model/entity/base/request"
+	"server/internal/service/base"
 )
 
-type CasbinApi struct{}
+type CasbinApi struct {
+	casbinService *base.CasbinService
+}
+
+func NewCasbinApi() *CasbinApi {
+	return &CasbinApi{casbinService: base.NewCasbinService()}
+}
 
 // EditCasbin
 // @Tags      CasbinApi
@@ -22,14 +30,14 @@ type CasbinApi struct{}
 func (ca *CasbinApi) EditCasbin(c *gin.Context) {
 	var reqCasbin authorityReq.ReqCasbin
 	if err := c.ShouldBindJSON(&reqCasbin); err != nil {
-		commonRes.FailReq(err.Error(), c)
+		response.FailReq(err.Error(), c)
 		return
 	}
 
-	if err := casbinService.EditCasbin(reqCasbin.RoleId, reqCasbin.CasbinInfos); err != nil {
-		commonRes.Fail(c)
+	if err := ca.casbinService.EditCasbin(reqCasbin.RoleId, reqCasbin.CasbinInfos); err != nil {
+		response.Fail(c)
 		global.TD27_LOG.Error("更新失败", zap.Error(err))
 	} else {
-		commonRes.Ok(c)
+		response.Ok(c)
 	}
 }

@@ -7,18 +7,30 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/mojocn/base64Captcha"
 	"go.uber.org/zap"
+
 	"server/internal/global"
-	commonRes "server/internal/model/common/response"
+	"server/internal/model/common/response"
 	modelAuthority "server/internal/model/entity/authority"
-	request2 "server/internal/model/entity/base/request"
-	baseRes "server/internal/model/entity/base/response"
+	baseReq "server/internal/model/entity/base/request"
+	baseResp "server/internal/model/entity/base/response"
 	"server/internal/pkg"
+	"server/internal/service/base"
 	"time"
 )
 
 var store = base64Captcha.DefaultMemStore
 
-type LogRegApi struct{}
+type LogRegApi struct {
+	logRegService *base.LogRegService
+	jwtService    *base.JwtService
+}
+
+func NewLogRegApi() *LogRegApi {
+	return &LogRegApi{
+		logRegService: base.NewLogRegService(),
+		jwtService:    base.NewJwtService(),
+	}
+}
 
 // Captcha
 // @Tags      LogRegApi
@@ -36,10 +48,10 @@ func (ba *LogRegApi) Captcha(c *gin.Context) {
 	id, b64s, _, err := cp.Generate()
 	if err != nil {
 		global.TD27_LOG.Error("验证码获取失败!", zap.Error(err))
-		commonRes.FailWithMessage("验证码获取失败", c)
+		response.FailWithMessage("验证码获取失败", c)
 		return
 	}
-	commonRes.OkWithDetailed(request2.CaptchaResponse{
+	response.OkWithDetailed(baseReq.CaptchaResponse{
 		CaptchaId:     id,
 		PicPath:       b64s,
 		CaptchaLength: global.TD27_CONFIG.Captcha.KeyLong,
@@ -52,36 +64,36 @@ func (ba *LogRegApi) Captcha(c *gin.Context) {
 // @accept    application/json
 // @Produce   application/json
 // @Param    data  body      baseReq.Login true "请求参数"
-// @Success  200   {object}  response.Response{data=baseRes.LoginResponse,msg=string}
+// @Success  200   {object}  response.Response{data=baseResp.LoginResponse,msg=string}
 // @Router   /logReg/login [post]
 func (ba *LogRegApi) Login(c *gin.Context) {
-	var login request2.Login
+	var login baseReq.Login
 	if err := c.ShouldBindJSON(&login); err != nil {
-		commonRes.FailReq(err.Error(), c)
+		response.FailReq(err.Error(), c)
 		return
 	}
 
 	// 验证码
 	if store.Verify(login.CaptchaId, login.Captcha, true) {
 		u := &modelAuthority.UserModel{Username: login.Username, Password: login.Password}
-		user, err := logRegService.Login(u)
+		user, err := ba.logRegService.Login(u)
 		if err != nil {
-			commonRes.FailWithMessage(fmt.Sprintf("登录失败: %s", err.Error()), c)
+			response.FailWithMessage(fmt.Sprintf("登录失败: %s", err.Error()), c)
 			global.TD27_LOG.Error("登录失败", zap.Error(err))
 			return
 		}
 		// 获取token
-		tokenNext(c, user)
+		ba.tokenNext(c, user)
 	} else {
-		commonRes.FailWithMessage("验证码错误", c)
+		response.FailWithMessage("验证码错误", c)
 	}
 }
 
 // 生成jwt token
-func tokenNext(c *gin.Context, user *modelAuthority.UserModel) {
+func (ba *LogRegApi) tokenNext(c *gin.Context, user *modelAuthority.UserModel) {
 	j := &pkg.JWT{SigningKey: []byte(global.TD27_CONFIG.JWT.SigningKey)} // 唯一签名
 
-	claims := request2.CustomClaims{
+	claims := baseReq.CustomClaims{
 		ID:         user.ID,
 		Username:   user.Username,
 		RoleId:     user.RoleModelID,
@@ -95,20 +107,20 @@ func tokenNext(c *gin.Context, user *modelAuthority.UserModel) {
 
 	token, err := j.CreateToken(claims)
 	if err != nil {
-		commonRes.FailWithMessage("创建token失败", c)
+		response.FailWithMessage("创建token失败", c)
 		global.TD27_LOG.Error("创建token失败", zap.Error(err))
 		return
 	}
 
 	// token写入redis，后续鉴权使用
-	if err := jwtService.SetRedisJWT(user.Username, token); err != nil {
-		commonRes.FailWithMessage("设置登录状态失败", c)
+	if err = ba.jwtService.SetRedisJWT(user.Username, token); err != nil {
+		response.FailWithMessage("设置登录状态失败", c)
 		global.TD27_LOG.Error("设置登录状态失败", zap.Error(err))
 		return
 	}
 
 	// 登录成功
-	commonRes.OkWithDetailed(baseRes.LoginResponse{
+	response.OkWithDetailed(baseResp.LoginResponse{
 		User:      *user,
 		Token:     token,
 		ExpiresAt: claims.RegisteredClaims.ExpiresAt.Unix(),
@@ -130,11 +142,10 @@ func (ba *LogRegApi) LogOut(c *gin.Context) {
 	if err != nil {
 		global.TD27_LOG.Error("登出解析token失败", zap.Error(err))
 	} else {
-		global.TD27_REDIS.Del(context.Background(), claims.Username)
+		err = global.TD27_REDIS.Del(context.Background(), claims.Username).Err()
 		if err != nil {
 			global.TD27_LOG.Error("登出写入token失败", zap.Error(err))
 		}
 	}
-
-	commonRes.OkWithMessage("登出失败", c)
+	response.OkWithMessage("登出失败", c)
 }

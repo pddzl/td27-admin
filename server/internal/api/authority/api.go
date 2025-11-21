@@ -3,15 +3,23 @@ package authority
 import (
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
+
 	"server/internal/global"
-	commonReq "server/internal/model/common/request"
+	"server/internal/model/common/request"
 	"server/internal/model/common/response"
 	modelAuthority "server/internal/model/entity/authority"
 	authorityReq "server/internal/model/entity/authority/request"
 	authorityRes "server/internal/model/entity/authority/response"
+	"server/internal/service/authority"
 )
 
-type ApiApi struct{}
+type ApiApi struct {
+	apiService *authority.ApiService
+}
+
+func NewApiApi() *ApiApi {
+	return &ApiApi{apiService: authority.NewApiService()}
+}
 
 // AddApi
 // @Tags      ApiApi
@@ -22,14 +30,14 @@ type ApiApi struct{}
 // @Param     data  body      modelAuthority.ApiModel true "请求参数"
 // @Success   200   {object}  response.Response{data=modelAuthority.ApiModel,msg=string}
 // @Router    /api/addApi [post]
-func (a *ApiApi) AddApi(c *gin.Context) {
+func (aa *ApiApi) AddApi(c *gin.Context) {
 	var apiModel modelAuthority.ApiModel
 	if err := c.ShouldBindJSON(&apiModel); err != nil {
 		response.FailReq(err.Error(), c)
 		return
 	}
 
-	if instance, err := apiService.AddApi(&apiModel); err != nil {
+	if instance, err := aa.apiService.AddApi(&apiModel); err != nil {
 		response.Fail(c)
 		global.TD27_LOG.Error("添加失败", zap.Error(err))
 	} else {
@@ -46,14 +54,14 @@ func (a *ApiApi) AddApi(c *gin.Context) {
 // @Param     data  body      authorityReq.ApiSearchParams true  "请求参数"
 // @Success   200   {object}  response.Response{data=response.Page{list=[]modelAuthority.ApiModel},msg=string}
 // @Router    /api/getApis [post]
-func (a *ApiApi) GetApis(c *gin.Context) {
+func (aa *ApiApi) GetApis(c *gin.Context) {
 	var apiSp authorityReq.ApiSearchParams
 	if err := c.ShouldBindJSON(&apiSp); err != nil {
 		response.FailReq(err.Error(), c)
 		return
 	}
 
-	if list, total, err := apiService.GetApis(apiSp); err != nil {
+	if list, total, err := aa.apiService.GetApis(apiSp); err != nil {
 		response.FailWithMessage("获取失败", c)
 		global.TD27_LOG.Error("获取失败", zap.Error(err))
 	} else {
@@ -75,14 +83,14 @@ func (a *ApiApi) GetApis(c *gin.Context) {
 // @Param     data  body      request.CId true "请求参数"
 // @Success   200   {object}  response.Response{msg=string}
 // @Router    /api/deleteApi [post]
-func (a *ApiApi) DeleteApi(c *gin.Context) {
-	var cId commonReq.CId
+func (aa *ApiApi) DeleteApi(c *gin.Context) {
+	var cId request.CId
 	if err := c.ShouldBindJSON(&cId); err != nil {
 		response.FailReq(err.Error(), c)
 		return
 	}
 
-	if err := apiService.DeleteApi(cId.ID); err != nil {
+	if err := aa.apiService.DeleteApi(cId.ID); err != nil {
 		response.Fail(c)
 		global.TD27_LOG.Error("删除失败", zap.Error(err))
 	} else {
@@ -99,14 +107,14 @@ func (a *ApiApi) DeleteApi(c *gin.Context) {
 // @Param     data  body      request.CIds true "请求参数"
 // @Success   200   {object}  response.Response{msg=string}
 // @Router    /api/deleteApiById [post]
-func (a *ApiApi) DeleteApiById(c *gin.Context) {
-	var cIds commonReq.CIds
+func (aa *ApiApi) DeleteApiById(c *gin.Context) {
+	var cIds request.CIds
 	if err := c.ShouldBindJSON(&cIds); err != nil {
 		response.FailReq(err.Error(), c)
 		return
 	}
 
-	if err := apiService.DeleteApiById(cIds.IDs); err != nil {
+	if err := aa.apiService.DeleteApiById(cIds.IDs); err != nil {
 		response.Fail(c)
 		global.TD27_LOG.Error("批量删除失败", zap.Error(err))
 	} else {
@@ -123,14 +131,14 @@ func (a *ApiApi) DeleteApiById(c *gin.Context) {
 // @Param     data  body      modelAuthority.ApiModel true "请求参数"
 // @Success   200   {object}  response.Response{msg=string}
 // @Router    /api/editApi [post]
-func (a *ApiApi) EditApi(c *gin.Context) {
+func (aa *ApiApi) EditApi(c *gin.Context) {
 	var apiModel modelAuthority.ApiModel
 	if err := c.ShouldBindJSON(&apiModel); err != nil {
 		response.FailReq(err.Error(), c)
 		return
 	}
 
-	if err := apiService.EditApi(&apiModel); err != nil {
+	if err := aa.apiService.EditApi(&apiModel); err != nil {
 		response.Fail(c)
 		global.TD27_LOG.Error("编辑失败", zap.Error(err))
 	} else {
@@ -147,14 +155,14 @@ func (a *ApiApi) EditApi(c *gin.Context) {
 // @Param     data  body      request.CId true "请求参数"
 // @Success   200   {object}  response.Response{data=authorityRes.ApiTree{list=[]modelAuthority.ApiTree,checkedKey=[]string},msg=string}
 // @Router    /api/getElTreeApis [post]
-func (a *ApiApi) GetElTreeApis(c *gin.Context) {
-	var cId commonReq.CId
+func (aa *ApiApi) GetElTreeApis(c *gin.Context) {
+	var cId request.CId
 	if err := c.ShouldBindJSON(&cId); err != nil {
 		response.FailReq(err.Error(), c)
 		return
 	}
 
-	list, checkedKey, err := apiService.GetElTreeApis(cId.ID)
+	list, checkedKey, err := aa.apiService.GetElTreeApis(cId.ID)
 	if err != nil {
 		response.FailWithMessage("获取失败", c)
 	} else {

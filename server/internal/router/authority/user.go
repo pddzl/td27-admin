@@ -2,26 +2,29 @@ package authority
 
 import (
 	"github.com/gin-gonic/gin"
-	"server/internal/api"
+
+	"server/internal/api/authority"
 	"server/internal/middleware"
 )
 
-type UserRouter struct{}
+type UserRouter struct {
+	userApi *authority.UserApi
+}
 
-func (u *UserRouter) InitUserRouter(Router *gin.RouterGroup) {
+func NewUserRouter() *UserRouter {
+	return &UserRouter{userApi: authority.NewUserApi()}
+}
+
+func (ur *UserRouter) InitUserRouter(Router *gin.RouterGroup) {
+	// record
 	userRouter := Router.Group("user").Use(middleware.OperationRecord())
+	userRouter.POST("deleteUser", ur.userApi.DeleteUser)
+	userRouter.POST("addUser", ur.userApi.AddUser)
+	userRouter.POST("editUser", ur.userApi.EditUser)
+	userRouter.POST("modifyPass", ur.userApi.ModifyPass)
+	userRouter.POST("switchActive", ur.userApi.SwitchActive)
+	// without record
 	userWithoutRouter := Router.Group("user")
-
-	userApi := api.ApiGroupApp.Authority.UserApi
-	{
-		userRouter.POST("deleteUser", userApi.DeleteUser)
-		userRouter.POST("addUser", userApi.AddUser)
-		userRouter.POST("editUser", userApi.EditUser)
-		userRouter.POST("modifyPass", userApi.ModifyPass)
-		userRouter.POST("switchActive", userApi.SwitchActive)
-	}
-	{
-		userWithoutRouter.GET("getUserInfo", userApi.GetUserInfo)
-		userWithoutRouter.POST("getUsers", userApi.GetUsers)
-	}
+	userWithoutRouter.GET("getUserInfo", ur.userApi.GetUserInfo)
+	userWithoutRouter.POST("getUsers", ur.userApi.GetUsers)
 }

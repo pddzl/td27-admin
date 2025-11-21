@@ -40,7 +40,7 @@ router:
 mysql:
   host: 'mysql'
   port: 3306
-  config: 'charset=utf8&parseTime=true'
+  config: 'charset=utf8&parseTime=true&loc=Local'
   db-name: 'td27'
   username: 'root'
   password: 'td27admin'

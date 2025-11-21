@@ -6,6 +6,7 @@ import (
 	"github.com/casbin/casbin/v2/model"
 	gormadapter "github.com/casbin/gorm-adapter/v3"
 	"go.uber.org/zap"
+
 	"server/internal/global"
 	baseReq "server/internal/model/entity/base/request"
 	"strconv"
@@ -14,7 +15,9 @@ import (
 
 type CasbinService struct{}
 
-var CasbinServiceApp = new(CasbinService)
+func NewCasbinService() *CasbinService {
+	return &CasbinService{}
+}
 
 var (
 	syncedCachedEnforcer *casbin.SyncedCachedEnforcer

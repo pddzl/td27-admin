@@ -3,14 +3,22 @@ package authority
 import (
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
+
 	"server/internal/global"
-	commonReq "server/internal/model/common/request"
-	commonRes "server/internal/model/common/response"
+	"server/internal/model/common/request"
+	"server/internal/model/common/response"
 	modelAuthority "server/internal/model/entity/authority"
-	request2 "server/internal/model/entity/authority/request"
+	authorityReq "server/internal/model/entity/authority/request"
+	"server/internal/service/authority"
 )
 
-type RoleApi struct{}
+type RoleApi struct {
+	roleService *authority.RoleService
+}
+
+func NewRoleApi() *RoleApi {
+	return &RoleApi{roleService: authority.NewRoleService()}
+}
 
 // GetRoles
 // @Tags      RoleApi
@@ -20,10 +28,10 @@ type RoleApi struct{}
 // @Success   200   {object}  response.Response{data=[]authority.RoleModel,msg=string}
 // @Router    /role/getRoles [post]
 func (ra *RoleApi) GetRoles(c *gin.Context) {
-	if list, err := roleService.GetRoles(); err != nil {
-		commonRes.FailWithMessage(err.Error(), c)
+	if list, err := ra.roleService.GetRoles(); err != nil {
+		response.FailWithMessage(err.Error(), c)
 	} else {
-		commonRes.OkWithDetailed(list, "获取成功", c)
+		response.OkWithDetailed(list, "获取成功", c)
 	}
 }
 
@@ -39,15 +47,15 @@ func (ra *RoleApi) GetRoles(c *gin.Context) {
 func (ra *RoleApi) AddRole(c *gin.Context) {
 	var roleModel modelAuthority.RoleModel
 	if err := c.ShouldBindJSON(&roleModel); err != nil {
-		commonRes.FailReq(err.Error(), c)
+		response.FailReq(err.Error(), c)
 		return
 	}
 
-	if role, err := roleService.AddRole(&roleModel); err != nil {
-		commonRes.Fail(c)
+	if role, err := ra.roleService.AddRole(&roleModel); err != nil {
+		response.Fail(c)
 		global.TD27_LOG.Error("添加角色失败", zap.Error(err))
 	} else {
-		commonRes.OkWithDetailed(role, "添加角色成功", c)
+		response.OkWithDetailed(role, "添加角色成功", c)
 	}
 }
 
@@ -61,17 +69,17 @@ func (ra *RoleApi) AddRole(c *gin.Context) {
 // @Success   200   {object}  response.Response{msg=string}
 // @Router    /api/deleteRole [post]
 func (ra *RoleApi) DeleteRole(c *gin.Context) {
-	var cId commonReq.CId
+	var cId request.CId
 	if err := c.ShouldBindJSON(&cId); err != nil {
-		commonRes.FailReq(err.Error(), c)
+		response.FailReq(err.Error(), c)
 		return
 	}
 
-	if err := roleService.DeleteRole(cId.ID); err != nil {
-		commonRes.Fail(c)
+	if err := ra.roleService.DeleteRole(cId.ID); err != nil {
+		response.Fail(c)
 		global.TD27_LOG.Error("删除角色失败", zap.Error(err))
 	} else {
-		commonRes.Ok(c)
+		response.Ok(c)
 	}
 }
 
@@ -85,17 +93,17 @@ func (ra *RoleApi) DeleteRole(c *gin.Context) {
 // @Success   200   {object}  response.Response{msg=string}
 // @Router    /api/editRole [post]
 func (ra *RoleApi) EditRole(c *gin.Context) {
-	var eRole request2.EditRole
+	var eRole authorityReq.EditRole
 	if err := c.ShouldBindJSON(&eRole); err != nil {
-		commonRes.FailReq(err.Error(), c)
+		response.FailReq(err.Error(), c)
 		return
 	}
 
-	if err := roleService.EditRole(eRole); err != nil {
-		commonRes.Fail(c)
+	if err := ra.roleService.EditRole(eRole); err != nil {
+		response.Fail(c)
 		global.TD27_LOG.Error("编辑失败", zap.Error(err))
 	} else {
-		commonRes.Ok(c)
+		response.Ok(c)
 	}
 }
 
@@ -109,16 +117,16 @@ func (ra *RoleApi) EditRole(c *gin.Context) {
 // @Success   200   {object}  response.Response{msg=string}
 // @Router    /api/editRoleMenu [post]
 func (ra *RoleApi) EditRoleMenu(c *gin.Context) {
-	var editRE request2.EditRoleMenu
+	var editRE authorityReq.EditRoleMenu
 	if err := c.ShouldBindJSON(&editRE); err != nil {
-		commonRes.FailWithMessage(err.Error(), c)
+		response.FailWithMessage(err.Error(), c)
 		return
 	}
 
-	if err := roleService.EditRoleMenu(editRE.RoleId, editRE.Ids); err != nil {
-		commonRes.Fail(c)
+	if err := ra.roleService.EditRoleMenu(editRE.RoleId, editRE.Ids); err != nil {
+		response.Fail(c)
 		global.TD27_LOG.Error("编辑失败", zap.Error(err))
 	} else {
-		commonRes.Ok(c)
+		response.Ok(c)
 	}
 }

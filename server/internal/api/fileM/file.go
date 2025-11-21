@@ -5,12 +5,22 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 	"os"
+
 	"server/internal/global"
 	"server/internal/model/common/response"
 	fileMReq "server/internal/model/entity/fileM/request"
+	"server/internal/service/fileM"
 )
 
-type FileApi struct{}
+type FileApi struct {
+	fileService *fileM.FileService
+}
+
+func NewFileApi() *FileApi {
+	return &FileApi{
+		fileService: fileM.NewFileService(),
+	}
+}
 
 // Upload
 // @Tags      FileApi
@@ -21,7 +31,7 @@ type FileApi struct{}
 // @Param     file formData file true "The file to upload"
 // @Success   200   {object}  response.Response{msg=string}
 // @Router    /file/upload [post]
-func (f *FileApi) Upload(c *gin.Context) {
+func (fa *FileApi) Upload(c *gin.Context) {
 	file, err := c.FormFile("file")
 	if err != nil {
 		response.FailWithStatusMessage(400, fmt.Sprintf("上传失败：%s", err.Error()), c)
@@ -34,7 +44,7 @@ func (f *FileApi) Upload(c *gin.Context) {
 		return
 	}
 
-	if fullInfo, err := fileService.Upload(file); err != nil {
+	if fullInfo, err := fa.fileService.Upload(file); err != nil {
 		response.FailWithStatusMessage(400, "上传失败", c)
 		global.TD27_LOG.Error("上传失败", zap.Error(err))
 	} else {
@@ -51,14 +61,14 @@ func (f *FileApi) Upload(c *gin.Context) {
 // @Param     data  body      fileMReq.FileSearchParams true  "请求参数"
 // @Success   200   {object}  response.Response{data=response.Page{list=[]fileM.FileModel},msg=string}
 // @Router    /file/getFileList [post]
-func (f *FileApi) GetFileList(c *gin.Context) {
+func (fa *FileApi) GetFileList(c *gin.Context) {
 	var params fileMReq.FileSearchParams
 	if err := c.ShouldBindJSON(&params); err != nil {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
 
-	if list, total, err := fileService.GetFileList(params); err != nil {
+	if list, total, err := fa.fileService.GetFileList(params); err != nil {
 		response.FailWithMessage("获取失败", c)
 		global.TD27_LOG.Error("获取失败", zap.Error(err))
 	} else {
@@ -80,7 +90,7 @@ func (f *FileApi) GetFileList(c *gin.Context) {
 // @Param     name query string true "文件名"
 // @Success   200   {file} application/octet-stream
 // @Router    /file/download [get]
-func (f *FileApi) Download(c *gin.Context) {
+func (fa *FileApi) Download(c *gin.Context) {
 	fileName := c.Query("name")
 
 	path := fmt.Sprintf("%s/%s", global.TD27_CONFIG.File.Upload, fileName)
@@ -107,10 +117,10 @@ func (f *FileApi) Download(c *gin.Context) {
 // @Param     name query string true "文件名"
 // @Success   200   {object}  response.Response{msg=string}
 // @Router    /file/delete [get]
-func (f *FileApi) Delete(c *gin.Context) {
+func (fa *FileApi) Delete(c *gin.Context) {
 	fileName := c.Query("name")
 
-	if err := fileService.Delete(fileName); err != nil {
+	if err := fa.fileService.Delete(fileName); err != nil {
 		response.FailWithMessage("删除文件失败", c)
 		global.TD27_LOG.Error("删除文件失败", zap.Error(err))
 	} else {

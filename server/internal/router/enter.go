@@ -9,22 +9,26 @@ import (
 	"server/internal/router/sysTool"
 )
 
-type RouterGroup struct {
-	Base      base.RouterGroup
-	Authority authority.RouterGroup
-	FileM     fileM.RouterGroup
+func NewBaseRouterGroup() *base.RouterGroup {
+	return base.NewRouterGroup()
 }
 
-func NewMonitorGroup() *monitor.RouterGroup {
+func NewMonitorRouterGroup() *monitor.RouterGroup {
 	return monitor.NewRouterGroup()
 }
 
-func NewSysSetGroup() *sysSet.RouterGroup {
+func NewSysSetRouterGroup() *sysSet.RouterGroup {
 	return sysSet.NewRouterGroup()
 }
 
-func NewSysToolGroup() *sysTool.RouterGroup {
+func NewSysToolRouterGroup() *sysTool.RouterGroup {
 	return sysTool.NewRouterGroup()
 }
 
-var RouterGroupApp = new(RouterGroup)
+func NewAuthorityRouterGroup() *authority.RouterGroup {
+	return authority.NewRouterGroup()
+}
+
+func NewFileMRouterGroup() *fileM.RouterGroup {
+	return fileM.NewRouterGroup()
+}

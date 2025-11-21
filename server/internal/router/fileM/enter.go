@@ -1,5 +1,11 @@
 package fileM
 
 type RouterGroup struct {
-	FileRouter
+	*FileRouter
+}
+
+func NewRouterGroup() *RouterGroup {
+	return &RouterGroup{
+		FileRouter: NewFileRouter(),
+	}
 }

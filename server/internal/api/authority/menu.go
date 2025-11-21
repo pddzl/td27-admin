@@ -3,15 +3,23 @@ package authority
 import (
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
+
 	"server/internal/global"
-	commonReq "server/internal/model/common/request"
-	commonRes "server/internal/model/common/response"
+	"server/internal/model/common/request"
+	"server/internal/model/common/response"
 	authorityReq "server/internal/model/entity/authority/request"
 	authorityRes "server/internal/model/entity/authority/response"
 	"server/internal/pkg"
+	"server/internal/service/authority"
 )
 
-type MenuApi struct{}
+type MenuApi struct {
+	menuService *authority.MenuService
+}
+
+func NewMenuApi() *MenuApi {
+	return &MenuApi{menuService: authority.NewMenuService()}
+}
 
 // GetMenus
 // @Tags      MenuApi
@@ -23,16 +31,16 @@ type MenuApi struct{}
 func (ma *MenuApi) GetMenus(c *gin.Context) {
 	userInfo, err := pkg.GetUserInfo(c)
 	if err != nil {
-		commonRes.FailWithMessage("获取失败", c)
+		response.FailWithMessage("获取失败", c)
 		global.TD27_LOG.Error("获取失败!", zap.Error(err))
 	}
 
-	list, err := menuService.GetMenus(userInfo.ID)
+	list, err := ma.menuService.GetMenus(userInfo.ID)
 	if err != nil {
-		commonRes.FailWithMessage("获取失败", c)
+		response.FailWithMessage("获取失败", c)
 		global.TD27_LOG.Error("获取失败!", zap.Error(err))
 	} else {
-		commonRes.OkWithDetailed(list, "获取成功", c)
+		response.OkWithDetailed(list, "获取成功", c)
 	}
 }
 
@@ -48,14 +56,14 @@ func (ma *MenuApi) GetMenus(c *gin.Context) {
 func (ma *MenuApi) AddMenu(c *gin.Context) {
 	var menuReq authorityReq.Menu
 	if err := c.ShouldBindJSON(&menuReq); err != nil {
-		commonRes.FailReq(err.Error(), c)
+		response.FailReq(err.Error(), c)
 		return
 	}
 
-	if ok := menuService.AddMenu(menuReq); !ok {
-		commonRes.Fail(c)
+	if ok := ma.menuService.AddMenu(menuReq); !ok {
+		response.Fail(c)
 	} else {
-		commonRes.OkWithMessage("添加成功", c)
+		response.OkWithMessage("添加成功", c)
 	}
 }
 
@@ -71,15 +79,15 @@ func (ma *MenuApi) AddMenu(c *gin.Context) {
 func (ma *MenuApi) EditMenu(c *gin.Context) {
 	var editMenuReq authorityReq.EditMenuReq
 	if err := c.ShouldBindJSON(&editMenuReq); err != nil {
-		commonRes.FailReq(err.Error(), c)
+		response.FailReq(err.Error(), c)
 		return
 	}
 
-	if err := menuService.EditMenu(editMenuReq); err != nil {
-		commonRes.FailWithMessage("编辑失败", c)
+	if err := ma.menuService.EditMenu(editMenuReq); err != nil {
+		response.FailWithMessage("编辑失败", c)
 		global.TD27_LOG.Error("编辑失败", zap.Error(err))
 	} else {
-		commonRes.OkWithMessage("编辑成功", c)
+		response.OkWithMessage("编辑成功", c)
 	}
 }
 
@@ -93,17 +101,17 @@ func (ma *MenuApi) EditMenu(c *gin.Context) {
 // @Success   200   {object}  response.Response{msg=string}
 // @Router    /menu/deleteMenu [post]
 func (ma *MenuApi) DeleteMenu(c *gin.Context) {
-	var cId commonReq.CId
+	var cId request.CId
 	if err := c.ShouldBindJSON(&cId); err != nil {
-		commonRes.FailReq(err.Error(), c)
+		response.FailReq(err.Error(), c)
 		return
 	}
 
-	if err := menuService.DeleteMenu(cId.ID); err != nil {
-		commonRes.FailWithMessage("删除失败", c)
+	if err := ma.menuService.DeleteMenu(cId.ID); err != nil {
+		response.FailWithMessage("删除失败", c)
 		global.TD27_LOG.Error("删除失败", zap.Error(err))
 	} else {
-		commonRes.OkWithMessage("删除成功", c)
+		response.OkWithMessage("删除成功", c)
 	}
 }
 
@@ -117,17 +125,17 @@ func (ma *MenuApi) DeleteMenu(c *gin.Context) {
 // @Success   200   {object}  response.Response{data=authorityRes.Menu{list=[]authority.MenuModel,menuIds=[]uint},msg=string}
 // @Router    /menu/getElTreeMenus [post]
 func (ma *MenuApi) GetElTreeMenus(c *gin.Context) {
-	var cId commonReq.CId
+	var cId request.CId
 	if err := c.ShouldBindJSON(&cId); err != nil {
-		commonRes.FailReq(err.Error(), c)
+		response.FailReq(err.Error(), c)
 		return
 	}
 
-	if list, ids, err := menuService.GetElTreeMenus(cId.ID); err != nil {
-		commonRes.FailWithMessage("获取失败", c)
+	if list, ids, err := ma.menuService.GetElTreeMenus(cId.ID); err != nil {
+		response.FailWithMessage("获取失败", c)
 		global.TD27_LOG.Error("获取失败!", zap.Error(err))
 	} else {
-		commonRes.OkWithDetailed(authorityRes.Menu{
+		response.OkWithDetailed(authorityRes.Menu{
 			List:    list,
 			MenuIds: ids,
 		}, "获取成功", c)

@@ -5,27 +5,31 @@ import (
 	"fmt"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
+	"strconv"
+
 	"server/internal/global"
-	authority3 "server/internal/model/entity/authority"
+	modelAuthority "server/internal/model/entity/authority"
 	authorityReq "server/internal/model/entity/authority/request"
 	baseReq "server/internal/model/entity/base/request"
-	serviceBase "server/internal/service/base"
-	"strconv"
 )
 
 type RoleService struct{}
 
-func (rs *RoleService) GetRoles() ([]authority3.RoleModel, error) {
-	var roleList []authority3.RoleModel
+func NewRoleService() *RoleService {
+	return &RoleService{}
+}
+
+func (rs *RoleService) GetRoles() ([]modelAuthority.RoleModel, error) {
+	var roleList []modelAuthority.RoleModel
 	err := global.TD27_DB.Preload("Menus").Find(&roleList).Error
 
 	return roleList, err
 }
 
-func (rs *RoleService) AddRole(instance *authority3.RoleModel) (*authority3.RoleModel, error) {
+func (rs *RoleService) AddRole(instance *modelAuthority.RoleModel) (*modelAuthority.RoleModel, error) {
 	err := global.TD27_DB.Create(instance).Error
 	if err == nil {
-		if err = serviceBase.CasbinServiceApp.EditCasbin(instance.ID, baseReq.DefaultCasbin()); err != nil {
+		if err = casbinService.EditCasbin(instance.ID, baseReq.DefaultCasbin()); err != nil {
 			global.TD27_LOG.Error("更新casbin rule失败", zap.Error(err))
 		}
 	}
@@ -35,12 +39,12 @@ func (rs *RoleService) AddRole(instance *authority3.RoleModel) (*authority3.Role
 
 // DeleteRole 删除角色
 func (rs *RoleService) DeleteRole(id uint) (err error) {
-	var roleModel authority3.RoleModel
+	var roleModel modelAuthority.RoleModel
 	if errors.Is(global.TD27_DB.Where("id = ?", id).First(&roleModel).Error, gorm.ErrRecordNotFound) {
 		return errors.New("记录不存在")
 	}
 
-	if !errors.Is(global.TD27_DB.Where("role_model_id = ?", id).First(&authority3.UserModel{}).Error, gorm.ErrRecordNotFound) {
+	if !errors.Is(global.TD27_DB.Where("role_model_id = ?", id).First(&modelAuthority.UserModel{}).Error, gorm.ErrRecordNotFound) {
 		return errors.New("该角色下面还有所属用户")
 	}
 
@@ -57,7 +61,7 @@ func (rs *RoleService) DeleteRole(id uint) (err error) {
 
 	// 删除对应casbin rule
 	authorityId := strconv.Itoa(int(roleModel.ID))
-	ok := serviceBase.CasbinServiceApp.ClearCasbin(0, authorityId)
+	ok := casbinService.ClearCasbin(0, authorityId)
 	if !ok {
 		global.TD27_LOG.Warn("删除role关联casbin_rule失败")
 	}
@@ -66,7 +70,7 @@ func (rs *RoleService) DeleteRole(id uint) (err error) {
 
 // EditRole 编辑用户
 func (rs *RoleService) EditRole(eRole authorityReq.EditRole) (err error) {
-	var roleModel authority3.RoleModel
+	var roleModel modelAuthority.RoleModel
 	if errors.Is(global.TD27_DB.Where("id = ?", eRole.ID).First(&roleModel).Error, gorm.ErrRecordNotFound) {
 		return errors.New("记录不存在")
 	}
@@ -76,12 +80,12 @@ func (rs *RoleService) EditRole(eRole authorityReq.EditRole) (err error) {
 
 // EditRoleMenu 编辑用户menu
 func (rs *RoleService) EditRoleMenu(roleId uint, ids []uint) (err error) {
-	var roleModel authority3.RoleModel
+	var roleModel modelAuthority.RoleModel
 	if errors.Is(global.TD27_DB.Where("id = ?", roleId).First(&roleModel).Error, gorm.ErrRecordNotFound) {
 		return errors.New("记录不存在")
 	}
 
-	var menuModel []authority3.MenuModel
+	var menuModel []modelAuthority.MenuModel
 	err = global.TD27_DB.Where("id in ?", ids).Find(&menuModel).Error
 	if err != nil {
 		global.TD27_LOG.Error("EditRoleMenu 查询menu", zap.Error(err))

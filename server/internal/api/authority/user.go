@@ -5,14 +5,22 @@ import (
 	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/validator/v10"
 	"go.uber.org/zap"
+
 	"server/internal/global"
-	commonReq "server/internal/model/common/request"
+	"server/internal/model/common/request"
 	"server/internal/model/common/response"
 	authorityReq "server/internal/model/entity/authority/request"
 	"server/internal/pkg"
+	"server/internal/service/authority"
 )
 
-type UserApi struct{}
+type UserApi struct {
+	userService *authority.UserService
+}
+
+func NewUserApi() *UserApi {
+	return &UserApi{userService: authority.NewUserService()}
+}
 
 // GetUserInfo
 // @Tags      UserApi
@@ -27,7 +35,7 @@ func (ua *UserApi) GetUserInfo(c *gin.Context) {
 		response.FailWithMessage("获取失败", c)
 	}
 
-	if user, err := userService.GetUserInfo(userInfo.ID); err != nil {
+	if user, err := ua.userService.GetUserInfo(userInfo.ID); err != nil {
 		response.FailWithMessage("获取失败", c)
 		global.TD27_LOG.Error("获取失败", zap.Error(err))
 	} else {
@@ -45,13 +53,13 @@ func (ua *UserApi) GetUserInfo(c *gin.Context) {
 // @Success   200   {object}  response.Response{data=response.Page{list=[]response.UserResult},msg=string}
 // @Router    /user/getUsers [post]
 func (ua *UserApi) GetUsers(c *gin.Context) {
-	var pageInfo commonReq.PageInfo
+	var pageInfo request.PageInfo
 	if err := c.ShouldBindJSON(&pageInfo); err != nil {
 		response.FailReq(err.Error(), c)
 		return
 	}
 
-	if list, total, err := userService.GetUsers(pageInfo); err != nil {
+	if list, total, err := ua.userService.GetUsers(pageInfo); err != nil {
 		response.FailWithMessage("获取失败", c)
 		global.TD27_LOG.Error("获取users失败", zap.Error(err))
 	} else {
@@ -74,13 +82,13 @@ func (ua *UserApi) GetUsers(c *gin.Context) {
 // @Success   200   {object}  response.Response{msg=string}
 // @Router    /user/deleteUser [post]
 func (ua *UserApi) DeleteUser(c *gin.Context) {
-	var cId commonReq.CId
+	var cId request.CId
 	if err := c.ShouldBindJSON(&cId); err != nil {
 		response.FailReq(err.Error(), c)
 		return
 	}
 
-	if err := userService.DeleteUser(cId.ID); err != nil {
+	if err := ua.userService.DeleteUser(cId.ID); err != nil {
 		response.Fail(c)
 		global.TD27_LOG.Error("删除失败", zap.Error(err))
 	} else {
@@ -116,12 +124,12 @@ func (ua *UserApi) AddUser(c *gin.Context) {
 	}
 
 	var addUser authorityReq.AddUser
-	if err := c.ShouldBindJSON(&addUser); err != nil {
+	if err = c.ShouldBindJSON(&addUser); err != nil {
 		response.FailReq(err.Error(), c)
 		return
 	}
 
-	if err := userService.AddUser(&addUser); err != nil {
+	if err = ua.userService.AddUser(&addUser); err != nil {
 		response.FailWithMessage("添加失败", c)
 		global.TD27_LOG.Error("添加失败", zap.Error(err))
 	} else {
@@ -157,12 +165,12 @@ func (ua *UserApi) EditUser(c *gin.Context) {
 	}
 
 	var editUser authorityReq.EditUser
-	if err := c.ShouldBindJSON(&editUser); err != nil {
+	if err = c.ShouldBindJSON(&editUser); err != nil {
 		response.FailReq(err.Error(), c)
 		return
 	}
 
-	if instance, err := userService.EditUser(&editUser); err != nil {
+	if instance, err := ua.userService.EditUser(&editUser); err != nil {
 		response.Fail(c)
 		global.TD27_LOG.Error("编辑失败", zap.Error(err))
 	} else {
@@ -186,7 +194,7 @@ func (ua *UserApi) ModifyPass(c *gin.Context) {
 		return
 	}
 
-	if err := userService.ModifyPass(&mp); err != nil {
+	if err := ua.userService.ModifyPass(&mp); err != nil {
 		response.FailWithMessage(err.Error(), c)
 		global.TD27_LOG.Error("修改失败", zap.Error(err))
 	} else {
@@ -210,7 +218,7 @@ func (ua *UserApi) SwitchActive(c *gin.Context) {
 		return
 	}
 
-	if err := userService.SwitchActive(&sa); err != nil {
+	if err := ua.userService.SwitchActive(&sa); err != nil {
 		response.Fail(c)
 		global.TD27_LOG.Error("切换失败", zap.Error(err))
 	} else {

@@ -5,12 +5,12 @@ import (
 	"server/internal/global"
 	commonRes "server/internal/model/common/response"
 	"server/internal/pkg"
-	"server/internal/service"
+	"server/internal/service/base"
 	"strconv"
 )
 
 var (
-	casbinService = service.ServiceGroupApp.Base.CasbinService
+	casbinService = base.NewCasbinService()
 )
 
 // CasbinHandler 拦截器
