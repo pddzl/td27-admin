@@ -1,10 +1,12 @@
 package internal
 
 import (
+	"time"
+	
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
+
 	"server/internal/global"
-	"time"
 )
 
 type _zap struct{}

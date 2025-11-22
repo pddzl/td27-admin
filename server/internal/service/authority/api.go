@@ -3,10 +3,11 @@ package authority
 import (
 	"errors"
 	"fmt"
-	"go.uber.org/zap"
-	"gorm.io/gorm"
 	"strconv"
 	"strings"
+	
+	"go.uber.org/zap"
+	"gorm.io/gorm"
 
 	"server/internal/global"
 	modelAuthority "server/internal/model/entity/authority"
@@ -129,7 +130,7 @@ func (a *ApiService) GetElTreeApis(roleId uint) (list []modelAuthority.ApiTree, 
 	// 前端 el-tree default-checked-keys
 	e := casbinService.Casbin()
 	authorityId := strconv.Itoa(int(roleId))
-	cData := e.GetFilteredPolicy(0, authorityId)
+	cData, _ := e.GetFilteredPolicy(0, authorityId)
 	for _, v := range cData {
 		checkedKey = append(checkedKey, fmt.Sprintf("%s,%s", v[1], v[2]))
 	}

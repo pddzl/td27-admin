@@ -1,10 +1,12 @@
 package log
 
 import (
+	"time"
+	
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
+
 	"server/internal/global"
-	"time"
 )
 
 // GinLogger 接收gin框架默认的日志

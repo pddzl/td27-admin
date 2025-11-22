@@ -1,15 +1,17 @@
 package log
 
 import (
-	"github.com/gin-gonic/gin"
-	"go.uber.org/zap"
 	"net"
 	"net/http"
 	"net/http/httputil"
 	"os"
 	"runtime/debug"
-	"server/internal/global"
+
+	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
 	"strings"
+
+	"server/internal/global"
 )
 
 // GinRecovery recover掉项目可能出现的panic，并使用zap记录相关日志
@@ -32,7 +34,7 @@ func GinRecovery(stack bool) gin.HandlerFunc {
 				if brokenPipe {
 					global.TD27_LOG.Debug(c.Request.URL.Path, zap.Any("error", err), zap.String("request", string(httpRequest)))
 					// If the connection is dead, we can't write a status to it.
-					c.Error(err.(error))
+					_ = c.Error(err.(error))
 					c.Abort()
 					return
 				}

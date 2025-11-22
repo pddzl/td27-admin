@@ -2,9 +2,9 @@ package base
 
 import (
 	"context"
-	"server/internal/global"
-	
 	"time"
+
+	"server/internal/global"
 )
 
 type JwtService struct{}

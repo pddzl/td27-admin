@@ -2,10 +2,11 @@ package middleware
 
 import (
 	"errors"
-	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt/v4"
 	"strconv"
 	"time"
+
+	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt/v4"
 
 	"server/internal/global"
 	"server/internal/model/common/response"

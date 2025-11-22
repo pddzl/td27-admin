@@ -2,13 +2,14 @@ package initialize
 
 import (
 	"fmt"
+	"log"
+	"os"
+	"time"
+
 	"go.uber.org/zap"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
-	"log"
-	"os"
-	"time"
 
 	"server/internal/global"
 	modelAuthority "server/internal/model/entity/authority"

@@ -3,6 +3,8 @@ package base
 import (
 	"context"
 	"fmt"
+	"time"
+
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/mojocn/base64Captcha"
@@ -15,7 +17,6 @@ import (
 	baseResp "server/internal/model/entity/base/response"
 	"server/internal/pkg"
 	"server/internal/service/base"
-	"time"
 )
 
 var store = base64Captcha.DefaultMemStore

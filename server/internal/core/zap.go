@@ -2,9 +2,11 @@ package core
 
 import (
 	"fmt"
+	"os"
+
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
-	"os"
+
 	"server/internal/core/internal"
 	"server/internal/global"
 	"server/internal/pkg"

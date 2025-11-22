@@ -3,13 +3,14 @@ package authority
 import (
 	"errors"
 	"fmt"
+	"sort"
+
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 
 	"server/internal/global"
 	modelAuthority "server/internal/model/entity/authority"
 	authorityReq "server/internal/model/entity/authority/request"
-	"sort"
 )
 
 type MenuService struct{}

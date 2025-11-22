@@ -3,18 +3,19 @@ package middleware
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/gin-gonic/gin"
-	"go.uber.org/zap"
 	"io"
 	"net/http"
 	"net/url"
+	"strings"
+	"time"
+
+	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
 
 	"server/internal/global"
 	modelMonitor "server/internal/model/entity/monitor"
 	"server/internal/pkg"
 	"server/internal/service/monitor"
-	"strings"
-	"time"
 )
 
 var (

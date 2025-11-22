@@ -3,9 +3,10 @@ package authority
 import (
 	"errors"
 	"fmt"
+	"strconv"
+	
 	"go.uber.org/zap"
 	"gorm.io/gorm"
-	"strconv"
 
 	"server/internal/global"
 	modelAuthority "server/internal/model/entity/authority"

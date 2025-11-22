@@ -4,8 +4,9 @@ import (
 	"errors"
 	"fmt"
 	"gorm.io/gorm"
-	"server/internal/global"
 	"time"
+
+	"server/internal/global"
 )
 
 func ClearTable(db *gorm.DB, tableName string, compareField string, interval string) error {

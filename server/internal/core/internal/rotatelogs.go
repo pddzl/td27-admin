@@ -1,10 +1,12 @@
 package internal
 
 import (
-	"go.uber.org/zap/zapcore"
-	"gopkg.in/natefinch/lumberjack.v2"
 	"os"
 	"path"
+	
+	"go.uber.org/zap/zapcore"
+	"gopkg.in/natefinch/lumberjack.v2"
+
 	"server/internal/global"
 )
 

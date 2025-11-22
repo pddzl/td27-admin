@@ -8,16 +8,16 @@ import (
 	"server/internal/model/common/request"
 	"server/internal/model/common/response"
 	monitorReq "server/internal/model/entity/monitor/request"
-	serviceMonitor "server/internal/service/monitor"
+	"server/internal/service/monitor"
 )
 
 type OperationLogApi struct {
-	operationLogService *serviceMonitor.OperationLogService
+	operationLogService *monitor.OperationLogService
 }
 
 func NewOperationLogApi() *OperationLogApi {
 	return &OperationLogApi{
-		operationLogService: serviceMonitor.NewOperationLogService(),
+		operationLogService: monitor.NewOperationLogService(),
 	}
 }
 

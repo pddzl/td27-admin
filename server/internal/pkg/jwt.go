@@ -3,6 +3,7 @@ package pkg
 import (
 	"errors"
 	"github.com/golang-jwt/jwt/v4"
+
 	"server/internal/global"
 	baseReq "server/internal/model/entity/base/request"
 )

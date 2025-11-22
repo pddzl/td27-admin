@@ -4,10 +4,12 @@ import (
 	"database/sql/driver"
 	"encoding/json"
 	"fmt"
+	"time"
+
 	"github.com/robfig/cron/v3"
 	"go.uber.org/zap"
-	global2 "server/internal/global"
-	"time"
+
+	"server/internal/global"
 )
 
 type Method struct {
@@ -21,7 +23,7 @@ var CronMethod = Method{
 }
 
 type CronModel struct {
-	global2.TD27_MODEL
+	global.TD27_MODEL
 	Name        string      `json:"name" gorm:"column:name;unique;comment:任务名称" binding:"required"`
 	Method      string      `json:"method" gorm:"column:method;not null;comment:任务方法" binding:"required"`
 	Expression  string      `json:"expression" gorm:"column:expression;not null;comment:表达式" binding:"required"`
@@ -57,28 +59,28 @@ func (cm *CronModel) TableName() string {
 }
 
 func (cm *CronModel) Run() {
-	global2.TD27_LOG.Info("[CRON]", zap.String("START", cm.Method))
+	global.TD27_LOG.Info("[CRON]", zap.String("START", cm.Method))
 	switch cm.Method {
 	case "clearTable":
 		for _, v := range cm.ExtraParams.TableInfo {
 			duration, err := time.ParseDuration(v.Interval)
 			if err != nil {
-				global2.TD27_LOG.Error(fmt.Sprintf("parse duration err: %v", err))
+				global.TD27_LOG.Error(fmt.Sprintf("parse duration err: %v", err))
 			}
 			if duration < 0 {
-				global2.TD27_LOG.Error("parse duration < 0")
+				global.TD27_LOG.Error("parse duration < 0")
 			}
-			err = global2.TD27_DB.Debug().Exec(fmt.Sprintf("DELETE FROM %s WHERE %s < ?", v.TableName, v.CompareField), time.Now().Add(-duration)).Error
+			err = global.TD27_DB.Debug().Exec(fmt.Sprintf("DELETE FROM %s WHERE %s < ?", v.TableName, v.CompareField), time.Now().Add(-duration)).Error
 			if err != nil {
-				global2.TD27_LOG.Error(fmt.Sprintf("delete err: %v", err))
+				global.TD27_LOG.Error(fmt.Sprintf("delete err: %v", err))
 			}
 		}
 	default:
-		global2.TD27_LOG.Error("unsupport method")
+		global.TD27_LOG.Error("unsupport method")
 	}
 	if cm.Strategy == "once" {
-		global2.TD27_LOG.Info("[CRON]", zap.String(cm.Name, "stop"))
-		global2.TD27_CRON.Remove(cron.EntryID(cm.EntryId))
-		global2.TD27_DB.Model(cm).Updates(map[string]interface{}{"open": false, "entryId": 0})
+		global.TD27_LOG.Info("[CRON]", zap.String(cm.Name, "stop"))
+		global.TD27_CRON.Remove(cron.EntryID(cm.EntryId))
+		global.TD27_DB.Model(cm).Updates(map[string]interface{}{"open": false, "entryId": 0})
 	}
 }
