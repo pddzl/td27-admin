@@ -1,6 +1,8 @@
 package router
 
 import (
+	"github.com/gin-gonic/gin"
+
 	"server/internal/router/authority"
 	"server/internal/router/base"
 	"server/internal/router/fileM"
@@ -31,4 +33,28 @@ func NewAuthorityRouterGroup() *authority.RouterGroup {
 
 func NewFileMRouterGroup() *fileM.RouterGroup {
 	return fileM.NewRouterGroup()
+}
+
+type ModuleRouter interface {
+	InitPublic(group *gin.RouterGroup)
+	InitPrivate(group *gin.RouterGroup)
+}
+
+var modules []ModuleRouter
+
+func Register(m ModuleRouter) {
+	modules = append(modules, m)
+}
+
+func GetAllModules() []ModuleRouter {
+	return modules
+}
+
+func init() {
+	Register(NewAuthorityRouterGroup())
+	Register(NewBaseRouterGroup())
+	Register(NewFileMRouterGroup())
+	Register(NewMonitorRouterGroup())
+	Register(NewSysSetRouterGroup())
+	Register(NewSysToolRouterGroup())
 }
