@@ -4,12 +4,12 @@ import (
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
-	"server/internal/middleware"
-	"server/internal/router"
 
 	_ "server/docs"
 	"server/internal/global"
+	"server/internal/middleware"
 	"server/internal/middleware/log"
+	"server/internal/router"
 )
 
 func Routers() *gin.Engine {
