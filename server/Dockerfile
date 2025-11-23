@@ -8,7 +8,7 @@ RUN go env -w GO111MODULE=on \
     && go env -w CGO_ENABLED=0 \
     && go env \
     && go mod tidy \
-    && go build -o td27Server .
+    && go build -o td27Server ./cmd/server/
 
 FROM alpine:latest
 
@@ -16,9 +16,11 @@ LABEL MAINTAINER="pddzl5@foxmail.com"
 
 WORKDIR /server
 
+RUN mkdir -p ./configs
+
 COPY --from=0 /server/td27Server ./
-COPY --from=0 /server/config.yaml ./
-COPY --from=0 /server/wait-for-it.sh ./
+COPY --from=0 /server/configs/config.yaml ./configs/
+COPY --from=0 /server/scripts/wait-for-it.sh ./
 
 RUN mkdir -p ./resource/upload && chmod +x ./wait-for-it.sh
 
