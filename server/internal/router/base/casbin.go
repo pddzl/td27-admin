@@ -2,7 +2,7 @@ package base
 
 import (
 	"github.com/gin-gonic/gin"
-	
+
 	"server/internal/api/base"
 	"server/internal/middleware"
 )
@@ -17,8 +17,8 @@ func NewCasbinRouter() *CasbinRouter {
 	}
 }
 
-func (cr *CasbinRouter) InitCasbinRouter(Router *gin.RouterGroup) (R gin.IRoutes) {
-	casbinRouter := Router.Group("casbin").Use(middleware.OperationRecord())
-	casbinRouter.POST("editCasbin", cr.casbinApi.EditCasbin)
-	return casbinRouter
+func (cr *CasbinRouter) InitCasbinRouter(rg *gin.RouterGroup) {
+	baseG := rg.Group("casbin")
+	record := baseG.Use(middleware.OperationRecord())
+	record.POST("editCasbin", cr.casbinApi.EditCasbin)
 }

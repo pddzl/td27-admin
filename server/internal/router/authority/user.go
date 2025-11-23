@@ -15,16 +15,16 @@ func NewUserRouter() *UserRouter {
 	return &UserRouter{userApi: authority.NewUserApi()}
 }
 
-func (ur *UserRouter) InitUserRouter(Router *gin.RouterGroup) {
+func (ur *UserRouter) InitUserRouter(rg *gin.RouterGroup) {
+	base := rg.Group("user")
+	record := base.Use(middleware.OperationRecord())
 	// record
-	userRouter := Router.Group("user").Use(middleware.OperationRecord())
-	userRouter.POST("deleteUser", ur.userApi.DeleteUser)
-	userRouter.POST("addUser", ur.userApi.AddUser)
-	userRouter.POST("editUser", ur.userApi.EditUser)
-	userRouter.POST("modifyPass", ur.userApi.ModifyPass)
-	userRouter.POST("switchActive", ur.userApi.SwitchActive)
+	record.POST("deleteUser", ur.userApi.DeleteUser)
+	record.POST("addUser", ur.userApi.AddUser)
+	record.POST("editUser", ur.userApi.EditUser)
+	record.POST("modifyPass", ur.userApi.ModifyPass)
+	record.POST("switchActive", ur.userApi.SwitchActive)
 	// without record
-	userWithoutRouter := Router.Group("user")
-	userWithoutRouter.GET("getUserInfo", ur.userApi.GetUserInfo)
-	userWithoutRouter.POST("getUsers", ur.userApi.GetUsers)
+	base.GET("getUserInfo", ur.userApi.GetUserInfo)
+	base.POST("getUsers", ur.userApi.GetUsers)
 }

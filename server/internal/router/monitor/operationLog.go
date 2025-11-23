@@ -2,7 +2,7 @@ package monitor
 
 import (
 	"github.com/gin-gonic/gin"
-	
+
 	"server/internal/api/monitor"
 	"server/internal/middleware"
 )
@@ -15,12 +15,12 @@ func NewOperationLogRouter() *OperationLogRouter {
 	return &OperationLogRouter{operationLogApi: monitor.NewOperationLogApi()}
 }
 
-func (or *OperationLogRouter) InitOperationLogRouter(Router *gin.RouterGroup) {
+func (or *OperationLogRouter) InitOperationLogRouter(rg *gin.RouterGroup) {
+	base := rg.Group("opl")
+	record := base.Use(middleware.OperationRecord())
 	// record
-	operationLogRouter := Router.Group("opl").Use(middleware.OperationRecord())
-	operationLogRouter.POST("deleteOpl", or.operationLogApi.DeleteOperationLog)
-	operationLogRouter.POST("deleteOplByIds", or.operationLogApi.DeleteOperationLogByIds)
+	record.POST("deleteOpl", or.operationLogApi.DeleteOperationLog)
+	record.POST("deleteOplByIds", or.operationLogApi.DeleteOperationLogByIds)
 	// not record
-	operationLogWithoutRouter := Router.Group("opl")
-	operationLogWithoutRouter.POST("getOplList", or.operationLogApi.GetOperationLogList)
+	base.POST("getOplList", or.operationLogApi.GetOperationLogList)
 }

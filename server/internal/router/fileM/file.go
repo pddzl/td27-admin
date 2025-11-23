@@ -17,13 +17,13 @@ func NewFileRouter() *FileRouter {
 	}
 }
 
-func (fr *FileRouter) InitFileRouter(Router *gin.RouterGroup) {
+func (fr *FileRouter) InitFileRouter(rg *gin.RouterGroup) {
+	base := rg.Group("file")
+	record := base.Use(middleware.OperationRecord())
 	// record
-	fileRouter := Router.Group("file").Use(middleware.OperationRecord())
-	fileRouter.POST("upload", fr.fileApi.Upload)    // 文件上传
-	fileRouter.GET("download", fr.fileApi.Download) // 下载文件
-	fileRouter.GET("delete", fr.fileApi.Delete)     // 删除文件
+	record.POST("upload", fr.fileApi.Upload)    // 文件上传
+	record.GET("download", fr.fileApi.Download) // 下载文件
+	record.GET("delete", fr.fileApi.Delete)     // 删除文件
 	// without record
-	fileWithoutRouter := Router.Group("file")
-	fileWithoutRouter.POST("getFileList", fr.fileApi.GetFileList) // 分页获取文件信息
+	base.POST("getFileList", fr.fileApi.GetFileList) // 分页获取文件信息
 }

@@ -2,7 +2,6 @@ package base
 
 import (
 	"github.com/gin-gonic/gin"
-	
 	"server/internal/api/base"
 )
 
@@ -16,11 +15,9 @@ func NewLogRegRouter() *LogRegRouter {
 	}
 }
 
-func (br *LogRegRouter) InitLogRegRouter(Router *gin.RouterGroup) (R gin.IRouter) {
-	logRegRouter := Router.Group("logReg")
-	logRegRouter.POST("captcha", br.logRegApi.Captcha)
-	logRegRouter.POST("login", br.logRegApi.Login)
-	logRegRouter.POST("logout", br.logRegApi.LogOut)
-
-	return logRegRouter
+func (br *LogRegRouter) InitLogRegRouter(rg *gin.RouterGroup) {
+	baseG := rg.Group("logReg")
+	baseG.POST("captcha", br.logRegApi.Captcha)
+	baseG.POST("login", br.logRegApi.Login)
+	baseG.POST("logout", br.logRegApi.LogOut)
 }

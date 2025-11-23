@@ -2,7 +2,7 @@ package authority
 
 import (
 	"github.com/gin-gonic/gin"
-	
+
 	"server/internal/api/authority"
 	"server/internal/middleware"
 )
@@ -15,14 +15,14 @@ func NewRoleRouter() *RoleRouter {
 	return &RoleRouter{roleApi: authority.NewRoleApi()}
 }
 
-func (rr *RoleRouter) InitRoleRouter(Router *gin.RouterGroup) {
+func (rr *RoleRouter) InitRoleRouter(rg *gin.RouterGroup) {
+	base := rg.Group("role")
+	record := base.Use(middleware.OperationRecord())
 	// record
-	roleRouter := Router.Group("role").Use(middleware.OperationRecord())
-	roleRouter.POST("addRole", rr.roleApi.AddRole)
-	roleRouter.POST("deleteRole", rr.roleApi.DeleteRole)
-	roleRouter.POST("editRole", rr.roleApi.EditRole)
-	roleRouter.POST("editRoleMenu", rr.roleApi.EditRoleMenu)
+	record.POST("addRole", rr.roleApi.AddRole)
+	record.POST("deleteRole", rr.roleApi.DeleteRole)
+	record.POST("editRole", rr.roleApi.EditRole)
+	record.POST("editRoleMenu", rr.roleApi.EditRoleMenu)
 	// without record
-	roleWithoutRouter := Router.Group("role")
-	roleWithoutRouter.POST("getRoles", rr.roleApi.GetRoles)
+	base.POST("getRoles", rr.roleApi.GetRoles)
 }

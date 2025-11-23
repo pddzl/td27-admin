@@ -2,7 +2,7 @@ package sysTool
 
 import (
 	"github.com/gin-gonic/gin"
-	
+
 	"server/internal/api/sysTool"
 	"server/internal/middleware"
 )
@@ -17,15 +17,15 @@ func NewCronRouter() *CronRouter {
 	}
 }
 
-func (cr *CronRouter) InitCronRouter(Router *gin.RouterGroup) {
+func (cr *CronRouter) InitCronRouter(rg *gin.RouterGroup) {
+	base := rg.Group("cron")
+	record := base.Use(middleware.OperationRecord())
 	// record
-	cronRouter := Router.Group("cron").Use(middleware.OperationRecord())
-	cronRouter.POST("addCron", cr.cronApi.AddCron)
-	cronRouter.POST("deleteCron", cr.cronApi.DeleteCron)
-	cronRouter.POST("deleteCronByIds", cr.cronApi.DeleteCronByIds)
-	cronRouter.POST("editCron", cr.cronApi.EditCron)
-	cronRouter.POST("switchOpen", cr.cronApi.SwitchOpen)
+	record.POST("addCron", cr.cronApi.AddCron)
+	record.POST("deleteCron", cr.cronApi.DeleteCron)
+	record.POST("deleteCronByIds", cr.cronApi.DeleteCronByIds)
+	record.POST("editCron", cr.cronApi.EditCron)
+	record.POST("switchOpen", cr.cronApi.SwitchOpen)
 	// not record
-	cronWithoutRouter := Router.Group("cron")
-	cronWithoutRouter.POST("getCronList", cr.cronApi.GetCronList)
+	base.POST("getCronList", cr.cronApi.GetCronList)
 }

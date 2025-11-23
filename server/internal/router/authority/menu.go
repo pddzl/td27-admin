@@ -2,7 +2,7 @@ package authority
 
 import (
 	"github.com/gin-gonic/gin"
-	
+
 	"server/internal/api/authority"
 	"server/internal/middleware"
 )
@@ -15,14 +15,14 @@ func NewMenuRouter() *MenuRouter {
 	return &MenuRouter{menuApi: authority.NewMenuApi()}
 }
 
-func (mr *MenuRouter) InitMenuRouter(Router *gin.RouterGroup) {
+func (mr *MenuRouter) InitMenuRouter(rg *gin.RouterGroup) {
+	base := rg.Group("menu")
+	record := base.Use(middleware.OperationRecord())
 	// record
-	menuRouter := Router.Group("menu").Use(middleware.OperationRecord())
-	menuRouter.POST("addMenu", mr.menuApi.AddMenu)
-	menuRouter.POST("editMenu", mr.menuApi.EditMenu)
-	menuRouter.POST("deleteMenu", mr.menuApi.DeleteMenu)
-	menuRouter.POST("getElTreeMenus", mr.menuApi.GetElTreeMenus)
+	record.POST("addMenu", mr.menuApi.AddMenu)
+	record.POST("editMenu", mr.menuApi.EditMenu)
+	record.POST("deleteMenu", mr.menuApi.DeleteMenu)
+	record.POST("getElTreeMenus", mr.menuApi.GetElTreeMenus)
 	// without record
-	menuWithoutRouter := Router.Group("menu")
-	menuWithoutRouter.GET("getMenus", mr.menuApi.GetMenus)
+	base.GET("getMenus", mr.menuApi.GetMenus)
 }

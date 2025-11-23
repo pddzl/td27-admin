@@ -15,15 +15,15 @@ func NewApiRouter() *ApiRouter {
 	return &ApiRouter{apiApi: authority.NewApiApi()}
 }
 
-func (ur *ApiRouter) InitApiRouter(Router *gin.RouterGroup) {
+func (ur *ApiRouter) InitApiRouter(rg *gin.RouterGroup) {
+	base := rg.Group("api")
+	record := base.Use(middleware.OperationRecord())
 	// record
-	apiRouter := Router.Group("api").Use(middleware.OperationRecord())
-	apiRouter.POST("addApi", ur.apiApi.AddApi)
-	apiRouter.POST("deleteApi", ur.apiApi.DeleteApi)
-	apiRouter.POST("deleteApiById", ur.apiApi.DeleteApiById)
-	apiRouter.POST("editApi", ur.apiApi.EditApi)
-	apiRouter.POST("getElTreeApis", ur.apiApi.GetElTreeApis)
+	record.POST("addApi", ur.apiApi.AddApi)
+	record.POST("deleteApi", ur.apiApi.DeleteApi)
+	record.POST("deleteApiById", ur.apiApi.DeleteApiById)
+	record.POST("editApi", ur.apiApi.EditApi)
+	record.POST("getElTreeApis", ur.apiApi.GetElTreeApis)
 	// without record
-	apiWithoutRouter := Router.Group("api")
-	apiWithoutRouter.POST("getApis", ur.apiApi.GetApis)
+	base.POST("getApis", ur.apiApi.GetApis)
 }

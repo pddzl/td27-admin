@@ -2,7 +2,7 @@ package sysSet
 
 import (
 	"github.com/gin-gonic/gin"
-	
+
 	"server/internal/api/sysSet"
 	"server/internal/middleware"
 )
@@ -17,14 +17,13 @@ func NewDictRouter() *DictRouter {
 	}
 }
 
-func (dr *DictRouter) InitDictRouter(Router *gin.RouterGroup) {
+func (dr *DictRouter) InitDictRouter(rg *gin.RouterGroup) {
+	base := rg.Group("dict")
+	record := base.Use(middleware.OperationRecord())
 	// record
-	dictRouter := Router.Group("dict").Use(middleware.OperationRecord())
-	dictRouter.POST("delDict", dr.dictApi.DelDict)
-	dictRouter.POST("addDict", dr.dictApi.AddDict)
-	dictRouter.POST("editDict", dr.dictApi.EditDict)
+	record.POST("delDict", dr.dictApi.DelDict)
+	record.POST("addDict", dr.dictApi.AddDict)
+	record.POST("editDict", dr.dictApi.EditDict)
 	// not record
-	dictWithoutRouter := Router.Group("dict")
-	dictWithoutRouter.GET("getDict", dr.dictApi.GetDict)
-
+	base.GET("getDict", dr.dictApi.GetDict)
 }
