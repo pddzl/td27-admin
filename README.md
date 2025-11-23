@@ -64,7 +64,7 @@ pnpm lint
 
 ```bash
 # 配置
-1. Go >= 1.19
+1. Go >= 1.25
 
 # 进入server文件夹
 cd server
@@ -73,10 +73,39 @@ cd server
 go generate
 
 # 编译 
-go build -o server main.go
+go build -o server cmd/server/main.go
 
 # 运行二进制
 ./server
+```
+
+#### 目录结构
+```shell
+├── cmd                      # Main application entry points (one folder per binary)
+│   └── server               # Main HTTP server entry (main.go)
+│
+├── configs                  # Configuration files (YAML/JSON), config templates
+│
+├── docs                     # API docs, Swagger files, architecture docs
+│
+├── internal                 # Private application code (not for import by other modules)
+│   ├── api                  # Request handlers (Gin handlers / controllers)
+│   ├── core                 # Core startup logic (config load, logger, DB, server setup)
+│   ├── global               # Global variables (DB, Redis, Config, Logger, etc.)
+│   ├── initialize           # Init functions (router setup, config init, cron init)
+│   ├── middleware           # Gin middleware
+│   ├── model                # Data models: entity, request, response, VO, DTO
+│   ├── pkg                  # Shared utilities (tools, common helpers, not business logic)
+│   ├── router               # Router groups & route registration
+│   └── service              # Business logic & database operations (service layer)
+│
+├── log                      # Application logs
+│
+├── resource                 # Static resources (images, attachments, templates)
+│   └── upload               # File upload target directory
+│
+└── scripts                  # Shell scripts (build, deploy, maintenance)
+
 ```
 
 **<u>如果选择手动部署，需要创建数据库（td27）并导入初始化数据。sql文件位置（./docker-compose/mysql/init/init.sql）</u>**
