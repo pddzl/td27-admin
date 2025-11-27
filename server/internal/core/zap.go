@@ -19,7 +19,14 @@ func Zap() (logger *zap.Logger) {
 		_ = os.Mkdir(global.TD27_CONFIG.Zap.Director, os.ModePerm)
 	}
 
-	cores := internal.Zap.GetZapCores()
+	levels := global.TD27_CONFIG.Zap.Levels()
+	length := len(levels)
+	cores := make([]zapcore.Core, 0, length)
+	for i := 0; i < length; i++ {
+		core := internal.NewZapCore(levels[i])
+		cores = append(cores, core)
+	}
+
 	logger = zap.New(zapcore.NewTee(cores...))
 
 	if global.TD27_CONFIG.Zap.ShowLine {

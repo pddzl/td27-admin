@@ -3,7 +3,7 @@ package internal
 import (
 	"os"
 	"path"
-	
+
 	"go.uber.org/zap/zapcore"
 	"gopkg.in/natefinch/lumberjack.v2"
 

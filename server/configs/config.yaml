@@ -7,12 +7,12 @@ jwt:
 
 # zap logger configuration
 zap:
-  level: debug
-  format: console
+  level: info
+  format: text
   prefix: '[TD27] '
+  encode-level: 'LowercaseLevelEncoder'
   director: log
   show-line: true
-  encode-level: LowercaseColorLevelEncoder
   stacktrace-key: stacktrace
   log-in-console: true
 
