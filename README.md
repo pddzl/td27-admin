@@ -170,7 +170,7 @@ Then open in browser: `http://ip:8500`
 </table>
 
 ## Acknowledgements
-+ 项目前端脚手架 [v3-admin-vite](https://github.com/un-pany/v3-admin-vite)
++ Frontend scaffold based on [v3-admin-vite](https://github.com/un-pany/v3-admin-vite)
 
 ## 📄 License
 
