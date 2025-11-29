@@ -11,23 +11,21 @@
 
 ## Built-in Features
 
-- User Management: System operators; mainly used for configuring system users.
+- User Management: Full CRUD and lifecycle management for system accounts, including role binding and status toggling.
 
-- Role Management: Objects for permission assignment; different roles can have different menus and API access permissions.
+- Role Management: Permission entities that map roles to menus and API endpoints.
 
-- Menu Management: Dynamically configure menus based on user roles, enabling different menus for different roles.
+- Menu Management: Role-based dynamic routing and menu generation.
 
-- API Management: Control which API interfaces each role is allowed to call.
+- API Management: Role-level access control for backend API routes.
 
-- Operation Logs: Record detailed logs of user requests and operations.
+- Operation Logs: Records user operations and request traces for auditing.
 
-- Scheduled Tasks: Previously supported only configuration-file mode now supports both config-file and UI-based configuration.
+- Scheduled Tasks: Supports cron-like task configuration via both YAML and UI-driven management.
 
-- Watermark Settings: Currently only configurable on the frontend.
+- File Management: Implements backend file storage with upload, retrieval, and deletion APIs.
 
-- File Management: File upload, download, and deletion.
-
-- Dictionary Management: Maintain data dictionaries (supports nesting), convenient for frontend use.
+- Dictionary Management: Nested dictionary definitions for unified data mapping and frontend rendering.
 
 ## Run
 
