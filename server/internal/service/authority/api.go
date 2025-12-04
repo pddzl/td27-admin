@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
-	
+
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 
@@ -20,8 +20,7 @@ func NewApiService() *ApiService {
 	return &ApiService{}
 }
 
-// AddApi 添加api
-func (a *ApiService) AddApi(api *modelAuthority.ApiModel) (*modelAuthority.ApiModel, error) {
+func (as *ApiService) Create(api *modelAuthority.ApiModel) (*modelAuthority.ApiModel, error) {
 	if !errors.Is(global.TD27_DB.Where("path = ? AND method = ?", api.Path, api.Method).First(&modelAuthority.ApiModel{}).Error, gorm.ErrRecordNotFound) {
 		return nil, errors.New("存在相同api")
 	}
@@ -31,8 +30,7 @@ func (a *ApiService) AddApi(api *modelAuthority.ApiModel) (*modelAuthority.ApiMo
 	return api, err
 }
 
-// GetApis 获取所有api
-func (a *ApiService) GetApis(apiSp authorityReq.ApiSearchParams) ([]modelAuthority.ApiModel, int64, error) {
+func (as *ApiService) List(apiSp authorityReq.ApiSearchParams) ([]modelAuthority.ApiModel, int64, error) {
 	limit := apiSp.PageSize
 	offset := apiSp.PageSize * (apiSp.Page - 1)
 	db := global.TD27_DB.Model(&modelAuthority.ApiModel{})
@@ -88,9 +86,9 @@ func (a *ApiService) GetApis(apiSp authorityReq.ApiSearchParams) ([]modelAuthori
 	return apiList, total, err
 }
 
-// GetElTreeApis 获取所有api tree
+// GetElTree 获取所有api tree
 // element-plus el-tree的数据格式
-func (a *ApiService) GetElTreeApis(roleId uint) (list []modelAuthority.ApiTree, checkedKey []string, err error) {
+func (as *ApiService) GetElTree(roleId uint) (list []modelAuthority.ApiTree, checkedKey []string, err error) {
 	var apiModels []modelAuthority.ApiModel
 	err = global.TD27_DB.Find(&apiModels).Error
 	if err != nil {
@@ -138,8 +136,7 @@ func (a *ApiService) GetElTreeApis(roleId uint) (list []modelAuthority.ApiTree, 
 	return
 }
 
-// DeleteApi 删除指定api
-func (a *ApiService) DeleteApi(id uint) (err error) {
+func (as *ApiService) Delete(id uint) (err error) {
 	var apiModel modelAuthority.ApiModel
 	if errors.Is(global.TD27_DB.Where("id = ?", id).First(&apiModel).Error, gorm.ErrRecordNotFound) {
 		global.TD27_LOG.Error("deleteApi -> 查找id", zap.Error(err))
@@ -160,8 +157,7 @@ func (a *ApiService) DeleteApi(id uint) (err error) {
 	return nil
 }
 
-// DeleteApiById 批量删除API
-func (a *ApiService) DeleteApiById(ids []uint) (err error) {
+func (as *ApiService) DeleteByIds(ids []uint) (err error) {
 	var apis []modelAuthority.ApiModel
 	err = global.TD27_DB.Find(&apis, "id in ?", ids).Unscoped().Delete(&apis).Error
 	// 删除对应casbin条目
@@ -177,8 +173,7 @@ func (a *ApiService) DeleteApiById(ids []uint) (err error) {
 	return
 }
 
-// EditApi 编辑api
-func (a *ApiService) EditApi(instance *modelAuthority.ApiModel) (err error) {
+func (as *ApiService) Update(instance *modelAuthority.ApiModel) (err error) {
 	var apiModel modelAuthority.ApiModel
 	if errors.Is(global.TD27_DB.Where("id = ?", instance.ID).First(&apiModel).Error, gorm.ErrRecordNotFound) {
 		return errors.New("记录不存在")

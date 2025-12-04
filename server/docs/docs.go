@@ -15,59 +15,6 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/api/addApi": {
-            "post": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "ApiApi"
-                ],
-                "summary": "添加api",
-                "parameters": [
-                    {
-                        "description": "请求参数",
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/authority.ApiModel"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/response.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/authority.ApiModel"
-                                        },
-                                        "msg": {
-                                            "type": "string"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            }
-        },
         "/api/addRole": {
             "post": {
                 "security": [
@@ -92,7 +39,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/authority.RoleModel"
+                            "$ref": "#/definitions/server_internal_model_entity_authority.RoleModel"
                         }
                     }
                 ],
@@ -102,13 +49,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/server_internal_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/authority.RoleModel"
+                                            "$ref": "#/definitions/server_internal_model_entity_authority.RoleModel"
                                         },
                                         "msg": {
                                             "type": "string"
@@ -121,7 +68,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/deleteApi": {
+        "/api/create": {
             "post": {
                 "security": [
                     {
@@ -135,9 +82,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "ApiApi"
+                    "Create"
                 ],
-                "summary": "删除api",
+                "summary": "添加api",
                 "parameters": [
                     {
                         "description": "请求参数",
@@ -145,7 +92,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.CId"
+                            "$ref": "#/definitions/server_internal_model_entity_authority.ApiModel"
                         }
                     }
                 ],
@@ -155,7 +102,60 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/server_internal_model_common_response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/server_internal_model_entity_authority.ApiModel"
+                                        },
+                                        "msg": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/delete": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Delete"
+                ],
+                "summary": "删除api",
+                "parameters": [
+                    {
+                        "description": "请求参数",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/server_internal_model_common_request.CId"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/server_internal_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -185,7 +185,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "ApiApi"
+                    "DeleteByIds"
                 ],
                 "summary": "批量删除api",
                 "parameters": [
@@ -195,7 +195,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.CIds"
+                            "$ref": "#/definitions/server_internal_model_common_request.CIds"
                         }
                     }
                 ],
@@ -205,7 +205,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/server_internal_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -245,7 +245,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.CId"
+                            "$ref": "#/definitions/server_internal_model_common_request.CId"
                         }
                     }
                 ],
@@ -255,7 +255,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/server_internal_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -285,7 +285,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "ApiApi"
+                    "Update"
                 ],
                 "summary": "编辑api",
                 "parameters": [
@@ -295,7 +295,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/authority.ApiModel"
+                            "$ref": "#/definitions/server_internal_model_entity_authority.ApiModel"
                         }
                     }
                 ],
@@ -305,7 +305,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/server_internal_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -345,7 +345,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.EditRole"
+                            "$ref": "#/definitions/server_internal_model_entity_authority_request.EditRole"
                         }
                     }
                 ],
@@ -355,7 +355,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/server_internal_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -395,7 +395,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.EditRoleMenu"
+                            "$ref": "#/definitions/server_internal_model_entity_authority_request.EditRoleMenu"
                         }
                     }
                 ],
@@ -405,79 +405,11 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/server_internal_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
-                                        "msg": {
-                                            "type": "string"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            }
-        },
-        "/api/getApis": {
-            "post": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "ApiApi"
-                ],
-                "summary": "分页获取api",
-                "parameters": [
-                    {
-                        "description": "请求参数",
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.ApiSearchParams"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/response.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "allOf": [
-                                                {
-                                                    "$ref": "#/definitions/response.PageResult"
-                                                },
-                                                {
-                                                    "type": "object",
-                                                    "properties": {
-                                                        "list": {
-                                                            "type": "array",
-                                                            "items": {
-                                                                "$ref": "#/definitions/authority.ApiModel"
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            ]
-                                        },
                                         "msg": {
                                             "type": "string"
                                         }
@@ -503,7 +435,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "ApiApi"
+                    "GetElTree"
                 ],
                 "summary": "格式化列出所有api",
                 "parameters": [
@@ -513,7 +445,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.CId"
+                            "$ref": "#/definitions/server_internal_model_common_request.CId"
                         }
                     }
                 ],
@@ -523,7 +455,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/server_internal_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -531,7 +463,7 @@ const docTemplate = `{
                                         "data": {
                                             "allOf": [
                                                 {
-                                                    "$ref": "#/definitions/response.ApiTree"
+                                                    "$ref": "#/definitions/server_internal_model_entity_authority_response.ApiTree"
                                                 },
                                                 {
                                                     "type": "object",
@@ -545,7 +477,75 @@ const docTemplate = `{
                                                         "list": {
                                                             "type": "array",
                                                             "items": {
-                                                                "$ref": "#/definitions/authority.ApiTree"
+                                                                "$ref": "#/definitions/server_internal_model_entity_authority.ApiTree"
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        "msg": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/list": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "List"
+                ],
+                "summary": "分页获取api",
+                "parameters": [
+                    {
+                        "description": "请求参数",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/server_internal_model_entity_authority_request.ApiSearchParams"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/server_internal_model_common_response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/definitions/server_internal_model_common_response.Page"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "list": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "$ref": "#/definitions/server_internal_model_entity_authority.ApiModel"
                                                             }
                                                         }
                                                     }
@@ -587,7 +587,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.ReqCasbin"
+                            "$ref": "#/definitions/server_internal_model_entity_base_request.ReqCasbin"
                         }
                     }
                 ],
@@ -597,7 +597,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/server_internal_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -637,7 +637,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/sysTool.CronModel"
+                            "$ref": "#/definitions/server_internal_model_entity_sysTool.CronModel"
                         }
                     }
                 ],
@@ -647,13 +647,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/server_internal_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/sysTool.CronModel"
+                                            "$ref": "#/definitions/server_internal_model_entity_sysTool.CronModel"
                                         },
                                         "msg": {
                                             "type": "string"
@@ -690,7 +690,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.CId"
+                            "$ref": "#/definitions/server_internal_model_common_request.CId"
                         }
                     }
                 ],
@@ -700,7 +700,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/server_internal_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -740,7 +740,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/sysTool.CronModel"
+                            "$ref": "#/definitions/server_internal_model_entity_sysTool.CronModel"
                         }
                     }
                 ],
@@ -750,13 +750,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/server_internal_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/sysTool.CronModel"
+                                            "$ref": "#/definitions/server_internal_model_entity_sysTool.CronModel"
                                         },
                                         "msg": {
                                             "type": "string"
@@ -793,7 +793,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.PageInfo"
+                            "$ref": "#/definitions/server_internal_model_common_request.PageInfo"
                         }
                     }
                 ],
@@ -803,7 +803,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/server_internal_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -811,7 +811,7 @@ const docTemplate = `{
                                         "data": {
                                             "allOf": [
                                                 {
-                                                    "$ref": "#/definitions/response.PageResult"
+                                                    "$ref": "#/definitions/server_internal_model_common_response.Page"
                                                 },
                                                 {
                                                     "type": "object",
@@ -819,7 +819,7 @@ const docTemplate = `{
                                                         "list": {
                                                             "type": "array",
                                                             "items": {
-                                                                "$ref": "#/definitions/sysTool.CronModel"
+                                                                "$ref": "#/definitions/server_internal_model_entity_sysTool.CronModel"
                                                             }
                                                         }
                                                     }
@@ -861,7 +861,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.SwitchReq"
+                            "$ref": "#/definitions/server_internal_model_entity_sysTool_request.SwitchReq"
                         }
                     }
                 ],
@@ -871,7 +871,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/server_internal_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -925,7 +925,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/server_internal_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -1001,7 +1001,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.FileSearchParams"
+                            "$ref": "#/definitions/server_internal_model_entity_fileM_request.FileSearchParams"
                         }
                     }
                 ],
@@ -1011,7 +1011,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/server_internal_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -1019,7 +1019,7 @@ const docTemplate = `{
                                         "data": {
                                             "allOf": [
                                                 {
-                                                    "$ref": "#/definitions/response.PageResult"
+                                                    "$ref": "#/definitions/server_internal_model_common_response.Page"
                                                 },
                                                 {
                                                     "type": "object",
@@ -1027,7 +1027,7 @@ const docTemplate = `{
                                                         "list": {
                                                             "type": "array",
                                                             "items": {
-                                                                "$ref": "#/definitions/fileM.FileModel"
+                                                                "$ref": "#/definitions/server_internal_model_entity_fileM.FileModel"
                                                             }
                                                         }
                                                     }
@@ -1077,7 +1077,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/server_internal_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -1113,13 +1113,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/server_internal_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/request.CaptchaResponse"
+                                            "$ref": "#/definitions/server_internal_model_entity_base_request.CaptchaResponse"
                                         },
                                         "msg": {
                                             "type": "string"
@@ -1151,7 +1151,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.Login"
+                            "$ref": "#/definitions/server_internal_model_entity_base_request.Login"
                         }
                     }
                 ],
@@ -1161,13 +1161,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/server_internal_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/response.LoginResponse"
+                                            "$ref": "#/definitions/server_internal_model_entity_base_response.LoginResponse"
                                         },
                                         "msg": {
                                             "type": "string"
@@ -1198,7 +1198,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/server_internal_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -1238,7 +1238,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.EditMenuReq"
+                            "$ref": "#/definitions/server_internal_model_entity_authority_request.EditMenuReq"
                         }
                     }
                 ],
@@ -1248,7 +1248,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/server_internal_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -1288,7 +1288,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.CId"
+                            "$ref": "#/definitions/server_internal_model_common_request.CId"
                         }
                     }
                 ],
@@ -1298,7 +1298,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/server_internal_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -1338,7 +1338,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.EditMenuReq"
+                            "$ref": "#/definitions/server_internal_model_entity_authority_request.EditMenuReq"
                         }
                     }
                 ],
@@ -1348,7 +1348,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/server_internal_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -1388,7 +1388,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.CId"
+                            "$ref": "#/definitions/server_internal_model_common_request.CId"
                         }
                     }
                 ],
@@ -1398,7 +1398,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/server_internal_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -1406,7 +1406,7 @@ const docTemplate = `{
                                         "data": {
                                             "allOf": [
                                                 {
-                                                    "$ref": "#/definitions/response.Menu"
+                                                    "$ref": "#/definitions/server_internal_model_entity_authority_response.Menu"
                                                 },
                                                 {
                                                     "type": "object",
@@ -1414,7 +1414,7 @@ const docTemplate = `{
                                                         "list": {
                                                             "type": "array",
                                                             "items": {
-                                                                "$ref": "#/definitions/authority.MenuModel"
+                                                                "$ref": "#/definitions/server_internal_model_entity_authority.MenuModel"
                                                             }
                                                         },
                                                         "menuIds": {
@@ -1458,7 +1458,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/server_internal_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -1466,7 +1466,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/authority.MenuModel"
+                                                "$ref": "#/definitions/server_internal_model_entity_authority.MenuModel"
                                             }
                                         },
                                         "msg": {
@@ -1504,7 +1504,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.CId"
+                            "$ref": "#/definitions/server_internal_model_common_request.CId"
                         }
                     }
                 ],
@@ -1514,7 +1514,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/server_internal_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -1554,7 +1554,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.CIds"
+                            "$ref": "#/definitions/server_internal_model_common_request.CIds"
                         }
                     }
                 ],
@@ -1564,7 +1564,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/server_internal_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -1604,7 +1604,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.OrSearchParams"
+                            "$ref": "#/definitions/server_internal_model_entity_monitor_request.OrSearchParams"
                         }
                     }
                 ],
@@ -1614,7 +1614,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/server_internal_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -1622,7 +1622,7 @@ const docTemplate = `{
                                         "data": {
                                             "allOf": [
                                                 {
-                                                    "$ref": "#/definitions/response.PageResult"
+                                                    "$ref": "#/definitions/server_internal_model_common_response.Page"
                                                 },
                                                 {
                                                     "type": "object",
@@ -1630,7 +1630,7 @@ const docTemplate = `{
                                                         "list": {
                                                             "type": "array",
                                                             "items": {
-                                                                "$ref": "#/definitions/monitor.OperationLogModel"
+                                                                "$ref": "#/definitions/server_internal_model_entity_monitor.OperationLogModel"
                                                             }
                                                         }
                                                     }
@@ -1668,7 +1668,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/server_internal_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -1676,7 +1676,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/authority.RoleModel"
+                                                "$ref": "#/definitions/server_internal_model_entity_authority.RoleModel"
                                             }
                                         },
                                         "msg": {
@@ -1714,7 +1714,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.AddUser"
+                            "$ref": "#/definitions/server_internal_model_entity_authority_request.AddUser"
                         }
                     }
                 ],
@@ -1724,7 +1724,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/server_internal_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -1764,7 +1764,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.CId"
+                            "$ref": "#/definitions/server_internal_model_common_request.CId"
                         }
                     }
                 ],
@@ -1774,7 +1774,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/server_internal_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -1814,7 +1814,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.EditUser"
+                            "$ref": "#/definitions/server_internal_model_entity_authority_request.EditUser"
                         }
                     }
                 ],
@@ -1824,7 +1824,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/server_internal_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -1860,7 +1860,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/server_internal_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -1900,7 +1900,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.PageInfo"
+                            "$ref": "#/definitions/server_internal_model_common_request.PageInfo"
                         }
                     }
                 ],
@@ -1910,7 +1910,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/server_internal_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -1918,7 +1918,7 @@ const docTemplate = `{
                                         "data": {
                                             "allOf": [
                                                 {
-                                                    "$ref": "#/definitions/response.PageResult"
+                                                    "$ref": "#/definitions/server_internal_model_common_response.Page"
                                                 },
                                                 {
                                                     "type": "object",
@@ -1926,7 +1926,7 @@ const docTemplate = `{
                                                         "list": {
                                                             "type": "array",
                                                             "items": {
-                                                                "$ref": "#/definitions/response.UserResult"
+                                                                "$ref": "#/definitions/server_internal_model_entity_authority_response.UserResult"
                                                             }
                                                         }
                                                     }
@@ -1968,7 +1968,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.ModifyPass"
+                            "$ref": "#/definitions/server_internal_model_entity_authority_request.ModifyPass"
                         }
                     }
                 ],
@@ -1978,7 +1978,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/server_internal_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -2018,7 +2018,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.SwitchActive"
+                            "$ref": "#/definitions/server_internal_model_entity_authority_request.SwitchActive"
                         }
                     }
                 ],
@@ -2028,7 +2028,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Response"
+                                    "$ref": "#/definitions/server_internal_model_common_response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -2046,7 +2046,73 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "authority.ApiModel": {
+        "server_internal_model_common_request.CId": {
+            "type": "object",
+            "required": [
+                "id"
+            ],
+            "properties": {
+                "id": {
+                    "description": "主键ID",
+                    "type": "integer"
+                }
+            }
+        },
+        "server_internal_model_common_request.CIds": {
+            "type": "object",
+            "required": [
+                "ids"
+            ],
+            "properties": {
+                "ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                }
+            }
+        },
+        "server_internal_model_common_request.PageInfo": {
+            "type": "object",
+            "properties": {
+                "page": {
+                    "description": "页码",
+                    "type": "integer"
+                },
+                "pageSize": {
+                    "description": "每页大小",
+                    "type": "integer"
+                }
+            }
+        },
+        "server_internal_model_common_response.Page": {
+            "type": "object",
+            "properties": {
+                "list": {},
+                "page": {
+                    "type": "integer"
+                },
+                "pageSize": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
+        "server_internal_model_common_response.Response": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {},
+                "msg": {
+                    "type": "string"
+                }
+            }
+        },
+        "server_internal_model_entity_authority.ApiModel": {
             "type": "object",
             "required": [
                 "apiGroup",
@@ -2085,7 +2151,7 @@ const docTemplate = `{
                 }
             }
         },
-        "authority.ApiTree": {
+        "server_internal_model_entity_authority.ApiTree": {
             "type": "object",
             "properties": {
                 "apiGroup": {
@@ -2094,12 +2160,12 @@ const docTemplate = `{
                 "children": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/authority.Children"
+                        "$ref": "#/definitions/server_internal_model_entity_authority.Children"
                     }
                 }
             }
         },
-        "authority.Children": {
+        "server_internal_model_entity_authority.Children": {
             "type": "object",
             "properties": {
                 "apiGroup": {
@@ -2121,13 +2187,13 @@ const docTemplate = `{
                 }
             }
         },
-        "authority.MenuModel": {
+        "server_internal_model_entity_authority.MenuModel": {
             "type": "object",
             "properties": {
                 "children": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/authority.MenuModel"
+                        "$ref": "#/definitions/server_internal_model_entity_authority.MenuModel"
                     }
                 },
                 "component": {
@@ -2146,7 +2212,7 @@ const docTemplate = `{
                     "description": "元数据",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/authority.Meta"
+                            "$ref": "#/definitions/server_internal_model_entity_authority.Meta"
                         }
                     ]
                 },
@@ -2176,7 +2242,7 @@ const docTemplate = `{
                 }
             }
         },
-        "authority.Meta": {
+        "server_internal_model_entity_authority.Meta": {
             "type": "object",
             "properties": {
                 "affix": {
@@ -2208,7 +2274,7 @@ const docTemplate = `{
                 }
             }
         },
-        "authority.RoleModel": {
+        "server_internal_model_entity_authority.RoleModel": {
             "type": "object",
             "required": [
                 "roleName"
@@ -2226,7 +2292,7 @@ const docTemplate = `{
                     "description": "Users    []*UserModel ` + "`" + `json:\"users\"` + "`" + `",
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/authority.MenuModel"
+                        "$ref": "#/definitions/server_internal_model_entity_authority.MenuModel"
                     }
                 },
                 "roleName": {
@@ -2238,7 +2304,7 @@ const docTemplate = `{
                 }
             }
         },
-        "authority.UserModel": {
+        "server_internal_model_entity_authority.UserModel": {
             "type": "object",
             "required": [
                 "roleId",
@@ -2279,7 +2345,421 @@ const docTemplate = `{
                 }
             }
         },
-        "fileM.FileModel": {
+        "server_internal_model_entity_authority_request.AddUser": {
+            "type": "object",
+            "required": [
+                "password",
+                "roleId",
+                "username"
+            ],
+            "properties": {
+                "active": {
+                    "description": "是否活跃",
+                    "type": "boolean"
+                },
+                "email": {
+                    "description": "邮箱",
+                    "type": "string"
+                },
+                "password": {
+                    "description": "密码",
+                    "type": "string"
+                },
+                "phone": {
+                    "description": "手机号",
+                    "type": "string"
+                },
+                "roleId": {
+                    "description": "角色ID",
+                    "type": "integer"
+                },
+                "username": {
+                    "description": "用户名",
+                    "type": "string"
+                }
+            }
+        },
+        "server_internal_model_entity_authority_request.ApiSearchParams": {
+            "type": "object",
+            "properties": {
+                "apiGroup": {
+                    "description": "API分组",
+                    "type": "string"
+                },
+                "desc": {
+                    "description": "排序方式:升序false(默认)|降序true",
+                    "type": "boolean"
+                },
+                "description": {
+                    "description": "描述",
+                    "type": "string"
+                },
+                "method": {
+                    "description": "请求方法",
+                    "type": "string",
+                    "enum": [
+                        "GET",
+                        "POST",
+                        "DELETE",
+                        "PUT"
+                    ]
+                },
+                "orderKey": {
+                    "description": "排序",
+                    "type": "string"
+                },
+                "page": {
+                    "description": "页码",
+                    "type": "integer"
+                },
+                "pageSize": {
+                    "description": "每页大小",
+                    "type": "integer"
+                },
+                "path": {
+                    "description": "路径",
+                    "type": "string"
+                }
+            }
+        },
+        "server_internal_model_entity_authority_request.EditMenuReq": {
+            "type": "object",
+            "required": [
+                "component",
+                "id",
+                "path",
+                "sort"
+            ],
+            "properties": {
+                "component": {
+                    "description": "前端组件",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "菜单ID",
+                    "type": "integer"
+                },
+                "meta": {
+                    "$ref": "#/definitions/server_internal_model_entity_authority_request.meta"
+                },
+                "name": {
+                    "description": "名称",
+                    "type": "string"
+                },
+                "path": {
+                    "description": "路径",
+                    "type": "string"
+                },
+                "pid": {
+                    "description": "默认0 根目录",
+                    "type": "integer"
+                },
+                "redirect": {
+                    "description": "重定向",
+                    "type": "string"
+                },
+                "sort": {
+                    "description": "排序",
+                    "type": "integer"
+                }
+            }
+        },
+        "server_internal_model_entity_authority_request.EditRole": {
+            "type": "object",
+            "required": [
+                "id",
+                "roleName"
+            ],
+            "properties": {
+                "id": {
+                    "description": "角色ID",
+                    "type": "integer"
+                },
+                "roleName": {
+                    "description": "角色名称",
+                    "type": "string"
+                }
+            }
+        },
+        "server_internal_model_entity_authority_request.EditRoleMenu": {
+            "type": "object",
+            "properties": {
+                "ids": {
+                    "description": "菜单ID",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "roleId": {
+                    "description": "角色ID",
+                    "type": "integer"
+                }
+            }
+        },
+        "server_internal_model_entity_authority_request.EditUser": {
+            "type": "object",
+            "required": [
+                "id",
+                "roleId",
+                "username"
+            ],
+            "properties": {
+                "active": {
+                    "description": "是否活跃",
+                    "type": "boolean"
+                },
+                "email": {
+                    "description": "邮箱",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "用户ID",
+                    "type": "integer"
+                },
+                "phone": {
+                    "description": "手机号",
+                    "type": "string"
+                },
+                "roleId": {
+                    "description": "角色ID",
+                    "type": "integer"
+                },
+                "username": {
+                    "description": "用户名",
+                    "type": "string"
+                }
+            }
+        },
+        "server_internal_model_entity_authority_request.ModifyPass": {
+            "type": "object",
+            "required": [
+                "id",
+                "newPassword",
+                "oldPassword"
+            ],
+            "properties": {
+                "id": {
+                    "description": "用户ID",
+                    "type": "integer"
+                },
+                "newPassword": {
+                    "description": "新密码",
+                    "type": "string"
+                },
+                "oldPassword": {
+                    "description": "旧密码",
+                    "type": "string"
+                }
+            }
+        },
+        "server_internal_model_entity_authority_request.SwitchActive": {
+            "type": "object",
+            "required": [
+                "id"
+            ],
+            "properties": {
+                "active": {
+                    "description": "是否启用",
+                    "type": "boolean"
+                },
+                "id": {
+                    "description": "用户ID",
+                    "type": "integer"
+                }
+            }
+        },
+        "server_internal_model_entity_authority_request.meta": {
+            "type": "object",
+            "properties": {
+                "affix": {
+                    "description": "组件固定",
+                    "type": "boolean"
+                },
+                "alwaysShow": {
+                    "description": "是否一直显示根路由",
+                    "type": "boolean"
+                },
+                "hidden": {
+                    "description": "隐藏菜单",
+                    "type": "boolean"
+                },
+                "icon": {
+                    "description": "element图标",
+                    "type": "string"
+                },
+                "keepAlive": {
+                    "description": "组件缓存",
+                    "type": "boolean"
+                },
+                "title": {
+                    "description": "菜单名",
+                    "type": "string"
+                }
+            }
+        },
+        "server_internal_model_entity_authority_response.ApiTree": {
+            "type": "object",
+            "properties": {
+                "checkedKey": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "list": {}
+            }
+        },
+        "server_internal_model_entity_authority_response.Menu": {
+            "type": "object",
+            "properties": {
+                "list": {},
+                "menuIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                }
+            }
+        },
+        "server_internal_model_entity_authority_response.UserResult": {
+            "type": "object",
+            "required": [
+                "roleId",
+                "username"
+            ],
+            "properties": {
+                "active": {
+                    "description": "是否活跃",
+                    "type": "boolean"
+                },
+                "createdAt": {
+                    "description": "创建时间",
+                    "type": "string"
+                },
+                "email": {
+                    "description": "邮箱",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "主键ID",
+                    "type": "integer"
+                },
+                "phone": {
+                    "description": "手机号",
+                    "type": "string"
+                },
+                "roleId": {
+                    "description": "角色ID",
+                    "type": "integer"
+                },
+                "roleName": {
+                    "description": "角色名",
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "description": "更新时间",
+                    "type": "string"
+                },
+                "username": {
+                    "description": "用户名",
+                    "type": "string"
+                }
+            }
+        },
+        "server_internal_model_entity_base_request.CaptchaResponse": {
+            "type": "object",
+            "properties": {
+                "captchaId": {
+                    "type": "string"
+                },
+                "captchaLength": {
+                    "type": "integer"
+                },
+                "picPath": {
+                    "type": "string"
+                }
+            }
+        },
+        "server_internal_model_entity_base_request.CasbinInfo": {
+            "type": "object",
+            "properties": {
+                "method": {
+                    "description": "方法",
+                    "type": "string"
+                },
+                "path": {
+                    "description": "路径",
+                    "type": "string"
+                }
+            }
+        },
+        "server_internal_model_entity_base_request.Login": {
+            "type": "object",
+            "required": [
+                "captcha",
+                "captchaId",
+                "password",
+                "username"
+            ],
+            "properties": {
+                "captcha": {
+                    "description": "验证码",
+                    "type": "string"
+                },
+                "captchaId": {
+                    "description": "验证码ID",
+                    "type": "string"
+                },
+                "password": {
+                    "description": "密码",
+                    "type": "string"
+                },
+                "username": {
+                    "description": "用户名",
+                    "type": "string"
+                }
+            }
+        },
+        "server_internal_model_entity_base_request.ReqCasbin": {
+            "type": "object",
+            "required": [
+                "roleId"
+            ],
+            "properties": {
+                "casbinInfos": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/server_internal_model_entity_base_request.CasbinInfo"
+                    }
+                },
+                "roleId": {
+                    "description": "角色ID",
+                    "type": "integer"
+                }
+            }
+        },
+        "server_internal_model_entity_base_response.LoginResponse": {
+            "type": "object",
+            "properties": {
+                "expiresAt": {
+                    "description": "过期时间",
+                    "type": "integer"
+                },
+                "token": {
+                    "type": "string"
+                },
+                "user": {
+                    "description": "用户",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/server_internal_model_entity_authority.UserModel"
+                        }
+                    ]
+                }
+            }
+        },
+        "server_internal_model_entity_fileM.FileModel": {
             "type": "object",
             "properties": {
                 "createdAt": {
@@ -2305,7 +2785,31 @@ const docTemplate = `{
                 }
             }
         },
-        "monitor.OperationLogModel": {
+        "server_internal_model_entity_fileM_request.FileSearchParams": {
+            "type": "object",
+            "properties": {
+                "desc": {
+                    "description": "排序方式:升序false(默认)|降序true",
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "orderKey": {
+                    "description": "排序",
+                    "type": "string"
+                },
+                "page": {
+                    "description": "页码",
+                    "type": "integer"
+                },
+                "pageSize": {
+                    "description": "每页大小",
+                    "type": "integer"
+                }
+            }
+        },
+        "server_internal_model_entity_monitor.OperationLogModel": {
             "type": "object",
             "properties": {
                 "createdAt": {
@@ -2362,319 +2866,7 @@ const docTemplate = `{
                 }
             }
         },
-        "request.AddUser": {
-            "type": "object",
-            "required": [
-                "password",
-                "roleId",
-                "username"
-            ],
-            "properties": {
-                "active": {
-                    "description": "是否活跃",
-                    "type": "boolean"
-                },
-                "email": {
-                    "description": "邮箱",
-                    "type": "string"
-                },
-                "password": {
-                    "description": "密码",
-                    "type": "string"
-                },
-                "phone": {
-                    "description": "手机号",
-                    "type": "string"
-                },
-                "roleId": {
-                    "description": "角色ID",
-                    "type": "integer"
-                },
-                "username": {
-                    "description": "用户名",
-                    "type": "string"
-                }
-            }
-        },
-        "request.ApiSearchParams": {
-            "type": "object",
-            "properties": {
-                "api_group": {
-                    "description": "API分组",
-                    "type": "string"
-                },
-                "desc": {
-                    "description": "排序方式:升序false(默认)|降序true",
-                    "type": "boolean"
-                },
-                "description": {
-                    "description": "描述",
-                    "type": "string"
-                },
-                "method": {
-                    "description": "请求方法",
-                    "type": "string",
-                    "enum": [
-                        "GET",
-                        "POST",
-                        "DELETE",
-                        "PUT"
-                    ]
-                },
-                "orderKey": {
-                    "description": "排序",
-                    "type": "string"
-                },
-                "page": {
-                    "description": "页码",
-                    "type": "integer"
-                },
-                "pageSize": {
-                    "description": "每页大小",
-                    "type": "integer"
-                },
-                "path": {
-                    "description": "路径",
-                    "type": "string"
-                }
-            }
-        },
-        "request.CId": {
-            "type": "object",
-            "required": [
-                "id"
-            ],
-            "properties": {
-                "id": {
-                    "description": "主键ID",
-                    "type": "integer"
-                }
-            }
-        },
-        "request.CIds": {
-            "type": "object",
-            "required": [
-                "ids"
-            ],
-            "properties": {
-                "ids": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
-                }
-            }
-        },
-        "request.CaptchaResponse": {
-            "type": "object",
-            "properties": {
-                "captchaId": {
-                    "type": "string"
-                },
-                "captchaLength": {
-                    "type": "integer"
-                },
-                "picPath": {
-                    "type": "string"
-                }
-            }
-        },
-        "request.CasbinInfo": {
-            "type": "object",
-            "properties": {
-                "method": {
-                    "description": "方法",
-                    "type": "string"
-                },
-                "path": {
-                    "description": "路径",
-                    "type": "string"
-                }
-            }
-        },
-        "request.EditMenuReq": {
-            "type": "object",
-            "required": [
-                "component",
-                "id",
-                "path",
-                "sort"
-            ],
-            "properties": {
-                "component": {
-                    "description": "前端组件",
-                    "type": "string"
-                },
-                "id": {
-                    "description": "菜单ID",
-                    "type": "integer"
-                },
-                "meta": {
-                    "$ref": "#/definitions/request.meta"
-                },
-                "name": {
-                    "description": "名称",
-                    "type": "string"
-                },
-                "path": {
-                    "description": "路径",
-                    "type": "string"
-                },
-                "pid": {
-                    "description": "默认0 根目录",
-                    "type": "integer"
-                },
-                "redirect": {
-                    "description": "重定向",
-                    "type": "string"
-                },
-                "sort": {
-                    "description": "排序",
-                    "type": "integer"
-                }
-            }
-        },
-        "request.EditRole": {
-            "type": "object",
-            "required": [
-                "id",
-                "roleName"
-            ],
-            "properties": {
-                "id": {
-                    "description": "角色ID",
-                    "type": "integer"
-                },
-                "roleName": {
-                    "description": "角色名称",
-                    "type": "string"
-                }
-            }
-        },
-        "request.EditRoleMenu": {
-            "type": "object",
-            "properties": {
-                "ids": {
-                    "description": "菜单ID",
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
-                },
-                "roleId": {
-                    "description": "角色ID",
-                    "type": "integer"
-                }
-            }
-        },
-        "request.EditUser": {
-            "type": "object",
-            "required": [
-                "id",
-                "roleId",
-                "username"
-            ],
-            "properties": {
-                "active": {
-                    "description": "是否活跃",
-                    "type": "boolean"
-                },
-                "email": {
-                    "description": "邮箱",
-                    "type": "string"
-                },
-                "id": {
-                    "description": "用户ID",
-                    "type": "integer"
-                },
-                "phone": {
-                    "description": "手机号",
-                    "type": "string"
-                },
-                "roleId": {
-                    "description": "角色ID",
-                    "type": "integer"
-                },
-                "username": {
-                    "description": "用户名",
-                    "type": "string"
-                }
-            }
-        },
-        "request.FileSearchParams": {
-            "type": "object",
-            "properties": {
-                "desc": {
-                    "description": "排序方式:升序false(默认)|降序true",
-                    "type": "boolean"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "orderKey": {
-                    "description": "排序",
-                    "type": "string"
-                },
-                "page": {
-                    "description": "页码",
-                    "type": "integer"
-                },
-                "pageSize": {
-                    "description": "每页大小",
-                    "type": "integer"
-                }
-            }
-        },
-        "request.Login": {
-            "type": "object",
-            "required": [
-                "captcha",
-                "captchaId",
-                "password",
-                "username"
-            ],
-            "properties": {
-                "captcha": {
-                    "description": "验证码",
-                    "type": "string"
-                },
-                "captchaId": {
-                    "description": "验证码ID",
-                    "type": "string"
-                },
-                "password": {
-                    "description": "密码",
-                    "type": "string"
-                },
-                "username": {
-                    "description": "用户名",
-                    "type": "string"
-                }
-            }
-        },
-        "request.ModifyPass": {
-            "type": "object",
-            "required": [
-                "id",
-                "newPassword",
-                "oldPassword"
-            ],
-            "properties": {
-                "id": {
-                    "description": "用户ID",
-                    "type": "integer"
-                },
-                "newPassword": {
-                    "description": "新密码",
-                    "type": "string"
-                },
-                "oldPassword": {
-                    "description": "旧密码",
-                    "type": "string"
-                }
-            }
-        },
-        "request.OrSearchParams": {
+        "server_internal_model_entity_monitor_request.OrSearchParams": {
             "type": "object",
             "properties": {
                 "asc": {
@@ -2703,213 +2895,7 @@ const docTemplate = `{
                 }
             }
         },
-        "request.PageInfo": {
-            "type": "object",
-            "properties": {
-                "page": {
-                    "description": "页码",
-                    "type": "integer"
-                },
-                "pageSize": {
-                    "description": "每页大小",
-                    "type": "integer"
-                }
-            }
-        },
-        "request.ReqCasbin": {
-            "type": "object",
-            "required": [
-                "roleId"
-            ],
-            "properties": {
-                "casbinInfos": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/request.CasbinInfo"
-                    }
-                },
-                "roleId": {
-                    "description": "角色ID",
-                    "type": "integer"
-                }
-            }
-        },
-        "request.SwitchActive": {
-            "type": "object",
-            "required": [
-                "id"
-            ],
-            "properties": {
-                "active": {
-                    "description": "是否启用",
-                    "type": "boolean"
-                },
-                "id": {
-                    "description": "用户ID",
-                    "type": "integer"
-                }
-            }
-        },
-        "request.SwitchReq": {
-            "type": "object",
-            "required": [
-                "id"
-            ],
-            "properties": {
-                "id": {
-                    "type": "integer"
-                },
-                "open": {
-                    "type": "boolean"
-                }
-            }
-        },
-        "request.meta": {
-            "type": "object",
-            "properties": {
-                "affix": {
-                    "description": "组件固定",
-                    "type": "boolean"
-                },
-                "alwaysShow": {
-                    "description": "是否一直显示根路由",
-                    "type": "boolean"
-                },
-                "hidden": {
-                    "description": "隐藏菜单",
-                    "type": "boolean"
-                },
-                "icon": {
-                    "description": "element图标",
-                    "type": "string"
-                },
-                "keepAlive": {
-                    "description": "组件缓存",
-                    "type": "boolean"
-                },
-                "title": {
-                    "description": "菜单名",
-                    "type": "string"
-                }
-            }
-        },
-        "response.ApiTree": {
-            "type": "object",
-            "properties": {
-                "checkedKey": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "list": {}
-            }
-        },
-        "response.LoginResponse": {
-            "type": "object",
-            "properties": {
-                "expiresAt": {
-                    "description": "过期时间",
-                    "type": "integer"
-                },
-                "token": {
-                    "type": "string"
-                },
-                "user": {
-                    "description": "用户",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/authority.UserModel"
-                        }
-                    ]
-                }
-            }
-        },
-        "response.Menu": {
-            "type": "object",
-            "properties": {
-                "list": {},
-                "menuIds": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
-                }
-            }
-        },
-        "response.PageResult": {
-            "type": "object",
-            "properties": {
-                "list": {},
-                "page": {
-                    "type": "integer"
-                },
-                "pageSize": {
-                    "type": "integer"
-                },
-                "total": {
-                    "type": "integer"
-                }
-            }
-        },
-        "response.Response": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "integer"
-                },
-                "data": {},
-                "msg": {
-                    "type": "string"
-                }
-            }
-        },
-        "response.UserResult": {
-            "type": "object",
-            "required": [
-                "roleId",
-                "username"
-            ],
-            "properties": {
-                "active": {
-                    "description": "是否活跃",
-                    "type": "boolean"
-                },
-                "createdAt": {
-                    "description": "创建时间",
-                    "type": "string"
-                },
-                "email": {
-                    "description": "邮箱",
-                    "type": "string"
-                },
-                "id": {
-                    "description": "主键ID",
-                    "type": "integer"
-                },
-                "phone": {
-                    "description": "手机号",
-                    "type": "string"
-                },
-                "roleId": {
-                    "description": "角色ID",
-                    "type": "integer"
-                },
-                "roleName": {
-                    "description": "角色名",
-                    "type": "string"
-                },
-                "updatedAt": {
-                    "description": "更新时间",
-                    "type": "string"
-                },
-                "username": {
-                    "description": "用户名",
-                    "type": "string"
-                }
-            }
-        },
-        "sysTool.ClearTable": {
+        "server_internal_model_entity_sysTool.ClearTable": {
             "type": "object",
             "properties": {
                 "compareField": {
@@ -2923,7 +2909,7 @@ const docTemplate = `{
                 }
             }
         },
-        "sysTool.CronModel": {
+        "server_internal_model_entity_sysTool.CronModel": {
             "type": "object",
             "required": [
                 "expression",
@@ -2945,7 +2931,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "extraParams": {
-                    "$ref": "#/definitions/sysTool.ExtraParams"
+                    "$ref": "#/definitions/server_internal_model_entity_sysTool.ExtraParams"
                 },
                 "id": {
                     "description": "主键ID",
@@ -2973,7 +2959,7 @@ const docTemplate = `{
                 }
             }
         },
-        "sysTool.ExtraParams": {
+        "server_internal_model_entity_sysTool.ExtraParams": {
             "type": "object",
             "properties": {
                 "command": {
@@ -2984,8 +2970,22 @@ const docTemplate = `{
                     "description": "for clearTable",
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/sysTool.ClearTable"
+                        "$ref": "#/definitions/server_internal_model_entity_sysTool.ClearTable"
                     }
+                }
+            }
+        },
+        "server_internal_model_entity_sysTool_request.SwitchReq": {
+            "type": "object",
+            "required": [
+                "id"
+            ],
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "open": {
+                    "type": "boolean"
                 }
             }
         }

@@ -1,5 +1,49 @@
 definitions:
-  authority.ApiModel:
+  server_internal_model_common_request.CId:
+    properties:
+      id:
+        description: 主键ID
+        type: integer
+    required:
+    - id
+    type: object
+  server_internal_model_common_request.CIds:
+    properties:
+      ids:
+        items:
+          type: integer
+        type: array
+    required:
+    - ids
+    type: object
+  server_internal_model_common_request.PageInfo:
+    properties:
+      page:
+        description: 页码
+        type: integer
+      pageSize:
+        description: 每页大小
+        type: integer
+    type: object
+  server_internal_model_common_response.Page:
+    properties:
+      list: {}
+      page:
+        type: integer
+      pageSize:
+        type: integer
+      total:
+        type: integer
+    type: object
+  server_internal_model_common_response.Response:
+    properties:
+      code:
+        type: integer
+      data: {}
+      msg:
+        type: string
+    type: object
+  server_internal_model_entity_authority.ApiModel:
     properties:
       apiGroup:
         description: api组
@@ -28,16 +72,16 @@ definitions:
     - method
     - path
     type: object
-  authority.ApiTree:
+  server_internal_model_entity_authority.ApiTree:
     properties:
       apiGroup:
         type: string
       children:
         items:
-          $ref: '#/definitions/authority.Children'
+          $ref: '#/definitions/server_internal_model_entity_authority.Children'
         type: array
     type: object
-  authority.Children:
+  server_internal_model_entity_authority.Children:
     properties:
       apiGroup:
         description: for 前端el-tree label (path + description)
@@ -52,11 +96,11 @@ definitions:
       path:
         type: string
     type: object
-  authority.MenuModel:
+  server_internal_model_entity_authority.MenuModel:
     properties:
       children:
         items:
-          $ref: '#/definitions/authority.MenuModel'
+          $ref: '#/definitions/server_internal_model_entity_authority.MenuModel'
         type: array
       component:
         description: 前端组件
@@ -69,7 +113,7 @@ definitions:
         type: integer
       meta:
         allOf:
-        - $ref: '#/definitions/authority.Meta'
+        - $ref: '#/definitions/server_internal_model_entity_authority.Meta'
         description: 元数据
       name:
         description: 路由名称
@@ -90,7 +134,7 @@ definitions:
         description: 更新时间
         type: string
     type: object
-  authority.Meta:
+  server_internal_model_entity_authority.Meta:
     properties:
       affix:
         description: 是否固定
@@ -113,7 +157,7 @@ definitions:
         description: 菜单名
         type: string
     type: object
-  authority.RoleModel:
+  server_internal_model_entity_authority.RoleModel:
     properties:
       createdAt:
         description: 创建时间
@@ -124,7 +168,7 @@ definitions:
       menus:
         description: Users    []*UserModel `json:"users"`
         items:
-          $ref: '#/definitions/authority.MenuModel'
+          $ref: '#/definitions/server_internal_model_entity_authority.MenuModel'
         type: array
       roleName:
         type: string
@@ -134,7 +178,7 @@ definitions:
     required:
     - roleName
     type: object
-  authority.UserModel:
+  server_internal_model_entity_authority.UserModel:
     properties:
       active:
         description: 是否活跃
@@ -164,7 +208,302 @@ definitions:
     - roleId
     - username
     type: object
-  fileM.FileModel:
+  server_internal_model_entity_authority_request.AddUser:
+    properties:
+      active:
+        description: 是否活跃
+        type: boolean
+      email:
+        description: 邮箱
+        type: string
+      password:
+        description: 密码
+        type: string
+      phone:
+        description: 手机号
+        type: string
+      roleId:
+        description: 角色ID
+        type: integer
+      username:
+        description: 用户名
+        type: string
+    required:
+    - password
+    - roleId
+    - username
+    type: object
+  server_internal_model_entity_authority_request.ApiSearchParams:
+    properties:
+      apiGroup:
+        description: API分组
+        type: string
+      desc:
+        description: 排序方式:升序false(默认)|降序true
+        type: boolean
+      description:
+        description: 描述
+        type: string
+      method:
+        description: 请求方法
+        enum:
+        - GET
+        - POST
+        - DELETE
+        - PUT
+        type: string
+      orderKey:
+        description: 排序
+        type: string
+      page:
+        description: 页码
+        type: integer
+      pageSize:
+        description: 每页大小
+        type: integer
+      path:
+        description: 路径
+        type: string
+    type: object
+  server_internal_model_entity_authority_request.EditMenuReq:
+    properties:
+      component:
+        description: 前端组件
+        type: string
+      id:
+        description: 菜单ID
+        type: integer
+      meta:
+        $ref: '#/definitions/server_internal_model_entity_authority_request.meta'
+      name:
+        description: 名称
+        type: string
+      path:
+        description: 路径
+        type: string
+      pid:
+        description: 默认0 根目录
+        type: integer
+      redirect:
+        description: 重定向
+        type: string
+      sort:
+        description: 排序
+        type: integer
+    required:
+    - component
+    - id
+    - path
+    - sort
+    type: object
+  server_internal_model_entity_authority_request.EditRole:
+    properties:
+      id:
+        description: 角色ID
+        type: integer
+      roleName:
+        description: 角色名称
+        type: string
+    required:
+    - id
+    - roleName
+    type: object
+  server_internal_model_entity_authority_request.EditRoleMenu:
+    properties:
+      ids:
+        description: 菜单ID
+        items:
+          type: integer
+        type: array
+      roleId:
+        description: 角色ID
+        type: integer
+    type: object
+  server_internal_model_entity_authority_request.EditUser:
+    properties:
+      active:
+        description: 是否活跃
+        type: boolean
+      email:
+        description: 邮箱
+        type: string
+      id:
+        description: 用户ID
+        type: integer
+      phone:
+        description: 手机号
+        type: string
+      roleId:
+        description: 角色ID
+        type: integer
+      username:
+        description: 用户名
+        type: string
+    required:
+    - id
+    - roleId
+    - username
+    type: object
+  server_internal_model_entity_authority_request.ModifyPass:
+    properties:
+      id:
+        description: 用户ID
+        type: integer
+      newPassword:
+        description: 新密码
+        type: string
+      oldPassword:
+        description: 旧密码
+        type: string
+    required:
+    - id
+    - newPassword
+    - oldPassword
+    type: object
+  server_internal_model_entity_authority_request.SwitchActive:
+    properties:
+      active:
+        description: 是否启用
+        type: boolean
+      id:
+        description: 用户ID
+        type: integer
+    required:
+    - id
+    type: object
+  server_internal_model_entity_authority_request.meta:
+    properties:
+      affix:
+        description: 组件固定
+        type: boolean
+      alwaysShow:
+        description: 是否一直显示根路由
+        type: boolean
+      hidden:
+        description: 隐藏菜单
+        type: boolean
+      icon:
+        description: element图标
+        type: string
+      keepAlive:
+        description: 组件缓存
+        type: boolean
+      title:
+        description: 菜单名
+        type: string
+    type: object
+  server_internal_model_entity_authority_response.ApiTree:
+    properties:
+      checkedKey:
+        items:
+          type: string
+        type: array
+      list: {}
+    type: object
+  server_internal_model_entity_authority_response.Menu:
+    properties:
+      list: {}
+      menuIds:
+        items:
+          type: integer
+        type: array
+    type: object
+  server_internal_model_entity_authority_response.UserResult:
+    properties:
+      active:
+        description: 是否活跃
+        type: boolean
+      createdAt:
+        description: 创建时间
+        type: string
+      email:
+        description: 邮箱
+        type: string
+      id:
+        description: 主键ID
+        type: integer
+      phone:
+        description: 手机号
+        type: string
+      roleId:
+        description: 角色ID
+        type: integer
+      roleName:
+        description: 角色名
+        type: string
+      updatedAt:
+        description: 更新时间
+        type: string
+      username:
+        description: 用户名
+        type: string
+    required:
+    - roleId
+    - username
+    type: object
+  server_internal_model_entity_base_request.CaptchaResponse:
+    properties:
+      captchaId:
+        type: string
+      captchaLength:
+        type: integer
+      picPath:
+        type: string
+    type: object
+  server_internal_model_entity_base_request.CasbinInfo:
+    properties:
+      method:
+        description: 方法
+        type: string
+      path:
+        description: 路径
+        type: string
+    type: object
+  server_internal_model_entity_base_request.Login:
+    properties:
+      captcha:
+        description: 验证码
+        type: string
+      captchaId:
+        description: 验证码ID
+        type: string
+      password:
+        description: 密码
+        type: string
+      username:
+        description: 用户名
+        type: string
+    required:
+    - captcha
+    - captchaId
+    - password
+    - username
+    type: object
+  server_internal_model_entity_base_request.ReqCasbin:
+    properties:
+      casbinInfos:
+        items:
+          $ref: '#/definitions/server_internal_model_entity_base_request.CasbinInfo'
+        type: array
+      roleId:
+        description: 角色ID
+        type: integer
+    required:
+    - roleId
+    type: object
+  server_internal_model_entity_base_response.LoginResponse:
+    properties:
+      expiresAt:
+        description: 过期时间
+        type: integer
+      token:
+        type: string
+      user:
+        allOf:
+        - $ref: '#/definitions/server_internal_model_entity_authority.UserModel'
+        description: 用户
+    type: object
+  server_internal_model_entity_fileM.FileModel:
     properties:
       createdAt:
         description: 创建时间
@@ -182,7 +521,24 @@ definitions:
         description: 更新时间
         type: string
     type: object
-  monitor.OperationLogModel:
+  server_internal_model_entity_fileM_request.FileSearchParams:
+    properties:
+      desc:
+        description: 排序方式:升序false(默认)|降序true
+        type: boolean
+      name:
+        type: string
+      orderKey:
+        description: 排序
+        type: string
+      page:
+        description: 页码
+        type: integer
+      pageSize:
+        description: 每页大小
+        type: integer
+    type: object
+  server_internal_model_entity_monitor.OperationLogModel:
     properties:
       createdAt:
         description: 创建时间
@@ -224,231 +580,7 @@ definitions:
         description: 用户名称
         type: string
     type: object
-  request.AddUser:
-    properties:
-      active:
-        description: 是否活跃
-        type: boolean
-      email:
-        description: 邮箱
-        type: string
-      password:
-        description: 密码
-        type: string
-      phone:
-        description: 手机号
-        type: string
-      roleId:
-        description: 角色ID
-        type: integer
-      username:
-        description: 用户名
-        type: string
-    required:
-    - password
-    - roleId
-    - username
-    type: object
-  request.ApiSearchParams:
-    properties:
-      api_group:
-        description: API分组
-        type: string
-      desc:
-        description: 排序方式:升序false(默认)|降序true
-        type: boolean
-      description:
-        description: 描述
-        type: string
-      method:
-        description: 请求方法
-        enum:
-        - GET
-        - POST
-        - DELETE
-        - PUT
-        type: string
-      orderKey:
-        description: 排序
-        type: string
-      page:
-        description: 页码
-        type: integer
-      pageSize:
-        description: 每页大小
-        type: integer
-      path:
-        description: 路径
-        type: string
-    type: object
-  request.CId:
-    properties:
-      id:
-        description: 主键ID
-        type: integer
-    required:
-    - id
-    type: object
-  request.CIds:
-    properties:
-      ids:
-        items:
-          type: integer
-        type: array
-    required:
-    - ids
-    type: object
-  request.CaptchaResponse:
-    properties:
-      captchaId:
-        type: string
-      captchaLength:
-        type: integer
-      picPath:
-        type: string
-    type: object
-  request.CasbinInfo:
-    properties:
-      method:
-        description: 方法
-        type: string
-      path:
-        description: 路径
-        type: string
-    type: object
-  request.EditMenuReq:
-    properties:
-      component:
-        description: 前端组件
-        type: string
-      id:
-        description: 菜单ID
-        type: integer
-      meta:
-        $ref: '#/definitions/request.meta'
-      name:
-        description: 名称
-        type: string
-      path:
-        description: 路径
-        type: string
-      pid:
-        description: 默认0 根目录
-        type: integer
-      redirect:
-        description: 重定向
-        type: string
-      sort:
-        description: 排序
-        type: integer
-    required:
-    - component
-    - id
-    - path
-    - sort
-    type: object
-  request.EditRole:
-    properties:
-      id:
-        description: 角色ID
-        type: integer
-      roleName:
-        description: 角色名称
-        type: string
-    required:
-    - id
-    - roleName
-    type: object
-  request.EditRoleMenu:
-    properties:
-      ids:
-        description: 菜单ID
-        items:
-          type: integer
-        type: array
-      roleId:
-        description: 角色ID
-        type: integer
-    type: object
-  request.EditUser:
-    properties:
-      active:
-        description: 是否活跃
-        type: boolean
-      email:
-        description: 邮箱
-        type: string
-      id:
-        description: 用户ID
-        type: integer
-      phone:
-        description: 手机号
-        type: string
-      roleId:
-        description: 角色ID
-        type: integer
-      username:
-        description: 用户名
-        type: string
-    required:
-    - id
-    - roleId
-    - username
-    type: object
-  request.FileSearchParams:
-    properties:
-      desc:
-        description: 排序方式:升序false(默认)|降序true
-        type: boolean
-      name:
-        type: string
-      orderKey:
-        description: 排序
-        type: string
-      page:
-        description: 页码
-        type: integer
-      pageSize:
-        description: 每页大小
-        type: integer
-    type: object
-  request.Login:
-    properties:
-      captcha:
-        description: 验证码
-        type: string
-      captchaId:
-        description: 验证码ID
-        type: string
-      password:
-        description: 密码
-        type: string
-      username:
-        description: 用户名
-        type: string
-    required:
-    - captcha
-    - captchaId
-    - password
-    - username
-    type: object
-  request.ModifyPass:
-    properties:
-      id:
-        description: 用户ID
-        type: integer
-      newPassword:
-        description: 新密码
-        type: string
-      oldPassword:
-        description: 旧密码
-        type: string
-    required:
-    - id
-    - newPassword
-    - oldPassword
-    type: object
-  request.OrSearchParams:
+  server_internal_model_entity_monitor_request.OrSearchParams:
     properties:
       asc:
         description: 排序方式:升序true|降序true(默认)
@@ -469,148 +601,7 @@ definitions:
         description: http code
         type: integer
     type: object
-  request.PageInfo:
-    properties:
-      page:
-        description: 页码
-        type: integer
-      pageSize:
-        description: 每页大小
-        type: integer
-    type: object
-  request.ReqCasbin:
-    properties:
-      casbinInfos:
-        items:
-          $ref: '#/definitions/request.CasbinInfo'
-        type: array
-      roleId:
-        description: 角色ID
-        type: integer
-    required:
-    - roleId
-    type: object
-  request.SwitchActive:
-    properties:
-      active:
-        description: 是否启用
-        type: boolean
-      id:
-        description: 用户ID
-        type: integer
-    required:
-    - id
-    type: object
-  request.SwitchReq:
-    properties:
-      id:
-        type: integer
-      open:
-        type: boolean
-    required:
-    - id
-    type: object
-  request.meta:
-    properties:
-      affix:
-        description: 组件固定
-        type: boolean
-      alwaysShow:
-        description: 是否一直显示根路由
-        type: boolean
-      hidden:
-        description: 隐藏菜单
-        type: boolean
-      icon:
-        description: element图标
-        type: string
-      keepAlive:
-        description: 组件缓存
-        type: boolean
-      title:
-        description: 菜单名
-        type: string
-    type: object
-  response.ApiTree:
-    properties:
-      checkedKey:
-        items:
-          type: string
-        type: array
-      list: {}
-    type: object
-  response.LoginResponse:
-    properties:
-      expiresAt:
-        description: 过期时间
-        type: integer
-      token:
-        type: string
-      user:
-        allOf:
-        - $ref: '#/definitions/authority.UserModel'
-        description: 用户
-    type: object
-  response.Menu:
-    properties:
-      list: {}
-      menuIds:
-        items:
-          type: integer
-        type: array
-    type: object
-  response.PageResult:
-    properties:
-      list: {}
-      page:
-        type: integer
-      pageSize:
-        type: integer
-      total:
-        type: integer
-    type: object
-  response.Response:
-    properties:
-      code:
-        type: integer
-      data: {}
-      msg:
-        type: string
-    type: object
-  response.UserResult:
-    properties:
-      active:
-        description: 是否活跃
-        type: boolean
-      createdAt:
-        description: 创建时间
-        type: string
-      email:
-        description: 邮箱
-        type: string
-      id:
-        description: 主键ID
-        type: integer
-      phone:
-        description: 手机号
-        type: string
-      roleId:
-        description: 角色ID
-        type: integer
-      roleName:
-        description: 角色名
-        type: string
-      updatedAt:
-        description: 更新时间
-        type: string
-      username:
-        description: 用户名
-        type: string
-    required:
-    - roleId
-    - username
-    type: object
-  sysTool.ClearTable:
+  server_internal_model_entity_sysTool.ClearTable:
     properties:
       compareField:
         type: string
@@ -619,7 +610,7 @@ definitions:
       tableName:
         type: string
     type: object
-  sysTool.CronModel:
+  server_internal_model_entity_sysTool.CronModel:
     properties:
       comment:
         type: string
@@ -631,7 +622,7 @@ definitions:
       expression:
         type: string
       extraParams:
-        $ref: '#/definitions/sysTool.ExtraParams'
+        $ref: '#/definitions/server_internal_model_entity_sysTool.ExtraParams'
       id:
         description: 主键ID
         type: integer
@@ -654,7 +645,7 @@ definitions:
     - method
     - name
     type: object
-  sysTool.ExtraParams:
+  server_internal_model_entity_sysTool.ExtraParams:
     properties:
       command:
         description: for shell
@@ -662,42 +653,21 @@ definitions:
       tableInfo:
         description: for clearTable
         items:
-          $ref: '#/definitions/sysTool.ClearTable'
+          $ref: '#/definitions/server_internal_model_entity_sysTool.ClearTable'
         type: array
+    type: object
+  server_internal_model_entity_sysTool_request.SwitchReq:
+    properties:
+      id:
+        type: integer
+      open:
+        type: boolean
+    required:
+    - id
     type: object
 info:
   contact: {}
 paths:
-  /api/addApi:
-    post:
-      consumes:
-      - application/json
-      parameters:
-      - description: 请求参数
-        in: body
-        name: data
-        required: true
-        schema:
-          $ref: '#/definitions/authority.ApiModel'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/response.Response'
-            - properties:
-                data:
-                  $ref: '#/definitions/authority.ApiModel'
-                msg:
-                  type: string
-              type: object
-      security:
-      - ApiKeyAuth: []
-      summary: 添加api
-      tags:
-      - ApiApi
   /api/addRole:
     post:
       consumes:
@@ -708,7 +678,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/authority.RoleModel'
+          $ref: '#/definitions/server_internal_model_entity_authority.RoleModel'
       produces:
       - application/json
       responses:
@@ -716,10 +686,10 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/response.Response'
+            - $ref: '#/definitions/server_internal_model_common_response.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/authority.RoleModel'
+                  $ref: '#/definitions/server_internal_model_entity_authority.RoleModel'
                 msg:
                   type: string
               type: object
@@ -728,7 +698,7 @@ paths:
       summary: 添加角色
       tags:
       - RoleApi
-  /api/deleteApi:
+  /api/create:
     post:
       consumes:
       - application/json
@@ -738,7 +708,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/request.CId'
+          $ref: '#/definitions/server_internal_model_entity_authority.ApiModel'
       produces:
       - application/json
       responses:
@@ -746,7 +716,37 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/response.Response'
+            - $ref: '#/definitions/server_internal_model_common_response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/server_internal_model_entity_authority.ApiModel'
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 添加api
+      tags:
+      - Create
+  /api/delete:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 请求参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/server_internal_model_common_request.CId'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/server_internal_model_common_response.Response'
             - properties:
                 msg:
                   type: string
@@ -755,7 +755,7 @@ paths:
       - ApiKeyAuth: []
       summary: 删除api
       tags:
-      - ApiApi
+      - Delete
   /api/deleteApiById:
     post:
       consumes:
@@ -766,7 +766,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/request.CIds'
+          $ref: '#/definitions/server_internal_model_common_request.CIds'
       produces:
       - application/json
       responses:
@@ -774,7 +774,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/response.Response'
+            - $ref: '#/definitions/server_internal_model_common_response.Response'
             - properties:
                 msg:
                   type: string
@@ -783,7 +783,7 @@ paths:
       - ApiKeyAuth: []
       summary: 批量删除api
       tags:
-      - ApiApi
+      - DeleteByIds
   /api/deleteRole:
     post:
       consumes:
@@ -794,7 +794,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/request.CId'
+          $ref: '#/definitions/server_internal_model_common_request.CId'
       produces:
       - application/json
       responses:
@@ -802,7 +802,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/response.Response'
+            - $ref: '#/definitions/server_internal_model_common_response.Response'
             - properties:
                 msg:
                   type: string
@@ -822,7 +822,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/authority.ApiModel'
+          $ref: '#/definitions/server_internal_model_entity_authority.ApiModel'
       produces:
       - application/json
       responses:
@@ -830,7 +830,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/response.Response'
+            - $ref: '#/definitions/server_internal_model_common_response.Response'
             - properties:
                 msg:
                   type: string
@@ -839,7 +839,7 @@ paths:
       - ApiKeyAuth: []
       summary: 编辑api
       tags:
-      - ApiApi
+      - Update
   /api/editRole:
     post:
       consumes:
@@ -850,7 +850,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/request.EditRole'
+          $ref: '#/definitions/server_internal_model_entity_authority_request.EditRole'
       produces:
       - application/json
       responses:
@@ -858,7 +858,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/response.Response'
+            - $ref: '#/definitions/server_internal_model_common_response.Response'
             - properties:
                 msg:
                   type: string
@@ -878,7 +878,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/request.EditRoleMenu'
+          $ref: '#/definitions/server_internal_model_entity_authority_request.EditRoleMenu'
       produces:
       - application/json
       responses:
@@ -886,7 +886,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/response.Response'
+            - $ref: '#/definitions/server_internal_model_common_response.Response'
             - properties:
                 msg:
                   type: string
@@ -896,43 +896,6 @@ paths:
       summary: 编辑用户菜单
       tags:
       - RoleApi
-  /api/getApis:
-    post:
-      consumes:
-      - application/json
-      parameters:
-      - description: 请求参数
-        in: body
-        name: data
-        required: true
-        schema:
-          $ref: '#/definitions/request.ApiSearchParams'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/response.Response'
-            - properties:
-                data:
-                  allOf:
-                  - $ref: '#/definitions/response.PageResult'
-                  - properties:
-                      list:
-                        items:
-                          $ref: '#/definitions/authority.ApiModel'
-                        type: array
-                    type: object
-                msg:
-                  type: string
-              type: object
-      security:
-      - ApiKeyAuth: []
-      summary: 分页获取api
-      tags:
-      - ApiApi
   /api/getElTreeApis:
     post:
       consumes:
@@ -943,7 +906,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/request.CId'
+          $ref: '#/definitions/server_internal_model_common_request.CId'
       produces:
       - application/json
       responses:
@@ -951,11 +914,11 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/response.Response'
+            - $ref: '#/definitions/server_internal_model_common_response.Response'
             - properties:
                 data:
                   allOf:
-                  - $ref: '#/definitions/response.ApiTree'
+                  - $ref: '#/definitions/server_internal_model_entity_authority_response.ApiTree'
                   - properties:
                       checkedKey:
                         items:
@@ -963,7 +926,7 @@ paths:
                         type: array
                       list:
                         items:
-                          $ref: '#/definitions/authority.ApiTree'
+                          $ref: '#/definitions/server_internal_model_entity_authority.ApiTree'
                         type: array
                     type: object
                 msg:
@@ -973,7 +936,44 @@ paths:
       - ApiKeyAuth: []
       summary: 格式化列出所有api
       tags:
-      - ApiApi
+      - GetElTree
+  /api/list:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 请求参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/server_internal_model_entity_authority_request.ApiSearchParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/server_internal_model_common_response.Response'
+            - properties:
+                data:
+                  allOf:
+                  - $ref: '#/definitions/server_internal_model_common_response.Page'
+                  - properties:
+                      list:
+                        items:
+                          $ref: '#/definitions/server_internal_model_entity_authority.ApiModel'
+                        type: array
+                    type: object
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 分页获取api
+      tags:
+      - List
   /casbin/editCasbin:
     post:
       consumes:
@@ -984,7 +984,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/request.ReqCasbin'
+          $ref: '#/definitions/server_internal_model_entity_base_request.ReqCasbin'
       produces:
       - application/json
       responses:
@@ -992,7 +992,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/response.Response'
+            - $ref: '#/definitions/server_internal_model_common_response.Response'
             - properties:
                 msg:
                   type: string
@@ -1012,7 +1012,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/sysTool.CronModel'
+          $ref: '#/definitions/server_internal_model_entity_sysTool.CronModel'
       produces:
       - application/json
       responses:
@@ -1020,10 +1020,10 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/response.Response'
+            - $ref: '#/definitions/server_internal_model_common_response.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/sysTool.CronModel'
+                  $ref: '#/definitions/server_internal_model_entity_sysTool.CronModel'
                 msg:
                   type: string
               type: object
@@ -1042,7 +1042,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/request.CId'
+          $ref: '#/definitions/server_internal_model_common_request.CId'
       produces:
       - application/json
       responses:
@@ -1050,7 +1050,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/response.Response'
+            - $ref: '#/definitions/server_internal_model_common_response.Response'
             - properties:
                 msg:
                   type: string
@@ -1070,7 +1070,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/sysTool.CronModel'
+          $ref: '#/definitions/server_internal_model_entity_sysTool.CronModel'
       produces:
       - application/json
       responses:
@@ -1078,10 +1078,10 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/response.Response'
+            - $ref: '#/definitions/server_internal_model_common_response.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/sysTool.CronModel'
+                  $ref: '#/definitions/server_internal_model_entity_sysTool.CronModel'
                 msg:
                   type: string
               type: object
@@ -1100,7 +1100,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/request.PageInfo'
+          $ref: '#/definitions/server_internal_model_common_request.PageInfo'
       produces:
       - application/json
       responses:
@@ -1108,15 +1108,15 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/response.Response'
+            - $ref: '#/definitions/server_internal_model_common_response.Response'
             - properties:
                 data:
                   allOf:
-                  - $ref: '#/definitions/response.PageResult'
+                  - $ref: '#/definitions/server_internal_model_common_response.Page'
                   - properties:
                       list:
                         items:
-                          $ref: '#/definitions/sysTool.CronModel'
+                          $ref: '#/definitions/server_internal_model_entity_sysTool.CronModel'
                         type: array
                     type: object
                 msg:
@@ -1137,7 +1137,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/request.SwitchReq'
+          $ref: '#/definitions/server_internal_model_entity_sysTool_request.SwitchReq'
       produces:
       - application/json
       responses:
@@ -1145,7 +1145,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/response.Response'
+            - $ref: '#/definitions/server_internal_model_common_response.Response'
             - properties:
                 ' msg':
                   type: string
@@ -1176,7 +1176,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/response.Response'
+            - $ref: '#/definitions/server_internal_model_common_response.Response'
             - properties:
                 msg:
                   type: string
@@ -1218,7 +1218,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/request.FileSearchParams'
+          $ref: '#/definitions/server_internal_model_entity_fileM_request.FileSearchParams'
       produces:
       - application/json
       responses:
@@ -1226,15 +1226,15 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/response.Response'
+            - $ref: '#/definitions/server_internal_model_common_response.Response'
             - properties:
                 data:
                   allOf:
-                  - $ref: '#/definitions/response.PageResult'
+                  - $ref: '#/definitions/server_internal_model_common_response.Page'
                   - properties:
                       list:
                         items:
-                          $ref: '#/definitions/fileM.FileModel'
+                          $ref: '#/definitions/server_internal_model_entity_fileM.FileModel'
                         type: array
                     type: object
                 msg:
@@ -1262,7 +1262,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/response.Response'
+            - $ref: '#/definitions/server_internal_model_common_response.Response'
             - properties:
                 msg:
                   type: string
@@ -1281,10 +1281,10 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/response.Response'
+            - $ref: '#/definitions/server_internal_model_common_response.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/request.CaptchaResponse'
+                  $ref: '#/definitions/server_internal_model_entity_base_request.CaptchaResponse'
                 msg:
                   type: string
               type: object
@@ -1303,7 +1303,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/request.Login'
+          $ref: '#/definitions/server_internal_model_entity_base_request.Login'
       produces:
       - application/json
       responses:
@@ -1311,10 +1311,10 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/response.Response'
+            - $ref: '#/definitions/server_internal_model_common_response.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/response.LoginResponse'
+                  $ref: '#/definitions/server_internal_model_entity_base_response.LoginResponse'
                 msg:
                   type: string
               type: object
@@ -1332,7 +1332,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/response.Response'
+            - $ref: '#/definitions/server_internal_model_common_response.Response'
             - properties:
                 msg:
                   type: string
@@ -1350,7 +1350,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/request.EditMenuReq'
+          $ref: '#/definitions/server_internal_model_entity_authority_request.EditMenuReq'
       produces:
       - application/json
       responses:
@@ -1358,7 +1358,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/response.Response'
+            - $ref: '#/definitions/server_internal_model_common_response.Response'
             - properties:
                 msg:
                   type: string
@@ -1378,7 +1378,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/request.CId'
+          $ref: '#/definitions/server_internal_model_common_request.CId'
       produces:
       - application/json
       responses:
@@ -1386,7 +1386,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/response.Response'
+            - $ref: '#/definitions/server_internal_model_common_response.Response'
             - properties:
                 msg:
                   type: string
@@ -1406,7 +1406,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/request.EditMenuReq'
+          $ref: '#/definitions/server_internal_model_entity_authority_request.EditMenuReq'
       produces:
       - application/json
       responses:
@@ -1414,7 +1414,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/response.Response'
+            - $ref: '#/definitions/server_internal_model_common_response.Response'
             - properties:
                 msg:
                   type: string
@@ -1434,7 +1434,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/request.CId'
+          $ref: '#/definitions/server_internal_model_common_request.CId'
       produces:
       - application/json
       responses:
@@ -1442,15 +1442,15 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/response.Response'
+            - $ref: '#/definitions/server_internal_model_common_response.Response'
             - properties:
                 data:
                   allOf:
-                  - $ref: '#/definitions/response.Menu'
+                  - $ref: '#/definitions/server_internal_model_entity_authority_response.Menu'
                   - properties:
                       list:
                         items:
-                          $ref: '#/definitions/authority.MenuModel'
+                          $ref: '#/definitions/server_internal_model_entity_authority.MenuModel'
                         type: array
                       menuIds:
                         items:
@@ -1474,11 +1474,11 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/response.Response'
+            - $ref: '#/definitions/server_internal_model_common_response.Response'
             - properties:
                 data:
                   items:
-                    $ref: '#/definitions/authority.MenuModel'
+                    $ref: '#/definitions/server_internal_model_entity_authority.MenuModel'
                   type: array
                 msg:
                   type: string
@@ -1498,7 +1498,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/request.CId'
+          $ref: '#/definitions/server_internal_model_common_request.CId'
       produces:
       - application/json
       responses:
@@ -1506,7 +1506,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/response.Response'
+            - $ref: '#/definitions/server_internal_model_common_response.Response'
             - properties:
                 msg:
                   type: string
@@ -1526,7 +1526,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/request.CIds'
+          $ref: '#/definitions/server_internal_model_common_request.CIds'
       produces:
       - application/json
       responses:
@@ -1534,7 +1534,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/response.Response'
+            - $ref: '#/definitions/server_internal_model_common_response.Response'
             - properties:
                 msg:
                   type: string
@@ -1554,7 +1554,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/request.OrSearchParams'
+          $ref: '#/definitions/server_internal_model_entity_monitor_request.OrSearchParams'
       produces:
       - application/json
       responses:
@@ -1562,15 +1562,15 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/response.Response'
+            - $ref: '#/definitions/server_internal_model_common_response.Response'
             - properties:
                 data:
                   allOf:
-                  - $ref: '#/definitions/response.PageResult'
+                  - $ref: '#/definitions/server_internal_model_common_response.Page'
                   - properties:
                       list:
                         items:
-                          $ref: '#/definitions/monitor.OperationLogModel'
+                          $ref: '#/definitions/server_internal_model_entity_monitor.OperationLogModel'
                         type: array
                     type: object
                 msg:
@@ -1590,11 +1590,11 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/response.Response'
+            - $ref: '#/definitions/server_internal_model_common_response.Response'
             - properties:
                 data:
                   items:
-                    $ref: '#/definitions/authority.RoleModel'
+                    $ref: '#/definitions/server_internal_model_entity_authority.RoleModel'
                   type: array
                 msg:
                   type: string
@@ -1614,7 +1614,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/request.AddUser'
+          $ref: '#/definitions/server_internal_model_entity_authority_request.AddUser'
       produces:
       - application/json
       responses:
@@ -1622,7 +1622,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/response.Response'
+            - $ref: '#/definitions/server_internal_model_common_response.Response'
             - properties:
                 msg:
                   type: string
@@ -1642,7 +1642,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/request.CId'
+          $ref: '#/definitions/server_internal_model_common_request.CId'
       produces:
       - application/json
       responses:
@@ -1650,7 +1650,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/response.Response'
+            - $ref: '#/definitions/server_internal_model_common_response.Response'
             - properties:
                 msg:
                   type: string
@@ -1670,7 +1670,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/request.EditUser'
+          $ref: '#/definitions/server_internal_model_entity_authority_request.EditUser'
       produces:
       - application/json
       responses:
@@ -1678,7 +1678,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/response.Response'
+            - $ref: '#/definitions/server_internal_model_common_response.Response'
             - properties:
                 msg:
                   type: string
@@ -1697,7 +1697,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/response.Response'
+            - $ref: '#/definitions/server_internal_model_common_response.Response'
             - properties:
                 msg:
                   type: string
@@ -1717,7 +1717,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/request.PageInfo'
+          $ref: '#/definitions/server_internal_model_common_request.PageInfo'
       produces:
       - application/json
       responses:
@@ -1725,15 +1725,15 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/response.Response'
+            - $ref: '#/definitions/server_internal_model_common_response.Response'
             - properties:
                 data:
                   allOf:
-                  - $ref: '#/definitions/response.PageResult'
+                  - $ref: '#/definitions/server_internal_model_common_response.Page'
                   - properties:
                       list:
                         items:
-                          $ref: '#/definitions/response.UserResult'
+                          $ref: '#/definitions/server_internal_model_entity_authority_response.UserResult'
                         type: array
                     type: object
                 msg:
@@ -1754,7 +1754,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/request.ModifyPass'
+          $ref: '#/definitions/server_internal_model_entity_authority_request.ModifyPass'
       produces:
       - application/json
       responses:
@@ -1762,7 +1762,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/response.Response'
+            - $ref: '#/definitions/server_internal_model_common_response.Response'
             - properties:
                 msg:
                   type: string
@@ -1782,7 +1782,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/request.SwitchActive'
+          $ref: '#/definitions/server_internal_model_entity_authority_request.SwitchActive'
       produces:
       - application/json
       responses:
@@ -1790,7 +1790,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/response.Response'
+            - $ref: '#/definitions/server_internal_model_common_response.Response'
             - properties:
                 msg:
                   type: string

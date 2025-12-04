@@ -4,11 +4,11 @@ import type { ApiDataModel } from "@/api/authority/api"
 import WarningBar from "@@/components/WarningBar/warningBar.vue"
 import { reactive, ref } from "vue"
 import {
-  addApiApi,
-  deleteApiApi,
-  deleteApiByIdApi,
-  editApiApi,
-  getApisApi
+  createApi,
+  deleteApi,
+  deleteByIdsApi,
+  listApi,
+  updateApi
 } from "@/api/authority/api"
 import { usePagination } from "@/common/composables/usePagination_n"
 
@@ -56,7 +56,7 @@ const tableData = ref<ApiDataModel[]>([])
 async function getTableData() {
   loading.value = true
   try {
-    const res = await getApisApi({
+    const res = await listApi({
       path: searchFormData.path || undefined,
       apiGroup: searchFormData.apiGroup || undefined,
       method: searchFormData.method || undefined,
@@ -159,13 +159,13 @@ function operateAction(formEl: FormInstance | undefined) {
   formEl.validate(async (valid) => {
     if (valid) {
       if (oKind === "Add") {
-        const res = await addApiApi({ ...opFormData })
+        const res = await createApi({ ...opFormData })
         if (res.code === 0) {
           ElMessage({ type: "success", message: res.msg })
           tableData.value.push(res.data)
         }
       } else if (oKind === "Edit") {
-        const res = await editApiApi({ id: activeRow.id, ...opFormData })
+        const res = await updateApi({ id: activeRow.id, ...opFormData })
         if (res.code === 0) {
           ElMessage({ type: "success", message: res.msg })
           // 修改对应数据
@@ -189,7 +189,7 @@ function handleDeleteApi(row: ApiDataModel) {
     type: "warning"
   })
     .then(() => {
-      deleteApiApi({ id: row.id }).then((res) => {
+      deleteApi({ id: row.id }).then((res) => {
         if (res.code === 0) {
           ElMessage({ type: "success", message: res.msg })
           const index = tableData.value.indexOf(row)
@@ -223,7 +223,7 @@ async function onDelete() {
     })
     return
   }
-  const res = await deleteApiByIdApi({ ids: ids.value })
+  const res = await deleteByIdsApi({ ids: ids.value })
   if (res.code === 0) {
     ElMessage({
       type: "success",

@@ -124,7 +124,7 @@ SQL file location: `./docker-compose/mysql/init/init.sql` </u>**
 
 ```bash
 cd server
-swag init
+swag init -g cmd/server/main.go -o docs --parseDependency --parseInternal
 ```
 
 `Access Swagger UI`

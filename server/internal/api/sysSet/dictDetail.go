@@ -5,35 +5,35 @@ import (
 	"go.uber.org/zap"
 
 	"server/internal/global"
-	"server/internal/model/common/request"
-	"server/internal/model/common/response"
-	modelSysSet "server/internal/model/entity/sysSet"
+	commonReq "server/internal/model/common/request"
+	commonResp "server/internal/model/common/response"
+	entitySysSet "server/internal/model/entity/sysSet"
 	sysSetReq "server/internal/model/entity/sysSet/request"
-	"server/internal/service/sysSet"
+	serviceSysSet "server/internal/service/sysSet"
 )
 
 type DictDetailApi struct {
-	dictDetailService *sysSet.DictDetailService
+	dictDetailService *serviceSysSet.DictDetailService
 }
 
 func NewDictDetailApi() *DictDetailApi {
 	return &DictDetailApi{
-		dictDetailService: sysSet.NewDictDetailService(),
+		dictDetailService: serviceSysSet.NewDictDetailService(),
 	}
 }
 
 func (dda *DictDetailApi) GetDictDetail(c *gin.Context) {
 	var ddsParams sysSetReq.DictDetailSearchParams
 	if err := c.ShouldBindJSON(&ddsParams); err != nil {
-		response.FailReq(err.Error(), c)
+		commonResp.FailReq(err.Error(), c)
 		return
 	}
 
 	if list, total, err := dda.dictDetailService.GetDictDetail(ddsParams); err != nil {
-		response.FailWithMessage("failed", c)
+		commonResp.FailWithMessage("failed", c)
 		global.TD27_LOG.Error("get failed", zap.Error(err))
 	} else {
-		response.OkWithDetailed(response.Page{
+		commonResp.OkWithDetailed(commonResp.Page{
 			List:     list,
 			Total:    total,
 			Page:     ddsParams.Page,
@@ -45,59 +45,59 @@ func (dda *DictDetailApi) GetDictDetail(c *gin.Context) {
 func (dda *DictDetailApi) GetDictDetailFlat(c *gin.Context) {
 	var flatReq sysSetReq.DictDetailFlatReq
 	if err := c.ShouldBindJSON(&flatReq); err != nil {
-		response.FailReq(err.Error(), c)
+		commonResp.FailReq(err.Error(), c)
 		return
 	}
 
 	if list, err := dda.dictDetailService.GetDictDetailFlat(flatReq.DictID); err != nil {
-		response.FailWithMessage("failed", c)
+		commonResp.FailWithMessage("failed", c)
 		global.TD27_LOG.Error("get failed", zap.Error(err))
 	} else {
-		response.OkWithDetailed(list, "success", c)
+		commonResp.OkWithDetailed(list, "success", c)
 	}
 }
 
 func (dda *DictDetailApi) AddDictDetail(c *gin.Context) {
-	var dictDetailModel modelSysSet.DictDetailModel
+	var dictDetailModel entitySysSet.DictDetailModel
 	if err := c.ShouldBindJSON(&dictDetailModel); err != nil {
-		response.FailReq(err.Error(), c)
+		commonResp.FailReq(err.Error(), c)
 		return
 	}
 
 	if instance, err := dda.dictDetailService.AddDictDetail(&dictDetailModel); err != nil {
-		response.FailWithMessage(err.Error(), c)
+		commonResp.FailWithMessage(err.Error(), c)
 		global.TD27_LOG.Error("add failed", zap.Error(err))
 	} else {
-		response.OkWithDetailed(instance, "success", c)
+		commonResp.OkWithDetailed(instance, "success", c)
 	}
 }
 
 func (dda *DictDetailApi) DelDictDetail(c *gin.Context) {
-	var cId request.CId
+	var cId commonReq.CId
 	if err := c.ShouldBindJSON(&cId); err != nil {
-		response.FailReq(err.Error(), c)
+		commonResp.FailReq(err.Error(), c)
 		return
 	}
 
 	if err := dda.dictDetailService.DelDictDetail(cId.ID); err != nil {
-		response.Fail(c)
+		commonResp.Fail(c)
 		global.TD27_LOG.Error("delete failed", zap.Error(err))
 	} else {
-		response.Ok(c)
+		commonResp.Ok(c)
 	}
 }
 
 func (dda *DictDetailApi) EditDictDetail(c *gin.Context) {
-	var dictDetailModel modelSysSet.DictDetailModel
+	var dictDetailModel entitySysSet.DictDetailModel
 	if err := c.ShouldBindJSON(&dictDetailModel); err != nil {
-		response.FailReq(err.Error(), c)
+		commonResp.FailReq(err.Error(), c)
 		return
 	}
 
 	if instance, err := dda.dictDetailService.EditDictDetail(&dictDetailModel); err != nil {
-		response.FailWithMessage(err.Error(), c)
+		commonResp.FailWithMessage(err.Error(), c)
 		global.TD27_LOG.Error("edit failed", zap.Error(err))
 	} else {
-		response.OkWithDetailed(instance, "success", c)
+		commonResp.OkWithDetailed(instance, "success", c)
 	}
 }

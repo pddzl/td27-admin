@@ -5,20 +5,21 @@ import (
 	"go.uber.org/zap"
 
 	"server/internal/global"
-	"server/internal/model/common/request"
-	"server/internal/model/common/response"
+	commonReq "server/internal/model/common/request"
+	commonResp "server/internal/model/common/response"
+	_ "server/internal/model/entity/authority"
 	authorityReq "server/internal/model/entity/authority/request"
-	authorityRes "server/internal/model/entity/authority/response"
+	authorityResp "server/internal/model/entity/authority/response"
 	"server/internal/pkg"
-	"server/internal/service/authority"
+	serviceAuthority "server/internal/service/authority"
 )
 
 type MenuApi struct {
-	menuService *authority.MenuService
+	menuService *serviceAuthority.MenuService
 }
 
 func NewMenuApi() *MenuApi {
-	return &MenuApi{menuService: authority.NewMenuService()}
+	return &MenuApi{menuService: serviceAuthority.NewMenuService()}
 }
 
 // GetMenus
@@ -26,21 +27,21 @@ func NewMenuApi() *MenuApi {
 // @Summary   获取用户菜单
 // @Security  ApiKeyAuth
 // @Produce   application/json
-// @Success   200   {object}  response.Response{data=[]authority.MenuModel,msg=string}
+// @Success   200   {object}  commonResp.Response{data=[]authority.MenuModel,msg=string}
 // @Router    /menu/getMenus [post]
 func (ma *MenuApi) GetMenus(c *gin.Context) {
 	userInfo, err := pkg.GetUserInfo(c)
 	if err != nil {
-		response.FailWithMessage("获取失败", c)
+		commonResp.FailWithMessage("获取失败", c)
 		global.TD27_LOG.Error("获取失败!", zap.Error(err))
 	}
 
 	list, err := ma.menuService.GetMenus(userInfo.ID)
 	if err != nil {
-		response.FailWithMessage("获取失败", c)
+		commonResp.FailWithMessage("获取失败", c)
 		global.TD27_LOG.Error("获取失败!", zap.Error(err))
 	} else {
-		response.OkWithDetailed(list, "获取成功", c)
+		commonResp.OkWithDetailed(list, "获取成功", c)
 	}
 }
 
@@ -51,19 +52,19 @@ func (ma *MenuApi) GetMenus(c *gin.Context) {
 // @accept    application/json
 // @Produce   application/json
 // @Param     data  body      authorityReq.EditMenuReq true "请求参数"
-// @Success   200   {object}  response.Response{msg=string}
+// @Success   200   {object}  commonResp.Response{msg=string}
 // @Router    /menu/addMenu [post]
 func (ma *MenuApi) AddMenu(c *gin.Context) {
 	var menuReq authorityReq.Menu
 	if err := c.ShouldBindJSON(&menuReq); err != nil {
-		response.FailReq(err.Error(), c)
+		commonResp.FailReq(err.Error(), c)
 		return
 	}
 
 	if ok := ma.menuService.AddMenu(menuReq); !ok {
-		response.Fail(c)
+		commonResp.Fail(c)
 	} else {
-		response.OkWithMessage("添加成功", c)
+		commonResp.OkWithMessage("添加成功", c)
 	}
 }
 
@@ -74,20 +75,20 @@ func (ma *MenuApi) AddMenu(c *gin.Context) {
 // @accept    application/json
 // @Produce   application/json
 // @Param     data  body      authorityReq.EditMenuReq true "请求参数"
-// @Success   200   {object}  response.Response{msg=string}
+// @Success   200   {object}  commonResp.Response{msg=string}
 // @Router    /menu/editMenu [post]
 func (ma *MenuApi) EditMenu(c *gin.Context) {
 	var editMenuReq authorityReq.EditMenuReq
 	if err := c.ShouldBindJSON(&editMenuReq); err != nil {
-		response.FailReq(err.Error(), c)
+		commonResp.FailReq(err.Error(), c)
 		return
 	}
 
 	if err := ma.menuService.EditMenu(editMenuReq); err != nil {
-		response.FailWithMessage("编辑失败", c)
+		commonResp.FailWithMessage("编辑失败", c)
 		global.TD27_LOG.Error("编辑失败", zap.Error(err))
 	} else {
-		response.OkWithMessage("编辑成功", c)
+		commonResp.OkWithMessage("编辑成功", c)
 	}
 }
 
@@ -97,21 +98,21 @@ func (ma *MenuApi) EditMenu(c *gin.Context) {
 // @Security  ApiKeyAuth
 // @accept    application/json
 // @Produce   application/json
-// @Param     data  body      request.CId true "请求参数"
-// @Success   200   {object}  response.Response{msg=string}
+// @Param     data  body      commonReq.CId true "请求参数"
+// @Success   200   {object}  commonResp.Response{msg=string}
 // @Router    /menu/deleteMenu [post]
 func (ma *MenuApi) DeleteMenu(c *gin.Context) {
-	var cId request.CId
+	var cId commonReq.CId
 	if err := c.ShouldBindJSON(&cId); err != nil {
-		response.FailReq(err.Error(), c)
+		commonResp.FailReq(err.Error(), c)
 		return
 	}
 
 	if err := ma.menuService.DeleteMenu(cId.ID); err != nil {
-		response.FailWithMessage("删除失败", c)
+		commonResp.FailWithMessage("删除失败", c)
 		global.TD27_LOG.Error("删除失败", zap.Error(err))
 	} else {
-		response.OkWithMessage("删除成功", c)
+		commonResp.OkWithMessage("删除成功", c)
 	}
 }
 
@@ -121,21 +122,21 @@ func (ma *MenuApi) DeleteMenu(c *gin.Context) {
 // @Security  ApiKeyAuth
 // @accept    application/json
 // @Produce   application/json
-// @Param     data  body      request.CId true "请求参数"
-// @Success   200   {object}  response.Response{data=authorityRes.Menu{list=[]authority.MenuModel,menuIds=[]uint},msg=string}
+// @Param     data  body      commonReq.CId true "请求参数"
+// @Success   200   {object}  commonResp.Response{data=authorityResp.Menu{list=[]authority.MenuModel,menuIds=[]uint},msg=string}
 // @Router    /menu/getElTreeMenus [post]
 func (ma *MenuApi) GetElTreeMenus(c *gin.Context) {
-	var cId request.CId
+	var cId commonReq.CId
 	if err := c.ShouldBindJSON(&cId); err != nil {
-		response.FailReq(err.Error(), c)
+		commonResp.FailReq(err.Error(), c)
 		return
 	}
 
 	if list, ids, err := ma.menuService.GetElTreeMenus(cId.ID); err != nil {
-		response.FailWithMessage("获取失败", c)
+		commonResp.FailWithMessage("获取失败", c)
 		global.TD27_LOG.Error("获取失败!", zap.Error(err))
 	} else {
-		response.OkWithDetailed(authorityRes.Menu{
+		commonResp.OkWithDetailed(authorityResp.Menu{
 			List:    list,
 			MenuIds: ids,
 		}, "获取成功", c)

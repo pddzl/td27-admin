@@ -3,23 +3,24 @@ package fileM
 import (
 	"fmt"
 	"os"
-	
+
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 
 	"server/internal/global"
-	"server/internal/model/common/response"
+	commonResp "server/internal/model/common/response"
+	_ "server/internal/model/entity/fileM"
 	fileMReq "server/internal/model/entity/fileM/request"
-	"server/internal/service/fileM"
+	serviceFileM "server/internal/service/fileM"
 )
 
 type FileApi struct {
-	fileService *fileM.FileService
+	fileService *serviceFileM.FileService
 }
 
 func NewFileApi() *FileApi {
 	return &FileApi{
-		fileService: fileM.NewFileService(),
+		fileService: serviceFileM.NewFileService(),
 	}
 }
 
@@ -30,26 +31,26 @@ func NewFileApi() *FileApi {
 // @accept    mpfd
 // @Produce   application/json
 // @Param     file formData file true "The file to upload"
-// @Success   200   {object}  response.Response{msg=string}
+// @Success   200   {object}  commonResp.Response{msg=string}
 // @Router    /file/upload [post]
 func (fa *FileApi) Upload(c *gin.Context) {
 	file, err := c.FormFile("file")
 	if err != nil {
-		response.FailWithStatusMessage(400, fmt.Sprintf("上传失败：%s", err.Error()), c)
+		commonResp.FailWithStatusMessage(400, fmt.Sprintf("上传失败：%s", err.Error()), c)
 		return
 	}
 
 	// 只允许上传csv文件
 	if file.Header.Get("Content-Type") != "text/csv" {
-		response.FailWithStatusMessage(400, "只允许上传csv文件", c)
+		commonResp.FailWithStatusMessage(400, "只允许上传csv文件", c)
 		return
 	}
 
 	if fullInfo, err := fa.fileService.Upload(file); err != nil {
-		response.FailWithStatusMessage(400, "上传失败", c)
+		commonResp.FailWithStatusMessage(400, "上传失败", c)
 		global.TD27_LOG.Error("上传失败", zap.Error(err))
 	} else {
-		response.OkWithDetailed(fullInfo, "上传成功", c)
+		commonResp.OkWithDetailed(fullInfo, "上传成功", c)
 	}
 }
 
@@ -60,20 +61,20 @@ func (fa *FileApi) Upload(c *gin.Context) {
 // @accept    application/json
 // @Produce   application/json
 // @Param     data  body      fileMReq.FileSearchParams true  "请求参数"
-// @Success   200   {object}  response.Response{data=response.Page{list=[]fileM.FileModel},msg=string}
+// @Success   200   {object}  commonResp.Response{data=commonResp.Page{list=[]fileM.FileModel},msg=string}
 // @Router    /file/getFileList [post]
 func (fa *FileApi) GetFileList(c *gin.Context) {
 	var params fileMReq.FileSearchParams
 	if err := c.ShouldBindJSON(&params); err != nil {
-		response.FailWithMessage(err.Error(), c)
+		commonResp.FailWithMessage(err.Error(), c)
 		return
 	}
 
 	if list, total, err := fa.fileService.GetFileList(params); err != nil {
-		response.FailWithMessage("获取失败", c)
+		commonResp.FailWithMessage("获取失败", c)
 		global.TD27_LOG.Error("获取失败", zap.Error(err))
 	} else {
-		response.OkWithDetailed(response.Page{
+		commonResp.OkWithDetailed(commonResp.Page{
 			List:     list,
 			Total:    total,
 			Page:     params.Page,
@@ -99,7 +100,7 @@ func (fa *FileApi) Download(c *gin.Context) {
 	// 打开文件
 	_, err := os.Stat(path)
 	if err != nil {
-		response.FailWithMessage(fmt.Sprintf("文件错误：%v", err), c)
+		commonResp.FailWithMessage(fmt.Sprintf("文件错误：%v", err), c)
 		return
 	}
 
@@ -116,15 +117,15 @@ func (fa *FileApi) Download(c *gin.Context) {
 // @accept    application/json
 // @Produce   application/json
 // @Param     name query string true "文件名"
-// @Success   200   {object}  response.Response{msg=string}
+// @Success   200   {object}  commonResp.Response{msg=string}
 // @Router    /file/delete [get]
 func (fa *FileApi) Delete(c *gin.Context) {
 	fileName := c.Query("name")
 
 	if err := fa.fileService.Delete(fileName); err != nil {
-		response.FailWithMessage("删除文件失败", c)
+		commonResp.FailWithMessage("删除文件失败", c)
 		global.TD27_LOG.Error("删除文件失败", zap.Error(err))
 	} else {
-		response.OkWithMessage("删除文件成功", c)
+		commonResp.OkWithMessage("删除文件成功", c)
 	}
 }

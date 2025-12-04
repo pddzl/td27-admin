@@ -123,7 +123,7 @@ go build -o server cmd/server/main.go
 
 ```bash
 cd server
-swag init
+swag init -g cmd/server/main.go -o docs --parseDependency --parseInternal
 ```
 
 `浏览`

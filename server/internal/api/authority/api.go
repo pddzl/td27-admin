@@ -5,67 +5,67 @@ import (
 	"go.uber.org/zap"
 
 	"server/internal/global"
-	"server/internal/model/common/request"
-	"server/internal/model/common/response"
-	modelAuthority "server/internal/model/entity/authority"
+	commonReq "server/internal/model/common/request"
+	commonResp "server/internal/model/common/response"
+	entityAuthority "server/internal/model/entity/authority"
 	authorityReq "server/internal/model/entity/authority/request"
-	authorityRes "server/internal/model/entity/authority/response"
-	"server/internal/service/authority"
+	authorityResp "server/internal/model/entity/authority/response"
+	serviceAuthority "server/internal/service/authority"
 )
 
 type ApiApi struct {
-	apiService *authority.ApiService
+	apiService *serviceAuthority.ApiService
 }
 
 func NewApiApi() *ApiApi {
-	return &ApiApi{apiService: authority.NewApiService()}
+	return &ApiApi{apiService: serviceAuthority.NewApiService()}
 }
 
-// AddApi
-// @Tags      ApiApi
+// Create
+// @Tags      Create
 // @Summary   添加api
 // @Security  ApiKeyAuth
 // @accept    application/json
 // @Produce   application/json
-// @Param     data  body      modelAuthority.ApiModel true "请求参数"
-// @Success   200   {object}  response.Response{data=modelAuthority.ApiModel,msg=string}
-// @Router    /api/addApi [post]
-func (aa *ApiApi) AddApi(c *gin.Context) {
-	var apiModel modelAuthority.ApiModel
+// @Param     data  body      entityAuthority.ApiModel true "请求参数"
+// @Success   200   {object}  commonResp.Response{data=entityAuthority.ApiModel,msg=string}
+// @Router    /api/create [post]
+func (aa *ApiApi) Create(c *gin.Context) {
+	var apiModel entityAuthority.ApiModel
 	if err := c.ShouldBindJSON(&apiModel); err != nil {
-		response.FailReq(err.Error(), c)
+		commonResp.FailReq(err.Error(), c)
 		return
 	}
 
-	if instance, err := aa.apiService.AddApi(&apiModel); err != nil {
-		response.Fail(c)
+	if instance, err := aa.apiService.Create(&apiModel); err != nil {
+		commonResp.Fail(c)
 		global.TD27_LOG.Error("添加失败", zap.Error(err))
 	} else {
-		response.OkWithDetailed(instance, "添加成功", c)
+		commonResp.OkWithDetailed(instance, "添加成功", c)
 	}
 }
 
-// GetApis
-// @Tags      ApiApi
+// List
+// @Tags      List
 // @Summary   分页获取api
 // @Security  ApiKeyAuth
 // @accept    application/json
 // @Produce   application/json
 // @Param     data  body      authorityReq.ApiSearchParams true  "请求参数"
-// @Success   200   {object}  response.Response{data=response.Page{list=[]modelAuthority.ApiModel},msg=string}
-// @Router    /api/getApis [post]
-func (aa *ApiApi) GetApis(c *gin.Context) {
+// @Success   200   {object}  commonResp.Response{data=commonResp.Page{list=[]entityAuthority.ApiModel},msg=string}
+// @Router    /api/list [post]
+func (aa *ApiApi) List(c *gin.Context) {
 	var apiSp authorityReq.ApiSearchParams
 	if err := c.ShouldBindJSON(&apiSp); err != nil {
-		response.FailReq(err.Error(), c)
+		commonResp.FailReq(err.Error(), c)
 		return
 	}
 
-	if list, total, err := aa.apiService.GetApis(apiSp); err != nil {
-		response.FailWithMessage("获取失败", c)
+	if list, total, err := aa.apiService.List(apiSp); err != nil {
+		commonResp.FailWithMessage("获取失败", c)
 		global.TD27_LOG.Error("获取失败", zap.Error(err))
 	} else {
-		response.OkWithDetailed(response.Page{
+		commonResp.OkWithDetailed(commonResp.Page{
 			List:     list,
 			Total:    total,
 			Page:     apiSp.Page,
@@ -74,99 +74,99 @@ func (aa *ApiApi) GetApis(c *gin.Context) {
 	}
 }
 
-// DeleteApi
-// @Tags      ApiApi
+// Delete
+// @Tags      Delete
 // @Summary   删除api
 // @Security  ApiKeyAuth
 // @accept    application/json
 // @Produce   application/json
-// @Param     data  body      request.CId true "请求参数"
-// @Success   200   {object}  response.Response{msg=string}
-// @Router    /api/deleteApi [post]
-func (aa *ApiApi) DeleteApi(c *gin.Context) {
-	var cId request.CId
+// @Param     data  body      commonReq.CId true "请求参数"
+// @Success   200   {object}  commonResp.Response{msg=string}
+// @Router    /api/delete [post]
+func (aa *ApiApi) Delete(c *gin.Context) {
+	var cId commonReq.CId
 	if err := c.ShouldBindJSON(&cId); err != nil {
-		response.FailReq(err.Error(), c)
+		commonResp.FailReq(err.Error(), c)
 		return
 	}
 
-	if err := aa.apiService.DeleteApi(cId.ID); err != nil {
-		response.Fail(c)
+	if err := aa.apiService.Delete(cId.ID); err != nil {
+		commonResp.Fail(c)
 		global.TD27_LOG.Error("删除失败", zap.Error(err))
 	} else {
-		response.Ok(c)
+		commonResp.Ok(c)
 	}
 }
 
-// DeleteApiById
-// @Tags      ApiApi
+// DeleteByIds
+// @Tags      DeleteByIds
 // @Summary   批量删除api
 // @Security  ApiKeyAuth
 // @accept    application/json
 // @Produce   application/json
-// @Param     data  body      request.CIds true "请求参数"
-// @Success   200   {object}  response.Response{msg=string}
+// @Param     data  body      commonReq.CIds true "请求参数"
+// @Success   200   {object}  commonResp.Response{msg=string}
 // @Router    /api/deleteApiById [post]
-func (aa *ApiApi) DeleteApiById(c *gin.Context) {
-	var cIds request.CIds
+func (aa *ApiApi) DeleteByIds(c *gin.Context) {
+	var cIds commonReq.CIds
 	if err := c.ShouldBindJSON(&cIds); err != nil {
-		response.FailReq(err.Error(), c)
+		commonResp.FailReq(err.Error(), c)
 		return
 	}
 
-	if err := aa.apiService.DeleteApiById(cIds.IDs); err != nil {
-		response.Fail(c)
+	if err := aa.apiService.DeleteByIds(cIds.IDs); err != nil {
+		commonResp.Fail(c)
 		global.TD27_LOG.Error("批量删除失败", zap.Error(err))
 	} else {
-		response.Ok(c)
+		commonResp.Ok(c)
 	}
 }
 
-// EditApi
-// @Tags      ApiApi
+// Update
+// @Tags      Update
 // @Summary   编辑api
 // @Security  ApiKeyAuth
 // @accept    application/json
 // @Produce   application/json
-// @Param     data  body      modelAuthority.ApiModel true "请求参数"
-// @Success   200   {object}  response.Response{msg=string}
+// @Param     data  body      entityAuthority.ApiModel true "请求参数"
+// @Success   200   {object}  commonResp.Response{msg=string}
 // @Router    /api/editApi [post]
-func (aa *ApiApi) EditApi(c *gin.Context) {
-	var apiModel modelAuthority.ApiModel
+func (aa *ApiApi) Update(c *gin.Context) {
+	var apiModel entityAuthority.ApiModel
 	if err := c.ShouldBindJSON(&apiModel); err != nil {
-		response.FailReq(err.Error(), c)
+		commonResp.FailReq(err.Error(), c)
 		return
 	}
 
-	if err := aa.apiService.EditApi(&apiModel); err != nil {
-		response.Fail(c)
+	if err := aa.apiService.Update(&apiModel); err != nil {
+		commonResp.Fail(c)
 		global.TD27_LOG.Error("编辑失败", zap.Error(err))
 	} else {
-		response.Ok(c)
+		commonResp.Ok(c)
 	}
 }
 
-// GetElTreeApis
-// @Tags      ApiApi
+// GetElTree
+// @Tags      GetElTree
 // @Summary   格式化列出所有api
 // @Security  ApiKeyAuth
 // @accept    application/json
 // @Produce   application/json
-// @Param     data  body      request.CId true "请求参数"
-// @Success   200   {object}  response.Response{data=authorityRes.ApiTree{list=[]modelAuthority.ApiTree,checkedKey=[]string},msg=string}
+// @Param     data  body      commonReq.CId true "请求参数"
+// @Success   200   {object}  commonResp.Response{data=authorityResp.ApiTree{list=[]entityAuthority.ApiTree,checkedKey=[]string},msg=string}
 // @Router    /api/getElTreeApis [post]
-func (aa *ApiApi) GetElTreeApis(c *gin.Context) {
-	var cId request.CId
+func (aa *ApiApi) GetElTree(c *gin.Context) {
+	var cId commonReq.CId
 	if err := c.ShouldBindJSON(&cId); err != nil {
-		response.FailReq(err.Error(), c)
+		commonResp.FailReq(err.Error(), c)
 		return
 	}
 
-	list, checkedKey, err := aa.apiService.GetElTreeApis(cId.ID)
+	list, checkedKey, err := aa.apiService.GetElTree(cId.ID)
 	if err != nil {
-		response.FailWithMessage("获取失败", c)
+		commonResp.FailWithMessage("获取失败", c)
 	} else {
-		response.OkWithDetailed(authorityRes.ApiTree{
+		commonResp.OkWithDetailed(authorityResp.ApiTree{
 			List:       list,
 			CheckedKey: checkedKey,
 		}, "获取成功", c)

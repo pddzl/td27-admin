@@ -90,7 +90,7 @@ generate:
 
 swag:
 	@echo "Generating Swagger docs (swag)..."
-	swag init -g $(MAIN) -o docs/swagger || true
+	swag init -g $(MAIN) -o docs --parseDependency --parseInternal || true
 
 # --- Build ---
 build: deps

@@ -22,9 +22,9 @@ interface reqApis extends PageInfo {
 }
 
 // 获取所有api 分页
-export function getApisApi(data: reqApis) {
+export function listApi(data: reqApis) {
   return request<ApiResponseData<ApiListData>>({
-    url: "/api/getApis",
+    url: "/api/list",
     method: "post",
     data
   })
@@ -49,45 +49,45 @@ interface ApiTreeAll {
 }
 
 // 获取所有api 不分页
-export function getElTreeApisApi(data: CId) {
+export function getElTreeApi(data: CId) {
   return request<ApiResponseData<ApiTreeAll>>({
-    url: "/api/getElTreeApis",
+    url: "/api/getElTree",
     method: "post",
     data
   })
 }
 
 // 添加api
-export function addApiApi(data: ApiData) {
+export function createApi(data: ApiData) {
   return request<ApiResponseData<ApiDataModel>>({
-    url: "/api/addApi",
+    url: "/api/create",
     method: "post",
     data
   })
 }
 
 // 删除api
-export function deleteApiApi(data: CId) {
+export function deleteApi(data: CId) {
   return request<ApiResponseData<null>>({
-    url: "/api/deleteApi",
+    url: "/api/delete",
     method: "post",
     data
   })
 }
 
 // 批量删除api
-export function deleteApiByIdApi(data: CIds) {
+export function deleteByIdsApi(data: CIds) {
   return request<ApiResponseData<null>>({
-    url: "/api/deleteApiById",
+    url: "/api/deleteByIds",
     method: "post",
     data
   })
 }
 
 // 编辑api
-export function editApiApi(data: ApiData & CId) {
+export function updateApi(data: ApiData & CId) {
   return request<ApiResponseData<null>>({
-    url: "/api/editApi",
+    url: "/api/update",
     method: "post",
     data
   })
