@@ -1,12 +1,13 @@
-package core
+package initialize
 
 import (
 	"context"
 	"errors"
-	"fmt"
+	"go.uber.org/zap"
 	"net/http"
 	"os"
 	"os/signal"
+	"server/internal/global"
 	"syscall"
 	"time"
 )
@@ -25,7 +26,7 @@ func RunServer(addr string, handler http.Handler) {
 	go func() {
 		//global.TD27_LOG.Info("server listening", zap.String("addr", addr))
 		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			fmt.Printf("server failed %v", err)
+			global.TD27_LOG.Error("http server failed ", zap.Any("err", err))
 		}
 	}()
 
@@ -33,14 +34,14 @@ func RunServer(addr string, handler http.Handler) {
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
-	fmt.Println("shutting down server...")
+	global.TD27_LOG.Info("shutting down server...")
 
 	// Graceful shutdown with timeout
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	if err := srv.Shutdown(ctx); err != nil {
-		fmt.Printf("server shutdown error: %v", err)
+		global.TD27_LOG.Error("server forced to shutdown", zap.Any("err", err))
 	}
 
-	fmt.Println("server exited")
+	global.TD27_LOG.Info("server exiting")
 }

@@ -25,6 +25,7 @@ func main() {
 	db, _ := global.TD27_DB.DB()
 	defer db.Close()
 
+	// Initialize Redis
 	global.TD27_REDIS = initialize.Redis()
 	if global.TD27_REDIS == nil {
 		global.TD27_LOG.Fatal("redis connection failed")
@@ -42,5 +43,5 @@ func main() {
 
 	// Run HTTP server
 	addr := fmt.Sprintf("%s:%d", global.TD27_CONFIG.System.Host, global.TD27_CONFIG.System.Port)
-	core.RunServer(addr, router)
+	initialize.RunServer(addr, router)
 }
