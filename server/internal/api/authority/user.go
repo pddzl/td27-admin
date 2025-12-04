@@ -44,7 +44,7 @@ func (ua *UserApi) GetUserInfo(c *gin.Context) {
 	}
 }
 
-// GetUsers
+// List
 // @Tags      UserApi
 // @Summary   分页获取用户
 // @Security  ApiKeyAuth
@@ -52,15 +52,15 @@ func (ua *UserApi) GetUserInfo(c *gin.Context) {
 // @Produce   application/json
 // @Param     data  body      commonReq.PageInfo true "请求参数"
 // @Success   200   {object}  commonResp.Response{data=commonResp.Page{list=[]response.UserResult},msg=string}
-// @Router    /user/getUsers [post]
-func (ua *UserApi) GetUsers(c *gin.Context) {
+// @Router    /user/list [post]
+func (ua *UserApi) List(c *gin.Context) {
 	var pageInfo commonReq.PageInfo
 	if err := c.ShouldBindJSON(&pageInfo); err != nil {
 		commonResp.FailReq(err.Error(), c)
 		return
 	}
 
-	if list, total, err := ua.userService.GetUsers(pageInfo); err != nil {
+	if list, total, err := ua.userService.List(pageInfo); err != nil {
 		commonResp.FailWithMessage("获取失败", c)
 		global.TD27_LOG.Error("获取users失败", zap.Error(err))
 	} else {
@@ -73,7 +73,7 @@ func (ua *UserApi) GetUsers(c *gin.Context) {
 	}
 }
 
-// DeleteUser
+// Delete
 // @Tags      UserApi
 // @Summary   删除用户
 // @Security  ApiKeyAuth
@@ -81,15 +81,15 @@ func (ua *UserApi) GetUsers(c *gin.Context) {
 // @Produce   application/json
 // @Param     data  body      commonReq.CId true "请求参数"
 // @Success   200   {object}  commonResp.Response{msg=string}
-// @Router    /user/deleteUser [post]
-func (ua *UserApi) DeleteUser(c *gin.Context) {
+// @Router    /user/delete [post]
+func (ua *UserApi) Delete(c *gin.Context) {
 	var cId commonReq.CId
 	if err := c.ShouldBindJSON(&cId); err != nil {
 		commonResp.FailReq(err.Error(), c)
 		return
 	}
 
-	if err := ua.userService.DeleteUser(cId.ID); err != nil {
+	if err := ua.userService.Delete(cId.ID); err != nil {
 		commonResp.Fail(c)
 		global.TD27_LOG.Error("删除失败", zap.Error(err))
 	} else {
@@ -97,7 +97,7 @@ func (ua *UserApi) DeleteUser(c *gin.Context) {
 	}
 }
 
-// AddUser
+// Create
 // @Tags      UserApi
 // @Summary   添加用户
 // @Security  ApiKeyAuth
@@ -105,8 +105,8 @@ func (ua *UserApi) DeleteUser(c *gin.Context) {
 // @Produce   application/json
 // @Param     data  body      authorityReq.AddUser true "请求参数"
 // @Success   200   {object}  commonResp.Response{msg=string}
-// @Router    /user/addUser [post]
-func (ua *UserApi) AddUser(c *gin.Context) {
+// @Router    /user/create [post]
+func (ua *UserApi) Create(c *gin.Context) {
 	// 注册自定义校验函数
 	validate := validator.New()
 	err := validate.RegisterValidation("phone", authorityReq.PhoneValidation)
@@ -130,7 +130,7 @@ func (ua *UserApi) AddUser(c *gin.Context) {
 		return
 	}
 
-	if err = ua.userService.AddUser(&addUser); err != nil {
+	if err = ua.userService.Create(&addUser); err != nil {
 		commonResp.FailWithMessage("添加失败", c)
 		global.TD27_LOG.Error("添加失败", zap.Error(err))
 	} else {
@@ -138,7 +138,7 @@ func (ua *UserApi) AddUser(c *gin.Context) {
 	}
 }
 
-// EditUser
+// Update
 // @Tags      UserApi
 // @Summary   编辑用户
 // @Security  ApiKeyAuth
@@ -146,8 +146,8 @@ func (ua *UserApi) AddUser(c *gin.Context) {
 // @Produce   application/json
 // @Param     data  body      authorityReq.EditUser true "请求参数"
 // @Success   200   {object}  commonResp.Response{msg=string}
-// @Router    /user/editUser [post]
-func (ua *UserApi) EditUser(c *gin.Context) {
+// @Router    /user/update [post]
+func (ua *UserApi) Update(c *gin.Context) {
 	// 注册自定义校验函数
 	validate := validator.New()
 	err := validate.RegisterValidation("phone", authorityReq.PhoneValidation)
@@ -171,7 +171,7 @@ func (ua *UserApi) EditUser(c *gin.Context) {
 		return
 	}
 
-	if instance, err := ua.userService.EditUser(&editUser); err != nil {
+	if instance, err := ua.userService.Update(&editUser); err != nil {
 		commonResp.Fail(c)
 		global.TD27_LOG.Error("编辑失败", zap.Error(err))
 	} else {

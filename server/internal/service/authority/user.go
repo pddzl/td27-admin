@@ -3,7 +3,7 @@ package authority
 import (
 	"errors"
 	"fmt"
-	
+
 	"gorm.io/gorm"
 
 	"server/internal/global"
@@ -25,8 +25,7 @@ func (us *UserService) GetUserInfo(userId uint) (userResults authorityRes.UserRe
 	return
 }
 
-// GetUsers 获取所有用户
-func (us *UserService) GetUsers(pageInfo request.PageInfo) ([]authorityRes.UserResult, int64, error) {
+func (us *UserService) List(pageInfo request.PageInfo) ([]authorityRes.UserResult, int64, error) {
 	var userResults []authorityRes.UserResult
 	var total int64
 
@@ -47,13 +46,11 @@ func (us *UserService) GetUsers(pageInfo request.PageInfo) ([]authorityRes.UserR
 	return userResults, total, err
 }
 
-// DeleteUser 删除用户
-func (us *UserService) DeleteUser(id uint) (err error) {
+func (us *UserService) Delete(id uint) (err error) {
 	return global.TD27_DB.Where("id = ?", id).Unscoped().Delete(&modelAuthority.UserModel{}).Error
 }
 
-// AddUser 添加用户
-func (us *UserService) AddUser(instance *authorityReq.AddUser) (err error) {
+func (us *UserService) Create(instance *authorityReq.AddUser) (err error) {
 	if errors.Is(global.TD27_DB.Where("id = ?", instance.RoleModelID).First(&modelAuthority.RoleModel{}).Error, gorm.ErrRecordNotFound) {
 		return errors.New("角色不存在")
 	}
@@ -69,8 +66,7 @@ func (us *UserService) AddUser(instance *authorityReq.AddUser) (err error) {
 	return global.TD27_DB.Create(&userModel).Error
 }
 
-// EditUser 编辑用户
-func (us *UserService) EditUser(instance *authorityReq.EditUser) (*authorityRes.UserResult, error) {
+func (us *UserService) Update(instance *authorityReq.EditUser) (*authorityRes.UserResult, error) {
 	var userModel modelAuthority.UserModel
 	// 用户是否存在
 	if errors.Is(global.TD27_DB.Where("id = ?", instance.ID).First(&userModel).Error, gorm.ErrRecordNotFound) {

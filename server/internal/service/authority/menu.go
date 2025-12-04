@@ -38,7 +38,7 @@ func getTreeMap(menuListFormat []modelAuthority.MenuModel, menuList []modelAutho
 	}
 }
 
-func (ms *MenuService) GetMenus(userId uint) ([]modelAuthority.MenuModel, error) {
+func (ms *MenuService) List(userId uint) ([]modelAuthority.MenuModel, error) {
 	// 查找用户
 	var userModel modelAuthority.UserModel
 	err := global.TD27_DB.Where("id = ?", userId).First(&userModel).Error
@@ -89,7 +89,7 @@ func (ms *MenuService) GetMenus(userId uint) ([]modelAuthority.MenuModel, error)
 	return menuListFormat, nil
 }
 
-func (ms *MenuService) AddMenu(menuRaw authorityReq.Menu) bool {
+func (ms *MenuService) Create(menuRaw authorityReq.Menu) bool {
 	var menuModel modelAuthority.MenuModel
 	menuModel.Name = menuRaw.Name
 	menuModel.Path = menuRaw.Path
@@ -112,7 +112,7 @@ func (ms *MenuService) AddMenu(menuRaw authorityReq.Menu) bool {
 	return true
 }
 
-func (ms *MenuService) EditMenu(menuRaw authorityReq.EditMenuReq) (err error) {
+func (ms *MenuService) Update(menuRaw authorityReq.EditMenuReq) (err error) {
 	var menuModel modelAuthority.MenuModel
 	var metaData modelAuthority.Meta
 
@@ -140,7 +140,7 @@ func (ms *MenuService) EditMenu(menuRaw authorityReq.EditMenuReq) (err error) {
 	return
 }
 
-func (ms *MenuService) DeleteMenu(id uint) (err error) {
+func (ms *MenuService) Delete(id uint) (err error) {
 	var menuModel modelAuthority.MenuModel
 	if errors.Is(global.TD27_DB.Where("id = ?", id).First(&menuModel).Error, gorm.ErrRecordNotFound) {
 		return errors.New("菜单不存在")

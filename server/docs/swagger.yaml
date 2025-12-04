@@ -840,34 +840,6 @@ paths:
       summary: 编辑api
       tags:
       - Update
-  /api/editRole:
-    post:
-      consumes:
-      - application/json
-      parameters:
-      - description: 请求参数
-        in: body
-        name: data
-        required: true
-        schema:
-          $ref: '#/definitions/server_internal_model_entity_authority_request.EditRole'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/server_internal_model_common_response.Response'
-            - properties:
-                msg:
-                  type: string
-              type: object
-      security:
-      - ApiKeyAuth: []
-      summary: 编辑角色
-      tags:
-      - RoleApi
   /api/editRoleMenu:
     post:
       consumes:
@@ -974,6 +946,34 @@ paths:
       summary: 分页获取api
       tags:
       - List
+  /api/update:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 请求参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/server_internal_model_entity_authority_request.EditRole'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/server_internal_model_common_response.Response'
+            - properties:
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 编辑角色
+      tags:
+      - RoleApi
   /casbin/editCasbin:
     post:
       consumes:
@@ -1340,7 +1340,7 @@ paths:
       summary: 用户登出
       tags:
       - LogRegApi
-  /menu/addMenu:
+  /menu/create:
     post:
       consumes:
       - application/json
@@ -1368,7 +1368,7 @@ paths:
       summary: 添加菜单
       tags:
       - MenuApi
-  /menu/deleteMenu:
+  /menu/delete:
     post:
       consumes:
       - application/json
@@ -1394,34 +1394,6 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: 删除菜单
-      tags:
-      - MenuApi
-  /menu/editMenu:
-    post:
-      consumes:
-      - application/json
-      parameters:
-      - description: 请求参数
-        in: body
-        name: data
-        required: true
-        schema:
-          $ref: '#/definitions/server_internal_model_entity_authority_request.EditMenuReq'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/server_internal_model_common_response.Response'
-            - properties:
-                msg:
-                  type: string
-              type: object
-      security:
-      - ApiKeyAuth: []
-      summary: 编辑菜单
       tags:
       - MenuApi
   /menu/getElTreeMenus:
@@ -1465,7 +1437,7 @@ paths:
       summary: 获取菜单树
       tags:
       - MenuApi
-  /menu/getMenus:
+  /menu/list:
     post:
       produces:
       - application/json
@@ -1486,6 +1458,34 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: 获取用户菜单
+      tags:
+      - MenuApi
+  /menu/update:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 请求参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/server_internal_model_entity_authority_request.EditMenuReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/server_internal_model_common_response.Response'
+            - properties:
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 编辑菜单
       tags:
       - MenuApi
   /opl/deleteOperationLog:
@@ -1604,7 +1604,7 @@ paths:
       summary: 获取所有角色
       tags:
       - RoleApi
-  /user/addUser:
+  /user/create:
     post:
       consumes:
       - application/json
@@ -1632,7 +1632,7 @@ paths:
       summary: 添加用户
       tags:
       - UserApi
-  /user/deleteUser:
+  /user/delete:
     post:
       consumes:
       - application/json
@@ -1660,34 +1660,6 @@ paths:
       summary: 删除用户
       tags:
       - UserApi
-  /user/editUser:
-    post:
-      consumes:
-      - application/json
-      parameters:
-      - description: 请求参数
-        in: body
-        name: data
-        required: true
-        schema:
-          $ref: '#/definitions/server_internal_model_entity_authority_request.EditUser'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/server_internal_model_common_response.Response'
-            - properties:
-                msg:
-                  type: string
-              type: object
-      security:
-      - ApiKeyAuth: []
-      summary: 编辑用户
-      tags:
-      - UserApi
   /user/getUserInfo:
     post:
       produces:
@@ -1707,7 +1679,7 @@ paths:
       summary: 获取用户信息
       tags:
       - UserApi
-  /user/getUsers:
+  /user/list:
     post:
       consumes:
       - application/json
@@ -1798,6 +1770,34 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: 切换启用状态
+      tags:
+      - UserApi
+  /user/update:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 请求参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/server_internal_model_entity_authority_request.EditUser'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/server_internal_model_common_response.Response'
+            - properties:
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 编辑用户
       tags:
       - UserApi
 swagger: "2.0"

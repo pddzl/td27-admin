@@ -19,10 +19,10 @@ func (rr *RoleRouter) InitRoleRouter(rg *gin.RouterGroup) {
 	base := rg.Group("role")
 	record := base.Use(middleware.OperationRecord())
 	// record
-	record.POST("addRole", rr.roleApi.AddRole)
-	record.POST("deleteRole", rr.roleApi.DeleteRole)
-	record.POST("editRole", rr.roleApi.EditRole)
+	record.POST("create", rr.roleApi.Create)
+	record.POST("delete", rr.roleApi.Delete)
+	record.POST("update", rr.roleApi.Update)
 	record.POST("editRoleMenu", rr.roleApi.EditRoleMenu)
 	// without record
-	base.POST("getRoles", rr.roleApi.GetRoles)
+	base.POST("list", rr.roleApi.List)
 }

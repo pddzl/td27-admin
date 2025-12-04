@@ -19,10 +19,10 @@ func (mr *MenuRouter) InitMenuRouter(rg *gin.RouterGroup) {
 	base := rg.Group("menu")
 	record := base.Use(middleware.OperationRecord())
 	// record
-	record.POST("addMenu", mr.menuApi.AddMenu)
-	record.POST("editMenu", mr.menuApi.EditMenu)
-	record.POST("deleteMenu", mr.menuApi.DeleteMenu)
+	record.POST("create", mr.menuApi.Create)
+	record.POST("update", mr.menuApi.Update)
+	record.POST("delete", mr.menuApi.Delete)
 	record.POST("getElTreeMenus", mr.menuApi.GetElTreeMenus)
 	// without record
-	base.GET("getMenus", mr.menuApi.GetMenus)
+	base.GET("list", mr.menuApi.List)
 }

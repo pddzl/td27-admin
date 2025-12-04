@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"strconv"
-	
+
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 
@@ -20,14 +20,14 @@ func NewRoleService() *RoleService {
 	return &RoleService{}
 }
 
-func (rs *RoleService) GetRoles() ([]modelAuthority.RoleModel, error) {
+func (rs *RoleService) List() ([]modelAuthority.RoleModel, error) {
 	var roleList []modelAuthority.RoleModel
 	err := global.TD27_DB.Preload("Menus").Find(&roleList).Error
 
 	return roleList, err
 }
 
-func (rs *RoleService) AddRole(instance *modelAuthority.RoleModel) (*modelAuthority.RoleModel, error) {
+func (rs *RoleService) Create(instance *modelAuthority.RoleModel) (*modelAuthority.RoleModel, error) {
 	err := global.TD27_DB.Create(instance).Error
 	if err == nil {
 		if err = casbinService.EditCasbin(instance.ID, baseReq.DefaultCasbin()); err != nil {
@@ -38,8 +38,7 @@ func (rs *RoleService) AddRole(instance *modelAuthority.RoleModel) (*modelAuthor
 
 }
 
-// DeleteRole 删除角色
-func (rs *RoleService) DeleteRole(id uint) (err error) {
+func (rs *RoleService) Delete(id uint) (err error) {
 	var roleModel modelAuthority.RoleModel
 	if errors.Is(global.TD27_DB.Where("id = ?", id).First(&roleModel).Error, gorm.ErrRecordNotFound) {
 		return errors.New("记录不存在")
@@ -69,8 +68,7 @@ func (rs *RoleService) DeleteRole(id uint) (err error) {
 	return
 }
 
-// EditRole 编辑用户
-func (rs *RoleService) EditRole(eRole authorityReq.EditRole) (err error) {
+func (rs *RoleService) Update(eRole authorityReq.EditRole) (err error) {
 	var roleModel modelAuthority.RoleModel
 	if errors.Is(global.TD27_DB.Where("id = ?", eRole.ID).First(&roleModel).Error, gorm.ErrRecordNotFound) {
 		return errors.New("记录不存在")

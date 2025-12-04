@@ -21,22 +21,22 @@ func NewRoleApi() *RoleApi {
 	return &RoleApi{roleService: serviceAuthority.NewRoleService()}
 }
 
-// GetRoles
+// List
 // @Tags      RoleApi
 // @Summary   获取所有角色
 // @Security  ApiKeyAuth
 // @Produce   application/json
 // @Success   200   {object}  commonResp.Response{data=[]authority.RoleModel,msg=string}
 // @Router    /role/getRoles [post]
-func (ra *RoleApi) GetRoles(c *gin.Context) {
-	if list, err := ra.roleService.GetRoles(); err != nil {
+func (ra *RoleApi) List(c *gin.Context) {
+	if list, err := ra.roleService.List(); err != nil {
 		commonResp.FailWithMessage(err.Error(), c)
 	} else {
 		commonResp.OkWithDetailed(list, "获取成功", c)
 	}
 }
 
-// AddRole
+// Create
 // @Tags      RoleApi
 // @Summary   添加角色
 // @Security  ApiKeyAuth
@@ -45,14 +45,14 @@ func (ra *RoleApi) GetRoles(c *gin.Context) {
 // @Param     data  body      modelAuthority.RoleModel true "请求参数"
 // @Success   200   {object}  commonResp.Response{data=authority.RoleModel,msg=string}
 // @Router    /api/addRole [post]
-func (ra *RoleApi) AddRole(c *gin.Context) {
+func (ra *RoleApi) Create(c *gin.Context) {
 	var roleModel modelAuthority.RoleModel
 	if err := c.ShouldBindJSON(&roleModel); err != nil {
 		commonResp.FailReq(err.Error(), c)
 		return
 	}
 
-	if role, err := ra.roleService.AddRole(&roleModel); err != nil {
+	if role, err := ra.roleService.Create(&roleModel); err != nil {
 		commonResp.Fail(c)
 		global.TD27_LOG.Error("添加角色失败", zap.Error(err))
 	} else {
@@ -60,7 +60,7 @@ func (ra *RoleApi) AddRole(c *gin.Context) {
 	}
 }
 
-// DeleteRole
+// Delete
 // @Tags      RoleApi
 // @Summary   删除角色
 // @Security  ApiKeyAuth
@@ -69,14 +69,14 @@ func (ra *RoleApi) AddRole(c *gin.Context) {
 // @Param     data  body      commonReq.CId true "请求参数"
 // @Success   200   {object}  commonResp.Response{msg=string}
 // @Router    /api/deleteRole [post]
-func (ra *RoleApi) DeleteRole(c *gin.Context) {
+func (ra *RoleApi) Delete(c *gin.Context) {
 	var cId commonReq.CId
 	if err := c.ShouldBindJSON(&cId); err != nil {
 		commonResp.FailReq(err.Error(), c)
 		return
 	}
 
-	if err := ra.roleService.DeleteRole(cId.ID); err != nil {
+	if err := ra.roleService.Delete(cId.ID); err != nil {
 		commonResp.Fail(c)
 		global.TD27_LOG.Error("删除角色失败", zap.Error(err))
 	} else {
@@ -84,7 +84,7 @@ func (ra *RoleApi) DeleteRole(c *gin.Context) {
 	}
 }
 
-// EditRole
+// Update
 // @Tags      RoleApi
 // @Summary   编辑角色
 // @Security  ApiKeyAuth
@@ -92,15 +92,15 @@ func (ra *RoleApi) DeleteRole(c *gin.Context) {
 // @Produce   application/json
 // @Param     data  body      authorityReq.EditRole true "请求参数"
 // @Success   200   {object}  commonResp.Response{msg=string}
-// @Router    /api/editRole [post]
-func (ra *RoleApi) EditRole(c *gin.Context) {
+// @Router    /api/update [post]
+func (ra *RoleApi) Update(c *gin.Context) {
 	var eRole authorityReq.EditRole
 	if err := c.ShouldBindJSON(&eRole); err != nil {
 		commonResp.FailReq(err.Error(), c)
 		return
 	}
 
-	if err := ra.roleService.EditRole(eRole); err != nil {
+	if err := ra.roleService.Update(eRole); err != nil {
 		commonResp.Fail(c)
 		global.TD27_LOG.Error("编辑失败", zap.Error(err))
 	} else {

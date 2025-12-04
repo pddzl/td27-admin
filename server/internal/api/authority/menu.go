@@ -22,21 +22,21 @@ func NewMenuApi() *MenuApi {
 	return &MenuApi{menuService: serviceAuthority.NewMenuService()}
 }
 
-// GetMenus
+// List
 // @Tags      MenuApi
 // @Summary   获取用户菜单
 // @Security  ApiKeyAuth
 // @Produce   application/json
 // @Success   200   {object}  commonResp.Response{data=[]authority.MenuModel,msg=string}
-// @Router    /menu/getMenus [post]
-func (ma *MenuApi) GetMenus(c *gin.Context) {
+// @Router    /menu/list [post]
+func (ma *MenuApi) List(c *gin.Context) {
 	userInfo, err := pkg.GetUserInfo(c)
 	if err != nil {
 		commonResp.FailWithMessage("获取失败", c)
 		global.TD27_LOG.Error("获取失败!", zap.Error(err))
 	}
 
-	list, err := ma.menuService.GetMenus(userInfo.ID)
+	list, err := ma.menuService.List(userInfo.ID)
 	if err != nil {
 		commonResp.FailWithMessage("获取失败", c)
 		global.TD27_LOG.Error("获取失败!", zap.Error(err))
@@ -45,7 +45,7 @@ func (ma *MenuApi) GetMenus(c *gin.Context) {
 	}
 }
 
-// AddMenu
+// Create
 // @Tags      MenuApi
 // @Summary   添加菜单
 // @Security  ApiKeyAuth
@@ -53,22 +53,22 @@ func (ma *MenuApi) GetMenus(c *gin.Context) {
 // @Produce   application/json
 // @Param     data  body      authorityReq.EditMenuReq true "请求参数"
 // @Success   200   {object}  commonResp.Response{msg=string}
-// @Router    /menu/addMenu [post]
-func (ma *MenuApi) AddMenu(c *gin.Context) {
+// @Router    /menu/create [post]
+func (ma *MenuApi) Create(c *gin.Context) {
 	var menuReq authorityReq.Menu
 	if err := c.ShouldBindJSON(&menuReq); err != nil {
 		commonResp.FailReq(err.Error(), c)
 		return
 	}
 
-	if ok := ma.menuService.AddMenu(menuReq); !ok {
+	if ok := ma.menuService.Create(menuReq); !ok {
 		commonResp.Fail(c)
 	} else {
 		commonResp.OkWithMessage("添加成功", c)
 	}
 }
 
-// EditMenu
+// Update
 // @Tags      MenuApi
 // @Summary   编辑菜单
 // @Security  ApiKeyAuth
@@ -76,15 +76,15 @@ func (ma *MenuApi) AddMenu(c *gin.Context) {
 // @Produce   application/json
 // @Param     data  body      authorityReq.EditMenuReq true "请求参数"
 // @Success   200   {object}  commonResp.Response{msg=string}
-// @Router    /menu/editMenu [post]
-func (ma *MenuApi) EditMenu(c *gin.Context) {
+// @Router    /menu/update [post]
+func (ma *MenuApi) Update(c *gin.Context) {
 	var editMenuReq authorityReq.EditMenuReq
 	if err := c.ShouldBindJSON(&editMenuReq); err != nil {
 		commonResp.FailReq(err.Error(), c)
 		return
 	}
 
-	if err := ma.menuService.EditMenu(editMenuReq); err != nil {
+	if err := ma.menuService.Update(editMenuReq); err != nil {
 		commonResp.FailWithMessage("编辑失败", c)
 		global.TD27_LOG.Error("编辑失败", zap.Error(err))
 	} else {
@@ -92,7 +92,7 @@ func (ma *MenuApi) EditMenu(c *gin.Context) {
 	}
 }
 
-// DeleteMenu
+// Delete
 // @Tags      MenuApi
 // @Summary   删除菜单
 // @Security  ApiKeyAuth
@@ -100,15 +100,15 @@ func (ma *MenuApi) EditMenu(c *gin.Context) {
 // @Produce   application/json
 // @Param     data  body      commonReq.CId true "请求参数"
 // @Success   200   {object}  commonResp.Response{msg=string}
-// @Router    /menu/deleteMenu [post]
-func (ma *MenuApi) DeleteMenu(c *gin.Context) {
+// @Router    /menu/delete [post]
+func (ma *MenuApi) Delete(c *gin.Context) {
 	var cId commonReq.CId
 	if err := c.ShouldBindJSON(&cId); err != nil {
 		commonResp.FailReq(err.Error(), c)
 		return
 	}
 
-	if err := ma.menuService.DeleteMenu(cId.ID); err != nil {
+	if err := ma.menuService.Delete(cId.ID); err != nil {
 		commonResp.FailWithMessage("删除失败", c)
 		global.TD27_LOG.Error("删除失败", zap.Error(err))
 	} else {

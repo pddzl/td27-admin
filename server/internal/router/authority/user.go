@@ -19,12 +19,12 @@ func (ur *UserRouter) InitUserRouter(rg *gin.RouterGroup) {
 	base := rg.Group("user")
 	record := base.Use(middleware.OperationRecord())
 	// record
-	record.POST("deleteUser", ur.userApi.DeleteUser)
-	record.POST("addUser", ur.userApi.AddUser)
-	record.POST("editUser", ur.userApi.EditUser)
+	record.POST("delete", ur.userApi.Delete)
+	record.POST("create", ur.userApi.Create)
+	record.POST("update", ur.userApi.Update)
 	record.POST("modifyPass", ur.userApi.ModifyPass)
 	record.POST("switchActive", ur.userApi.SwitchActive)
 	// without record
 	base.GET("getUserInfo", ur.userApi.GetUserInfo)
-	base.POST("getUsers", ur.userApi.GetUsers)
+	base.POST("getUsers", ur.userApi.List)
 }
