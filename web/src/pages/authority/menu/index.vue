@@ -3,7 +3,7 @@ import type { CascaderOption, FormInstance, FormRules } from "element-plus"
 import type { MenuDataModel } from "@/api/authority/menu"
 import WarningBar from "@@/components/WarningBar/warningBar.vue"
 import { reactive, ref } from "vue"
-import { addMenuApi, deleteMenuApi, editMenuApi, getMenus } from "@/api/authority/menu"
+import { createMenuApi, deleteMenuApi, listMenuApi, updateMenuApi } from "@/api/authority/menu"
 import icon from "./icon.vue"
 
 defineOptions({
@@ -16,7 +16,7 @@ const dialogVisible = ref<boolean>(false)
 const tableData = ref<MenuDataModel[]>([])
 async function getTableData() {
   loading.value = true
-  const res = await getMenus()
+  const res = await listMenuApi()
   if (res.code === 0) {
     tableData.value = res.data
     setOptions()
@@ -191,12 +191,12 @@ function operateAction(formEl: FormInstance | undefined) {
         }
       }
       if (oKind === "Add") {
-        const res = await addMenuApi(tempMenu)
+        const res = await createMenuApi(tempMenu)
         if (res.code === 0) {
           ElMessage({ type: "success", message: res.msg })
         }
       } else if (oKind === "Edit") {
-        const res = await editMenuApi({ id: activeRowId, ...tempMenu })
+        const res = await updateMenuApi({ id: activeRowId, ...tempMenu })
         if (res.code === 0) {
           ElMessage({ type: "success", message: res.msg })
           getTableData()

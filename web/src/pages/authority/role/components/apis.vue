@@ -3,7 +3,7 @@ import type { ElTree as ElTree1 } from "element-plus"
 import type { ApiTreeData } from "@/api/authority/api"
 import type { CasbinInfo } from "@/api/base/casbin"
 import { ref, watch } from "vue"
-import { getElTreeApisApi } from "@/api/authority/api"
+import { getElTreeApi } from "@/api/authority/api"
 import { editCasbinApi } from "@/api/base/casbin"
 
 const props = defineProps({
@@ -36,7 +36,7 @@ const apiIds = ref<string[]>()
 // const apiIds = ["/base/login,POST"]
 const apisTreeData = ref<ApiTreeData[]>([])
 function getTreeData() {
-  getElTreeApisApi({ id: props.id })
+  getElTreeApi({ id: props.id })
     .then((res) => {
       apisTreeData.value = res.data.list
       apiIds.value = res.data.checkedKey

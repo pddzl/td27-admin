@@ -185,7 +185,7 @@ func (as *ApiService) Update(instance *modelAuthority.ApiModel) (err error) {
 		}
 	}
 
-	err = casbinService.UpdateCasbinApi(apiModel.Path, apiModel.Path, apiModel.Method, apiModel.Method)
+	err = casbinService.UpdateCasbinApi(apiModel.Path, instance.Path, apiModel.Method, instance.Method)
 	if err != nil {
 		return fmt.Errorf("更新casbin rule err: %v", err)
 	}

@@ -8,21 +8,18 @@ interface roleData {
 
 export interface roleDataModel extends roleData, Td27Model {}
 
-// List
-// export type roleListData = ListData<roleDataModel[]>
-
 /** 获取用户详情 */
-export function getRolesApi() {
+export function listRoleApi() {
   return request<ApiResponseData<roleDataModel[]>>({
-    url: "/role/getRoles",
+    url: "/role/list",
     method: "post",
     data: {}
   })
 }
 
-export function addRoleApi(data: roleData) {
+export function createRoleApi(data: roleData) {
   return request<ApiResponseData<roleDataModel>>({
-    url: "/role/addRole",
+    url: "/role/create",
     method: "post",
     data
   })
@@ -30,15 +27,15 @@ export function addRoleApi(data: roleData) {
 
 export function deleteRoleApi(data: CId) {
   return request<ApiResponseData<null>>({
-    url: "/role/deleteRole",
+    url: "/role/delete",
     method: "post",
     data
   })
 }
 
-export function editRoleApi(data: roleData & CId) {
+export function updateRoleApi(data: roleData & CId) {
   return request<ApiResponseData<null>>({
-    url: "/role/editRole",
+    url: "/role/update",
     method: "post",
     data
   })

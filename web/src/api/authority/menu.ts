@@ -25,28 +25,25 @@ export interface MenuData {
 
 export interface MenuDataModel extends MenuData, Td27Model {}
 
-// List
-// export type MenuListData = ListData<MenuDataModel[]>
-
 // 获取动态路由
-export function getMenus() {
+export function listMenuApi() {
   return request<ApiResponseData<MenuDataModel[]>>({
-    url: "/menu/getMenus",
+    url: "/menu/list",
     method: "get"
   })
 }
 
-export function addMenuApi(data: MenuData) {
+export function createMenuApi(data: MenuData) {
   return request<ApiResponseData<null>>({
-    url: "menu/addMenu",
+    url: "menu/create",
     method: "post",
     data
   })
 }
 
-export function editMenuApi(data: MenuData & CId) {
+export function updateMenuApi(data: MenuData & CId) {
   return request<ApiResponseData<null>>({
-    url: "menu/editMenu",
+    url: "menu/update",
     method: "post",
     data
   })
@@ -54,7 +51,7 @@ export function editMenuApi(data: MenuData & CId) {
 
 export function deleteMenuApi(data: CId) {
   return request<ApiResponseData<null>>({
-    url: "menu/deleteMenu",
+    url: "menu/delete",
     method: "post",
     data
   })

@@ -4,14 +4,14 @@ import type { userDataModel } from "@/api/authority/user"
 import { usePagination } from "@@/composables/usePagination_n"
 import { useValidateEmail, useValidatePhone } from "@@/utils/useValidate"
 import { reactive, ref } from "vue"
-import { getRolesApi } from "@/api/authority/role"
+import { listRoleApi } from "@/api/authority/role"
 import {
-  addUserApi,
+  createUserApi,
   deleteUserApi,
-  editUserApi,
-  getUsersApi,
+  listUserApi,
   modifyPassApi,
-  SwitchActiveApi
+  SwitchActiveApi,
+  updateUserApi
 } from "@/api/authority/user"
 
 defineOptions({
@@ -27,7 +27,7 @@ let activeRow: userDataModel
 async function getTableData() {
   loading.value = true
   try {
-    const res = await getUsersApi({ page: paginationData.currentPage, pageSize: paginationData.pageSize })
+    const res = await listUserApi({ page: paginationData.currentPage, pageSize: paginationData.pageSize })
     if (res.code === 0) {
       tableData.value = res.data.list
       paginationData.total = res.data.total
@@ -165,7 +165,7 @@ function operateAction(formEl: FormInstance | undefined) {
   formEl.validate(async (valid) => {
     if (valid) {
       if (kind.value === "Add") {
-        const res = await addUserApi({
+        const res = await createUserApi({
           username: formData.username,
           password: formData.password,
           phone: formData.phone,
@@ -178,7 +178,7 @@ function operateAction(formEl: FormInstance | undefined) {
           getTableData()
         }
       } else if (kind.value === "Edit") {
-        const res = await editUserApi({
+        const res = await updateUserApi({
           id: activeRow.id,
           username: formData.username,
           phone: formData.phone,
@@ -233,7 +233,7 @@ interface option {
 }
 const roleOptions: option[] = []
 async function getRoleOption() {
-  const res = await getRolesApi()
+  const res = await listRoleApi()
   if (res.code === 0) {
     res.data.forEach((element) => {
       roleOptions.push({ ID: String(element.id), roleName: element.roleName })

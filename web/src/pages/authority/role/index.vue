@@ -2,7 +2,7 @@
 import type { FormInstance, FormRules } from "element-plus"
 import type { roleDataModel } from "@/api/authority/role"
 import { reactive, ref } from "vue"
-import { addRoleApi, deleteRoleApi, editRoleApi, getRolesApi } from "@/api/authority/role"
+import { createRoleApi, deleteRoleApi, listRoleApi, updateRoleApi } from "@/api/authority/role"
 import Apis from "./components/apis.vue"
 import Menus from "./components/menus.vue"
 
@@ -16,7 +16,7 @@ let activeRow: roleDataModel
 
 async function getTableData() {
   loading.value = true
-  const res = await getRolesApi()
+  const res = await listRoleApi()
   if (res.code === 0) {
     tableData.value = res.data
   }
@@ -69,7 +69,7 @@ function operateAction(formEl: FormInstance | undefined) {
   formEl.validate(async (valid) => {
     if (valid) {
       if (kind.value === "Add") {
-        const res = await addRoleApi({ roleName: formData.roleName })
+        const res = await createRoleApi({ roleName: formData.roleName })
         if (res.code === 0) {
           ElMessage({ type: "success", message: res.msg })
           // const tempData = {
@@ -80,7 +80,7 @@ function operateAction(formEl: FormInstance | undefined) {
           tableData.value.push(res.data)
         }
       } else if (kind.value === "Edit") {
-        const res = await editRoleApi({ id: activeRow.id, roleName: formData.roleName })
+        const res = await updateRoleApi({ id: activeRow.id, roleName: formData.roleName })
         if (res.code === 0) {
           ElMessage({ type: "success", message: res.msg })
           const index = tableData.value.indexOf(activeRow)

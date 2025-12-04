@@ -1,6 +1,6 @@
 import type { RouteRecordRaw } from "vue-router"
 import type { MenuData } from "@/api/authority/menu"
-import { getMenus } from "@/api/authority/menu"
+import { listMenuApi } from "@/api/authority/menu"
 import { formatRouter } from "@/common/utils/router_m"
 import { pinia } from "@/pinia"
 import { constantRoutes } from "@/router/index_n"
@@ -12,7 +12,7 @@ export const usePermissionStore = defineStore("permission", () => {
 
   const setRoutes = async () => {
     // 获取动态路由
-    const asyncRouterRes = await getMenus()
+    const asyncRouterRes = await listMenuApi()
     if (asyncRouterRes.code === 0) {
       asyncRouterList.value = asyncRouterRes.data
     }

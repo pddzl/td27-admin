@@ -24,9 +24,9 @@ export function getUserInfoApi() {
 }
 
 /** 获取所有用户 */
-export function getUsersApi(data: PageInfo) {
+export function listUserApi(data: PageInfo) {
   return request<ApiResponseData<userListData>>({
-    url: "/user/getUsers",
+    url: "/user/list",
     method: "post",
     data
   })
@@ -35,25 +35,25 @@ export function getUsersApi(data: PageInfo) {
 // 删除用户
 export function deleteUserApi(data: CId) {
   return request<ApiResponseData<null>>({
-    url: "/user/deleteUser",
+    url: "/user/delete",
     method: "post",
     data
   })
 }
 
 // 添加用户
-export function addUserApi(data: userData & { password: string }) {
+export function createUserApi(data: userData & { password: string }) {
   return request<ApiResponseData<null>>({
-    url: "/user/addUser",
+    url: "/user/create",
     method: "post",
     data
   })
 }
 
 // 编辑用户
-export function editUserApi(data: userData & CId) {
+export function updateUserApi(data: userData & CId) {
   return request<ApiResponseData<userDataModel>>({
-    url: "/user/editUser",
+    url: "/user/update",
     method: "post",
     data
   })

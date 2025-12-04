@@ -26,5 +26,5 @@ func (ur *UserRouter) InitUserRouter(rg *gin.RouterGroup) {
 	record.POST("switchActive", ur.userApi.SwitchActive)
 	// without record
 	base.GET("getUserInfo", ur.userApi.GetUserInfo)
-	base.POST("getUsers", ur.userApi.List)
+	base.POST("list", ur.userApi.List)
 }
