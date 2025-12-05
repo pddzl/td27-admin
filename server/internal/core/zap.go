@@ -7,7 +7,7 @@ import (
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 
-	"server/internal/core/internal"
+	coreZap "server/internal/core/zap"
 	"server/internal/global"
 	"server/internal/pkg"
 )
@@ -23,7 +23,7 @@ func Zap() (logger *zap.Logger) {
 	length := len(levels)
 	cores := make([]zapcore.Core, 0, length)
 	for i := 0; i < length; i++ {
-		core := internal.NewZapCore(levels[i])
+		core := coreZap.NewZapCore(levels[i])
 		cores = append(cores, core)
 	}
 

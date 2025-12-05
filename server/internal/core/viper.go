@@ -5,13 +5,12 @@ import (
 
 	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/viper"
-	
-	"server/internal/core/internal"
+
 	"server/internal/global"
 )
 
 func Viper() *viper.Viper {
-	config := internal.ConfigFile
+	config := "configs/config.yaml"
 
 	v := viper.New()
 	v.SetConfigFile(config)

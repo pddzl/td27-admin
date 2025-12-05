@@ -1,4 +1,4 @@
-package internal
+package zap
 
 import (
 	"go.uber.org/zap"
