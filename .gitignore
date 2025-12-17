@@ -21,6 +21,7 @@ yarn-error.log*
 *.sln
 *.sw?
 
+/server/.idea
 /server/log/
 /server/resource/upload
 
