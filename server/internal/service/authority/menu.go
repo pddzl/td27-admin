@@ -3,14 +3,15 @@ package authority
 import (
 	"errors"
 	"fmt"
+	"server/internal/model/authority/menu"
+	"server/internal/model/authority/role"
+	authority2 "server/internal/model/authority/user"
 	"sort"
 
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 
 	"server/internal/global"
-	modelAuthority "server/internal/model/entity/authority"
-	authorityReq "server/internal/model/entity/authority/request"
 )
 
 type MenuService struct{}
@@ -19,7 +20,7 @@ func NewMenuService() *MenuService {
 	return &MenuService{}
 }
 
-func getTreeMap(menuListFormat []modelAuthority.MenuModel, menuList []modelAuthority.MenuModel) {
+func getTreeMap(menuListFormat []menu.MenuModel, menuList []menu.MenuModel) {
 	for index, menuF := range menuListFormat {
 		for _, menu := range menuList {
 			if menuF.ID == menu.Pid {
@@ -38,29 +39,29 @@ func getTreeMap(menuListFormat []modelAuthority.MenuModel, menuList []modelAutho
 	}
 }
 
-func (ms *MenuService) List(userId uint) ([]modelAuthority.MenuModel, error) {
+func (ms *MenuService) List(userId uint) ([]menu.MenuModel, error) {
 	// 查找用户
-	var userModel modelAuthority.UserModel
+	var userModel authority2.UserModel
 	err := global.TD27_DB.Where("id = ?", userId).First(&userModel).Error
 	if err != nil {
 		return nil, fmt.Errorf("GetMenus 用户查询 -> %v", err)
 	}
 
 	// 查找用户对应角色
-	var roleModel modelAuthority.RoleModel
+	var roleModel role.RoleModel
 	err = global.TD27_DB.Where("id = ?", userModel.RoleModelID).First(&roleModel).Error
 	if err != nil {
 		return nil, fmt.Errorf("GetMenus 角色查询 -> %v", err)
 	}
 
-	var menuModels []modelAuthority.MenuModel
+	var menuModels []menu.MenuModel
 	err = global.TD27_DB.Preload("Roles").Find(&menuModels).Error
 	if err != nil {
 		return nil, fmt.Errorf("GetMenus 菜单查询 -> %v", err)
 	}
 
 	// 过滤角色拥有的路由
-	menuList := make([]modelAuthority.MenuModel, 0)
+	menuList := make([]menu.MenuModel, 0)
 	for _, menu := range menuModels {
 		for _, menuRole := range menu.Roles {
 			if roleModel.RoleName == menuRole.RoleName {
@@ -71,7 +72,7 @@ func (ms *MenuService) List(userId uint) ([]modelAuthority.MenuModel, error) {
 	}
 
 	// 找出第一级路由，（父路由id为0）
-	menuListFormat := make([]modelAuthority.MenuModel, 0)
+	menuListFormat := make([]menu.MenuModel, 0)
 	for _, menu := range menuList {
 		if menu.Pid == 0 {
 			menuListFormat = append(menuListFormat, menu)
@@ -89,8 +90,8 @@ func (ms *MenuService) List(userId uint) ([]modelAuthority.MenuModel, error) {
 	return menuListFormat, nil
 }
 
-func (ms *MenuService) Create(menuRaw authorityReq.Menu) bool {
-	var menuModel modelAuthority.MenuModel
+func (ms *MenuService) Create(menuRaw menu.Menu) bool {
+	var menuModel menu.MenuModel
 	menuModel.Name = menuRaw.Name
 	menuModel.Path = menuRaw.Path
 	menuModel.Component = menuRaw.Component
@@ -112,9 +113,9 @@ func (ms *MenuService) Create(menuRaw authorityReq.Menu) bool {
 	return true
 }
 
-func (ms *MenuService) Update(menuRaw authorityReq.EditMenuReq) (err error) {
-	var menuModel modelAuthority.MenuModel
-	var metaData modelAuthority.Meta
+func (ms *MenuService) Update(menuRaw menu.EditMenuReq) (err error) {
+	var menuModel menu.MenuModel
+	var metaData menu.Meta
 
 	if errors.Is(global.TD27_DB.Where("id = ?", menuRaw.ID).First(&menuModel).Error, gorm.ErrRecordNotFound) {
 		return errors.New("菜单不存在")
@@ -141,7 +142,7 @@ func (ms *MenuService) Update(menuRaw authorityReq.EditMenuReq) (err error) {
 }
 
 func (ms *MenuService) Delete(id uint) (err error) {
-	var menuModel modelAuthority.MenuModel
+	var menuModel menu.MenuModel
 	if errors.Is(global.TD27_DB.Where("id = ?", id).First(&menuModel).Error, gorm.ErrRecordNotFound) {
 		return errors.New("菜单不存在")
 	}
@@ -151,15 +152,15 @@ func (ms *MenuService) Delete(id uint) (err error) {
 }
 
 // GetElTreeMenus 获取所有menu
-func (ms *MenuService) GetElTreeMenus(roleId uint) ([]modelAuthority.MenuModel, []uint, error) {
-	var menuModels []modelAuthority.MenuModel
+func (ms *MenuService) GetElTreeMenus(roleId uint) ([]menu.MenuModel, []uint, error) {
+	var menuModels []menu.MenuModel
 	err := global.TD27_DB.Find(&menuModels).Error
 	if err != nil {
 		global.TD27_LOG.Error("GetElTreeMenus 查询menus", zap.Error(err))
 		return nil, nil, err
 	}
 
-	menuListFormat := make([]modelAuthority.MenuModel, 0)
+	menuListFormat := make([]menu.MenuModel, 0)
 	for _, menu := range menuModels {
 		if menu.Pid == 0 {
 			menuListFormat = append(menuListFormat, menu)
@@ -168,7 +169,7 @@ func (ms *MenuService) GetElTreeMenus(roleId uint) ([]modelAuthority.MenuModel, 
 
 	getTreeMap(menuListFormat, menuModels)
 
-	var roleModel modelAuthority.RoleModel
+	var roleModel role.RoleModel
 	err = global.TD27_DB.Where("id = ?", roleId).Preload("Menus").First(&roleModel).Error
 	if err != nil {
 		global.TD27_LOG.Error("GetElTreeMenus 查询role", zap.Error(err))

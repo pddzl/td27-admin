@@ -1,14 +1,14 @@
 package monitor
 
 import (
+	"server/internal/model/common"
+	monitorReq "server/internal/model/monitor/request"
+
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 
 	"server/internal/global"
-	commonReq "server/internal/model/common/request"
-	commonResp "server/internal/model/common/response"
 	_ "server/internal/model/entity/monitor"
-	monitorReq "server/internal/model/entity/monitor/request"
 	serviceMonitor "server/internal/service/monitor"
 )
 
@@ -34,15 +34,15 @@ func NewOperationLogApi() *OperationLogApi {
 func (oa *OperationLogApi) GetOperationLogList(c *gin.Context) {
 	var orSp monitorReq.OrSearchParams
 	if err := c.ShouldBindJSON(&orSp); err != nil {
-		commonResp.FailReq(err.Error(), c)
+		common.FailReq(err.Error(), c)
 		return
 	}
 
 	if list, total, err := oa.operationLogService.GetOperationLogList(orSp); err != nil {
-		commonResp.FailWithMessage("获取失败", c)
+		common.FailWithMessage("获取失败", c)
 		global.TD27_LOG.Error("获取失败", zap.Error(err))
 	} else {
-		commonResp.OkWithDetailed(commonResp.Page{
+		common.OkWithDetailed(common.Page{
 			List:     list,
 			Total:    total,
 			Page:     orSp.Page,
@@ -61,17 +61,17 @@ func (oa *OperationLogApi) GetOperationLogList(c *gin.Context) {
 // @Success   200   {object}  commonResp.Response{msg=string}
 // @Router    /opl/deleteOperationLog [post]
 func (oa *OperationLogApi) DeleteOperationLog(c *gin.Context) {
-	var cId commonReq.CId
+	var cId common.CId
 	if err := c.ShouldBindJSON(&cId); err != nil {
-		commonResp.FailReq(err.Error(), c)
+		common.FailReq(err.Error(), c)
 		return
 	}
 
 	if err := oa.operationLogService.DeleteOperationLog(cId.ID); err != nil {
-		commonResp.FailWithMessage("删除失败", c)
+		common.FailWithMessage("删除失败", c)
 		global.TD27_LOG.Error("删除失败", zap.Error(err))
 	} else {
-		commonResp.OkWithMessage("删除成功", c)
+		common.OkWithMessage("删除成功", c)
 	}
 }
 
@@ -85,16 +85,16 @@ func (oa *OperationLogApi) DeleteOperationLog(c *gin.Context) {
 // @Success   200   {object}  commonResp.Response{msg=string}
 // @Router    /opl/deleteOperationLogByIds [post]
 func (oa *OperationLogApi) DeleteOperationLogByIds(c *gin.Context) {
-	var cIds commonReq.CIds
+	var cIds common.CIds
 	if err := c.ShouldBindJSON(&cIds); err != nil {
-		commonResp.FailReq(err.Error(), c)
+		common.FailReq(err.Error(), c)
 		return
 	}
 
 	if err := oa.operationLogService.DeleteOperationLogByIds(cIds.IDs); err != nil {
-		commonResp.FailWithMessage("删除失败", c)
+		common.FailWithMessage("删除失败", c)
 		global.TD27_LOG.Error("删除失败", zap.Error(err))
 	} else {
-		commonResp.OkWithMessage("删除成功", c)
+		common.OkWithMessage("删除成功", c)
 	}
 }

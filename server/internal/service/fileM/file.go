@@ -5,12 +5,12 @@ import (
 	"io"
 	"mime/multipart"
 	"os"
+	modelFileM "server/internal/model/fileM"
+	fileMReq "server/internal/model/fileM/request"
 
 	"github.com/google/uuid"
-	
+
 	"server/internal/global"
-	modelFileM "server/internal/model/entity/fileM"
-	fileMReq "server/internal/model/entity/fileM/request"
 	"server/internal/pkg"
 )
 

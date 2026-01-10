@@ -1,15 +1,14 @@
 package authority
 
 import (
+	entityAuthority "server/internal/model/authority/api"
+	authorityResp "server/internal/model/authority/response"
+	"server/internal/model/common"
+
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 
 	"server/internal/global"
-	commonReq "server/internal/model/common/request"
-	commonResp "server/internal/model/common/response"
-	entityAuthority "server/internal/model/entity/authority"
-	authorityReq "server/internal/model/entity/authority/request"
-	authorityResp "server/internal/model/entity/authority/response"
 	serviceAuthority "server/internal/service/authority"
 )
 
@@ -33,15 +32,15 @@ func NewApiApi() *ApiApi {
 func (aa *ApiApi) Create(c *gin.Context) {
 	var apiModel entityAuthority.ApiModel
 	if err := c.ShouldBindJSON(&apiModel); err != nil {
-		commonResp.FailReq(err.Error(), c)
+		common.FailReq(err.Error(), c)
 		return
 	}
 
 	if instance, err := aa.apiService.Create(&apiModel); err != nil {
-		commonResp.Fail(c)
+		common.Fail(c)
 		global.TD27_LOG.Error("添加失败", zap.Error(err))
 	} else {
-		commonResp.OkWithDetailed(instance, "添加成功", c)
+		common.OkWithDetailed(instance, "添加成功", c)
 	}
 }
 
@@ -55,17 +54,17 @@ func (aa *ApiApi) Create(c *gin.Context) {
 // @Success   200   {object}  commonResp.Response{data=commonResp.Page{list=[]entityAuthority.ApiModel},msg=string}
 // @Router    /api/list [post]
 func (aa *ApiApi) List(c *gin.Context) {
-	var apiSp authorityReq.ApiSearchParams
+	var apiSp entityAuthority.ApiSearchParams
 	if err := c.ShouldBindJSON(&apiSp); err != nil {
-		commonResp.FailReq(err.Error(), c)
+		common.FailReq(err.Error(), c)
 		return
 	}
 
 	if list, total, err := aa.apiService.List(apiSp); err != nil {
-		commonResp.FailWithMessage("获取失败", c)
+		common.FailWithMessage("获取失败", c)
 		global.TD27_LOG.Error("获取失败", zap.Error(err))
 	} else {
-		commonResp.OkWithDetailed(commonResp.Page{
+		common.OkWithDetailed(common.Page{
 			List:     list,
 			Total:    total,
 			Page:     apiSp.Page,
@@ -84,17 +83,17 @@ func (aa *ApiApi) List(c *gin.Context) {
 // @Success   200   {object}  commonResp.Response{msg=string}
 // @Router    /api/delete [post]
 func (aa *ApiApi) Delete(c *gin.Context) {
-	var cId commonReq.CId
+	var cId common.CId
 	if err := c.ShouldBindJSON(&cId); err != nil {
-		commonResp.FailReq(err.Error(), c)
+		common.FailReq(err.Error(), c)
 		return
 	}
 
 	if err := aa.apiService.Delete(cId.ID); err != nil {
-		commonResp.Fail(c)
+		common.Fail(c)
 		global.TD27_LOG.Error("删除失败", zap.Error(err))
 	} else {
-		commonResp.Ok(c)
+		common.Ok(c)
 	}
 }
 
@@ -108,17 +107,17 @@ func (aa *ApiApi) Delete(c *gin.Context) {
 // @Success   200   {object}  commonResp.Response{msg=string}
 // @Router    /api/deleteApiById [post]
 func (aa *ApiApi) DeleteByIds(c *gin.Context) {
-	var cIds commonReq.CIds
+	var cIds common.CIds
 	if err := c.ShouldBindJSON(&cIds); err != nil {
-		commonResp.FailReq(err.Error(), c)
+		common.FailReq(err.Error(), c)
 		return
 	}
 
 	if err := aa.apiService.DeleteByIds(cIds.IDs); err != nil {
-		commonResp.Fail(c)
+		common.Fail(c)
 		global.TD27_LOG.Error("批量删除失败", zap.Error(err))
 	} else {
-		commonResp.Ok(c)
+		common.Ok(c)
 	}
 }
 
@@ -134,15 +133,15 @@ func (aa *ApiApi) DeleteByIds(c *gin.Context) {
 func (aa *ApiApi) Update(c *gin.Context) {
 	var apiModel entityAuthority.ApiModel
 	if err := c.ShouldBindJSON(&apiModel); err != nil {
-		commonResp.FailReq(err.Error(), c)
+		common.FailReq(err.Error(), c)
 		return
 	}
 
 	if err := aa.apiService.Update(&apiModel); err != nil {
-		commonResp.Fail(c)
+		common.Fail(c)
 		global.TD27_LOG.Error("编辑失败", zap.Error(err))
 	} else {
-		commonResp.Ok(c)
+		common.Ok(c)
 	}
 }
 
@@ -156,17 +155,17 @@ func (aa *ApiApi) Update(c *gin.Context) {
 // @Success   200   {object}  commonResp.Response{data=authorityResp.ApiTree{list=[]entityAuthority.ApiTree,checkedKey=[]string},msg=string}
 // @Router    /api/getElTreeApis [post]
 func (aa *ApiApi) GetElTree(c *gin.Context) {
-	var cId commonReq.CId
+	var cId common.CId
 	if err := c.ShouldBindJSON(&cId); err != nil {
-		commonResp.FailReq(err.Error(), c)
+		common.FailReq(err.Error(), c)
 		return
 	}
 
 	list, checkedKey, err := aa.apiService.GetElTree(cId.ID)
 	if err != nil {
-		commonResp.FailWithMessage("获取失败", c)
+		common.FailWithMessage("获取失败", c)
 	} else {
-		commonResp.OkWithDetailed(authorityResp.ApiTree{
+		common.OkWithDetailed(authorityResp.ApiTree{
 			List:       list,
 			CheckedKey: checkedKey,
 		}, "获取成功", c)

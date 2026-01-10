@@ -2,12 +2,12 @@ package sysSet
 
 import (
 	"errors"
-	
+	modelSysSet "server/internal/model/sysSet"
+	sysSetReq "server/internal/model/sysSet/request"
+
 	"gorm.io/gorm"
 
 	"server/internal/global"
-	modelSysSet "server/internal/model/entity/sysSet"
-	sysSetReq "server/internal/model/entity/sysSet/request"
 )
 
 type DictDetailService struct{}

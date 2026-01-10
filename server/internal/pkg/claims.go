@@ -1,10 +1,11 @@
 package pkg
 
 import (
+	baseReq "server/internal/model/base/request"
+
 	"github.com/gin-gonic/gin"
-	
+
 	"server/internal/global"
-	baseReq "server/internal/model/entity/base/request"
 )
 
 func GetUserInfo(c *gin.Context) (*baseReq.CustomClaims, error) {

@@ -4,6 +4,14 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"server/internal/model/authority/api"
+	"server/internal/model/authority/menu"
+	"server/internal/model/authority/role"
+	"server/internal/model/authority/user"
+	modelFileM "server/internal/model/fileM"
+	modelMonitor "server/internal/model/monitor"
+	"server/internal/model/sysSet"
+	modelSysTool "server/internal/model/sysTool"
 	"time"
 
 	"go.uber.org/zap"
@@ -12,11 +20,6 @@ import (
 	"gorm.io/gorm/logger"
 
 	"server/internal/global"
-	modelAuthority "server/internal/model/entity/authority"
-	modelFileM "server/internal/model/entity/fileM"
-	modelMonitor "server/internal/model/entity/monitor"
-	modelSysSet "server/internal/model/entity/sysSet"
-	modelSysTool "server/internal/model/entity/sysTool"
 )
 
 type writer struct {
@@ -85,10 +88,10 @@ func Gorm() *gorm.DB {
 func RegisterTables(db *gorm.DB) {
 	err := db.AutoMigrate(
 		// 权限
-		modelAuthority.UserModel{},
-		modelAuthority.RoleModel{},
-		modelAuthority.MenuModel{},
-		modelAuthority.ApiModel{},
+		user.UserModel{},
+		role.RoleModel{},
+		menu.MenuModel{},
+		api.ApiModel{},
 		// 监控
 		modelMonitor.OperationLogModel{},
 		// fileM
@@ -96,8 +99,8 @@ func RegisterTables(db *gorm.DB) {
 		// 系统工具
 		modelSysTool.CronModel{},
 		// system settings
-		modelSysSet.DictModel{},
-		modelSysSet.DictDetailModel{},
+		sysSet.DictModel{},
+		sysSet.DictDetailModel{},
 	)
 
 	if err != nil {

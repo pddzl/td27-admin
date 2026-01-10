@@ -1,14 +1,14 @@
 package sysTool
 
 import (
+	"server/internal/model/common"
+	entitySysTool "server/internal/model/sysTool"
+	sysToolReq "server/internal/model/sysTool/request"
+
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 
 	"server/internal/global"
-	commonReq "server/internal/model/common/request"
-	commonResp "server/internal/model/common/response"
-	entitySysTool "server/internal/model/entity/sysTool"
-	sysToolReq "server/internal/model/entity/sysTool/request"
 	serviceSysTool "server/internal/service/sysTool"
 )
 
@@ -32,17 +32,17 @@ func NewCronApi() *CronApi {
 // @Success   200   {object}  commonResp.Response{data=commonResp.Page{list=[]entitySysTool.CronModel},msg=string}
 // @Router    /cron/getCronList [post]
 func (ca *CronApi) GetCronList(c *gin.Context) {
-	var pageInfo commonReq.PageInfo
+	var pageInfo common.PageInfo
 	if err := c.ShouldBindJSON(&pageInfo); err != nil {
-		commonResp.FailReq(err.Error(), c)
+		common.FailReq(err.Error(), c)
 		return
 	}
 
 	if list, total, err := ca.cronService.GetCronList(pageInfo); err != nil {
-		commonResp.FailWithMessage("获取失败", c)
+		common.FailWithMessage("获取失败", c)
 		global.TD27_LOG.Error("获取失败", zap.Error(err))
 	} else {
-		commonResp.OkWithDetailed(commonResp.Page{
+		common.OkWithDetailed(common.Page{
 			List:     list,
 			Total:    total,
 			Page:     pageInfo.Page,
@@ -63,15 +63,15 @@ func (ca *CronApi) GetCronList(c *gin.Context) {
 func (ca *CronApi) AddCron(c *gin.Context) {
 	var cronModel entitySysTool.CronModel
 	if err := c.ShouldBindJSON(&cronModel); err != nil {
-		commonResp.FailReq(err.Error(), c)
+		common.FailReq(err.Error(), c)
 		return
 	}
 
 	if cron, err := ca.cronService.AddCron(&cronModel); err != nil {
-		commonResp.FailWithMessage("创建失败", c)
+		common.FailWithMessage("创建失败", c)
 		global.TD27_LOG.Error("创建失败", zap.Error(err))
 	} else {
-		commonResp.OkWithDetailed(cron, "创建成功", c)
+		common.OkWithDetailed(cron, "创建成功", c)
 	}
 }
 
@@ -85,33 +85,33 @@ func (ca *CronApi) AddCron(c *gin.Context) {
 // @Success   200   {object}  commonResp.Response{msg=string}
 // @Router    /cron/deleteCron [post]
 func (ca *CronApi) DeleteCron(c *gin.Context) {
-	var cId commonReq.CId
+	var cId common.CId
 	if err := c.ShouldBindJSON(&cId); err != nil {
-		commonResp.FailReq(err.Error(), c)
+		common.FailReq(err.Error(), c)
 		return
 	}
 
 	if err := ca.cronService.DeleteCron(cId.ID); err != nil {
-		commonResp.FailWithMessage("删除失败", c)
+		common.FailWithMessage("删除失败", c)
 		global.TD27_LOG.Error("删除失败", zap.Error(err))
 	} else {
-		commonResp.OkWithMessage("删除成功", c)
+		common.OkWithMessage("删除成功", c)
 	}
 }
 
 // DeleteCronByIds 批量删除cron
 func (ca *CronApi) DeleteCronByIds(c *gin.Context) {
-	var cIds commonReq.CIds
+	var cIds common.CIds
 	if err := c.ShouldBindJSON(&cIds); err != nil {
-		commonResp.FailReq(err.Error(), c)
+		common.FailReq(err.Error(), c)
 		return
 	}
 
 	if err := ca.cronService.DeleteCronByIds(cIds.IDs); err != nil {
-		commonResp.FailWithMessage("批量删除失败", c)
+		common.FailWithMessage("批量删除失败", c)
 		global.TD27_LOG.Error("批量删除失败", zap.Error(err))
 	} else {
-		commonResp.OkWithMessage("批量删除成功", c)
+		common.OkWithMessage("批量删除成功", c)
 	}
 }
 
@@ -127,15 +127,15 @@ func (ca *CronApi) DeleteCronByIds(c *gin.Context) {
 func (ca *CronApi) EditCron(c *gin.Context) {
 	var cronModel entitySysTool.CronModel
 	if err := c.ShouldBindJSON(&cronModel); err != nil {
-		commonResp.FailReq(err.Error(), c)
+		common.FailReq(err.Error(), c)
 		return
 	}
 
 	if instance, err := ca.cronService.EditCron(&cronModel); err != nil {
-		commonResp.FailWithMessage(err.Error(), c)
+		common.FailWithMessage(err.Error(), c)
 		global.TD27_LOG.Error("编辑失败", zap.Error(err))
 	} else {
-		commonResp.OkWithDetailed(instance, "编辑成功", c)
+		common.OkWithDetailed(instance, "编辑成功", c)
 	}
 }
 
@@ -151,14 +151,14 @@ func (ca *CronApi) EditCron(c *gin.Context) {
 func (ca *CronApi) SwitchOpen(c *gin.Context) {
 	var switchReq sysToolReq.SwitchReq
 	if err := c.ShouldBindJSON(&switchReq); err != nil {
-		commonResp.FailReq(err.Error(), c)
+		common.FailReq(err.Error(), c)
 		return
 	}
 
 	if entryId, err := ca.cronService.SwitchOpen(switchReq.ID, switchReq.Open); err != nil {
-		commonResp.FailWithMessage("切换失败", c)
+		common.FailWithMessage("切换失败", c)
 		global.TD27_LOG.Error("切换失败", zap.Error(err))
 	} else {
-		commonResp.OkWithDetailed(gin.H{"entryId": entryId}, "切换成功", c)
+		common.OkWithDetailed(gin.H{"entryId": entryId}, "切换成功", c)
 	}
 }

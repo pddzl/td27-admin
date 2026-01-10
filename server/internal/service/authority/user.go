@@ -3,14 +3,14 @@ package authority
 import (
 	"errors"
 	"fmt"
+	authorityRes "server/internal/model/authority/response"
+	"server/internal/model/authority/role"
+	authority2 "server/internal/model/authority/user"
+	"server/internal/model/common"
 
 	"gorm.io/gorm"
 
 	"server/internal/global"
-	"server/internal/model/common/request"
-	modelAuthority "server/internal/model/entity/authority"
-	authorityReq "server/internal/model/entity/authority/request"
-	authorityRes "server/internal/model/entity/authority/response"
 	"server/internal/pkg"
 )
 
@@ -25,11 +25,11 @@ func (us *UserService) GetUserInfo(userId uint) (userResults authorityRes.UserRe
 	return
 }
 
-func (us *UserService) List(pageInfo request.PageInfo) ([]authorityRes.UserResult, int64, error) {
+func (us *UserService) List(pageInfo common.PageInfo) ([]authorityRes.UserResult, int64, error) {
 	var userResults []authorityRes.UserResult
 	var total int64
 
-	db := global.TD27_DB.Model(&modelAuthority.UserModel{})
+	db := global.TD27_DB.Model(&authority2.UserModel{})
 
 	// 分页
 	err := db.Count(&total).Error
@@ -47,15 +47,15 @@ func (us *UserService) List(pageInfo request.PageInfo) ([]authorityRes.UserResul
 }
 
 func (us *UserService) Delete(id uint) (err error) {
-	return global.TD27_DB.Where("id = ?", id).Unscoped().Delete(&modelAuthority.UserModel{}).Error
+	return global.TD27_DB.Where("id = ?", id).Unscoped().Delete(&authority2.UserModel{}).Error
 }
 
-func (us *UserService) Create(instance *authorityReq.AddUser) (err error) {
-	if errors.Is(global.TD27_DB.Where("id = ?", instance.RoleModelID).First(&modelAuthority.RoleModel{}).Error, gorm.ErrRecordNotFound) {
+func (us *UserService) Create(instance *authority2.AddUser) (err error) {
+	if errors.Is(global.TD27_DB.Where("id = ?", instance.RoleModelID).First(&role.RoleModel{}).Error, gorm.ErrRecordNotFound) {
 		return errors.New("角色不存在")
 	}
 
-	var userModel modelAuthority.UserModel
+	var userModel authority2.UserModel
 	userModel.Username = instance.Username
 	userModel.Password = pkg.MD5V([]byte(instance.Password))
 	userModel.Phone = instance.Phone
@@ -66,15 +66,15 @@ func (us *UserService) Create(instance *authorityReq.AddUser) (err error) {
 	return global.TD27_DB.Create(&userModel).Error
 }
 
-func (us *UserService) Update(instance *authorityReq.EditUser) (*authorityRes.UserResult, error) {
-	var userModel modelAuthority.UserModel
+func (us *UserService) Update(instance *authority2.EditUser) (*authorityRes.UserResult, error) {
+	var userModel authority2.UserModel
 	// 用户是否存在
 	if errors.Is(global.TD27_DB.Where("id = ?", instance.ID).First(&userModel).Error, gorm.ErrRecordNotFound) {
 		return nil, errors.New("记录不存在")
 	}
 
 	// 角色是否存在
-	var roleModel modelAuthority.RoleModel
+	var roleModel role.RoleModel
 	if errors.Is(global.TD27_DB.Where("id = ?", instance.RoleModelID).First(&roleModel).Error, gorm.ErrRecordNotFound) {
 		return nil, errors.New("角色不存在")
 	}
@@ -99,8 +99,8 @@ func (us *UserService) Update(instance *authorityReq.EditUser) (*authorityRes.Us
 }
 
 // ModifyPass 修改用户密码
-func (us *UserService) ModifyPass(mp *authorityReq.ModifyPass) (err error) {
-	var userModel modelAuthority.UserModel
+func (us *UserService) ModifyPass(mp *authority2.ModifyPass) (err error) {
+	var userModel authority2.UserModel
 	if errors.Is(global.TD27_DB.Where("id = ? and password = ?", mp.ID, pkg.MD5V([]byte(mp.OldPassword))).First(&userModel).Error, gorm.ErrRecordNotFound) {
 		return errors.New("旧密码错误")
 	}
@@ -109,8 +109,8 @@ func (us *UserService) ModifyPass(mp *authorityReq.ModifyPass) (err error) {
 }
 
 // SwitchActive 切换启用状态
-func (us *UserService) SwitchActive(sa *authorityReq.SwitchActive) (err error) {
-	var userModel modelAuthority.UserModel
+func (us *UserService) SwitchActive(sa *authority2.SwitchActive) (err error) {
+	var userModel authority2.UserModel
 	if errors.Is(global.TD27_DB.Where("id = ?", sa.ID).First(&userModel).Error, gorm.ErrRecordNotFound) {
 		return errors.New("记录不存在")
 	}

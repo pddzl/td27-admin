@@ -2,6 +2,7 @@ package base
 
 import (
 	"errors"
+	baseReq "server/internal/model/base/request"
 	"strconv"
 	"sync"
 
@@ -11,7 +12,6 @@ import (
 	"go.uber.org/zap"
 
 	"server/internal/global"
-	baseReq "server/internal/model/entity/base/request"
 )
 
 type CasbinService struct{}

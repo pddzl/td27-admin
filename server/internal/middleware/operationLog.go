@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	modelMonitor "server/internal/model/monitor"
 	"strings"
 	"time"
 
@@ -13,7 +14,6 @@ import (
 	"go.uber.org/zap"
 
 	"server/internal/global"
-	modelMonitor "server/internal/model/entity/monitor"
 	"server/internal/pkg"
 	"server/internal/service/monitor"
 )

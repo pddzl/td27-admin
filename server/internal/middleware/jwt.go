@@ -2,6 +2,8 @@ package middleware
 
 import (
 	"errors"
+	modelAuthority "server/internal/model/authority/user"
+	"server/internal/model/common"
 	"strconv"
 	"time"
 
@@ -9,8 +11,6 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 
 	"server/internal/global"
-	"server/internal/model/common/response"
-	modelAuthority "server/internal/model/entity/authority"
 	"server/internal/pkg"
 	"server/internal/service/base"
 )
@@ -24,7 +24,7 @@ func JWTAuth() gin.HandlerFunc {
 		// 我们这里jwt鉴权取头部信息 x-token 登录时回返回token信息 这里前端需要把token存储到cookie或者本地localStorage中 不过需要跟后端协商过期时间 可以约定刷新令牌或者重新登录
 		token := c.Request.Header.Get("x-token")
 		if token == "" {
-			response.FailWithDetailed(gin.H{"reload": true}, "未登录或非法访问", c)
+			common.FailWithDetailed(gin.H{"reload": true}, "未登录或非法访问", c)
 			c.Abort()
 			return
 		}
@@ -34,11 +34,11 @@ func JWTAuth() gin.HandlerFunc {
 		claims, err := j.ParseToken(token)
 		if err != nil {
 			if errors.Is(err, pkg.TokenExpired) {
-				response.FailWithDetailed(gin.H{"reload": true}, "授权已过期", c)
+				common.FailWithDetailed(gin.H{"reload": true}, "授权已过期", c)
 				c.Abort()
 				return
 			}
-			response.FailWithDetailed(gin.H{"reload": true}, err.Error(), c)
+			common.FailWithDetailed(gin.H{"reload": true}, err.Error(), c)
 			c.Abort()
 			return
 		}
@@ -46,7 +46,7 @@ func JWTAuth() gin.HandlerFunc {
 		// x-token与redis存的token做对比
 		redisJwtToken, err := jwtService.GetRedisJWT(claims.Username)
 		if redisJwtToken != token {
-			response.FailWithDetailed(gin.H{"reload": true}, "您的帐户异地登陆或令牌失效", c)
+			common.FailWithDetailed(gin.H{"reload": true}, "您的帐户异地登陆或令牌失效", c)
 			c.Abort()
 			return
 		}
@@ -55,7 +55,7 @@ func JWTAuth() gin.HandlerFunc {
 		var userModel modelAuthority.UserModel
 		err = global.TD27_DB.Where("id = ?", claims.ID).First(&userModel).Error
 		if err != nil {
-			response.FailWithMessage("用户不存在", c)
+			common.FailWithMessage("用户不存在", c)
 			c.Abort()
 			global.TD27_LOG.Error("用户不存在")
 			return
@@ -63,7 +63,7 @@ func JWTAuth() gin.HandlerFunc {
 
 		// 已登录用户是否禁用
 		if !userModel.Active {
-			response.FailWithMessage("用户被禁用", c)
+			common.FailWithMessage("用户被禁用", c)
 			c.Abort()
 			global.TD27_LOG.Error("用户被禁用")
 			return

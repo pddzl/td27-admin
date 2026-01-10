@@ -2,8 +2,8 @@ package monitor
 
 import (
 	"server/internal/global"
-	modelMonitor "server/internal/model/entity/monitor"
-	monitorReq "server/internal/model/entity/monitor/request"
+	modelMonitor "server/internal/model/monitor"
+	monitorReq "server/internal/model/monitor/request"
 )
 
 type OperationLogService struct{}

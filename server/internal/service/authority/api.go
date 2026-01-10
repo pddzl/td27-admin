@@ -3,6 +3,7 @@ package authority
 import (
 	"errors"
 	"fmt"
+	modelAuthority "server/internal/model/authority/api"
 	"strconv"
 	"strings"
 
@@ -10,8 +11,6 @@ import (
 	"gorm.io/gorm"
 
 	"server/internal/global"
-	modelAuthority "server/internal/model/entity/authority"
-	authorityReq "server/internal/model/entity/authority/request"
 )
 
 type ApiService struct{}
@@ -21,7 +20,7 @@ func NewApiService() *ApiService {
 }
 
 func (as *ApiService) Create(api *modelAuthority.ApiModel) (*modelAuthority.ApiModel, error) {
-	if !errors.Is(global.TD27_DB.Where("path = ? AND method = ?", api.Path, api.Method).First(&modelAuthority.ApiModel{}).Error, gorm.ErrRecordNotFound) {
+	if !errors.Is(global.TD27_DB.Where("path = ? AND method = ?", api.Path, api.Method).First(&api.ApiModel{}).Error, gorm.ErrRecordNotFound) {
 		return nil, errors.New("存在相同api")
 	}
 
@@ -30,7 +29,7 @@ func (as *ApiService) Create(api *modelAuthority.ApiModel) (*modelAuthority.ApiM
 	return api, err
 }
 
-func (as *ApiService) List(apiSp authorityReq.ApiSearchParams) ([]modelAuthority.ApiModel, int64, error) {
+func (as *ApiService) List(apiSp modelAuthority.ApiSearchParams) ([]modelAuthority.ApiModel, int64, error) {
 	limit := apiSp.PageSize
 	offset := apiSp.PageSize * (apiSp.Page - 1)
 	db := global.TD27_DB.Model(&modelAuthority.ApiModel{})

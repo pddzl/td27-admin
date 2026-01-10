@@ -2,10 +2,11 @@ package pkg
 
 import (
 	"errors"
+	baseReq "server/internal/model/base/request"
+
 	"github.com/golang-jwt/jwt/v4"
 
 	"server/internal/global"
-	baseReq "server/internal/model/entity/base/request"
 )
 
 type JWT struct {

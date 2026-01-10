@@ -3,13 +3,13 @@ package sysTool
 import (
 	"errors"
 	"fmt"
-	
+	"server/internal/model/common"
+	modelSysTool "server/internal/model/sysTool"
+
 	"github.com/robfig/cron/v3"
 	"gorm.io/gorm"
 
 	"server/internal/global"
-	"server/internal/model/common/request"
-	modelSysTool "server/internal/model/entity/sysTool"
 	"server/internal/pkg"
 )
 
@@ -20,7 +20,7 @@ func NewCronService() *CronService {
 }
 
 // GetCronList 分页获取cron
-func (cs *CronService) GetCronList(pageInfo request.PageInfo) (cronModelList []modelSysTool.CronModel, total int64, err error) {
+func (cs *CronService) GetCronList(pageInfo common.PageInfo) (cronModelList []modelSysTool.CronModel, total int64, err error) {
 	db := global.TD27_DB.Model(&modelSysTool.CronModel{})
 
 	// 计算记录数量

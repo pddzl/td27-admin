@@ -3,15 +3,16 @@ package authority
 import (
 	"errors"
 	"fmt"
+	"server/internal/model/authority/menu"
+	"server/internal/model/authority/role"
+	authority2 "server/internal/model/authority/user"
+	baseReq "server/internal/model/base/request"
 	"strconv"
 
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 
 	"server/internal/global"
-	modelAuthority "server/internal/model/entity/authority"
-	authorityReq "server/internal/model/entity/authority/request"
-	baseReq "server/internal/model/entity/base/request"
 )
 
 type RoleService struct{}
@@ -20,14 +21,14 @@ func NewRoleService() *RoleService {
 	return &RoleService{}
 }
 
-func (rs *RoleService) List() ([]modelAuthority.RoleModel, error) {
-	var roleList []modelAuthority.RoleModel
+func (rs *RoleService) List() ([]role.RoleModel, error) {
+	var roleList []role.RoleModel
 	err := global.TD27_DB.Preload("Menus").Find(&roleList).Error
 
 	return roleList, err
 }
 
-func (rs *RoleService) Create(instance *modelAuthority.RoleModel) (*modelAuthority.RoleModel, error) {
+func (rs *RoleService) Create(instance *role.RoleModel) (*role.RoleModel, error) {
 	err := global.TD27_DB.Create(instance).Error
 	if err == nil {
 		if err = casbinService.EditCasbin(instance.ID, baseReq.DefaultCasbin()); err != nil {
@@ -39,12 +40,12 @@ func (rs *RoleService) Create(instance *modelAuthority.RoleModel) (*modelAuthori
 }
 
 func (rs *RoleService) Delete(id uint) (err error) {
-	var roleModel modelAuthority.RoleModel
+	var roleModel role.RoleModel
 	if errors.Is(global.TD27_DB.Where("id = ?", id).First(&roleModel).Error, gorm.ErrRecordNotFound) {
 		return errors.New("记录不存在")
 	}
 
-	if !errors.Is(global.TD27_DB.Where("role_model_id = ?", id).First(&modelAuthority.UserModel{}).Error, gorm.ErrRecordNotFound) {
+	if !errors.Is(global.TD27_DB.Where("role_model_id = ?", id).First(&authority2.UserModel{}).Error, gorm.ErrRecordNotFound) {
 		return errors.New("该角色下面还有所属用户")
 	}
 
@@ -68,8 +69,8 @@ func (rs *RoleService) Delete(id uint) (err error) {
 	return
 }
 
-func (rs *RoleService) Update(eRole authorityReq.EditRole) (err error) {
-	var roleModel modelAuthority.RoleModel
+func (rs *RoleService) Update(eRole role.EditRole) (err error) {
+	var roleModel role.RoleModel
 	if errors.Is(global.TD27_DB.Where("id = ?", eRole.ID).First(&roleModel).Error, gorm.ErrRecordNotFound) {
 		return errors.New("记录不存在")
 	}
@@ -79,12 +80,12 @@ func (rs *RoleService) Update(eRole authorityReq.EditRole) (err error) {
 
 // EditRoleMenu 编辑用户menu
 func (rs *RoleService) EditRoleMenu(roleId uint, ids []uint) (err error) {
-	var roleModel modelAuthority.RoleModel
+	var roleModel role.RoleModel
 	if errors.Is(global.TD27_DB.Where("id = ?", roleId).First(&roleModel).Error, gorm.ErrRecordNotFound) {
 		return errors.New("记录不存在")
 	}
 
-	var menuModel []modelAuthority.MenuModel
+	var menuModel []menu.MenuModel
 	err = global.TD27_DB.Where("id in ?", ids).Find(&menuModel).Error
 	if err != nil {
 		global.TD27_LOG.Error("EditRoleMenu 查询menu", zap.Error(err))

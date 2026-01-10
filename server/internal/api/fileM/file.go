@@ -3,14 +3,14 @@ package fileM
 import (
 	"fmt"
 	"os"
+	"server/internal/model/common"
+	fileMReq "server/internal/model/fileM/request"
 
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 
 	"server/internal/global"
-	commonResp "server/internal/model/common/response"
 	_ "server/internal/model/entity/fileM"
-	fileMReq "server/internal/model/entity/fileM/request"
 	serviceFileM "server/internal/service/fileM"
 )
 
@@ -36,21 +36,21 @@ func NewFileApi() *FileApi {
 func (fa *FileApi) Upload(c *gin.Context) {
 	file, err := c.FormFile("file")
 	if err != nil {
-		commonResp.FailWithStatusMessage(400, fmt.Sprintf("上传失败：%s", err.Error()), c)
+		common.FailWithStatusMessage(400, fmt.Sprintf("上传失败：%s", err.Error()), c)
 		return
 	}
 
 	// 只允许上传csv文件
 	if file.Header.Get("Content-Type") != "text/csv" {
-		commonResp.FailWithStatusMessage(400, "只允许上传csv文件", c)
+		common.FailWithStatusMessage(400, "只允许上传csv文件", c)
 		return
 	}
 
 	if fullInfo, err := fa.fileService.Upload(file); err != nil {
-		commonResp.FailWithStatusMessage(400, "上传失败", c)
+		common.FailWithStatusMessage(400, "上传失败", c)
 		global.TD27_LOG.Error("上传失败", zap.Error(err))
 	} else {
-		commonResp.OkWithDetailed(fullInfo, "上传成功", c)
+		common.OkWithDetailed(fullInfo, "上传成功", c)
 	}
 }
 
@@ -66,15 +66,15 @@ func (fa *FileApi) Upload(c *gin.Context) {
 func (fa *FileApi) GetFileList(c *gin.Context) {
 	var params fileMReq.FileSearchParams
 	if err := c.ShouldBindJSON(&params); err != nil {
-		commonResp.FailWithMessage(err.Error(), c)
+		common.FailWithMessage(err.Error(), c)
 		return
 	}
 
 	if list, total, err := fa.fileService.GetFileList(params); err != nil {
-		commonResp.FailWithMessage("获取失败", c)
+		common.FailWithMessage("获取失败", c)
 		global.TD27_LOG.Error("获取失败", zap.Error(err))
 	} else {
-		commonResp.OkWithDetailed(commonResp.Page{
+		common.OkWithDetailed(common.Page{
 			List:     list,
 			Total:    total,
 			Page:     params.Page,
@@ -100,7 +100,7 @@ func (fa *FileApi) Download(c *gin.Context) {
 	// 打开文件
 	_, err := os.Stat(path)
 	if err != nil {
-		commonResp.FailWithMessage(fmt.Sprintf("文件错误：%v", err), c)
+		common.FailWithMessage(fmt.Sprintf("文件错误：%v", err), c)
 		return
 	}
 
@@ -123,9 +123,9 @@ func (fa *FileApi) Delete(c *gin.Context) {
 	fileName := c.Query("name")
 
 	if err := fa.fileService.Delete(fileName); err != nil {
-		commonResp.FailWithMessage("删除文件失败", c)
+		common.FailWithMessage("删除文件失败", c)
 		global.TD27_LOG.Error("删除文件失败", zap.Error(err))
 	} else {
-		commonResp.OkWithMessage("删除文件成功", c)
+		common.OkWithMessage("删除文件成功", c)
 	}
 }

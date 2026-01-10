@@ -3,6 +3,10 @@ package base
 import (
 	"context"
 	"fmt"
+	modelAuthority "server/internal/model/authority/user"
+	"server/internal/model/base/request"
+	baseResp "server/internal/model/base/response"
+	"server/internal/model/common"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -11,10 +15,6 @@ import (
 	"go.uber.org/zap"
 
 	"server/internal/global"
-	"server/internal/model/common/response"
-	modelAuthority "server/internal/model/entity/authority"
-	baseReq "server/internal/model/entity/base/request"
-	baseResp "server/internal/model/entity/base/response"
 	"server/internal/pkg"
 	"server/internal/service/base"
 )
@@ -49,10 +49,10 @@ func (ba *LogRegApi) Captcha(c *gin.Context) {
 	id, b64s, _, err := cp.Generate()
 	if err != nil {
 		global.TD27_LOG.Error("验证码获取失败!", zap.Error(err))
-		response.FailWithMessage("验证码获取失败", c)
+		common.FailWithMessage("验证码获取失败", c)
 		return
 	}
-	response.OkWithDetailed(baseReq.CaptchaResponse{
+	common.OkWithDetailed(request.CaptchaResponse{
 		CaptchaId:     id,
 		PicPath:       b64s,
 		CaptchaLength: global.TD27_CONFIG.Captcha.KeyLong,
@@ -68,9 +68,9 @@ func (ba *LogRegApi) Captcha(c *gin.Context) {
 // @Success  200   {object}  response.Response{data=baseResp.LoginResponse,msg=string}
 // @Router   /logReg/login [post]
 func (ba *LogRegApi) Login(c *gin.Context) {
-	var login baseReq.Login
+	var login request.Login
 	if err := c.ShouldBindJSON(&login); err != nil {
-		response.FailReq(err.Error(), c)
+		common.FailReq(err.Error(), c)
 		return
 	}
 
@@ -79,14 +79,14 @@ func (ba *LogRegApi) Login(c *gin.Context) {
 		u := &modelAuthority.UserModel{Username: login.Username, Password: login.Password}
 		user, err := ba.logRegService.Login(u)
 		if err != nil {
-			response.FailWithMessage(fmt.Sprintf("登录失败: %s", err.Error()), c)
+			common.FailWithMessage(fmt.Sprintf("登录失败: %s", err.Error()), c)
 			global.TD27_LOG.Error("登录失败", zap.Error(err))
 			return
 		}
 		// 获取token
 		ba.tokenNext(c, user)
 	} else {
-		response.FailWithMessage("验证码错误", c)
+		common.FailWithMessage("验证码错误", c)
 	}
 }
 
@@ -94,7 +94,7 @@ func (ba *LogRegApi) Login(c *gin.Context) {
 func (ba *LogRegApi) tokenNext(c *gin.Context, user *modelAuthority.UserModel) {
 	j := &pkg.JWT{SigningKey: []byte(global.TD27_CONFIG.JWT.SigningKey)} // 唯一签名
 
-	claims := baseReq.CustomClaims{
+	claims := request.CustomClaims{
 		ID:         user.ID,
 		Username:   user.Username,
 		RoleId:     user.RoleModelID,
@@ -108,20 +108,20 @@ func (ba *LogRegApi) tokenNext(c *gin.Context, user *modelAuthority.UserModel) {
 
 	token, err := j.CreateToken(claims)
 	if err != nil {
-		response.FailWithMessage("创建token失败", c)
+		common.FailWithMessage("创建token失败", c)
 		global.TD27_LOG.Error("创建token失败", zap.Error(err))
 		return
 	}
 
 	// token写入redis，后续鉴权使用
 	if err = ba.jwtService.SetRedisJWT(user.Username, token); err != nil {
-		response.FailWithMessage("设置登录状态失败", c)
+		common.FailWithMessage("设置登录状态失败", c)
 		global.TD27_LOG.Error("设置登录状态失败", zap.Error(err))
 		return
 	}
 
 	// 登录成功
-	response.OkWithDetailed(baseResp.LoginResponse{
+	common.OkWithDetailed(baseResp.LoginResponse{
 		User:      *user,
 		Token:     token,
 		ExpiresAt: claims.RegisteredClaims.ExpiresAt.Unix(),
@@ -148,5 +148,5 @@ func (ba *LogRegApi) LogOut(c *gin.Context) {
 			global.TD27_LOG.Error("登出写入token失败", zap.Error(err))
 		}
 	}
-	response.OkWithMessage("登出失败", c)
+	common.OkWithMessage("登出失败", c)
 }
