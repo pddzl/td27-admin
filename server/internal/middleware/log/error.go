@@ -6,10 +6,10 @@ import (
 	"net/http/httputil"
 	"os"
 	"runtime/debug"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
-	"strings"
 
 	"server/internal/global"
 )
