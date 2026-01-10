@@ -2,15 +2,13 @@ package log
 
 import (
 	"time"
-	
+
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
-
-	"server/internal/global"
 )
 
 // GinLogger 接收gin框架默认的日志
-func GinLogger() gin.HandlerFunc {
+func GinLogger(logger *zap.Logger) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		start := time.Now()
 		path := c.Request.URL.Path
@@ -18,11 +16,11 @@ func GinLogger() gin.HandlerFunc {
 		c.Next()
 
 		cost := time.Since(start)
-		global.TD27_LOG.Info(
+		logger.Info(
 			path,
 			zap.Int("status", c.Writer.Status()),
 			zap.String("method", c.Request.Method),
-			//zap.String("path", path),
+			zap.String("path", path),
 			zap.String("query", query),
 			zap.String("ip", c.ClientIP()),
 			zap.String("user-agent", c.Request.UserAgent()),

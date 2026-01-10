@@ -17,7 +17,7 @@ func Routers() *gin.Engine {
 		gin.SetMode(gin.ReleaseMode)
 	}
 	r := gin.New()
-	r.Use(log.GinLogger(), log.GinRecovery(global.TD27_CONFIG.System.Stack))
+	r.Use(log.GinLogger(global.TD27_LOG), log.GinRecovery(global.TD27_LOG, global.TD27_CONFIG.System.Stack))
 
 	// 跨域，如需跨域可以打开下面的注释
 	// global.GVA_LOG.Info("use middleware cors")
