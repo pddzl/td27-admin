@@ -8,17 +8,17 @@ import (
 
 	"gorm.io/gorm"
 
-	"server/internal/global"
 	"server/internal/model/authority/role"
 	"server/internal/model/common"
 	"server/internal/pkg"
 )
 
 type UserEntity interface {
-	List(ctx context.Context, req *common.PageInfo) ([]ListUserResp, int64, error)
+	List(ctx context.Context, req *common.PageInfo) ([]UserResp, int64, error)
 	Delete(ctx context.Context, id uint) error
 	Create(ctx context.Context, req *AddUserReq) error
-	Update(ctx context.Context, req *EditUserReq) (*ListUserResp, error)
+	Update(ctx context.Context, req *UpdateUserReq) (*UserResp, error)
+	GetUserInfo(ctx context.Context, userId uint) (userResults *UserResp, err error)
 	ModifyPasswd(ctx context.Context, req *ModifyPasswdReq) error
 	SwitchActive(ctx context.Context, req *SwitchActiveReq) error
 }
@@ -31,13 +31,39 @@ func NewDefaultUserEntity(conn *gorm.DB) UserEntity {
 	return &defaultUserEntity{conn: conn}
 }
 
-func (ue *defaultUserEntity) GetUserInfo(userId uint) (userResults *ListUserResp, err error) {
-	err = global.TD27_DB.Table("authority_user").Select("authority_user.created_at,authority_user.id,authority_user.username,authority_user.phone,authority_user.email,authority_user.active,authority_user.role_model_id,authority_role.role_name").Joins("inner join authority_role on authority_user.role_model_id = authority_role.id").Where("authority_user.id = ?", userId).Scan(&userResults).Error
-	return
+func (ue *defaultUserEntity) GetUserInfo(ctx context.Context, userId uint) (listUserResp *UserResp, err error) {
+	var resp UserResp
+
+	tx := ue.conn.
+		WithContext(ctx).
+		Table("authority_user").
+		Select(`
+			authority_user.id,
+			authority_user.created_at,
+			authority_user.username,
+			authority_user.phone,
+			authority_user.email,
+			authority_user.active,
+			authority_user.role_model_id,
+			authority_role.role_name
+		`).
+		Joins("JOIN authority_role ON authority_user.role_model_id = authority_role.id").
+		Where("authority_user.id = ?", userId).
+		Scan(&resp)
+
+	if err = tx.Error; err != nil {
+		return nil, fmt.Errorf("get user info failed (id=%d): %w", userId, err)
+	}
+
+	if tx.RowsAffected == 0 {
+		return nil, gorm.ErrRecordNotFound
+	}
+
+	return &resp, nil
 }
 
-func (ue *defaultUserEntity) List(ctx context.Context, pageInfo *common.PageInfo) ([]ListUserResp, int64, error) {
-	var users []ListUserResp
+func (ue *defaultUserEntity) List(ctx context.Context, pageInfo *common.PageInfo) ([]UserResp, int64, error) {
+	var users []UserResp
 	var total int64
 
 	// Safety defaults
@@ -102,7 +128,7 @@ func (ue *defaultUserEntity) Delete(ctx context.Context, id uint) (err error) {
 	return nil
 }
 
-func (ue *defaultUserEntity) Create(ctx context.Context, req *AddUserReq) (err error) {
+func (ue *defaultUserEntity) Create(ctx context.Context, req *AddUserReq) error {
 	if errors.Is(ue.conn.WithContext(ctx).
 		Where("id = ?", req.RoleModelID).
 		First(&role.RoleModel{}).Error, gorm.ErrRecordNotFound) {
@@ -117,10 +143,10 @@ func (ue *defaultUserEntity) Create(ctx context.Context, req *AddUserReq) (err e
 	userModel.Active = req.Active
 	userModel.RoleModelID = req.RoleModelID
 
-	return global.TD27_DB.Create(&userModel).Error
+	return ue.conn.WithContext(ctx).Create(&userModel).Error
 }
 
-func (ue *defaultUserEntity) Update(ctx context.Context, req *EditUserReq) (*ListUserResp, error) {
+func (ue *defaultUserEntity) Update(ctx context.Context, req *UpdateUserReq) (*UserResp, error) {
 	db := ue.conn.WithContext(ctx)
 
 	// Check role existence
@@ -157,8 +183,8 @@ func (ue *defaultUserEntity) Update(ctx context.Context, req *EditUserReq) (*Lis
 		return nil, errors.New("记录不存在")
 	}
 
-	// Build response directly (no extra query)
-	resp := &ListUserResp{
+	// Build response directly
+	resp := &UserResp{
 		UserModel: UserModel{
 			Td27Model: common.Td27Model{
 				ID: req.ID,

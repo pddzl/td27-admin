@@ -1,16 +1,14 @@
 package authority
 
 import (
-	authorityReq "server/internal/model/authority/user"
-	"server/internal/model/common"
-
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/validator/v10"
 	"go.uber.org/zap"
 
 	"server/internal/global"
-	_ "server/internal/model/entity/authority/response"
+	modelUser "server/internal/model/authority/user"
+	"server/internal/model/common"
 	"server/internal/pkg"
 	serviceAuthority "server/internal/service/authority"
 )
@@ -28,7 +26,7 @@ func NewUserApi() *UserApi {
 // @Summary   获取用户信息
 // @Security  ApiKeyAuth
 // @Produce   application/json
-// @Success   200   {object}  commonResp.Response{msg=string}
+// @Success   200   {object}  common.Response{msg=string}
 // @Router    /user/getUserInfo [post]
 func (ua *UserApi) GetUserInfo(c *gin.Context) {
 	userInfo, err := pkg.GetUserInfo(c)
@@ -50,8 +48,8 @@ func (ua *UserApi) GetUserInfo(c *gin.Context) {
 // @Security  ApiKeyAuth
 // @accept    application/json
 // @Produce   application/json
-// @Param     data  body      commonReq.PageInfo true "请求参数"
-// @Success   200   {object}  commonResp.Response{data=commonResp.Page{list=[]response.UserResult},msg=string}
+// @Param     data  body      common.PageInfo true "请求参数"
+// @Success   200   {object}  common.Response{data=common.Page{list=[]response.UserResult},msg=string}
 // @Router    /user/list [post]
 func (ua *UserApi) List(c *gin.Context) {
 	var pageInfo common.PageInfo
@@ -60,9 +58,9 @@ func (ua *UserApi) List(c *gin.Context) {
 		return
 	}
 
-	if list, total, err := ua.userService.List(pageInfo); err != nil {
+	if list, total, err := ua.userService.List(&pageInfo); err != nil {
 		common.FailWithMessage("获取失败", c)
-		global.TD27_LOG.Error("获取users失败", zap.Error(err))
+		global.TD27_LOG.Error("get users failed", zap.Error(err))
 	} else {
 		common.OkWithDetailed(common.Page{
 			Page:     pageInfo.Page,
@@ -79,8 +77,8 @@ func (ua *UserApi) List(c *gin.Context) {
 // @Security  ApiKeyAuth
 // @accept    application/json
 // @Produce   application/json
-// @Param     data  body      commonReq.CId true "请求参数"
-// @Success   200   {object}  commonResp.Response{msg=string}
+// @Param     data  body      common.CId true "请求参数"
+// @Success   200   {object}  common.Response{msg=string}
 // @Router    /user/delete [post]
 func (ua *UserApi) Delete(c *gin.Context) {
 	var cId common.CId
@@ -104,12 +102,12 @@ func (ua *UserApi) Delete(c *gin.Context) {
 // @accept    application/json
 // @Produce   application/json
 // @Param     data  body      authorityReq.AddUser true "请求参数"
-// @Success   200   {object}  commonResp.Response{msg=string}
+// @Success   200   {object}  common.Response{msg=string}
 // @Router    /user/create [post]
 func (ua *UserApi) Create(c *gin.Context) {
 	// 注册自定义校验函数
 	validate := validator.New()
-	err := validate.RegisterValidation("phone", authorityReq.PhoneValidation)
+	err := validate.RegisterValidation("phone", modelUser.PhoneValidation)
 	if err != nil {
 		common.FailReq(err.Error(), c)
 		return
@@ -117,20 +115,20 @@ func (ua *UserApi) Create(c *gin.Context) {
 
 	// 使用 Gin 的验证器替换为自定义验证器
 	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
-		err = v.RegisterValidation("phone", authorityReq.PhoneValidation)
+		err = v.RegisterValidation("phone", modelUser.PhoneValidation)
 		if err != nil {
 			common.FailReq(err.Error(), c)
 			return
 		}
 	}
 
-	var addUser authorityReq.AddUser
-	if err = c.ShouldBindJSON(&addUser); err != nil {
+	var req modelUser.AddUserReq
+	if err = c.ShouldBindJSON(&req); err != nil {
 		common.FailReq(err.Error(), c)
 		return
 	}
 
-	if err = ua.userService.Create(&addUser); err != nil {
+	if err = ua.userService.Create(&req); err != nil {
 		common.FailWithMessage("添加失败", c)
 		global.TD27_LOG.Error("添加失败", zap.Error(err))
 	} else {
@@ -145,12 +143,12 @@ func (ua *UserApi) Create(c *gin.Context) {
 // @accept    application/json
 // @Produce   application/json
 // @Param     data  body      authorityReq.EditUser true "请求参数"
-// @Success   200   {object}  commonResp.Response{msg=string}
+// @Success   200   {object}  common.Response{msg=string}
 // @Router    /user/update [post]
 func (ua *UserApi) Update(c *gin.Context) {
 	// 注册自定义校验函数
 	validate := validator.New()
-	err := validate.RegisterValidation("phone", authorityReq.PhoneValidation)
+	err := validate.RegisterValidation("phone", modelUser.PhoneValidation)
 	if err != nil {
 		common.FailReq(err.Error(), c)
 		return
@@ -158,20 +156,20 @@ func (ua *UserApi) Update(c *gin.Context) {
 
 	// 使用 Gin 的验证器替换为自定义验证器
 	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
-		err = v.RegisterValidation("phone", authorityReq.PhoneValidation)
+		err = v.RegisterValidation("phone", modelUser.PhoneValidation)
 		if err != nil {
 			common.FailReq(err.Error(), c)
 			return
 		}
 	}
 
-	var editUser authorityReq.EditUser
-	if err = c.ShouldBindJSON(&editUser); err != nil {
+	var req modelUser.UpdateUserReq
+	if err = c.ShouldBindJSON(&req); err != nil {
 		common.FailReq(err.Error(), c)
 		return
 	}
 
-	if instance, err := ua.userService.Update(&editUser); err != nil {
+	if instance, err := ua.userService.Update(&req); err != nil {
 		common.Fail(c)
 		global.TD27_LOG.Error("编辑失败", zap.Error(err))
 	} else {
@@ -185,17 +183,17 @@ func (ua *UserApi) Update(c *gin.Context) {
 // @Security  ApiKeyAuth
 // @accept    application/json
 // @Produce   application/json
-// @Param     data  body      authorityReq.ModifyPass true "请求参数"
-// @Success   200   {object}  commonResp.Response{msg=string}
+// @Param     data  body      modelUser.ModifyPass true "请求参数"
+// @Success   200   {object}  common.Response{msg=string}
 // @Router    /user/modifyPass [post]
 func (ua *UserApi) ModifyPass(c *gin.Context) {
-	var mp authorityReq.ModifyPass
-	if err := c.ShouldBindJSON(&mp); err != nil {
+	var req modelUser.ModifyPasswdReq
+	if err := c.ShouldBindJSON(&req); err != nil {
 		common.FailReq(err.Error(), c)
 		return
 	}
 
-	if err := ua.userService.ModifyPass(&mp); err != nil {
+	if err := ua.userService.ModifyPasswd(&req); err != nil {
 		common.FailWithMessage(err.Error(), c)
 		global.TD27_LOG.Error("修改失败", zap.Error(err))
 	} else {
@@ -209,17 +207,17 @@ func (ua *UserApi) ModifyPass(c *gin.Context) {
 // @Security  ApiKeyAuth
 // @accept    application/json
 // @Produce   application/json
-// @Param     data  body      authorityReq.SwitchActive true "请求参数"
-// @Success   200   {object}  commonResp.Response{msg=string}
+// @Param     data  body      modelUser.SwitchActive true "请求参数"
+// @Success   200   {object}  common.Response{msg=string}
 // @Router    /user/switchActive [post]
 func (ua *UserApi) SwitchActive(c *gin.Context) {
-	var sa authorityReq.SwitchActive
-	if err := c.ShouldBindJSON(&sa); err != nil {
+	var req modelUser.SwitchActiveReq
+	if err := c.ShouldBindJSON(&req); err != nil {
 		common.FailReq(err.Error(), c)
 		return
 	}
 
-	if err := ua.userService.SwitchActive(&sa); err != nil {
+	if err := ua.userService.SwitchActive(&req); err != nil {
 		common.Fail(c)
 		global.TD27_LOG.Error("切换失败", zap.Error(err))
 	} else {

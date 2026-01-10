@@ -1,119 +1,69 @@
 package authority
 
 import (
-	"errors"
-	"fmt"
-	authorityRes "server/internal/model/authority/response"
-	"server/internal/model/authority/role"
-	authority2 "server/internal/model/authority/user"
-	"server/internal/model/common"
-
-	"gorm.io/gorm"
+	"context"
 
 	"server/internal/global"
-	"server/internal/pkg"
+	"server/internal/model/authority/user"
+	"server/internal/model/common"
 )
 
-type UserService struct{}
+type UserService struct {
+	userRepository user.UserEntity
+	ctx            context.Context
+}
 
 func NewUserService() *UserService {
-	return &UserService{}
+	return &UserService{
+		userRepository: user.NewDefaultUserEntity(global.TD27_DB),
+		ctx:            context.Background(),
+	}
 }
 
-func (us *UserService) GetUserInfo(userId uint) (userResults authorityRes.UserResult, err error) {
-	err = global.TD27_DB.Table("authority_user").Select("authority_user.created_at,authority_user.id,authority_user.username,authority_user.phone,authority_user.email,authority_user.active,authority_user.role_model_id,authority_role.role_name").Joins("inner join authority_role on authority_user.role_model_id = authority_role.id").Where("authority_user.id = ?", userId).Scan(&userResults).Error
-	return
-}
-
-func (us *UserService) List(pageInfo common.PageInfo) ([]authorityRes.UserResult, int64, error) {
-	var userResults []authorityRes.UserResult
-	var total int64
-
-	db := global.TD27_DB.Model(&authority2.UserModel{})
-
-	// 分页
-	err := db.Count(&total).Error
+func (us *UserService) GetUserInfo(userId uint) (*user.UserResp, error) {
+	resp, err := us.userRepository.GetUserInfo(us.ctx, userId)
 	if err != nil {
-		return userResults, total, fmt.Errorf("分页count err: %v", err)
-	} else {
-		limit := pageInfo.PageSize
-		offset := pageInfo.PageSize * (pageInfo.Page - 1)
-		db = db.Limit(limit).Offset(offset)
-		// 左连接 查询出role_name
-		db.Select("authority_user.id,authority_user.username,authority_user.phone,authority_user.email,authority_user.active,authority_user.role_model_id,authority_role.role_name").Joins("left join authority_role on authority_user.role_model_id = authority_role.id").Scan(&userResults)
+		return resp, err
 	}
-
-	return userResults, total, err
+	return resp, nil
 }
 
-func (us *UserService) Delete(id uint) (err error) {
-	return global.TD27_DB.Where("id = ?", id).Unscoped().Delete(&authority2.UserModel{}).Error
+func (us *UserService) List(req *common.PageInfo) ([]user.UserResp, int64, error) {
+	list, count, err := us.userRepository.List(us.ctx, req)
+	if err != nil {
+		return nil, 0, err
+	}
+	return list, count, nil
 }
 
-func (us *UserService) Create(instance *authority2.AddUser) (err error) {
-	if errors.Is(global.TD27_DB.Where("id = ?", instance.RoleModelID).First(&role.RoleModel{}).Error, gorm.ErrRecordNotFound) {
-		return errors.New("角色不存在")
-	}
-
-	var userModel authority2.UserModel
-	userModel.Username = instance.Username
-	userModel.Password = pkg.MD5V([]byte(instance.Password))
-	userModel.Phone = instance.Phone
-	userModel.Email = instance.Email
-	userModel.Active = instance.Active
-	userModel.RoleModelID = instance.RoleModelID
-
-	return global.TD27_DB.Create(&userModel).Error
+func (us *UserService) Delete(id uint) error {
+	return us.userRepository.Delete(us.ctx, id)
 }
 
-func (us *UserService) Update(instance *authority2.EditUser) (*authorityRes.UserResult, error) {
-	var userModel authority2.UserModel
-	// 用户是否存在
-	if errors.Is(global.TD27_DB.Where("id = ?", instance.ID).First(&userModel).Error, gorm.ErrRecordNotFound) {
-		return nil, errors.New("记录不存在")
-	}
+func (us *UserService) Create(req *user.AddUserReq) error {
+	// todo
+	// check role exist
 
-	// 角色是否存在
-	var roleModel role.RoleModel
-	if errors.Is(global.TD27_DB.Where("id = ?", instance.RoleModelID).First(&roleModel).Error, gorm.ErrRecordNotFound) {
-		return nil, errors.New("角色不存在")
-	}
+	return us.userRepository.Create(us.ctx, req)
+}
 
-	err := global.TD27_DB.Model(&userModel).Updates(map[string]interface{}{"username": instance.Username, "phone": instance.Phone, "email": instance.Email, "active": instance.Active, "role_model_id": instance.RoleModelID}).Error
+func (us *UserService) Update(req *user.UpdateUserReq) (*user.UserResp, error) {
+	// todo
+	// check role exist
 
+	update, err := us.userRepository.Update(us.ctx, req)
 	if err != nil {
 		return nil, err
 	}
-
-	var userResult authorityRes.UserResult
-
-	userResult.ID = userModel.ID
-	userResult.Username = userModel.Username
-	userResult.Phone = userModel.Phone
-	userResult.Email = userModel.Email
-	userResult.Active = userModel.Active
-	userResult.RoleName = roleModel.RoleName
-	userResult.RoleModelID = userModel.RoleModelID
-
-	return &userResult, nil
+	return update, nil
 }
 
-// ModifyPass 修改用户密码
-func (us *UserService) ModifyPass(mp *authority2.ModifyPass) (err error) {
-	var userModel authority2.UserModel
-	if errors.Is(global.TD27_DB.Where("id = ? and password = ?", mp.ID, pkg.MD5V([]byte(mp.OldPassword))).First(&userModel).Error, gorm.ErrRecordNotFound) {
-		return errors.New("旧密码错误")
-	}
-
-	return global.TD27_DB.Model(&userModel).Update("password", pkg.MD5V([]byte(mp.NewPassword))).Error
+// ModifyPasswd 修改用户密码
+func (us *UserService) ModifyPasswd(req *user.ModifyPasswdReq) error {
+	return us.userRepository.ModifyPasswd(us.ctx, req)
 }
 
 // SwitchActive 切换启用状态
-func (us *UserService) SwitchActive(sa *authority2.SwitchActive) (err error) {
-	var userModel authority2.UserModel
-	if errors.Is(global.TD27_DB.Where("id = ?", sa.ID).First(&userModel).Error, gorm.ErrRecordNotFound) {
-		return errors.New("记录不存在")
-	}
-
-	return global.TD27_DB.Model(&userModel).Update("active", sa.Active).Error
+func (us *UserService) SwitchActive(req *user.SwitchActiveReq) error {
+	return us.userRepository.SwitchActive(us.ctx, req)
 }

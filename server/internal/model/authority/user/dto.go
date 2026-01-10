@@ -22,7 +22,7 @@ func PhoneValidation(fl validator.FieldLevel) bool {
 	return re.MatchString(phone)
 }
 
-type EditUserReq struct {
+type UpdateUserReq struct {
 	ID          uint   `json:"id" binding:"required"`           // 用户 ID
 	Username    string `json:"username" binding:"required"`     // 用户名
 	Phone       string `json:"phone" binding:"omitempty,phone"` // 手机号
@@ -42,7 +42,7 @@ type SwitchActiveReq struct {
 	Active bool `json:"active"`                // 是否启用
 }
 
-type ListUserResp struct {
+type UserResp struct {
 	UserModel
 	RoleName string `json:"roleName"` // 角色名
 }
