@@ -7,7 +7,7 @@ import (
 	"go.uber.org/zap"
 
 	"server/internal/global"
-	modelUser "server/internal/model/authority/user"
+	"server/internal/model/authority/user"
 	"server/internal/model/common"
 	"server/internal/pkg"
 	serviceAuthority "server/internal/service/authority"
@@ -101,13 +101,13 @@ func (ua *UserApi) Delete(c *gin.Context) {
 // @Security  ApiKeyAuth
 // @accept    application/json
 // @Produce   application/json
-// @Param     data  body      authorityReq.AddUser true "请求参数"
+// @Param     data  body      user.AddUser true "请求参数"
 // @Success   200   {object}  common.Response{msg=string}
 // @Router    /user/create [post]
 func (ua *UserApi) Create(c *gin.Context) {
 	// 注册自定义校验函数
 	validate := validator.New()
-	err := validate.RegisterValidation("phone", modelUser.PhoneValidation)
+	err := validate.RegisterValidation("phone", user.PhoneValidation)
 	if err != nil {
 		common.FailReq(err.Error(), c)
 		return
@@ -115,14 +115,14 @@ func (ua *UserApi) Create(c *gin.Context) {
 
 	// 使用 Gin 的验证器替换为自定义验证器
 	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
-		err = v.RegisterValidation("phone", modelUser.PhoneValidation)
+		err = v.RegisterValidation("phone", user.PhoneValidation)
 		if err != nil {
 			common.FailReq(err.Error(), c)
 			return
 		}
 	}
 
-	var req modelUser.AddUserReq
+	var req user.AddUserReq
 	if err = c.ShouldBindJSON(&req); err != nil {
 		common.FailReq(err.Error(), c)
 		return
@@ -142,13 +142,13 @@ func (ua *UserApi) Create(c *gin.Context) {
 // @Security  ApiKeyAuth
 // @accept    application/json
 // @Produce   application/json
-// @Param     data  body      authorityReq.EditUser true "请求参数"
+// @Param     data  body      user.EditUser true "请求参数"
 // @Success   200   {object}  common.Response{msg=string}
 // @Router    /user/update [post]
 func (ua *UserApi) Update(c *gin.Context) {
 	// 注册自定义校验函数
 	validate := validator.New()
-	err := validate.RegisterValidation("phone", modelUser.PhoneValidation)
+	err := validate.RegisterValidation("phone", user.PhoneValidation)
 	if err != nil {
 		common.FailReq(err.Error(), c)
 		return
@@ -156,14 +156,14 @@ func (ua *UserApi) Update(c *gin.Context) {
 
 	// 使用 Gin 的验证器替换为自定义验证器
 	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
-		err = v.RegisterValidation("phone", modelUser.PhoneValidation)
+		err = v.RegisterValidation("phone", user.PhoneValidation)
 		if err != nil {
 			common.FailReq(err.Error(), c)
 			return
 		}
 	}
 
-	var req modelUser.UpdateUserReq
+	var req user.UpdateUserReq
 	if err = c.ShouldBindJSON(&req); err != nil {
 		common.FailReq(err.Error(), c)
 		return
@@ -183,11 +183,11 @@ func (ua *UserApi) Update(c *gin.Context) {
 // @Security  ApiKeyAuth
 // @accept    application/json
 // @Produce   application/json
-// @Param     data  body      modelUser.ModifyPass true "请求参数"
+// @Param     data  body      user.ModifyPass true "请求参数"
 // @Success   200   {object}  common.Response{msg=string}
 // @Router    /user/modifyPass [post]
 func (ua *UserApi) ModifyPass(c *gin.Context) {
-	var req modelUser.ModifyPasswdReq
+	var req user.ModifyPasswdReq
 	if err := c.ShouldBindJSON(&req); err != nil {
 		common.FailReq(err.Error(), c)
 		return
@@ -207,11 +207,11 @@ func (ua *UserApi) ModifyPass(c *gin.Context) {
 // @Security  ApiKeyAuth
 // @accept    application/json
 // @Produce   application/json
-// @Param     data  body      modelUser.SwitchActive true "请求参数"
+// @Param     data  body      user.SwitchActive true "请求参数"
 // @Success   200   {object}  common.Response{msg=string}
 // @Router    /user/switchActive [post]
 func (ua *UserApi) SwitchActive(c *gin.Context) {
-	var req modelUser.SwitchActiveReq
+	var req user.SwitchActiveReq
 	if err := c.ShouldBindJSON(&req); err != nil {
 		common.FailReq(err.Error(), c)
 		return

@@ -8,7 +8,7 @@ type PageInfo struct {
 
 // CId 主键ID
 type CId struct {
-	ID uint `json:"id" binding:"required"` // 主键ID
+	ID uint `json:"id" binding:"required"` // 主键 ID
 }
 
 type CIds struct {
