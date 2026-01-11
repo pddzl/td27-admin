@@ -10,11 +10,11 @@ import (
 )
 
 type MenuEntity interface {
-	List(ctx context.Context, roleId uint) ([]*MenuModel, error)
-	Create(ctx context.Context, req *Menu) error
-	Delete(ctx context.Context, id uint) error
-	Update(ctx context.Context, req *UpdateMenuReq) error
-	GetElTreeMenus(ctx context.Context, roleId uint) ([]*MenuModel, []uint, error)
+	List(context.Context, uint) ([]*MenuModel, error)
+	Create(context.Context, *Menu) error
+	Delete(context.Context, uint) error
+	Update(context.Context, *UpdateMenuReq) error
+	GetElTreeMenus(context.Context, uint) ([]*MenuModel, []uint, error)
 }
 
 type defaultMenuEntity struct {

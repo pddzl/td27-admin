@@ -27,14 +27,15 @@ func NewDefaultRoleEntity(conn *gorm.DB) RoleEntity {
 }
 
 func (re *defaultRoleEntity) FindOne(ctx context.Context, id uint) (*RoleModel, error) {
-	result := re.conn.WithContext(ctx).Find(&RoleModel{}, "id=?", id)
+	var roleModel RoleModel
+	result := re.conn.WithContext(ctx).Find(&roleModel, "id=?", id)
 	if result.Error != nil {
 		return nil, result.Error
 	}
 	if result.RowsAffected == 0 {
 		return nil, gorm.ErrRecordNotFound
 	}
-	return nil, nil
+	return &roleModel, nil
 }
 
 func (re *defaultRoleEntity) List(ctx context.Context, req *common.PageInfo) ([]RoleModel, int64, error) {

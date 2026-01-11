@@ -8,20 +8,26 @@ import (
 )
 
 type MenuService struct {
-	repository authority.MenuEntity
-	ctx        context.Context
+	menuRepository authority.MenuEntity
+	userRepository authority.UserEntity
+	ctx            context.Context
 }
 
 func NewMenuService() *MenuService {
 	return &MenuService{
-		repository: authority.NewDefaultMenuEntity(global.TD27_DB),
-		ctx:        context.Background(),
+		menuRepository: authority.NewDefaultMenuEntity(global.TD27_DB),
+		userRepository: authority.NewDefaultUserEntity(global.TD27_DB),
+		ctx:            context.Background(),
 	}
 }
 
 func (ms *MenuService) List(userId uint) ([]*authority.MenuModel, error) {
-	// todo 查找用户对应角色
-	list, err := ms.repository.List(ms.ctx, userId)
+	user, err := ms.userRepository.FindOne(ms.ctx, userId)
+	if err != nil {
+		return nil, err
+	}
+
+	list, err := ms.menuRepository.List(ms.ctx, user.RoleModelID)
 	if err != nil {
 		return nil, err
 	}
@@ -29,20 +35,20 @@ func (ms *MenuService) List(userId uint) ([]*authority.MenuModel, error) {
 }
 
 func (ms *MenuService) Create(req *authority.Menu) error {
-	return ms.repository.Create(ms.ctx, req)
+	return ms.menuRepository.Create(ms.ctx, req)
 }
 
 func (ms *MenuService) Update(req *authority.UpdateMenuReq) error {
-	return ms.repository.Update(ms.ctx, req)
+	return ms.menuRepository.Update(ms.ctx, req)
 }
 
 func (ms *MenuService) Delete(id uint) error {
-	return ms.repository.Delete(ms.ctx, id)
+	return ms.menuRepository.Delete(ms.ctx, id)
 }
 
 // GetElTreeMenus 获取所有menu
 func (ms *MenuService) GetElTreeMenus(roleId uint) ([]*authority.MenuModel, []uint, error) {
-	menus, i, err := ms.repository.GetElTreeMenus(ms.ctx, roleId)
+	menus, i, err := ms.menuRepository.GetElTreeMenus(ms.ctx, roleId)
 	if err != nil {
 		return nil, nil, err
 	}

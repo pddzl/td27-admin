@@ -13,6 +13,7 @@ import (
 )
 
 type UserEntity interface {
+	FindOne(context.Context, uint) (*UserModel, error)
 	List(ctx context.Context, req *common.PageInfo) ([]*UserResp, int64, error)
 	Delete(ctx context.Context, id uint) error
 	Create(ctx context.Context, req *AddUserReq) error
@@ -28,6 +29,18 @@ type defaultUserEntity struct {
 
 func NewDefaultUserEntity(conn *gorm.DB) UserEntity {
 	return &defaultUserEntity{conn: conn}
+}
+
+func (ue *defaultUserEntity) FindOne(ctx context.Context, id uint) (*UserModel, error) {
+	var userModel UserModel
+	result := ue.conn.WithContext(ctx).Where("id = ?", id).Find(&userModel)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	if result.RowsAffected == 0 {
+		return nil, gorm.ErrRecordNotFound
+	}
+	return &userModel, nil
 }
 
 func (ue *defaultUserEntity) GetUserInfo(ctx context.Context, userId uint) (listUserResp *UserResp, err error) {
