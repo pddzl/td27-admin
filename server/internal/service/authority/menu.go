@@ -1,198 +1,51 @@
 package authority
 
 import (
-	"errors"
-	"fmt"
-	"server/internal/model/authority/menu"
-	"server/internal/model/authority/role"
-	authority2 "server/internal/model/authority/user"
-	"sort"
-
-	"go.uber.org/zap"
-	"gorm.io/gorm"
+	"context"
 
 	"server/internal/global"
+	"server/internal/model/authority/menu"
 )
 
-type MenuService struct{}
+type MenuService struct {
+	repository menu.MenuEntity
+	ctx        context.Context
+}
 
 func NewMenuService() *MenuService {
-	return &MenuService{}
-}
-
-func getTreeMap(menuListFormat []menu.MenuModel, menuList []menu.MenuModel) {
-	for index, menuF := range menuListFormat {
-		for _, menu := range menuList {
-			if menuF.ID == menu.Pid {
-				// menuF 只是个复制值
-				//menuF.Children = append(menuF.Children, menu)
-				menuListFormat[index].Children = append(menuListFormat[index].Children, menu)
-			}
-		}
-		if len(menuListFormat[index].Children) > 0 {
-			// 排序
-			sort.Slice(menuListFormat[index].Children, func(i, j int) bool {
-				return menuListFormat[index].Children[i].Sort < menuListFormat[index].Children[j].Sort
-			})
-			getTreeMap(menuListFormat[index].Children, menuList)
-		}
+	return &MenuService{
+		repository: menu.NewDefaultMenuEntity(global.TD27_DB),
+		ctx:        context.Background(),
 	}
 }
 
-func (ms *MenuService) List(userId uint) ([]menu.MenuModel, error) {
-	// 查找用户
-	var userModel authority2.UserModel
-	err := global.TD27_DB.Where("id = ?", userId).First(&userModel).Error
+func (ms *MenuService) List(userId uint) ([]*menu.MenuModel, error) {
+	// todo 查找用户对应角色
+	list, err := ms.repository.List(ms.ctx, userId)
 	if err != nil {
-		return nil, fmt.Errorf("GetMenus 用户查询 -> %v", err)
+		return nil, err
 	}
-
-	// 查找用户对应角色
-	var roleModel role.RoleModel
-	err = global.TD27_DB.Where("id = ?", userModel.RoleModelID).First(&roleModel).Error
-	if err != nil {
-		return nil, fmt.Errorf("GetMenus 角色查询 -> %v", err)
-	}
-
-	var menuModels []menu.MenuModel
-	err = global.TD27_DB.Preload("Roles").Find(&menuModels).Error
-	if err != nil {
-		return nil, fmt.Errorf("GetMenus 菜单查询 -> %v", err)
-	}
-
-	// 过滤角色拥有的路由
-	menuList := make([]menu.MenuModel, 0)
-	for _, menu := range menuModels {
-		for _, menuRole := range menu.Roles {
-			if roleModel.RoleName == menuRole.RoleName {
-				menuList = append(menuList, menu)
-				continue
-			}
-		}
-	}
-
-	// 找出第一级路由，（父路由id为0）
-	menuListFormat := make([]menu.MenuModel, 0)
-	for _, menu := range menuList {
-		if menu.Pid == 0 {
-			menuListFormat = append(menuListFormat, menu)
-		}
-	}
-
-	// 排序
-	sort.Slice(menuListFormat, func(i, j int) bool {
-		return menuListFormat[i].Sort < menuListFormat[j].Sort
-	})
-
-	// 递归找出一级路由下面的子路由
-	getTreeMap(menuListFormat, menuList)
-
-	return menuListFormat, nil
+	return list, nil
 }
 
-func (ms *MenuService) Create(menuRaw menu.Menu) bool {
-	var menuModel menu.MenuModel
-	menuModel.Name = menuRaw.Name
-	menuModel.Path = menuRaw.Path
-	menuModel.Component = menuRaw.Component
-	menuModel.Redirect = menuRaw.Redirect
-	menuModel.Pid = menuRaw.Pid
-	menuModel.Sort = menuRaw.Sort
-	menuModel.Meta.Title = menuRaw.Meta.Title
-	menuModel.Meta.SvgIcon = menuRaw.Meta.Icon
-	menuModel.Meta.Hidden = menuRaw.Meta.Hidden
-	menuModel.Meta.Affix = menuRaw.Meta.Affix
-	menuModel.Meta.KeepAlive = menuRaw.Meta.KeepAlive
-	menuModel.Meta.AlwaysShow = menuRaw.Meta.AlwaysShow
-
-	if err := global.TD27_DB.Create(&menuModel).Error; err != nil {
-		global.TD27_LOG.Error("创建menu失败", zap.Error(err))
-		return false
-	}
-
-	return true
+func (ms *MenuService) Create(req *menu.Menu) error {
+	return ms.repository.Create(ms.ctx, req)
 }
 
-func (ms *MenuService) Update(menuRaw menu.EditMenuReq) (err error) {
-	var menuModel menu.MenuModel
-	var metaData menu.Meta
-
-	if errors.Is(global.TD27_DB.Where("id = ?", menuRaw.ID).First(&menuModel).Error, gorm.ErrRecordNotFound) {
-		return errors.New("菜单不存在")
-	}
-
-	metaData.SvgIcon = menuRaw.Meta.Icon
-	metaData.Title = menuRaw.Meta.Title
-	metaData.Hidden = menuRaw.Meta.Hidden
-	metaData.Affix = menuRaw.Meta.Affix
-	metaData.KeepAlive = menuRaw.Meta.KeepAlive
-	metaData.AlwaysShow = menuRaw.Meta.AlwaysShow
-
-	err = global.TD27_DB.Model(&menuModel).Updates(map[string]interface{}{
-		"pid":       menuRaw.Pid,
-		"name":      menuRaw.Name,
-		"path":      menuRaw.Path,
-		"component": menuRaw.Component,
-		"redirect":  menuRaw.Redirect,
-		"sort":      menuRaw.Sort,
-		"meta":      metaData,
-	}).Error
-
-	return
+func (ms *MenuService) Update(req *menu.UpdateMenuReq) error {
+	return ms.repository.Update(ms.ctx, req)
 }
 
-func (ms *MenuService) Delete(id uint) (err error) {
-	var menuModel menu.MenuModel
-	if errors.Is(global.TD27_DB.Where("id = ?", id).First(&menuModel).Error, gorm.ErrRecordNotFound) {
-		return errors.New("菜单不存在")
-	}
-	err = global.TD27_DB.Unscoped().Select("Roles").Delete(&menuModel).Error
-
-	return err
+func (ms *MenuService) Delete(id uint) error {
+	return ms.repository.Delete(ms.ctx, id)
 }
 
 // GetElTreeMenus 获取所有menu
-func (ms *MenuService) GetElTreeMenus(roleId uint) ([]menu.MenuModel, []uint, error) {
-	var menuModels []menu.MenuModel
-	err := global.TD27_DB.Find(&menuModels).Error
+func (ms *MenuService) GetElTreeMenus(roleId uint) ([]*menu.MenuModel, []uint, error) {
+	menus, i, err := ms.repository.GetElTreeMenus(ms.ctx, roleId)
 	if err != nil {
-		global.TD27_LOG.Error("GetElTreeMenus 查询menus", zap.Error(err))
 		return nil, nil, err
 	}
 
-	menuListFormat := make([]menu.MenuModel, 0)
-	for _, menu := range menuModels {
-		if menu.Pid == 0 {
-			menuListFormat = append(menuListFormat, menu)
-		}
-	}
-
-	getTreeMap(menuListFormat, menuModels)
-
-	var roleModel role.RoleModel
-	err = global.TD27_DB.Where("id = ?", roleId).Preload("Menus").First(&roleModel).Error
-	if err != nil {
-		global.TD27_LOG.Error("GetElTreeMenus 查询role", zap.Error(err))
-		return nil, nil, err
-	}
-
-	// 前端el-tree 选中数据
-	// 去掉夫菜单，防止直接选中父级造成全选
-	roleIds := make([]uint, 0)
-	count := 0
-	for _, menu := range roleModel.Menus {
-		for _, menu1 := range roleModel.Menus {
-			if menu.ID == menu1.Pid {
-				count++
-				break
-			}
-		}
-		if count == 0 {
-			roleIds = append(roleIds, menu.ID)
-		} else {
-			count--
-		}
-	}
-
-	return menuListFormat, roleIds, nil
+	return menus, i, err
 }

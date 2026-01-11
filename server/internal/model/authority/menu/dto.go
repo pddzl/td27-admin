@@ -13,18 +13,18 @@ type Menu struct {
 type meta struct {
 	Hidden     bool   `json:"hidden"`     // 隐藏菜单
 	Title      string `json:"title"`      // 菜单名
-	Icon       string `json:"icon"`       // element图标
+	Icon       string `json:"icon"`       // element 图标
 	Affix      bool   `json:"affix"`      // 组件固定
 	KeepAlive  bool   `json:"keepAlive"`  // 组件缓存
 	AlwaysShow bool   `json:"alwaysShow"` // 是否一直显示根路由
 }
 
-type EditMenuReq struct {
-	ID uint `json:"id" binding:"required"` // 菜单ID
+type UpdateMenuReq struct {
+	ID uint `json:"id" binding:"required"` // 菜单 ID
 	Menu
 }
 
-type EditRoleMenu struct {
-	RoleId uint   `json:"roleId"` // 角色ID
-	Ids    []uint `json:"ids"`    // 菜单ID
+type MenuResp struct {
+	List    interface{} `json:"list"`
+	MenuIds []uint      `json:"menuIds"`
 }

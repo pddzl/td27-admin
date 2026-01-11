@@ -9,14 +9,14 @@ import (
 
 type MenuModel struct {
 	common.Td27Model
-	Pid       uint        `json:"pid"`                       // 父菜单 ID
-	Name      string      `json:"name,omitempty"`            // 路由名称
-	Path      string      `json:"path" gorm:"unique"`        // 路由路径
-	Redirect  string      `json:"redirect,omitempty"`        // 重定向
-	Component string      `json:"component" gorm:"not null"` // 前端组件
-	Sort      uint        `json:"sort" gorm:"not null"`      // 排序
-	Meta      Meta        `json:"meta" gorm:"type:json"`     // 元数据
-	Children  []MenuModel `json:"children,omitempty" gorm:"-"`
+	Pid       uint         `json:"pid"`                       // 父菜单 ID
+	Name      string       `json:"name,omitempty"`            // 路由名称
+	Path      string       `json:"path" gorm:"unique"`        // 路由路径
+	Redirect  string       `json:"redirect,omitempty"`        // 重定向
+	Component string       `json:"component" gorm:"not null"` // 前端组件
+	Sort      uint         `json:"sort" gorm:"not null"`      // 排序
+	Meta      Meta         `json:"meta" gorm:"type:json"`     // 元数据
+	Children  []*MenuModel `json:"children,omitempty" gorm:"-"`
 	//Roles     []*role.RoleModel `json:"-" gorm:"many2many:role_menus;"`
 }
 
@@ -41,4 +41,13 @@ func (m *Meta) Scan(input interface{}) error {
 
 func (MenuModel) TableName() string {
 	return "authority_menu"
+}
+
+type RoleMenu struct {
+	MenuID uint `gorm:"column:menu_model_id"`
+	RoleID uint `gorm:"column:role_model_id"`
+}
+
+func (RoleMenu) TableName() string {
+	return "role_menus"
 }
