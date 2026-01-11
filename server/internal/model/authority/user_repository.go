@@ -1,4 +1,4 @@
-package user
+package authority
 
 import (
 	"context"
@@ -8,16 +8,15 @@ import (
 
 	"gorm.io/gorm"
 
-	"server/internal/model/authority/role"
 	"server/internal/model/common"
 	"server/internal/pkg"
 )
 
 type UserEntity interface {
-	List(ctx context.Context, req *common.PageInfo) ([]UserResp, int64, error)
+	List(ctx context.Context, req *common.PageInfo) ([]*UserResp, int64, error)
 	Delete(ctx context.Context, id uint) error
 	Create(ctx context.Context, req *AddUserReq) error
-	Update(ctx context.Context, req *UpdateUserReq) (*UserResp, error)
+	Update(ctx context.Context, req *UpdateUserReq) (*UserModel, error)
 	GetUserInfo(ctx context.Context, userId uint) (userResults *UserResp, err error)
 	ModifyPasswd(ctx context.Context, req *ModifyPasswdReq) error
 	SwitchActive(ctx context.Context, req *SwitchActiveReq) error
@@ -62,8 +61,8 @@ func (ue *defaultUserEntity) GetUserInfo(ctx context.Context, userId uint) (list
 	return &resp, nil
 }
 
-func (ue *defaultUserEntity) List(ctx context.Context, pageInfo *common.PageInfo) ([]UserResp, int64, error) {
-	var users []UserResp
+func (ue *defaultUserEntity) List(ctx context.Context, pageInfo *common.PageInfo) ([]*UserResp, int64, error) {
+	var users []*UserResp
 	var total int64
 
 	// Safety defaults
@@ -129,12 +128,6 @@ func (ue *defaultUserEntity) Delete(ctx context.Context, id uint) (err error) {
 }
 
 func (ue *defaultUserEntity) Create(ctx context.Context, req *AddUserReq) error {
-	if errors.Is(ue.conn.WithContext(ctx).
-		Where("id = ?", req.RoleModelID).
-		First(&role.RoleModel{}).Error, gorm.ErrRecordNotFound) {
-		return errors.New("角色不存在")
-	}
-
 	var userModel UserModel
 	userModel.Username = req.Username
 	userModel.Password = pkg.MD5V([]byte(req.Password))
@@ -146,22 +139,8 @@ func (ue *defaultUserEntity) Create(ctx context.Context, req *AddUserReq) error 
 	return ue.conn.WithContext(ctx).Create(&userModel).Error
 }
 
-func (ue *defaultUserEntity) Update(ctx context.Context, req *UpdateUserReq) (*UserResp, error) {
+func (ue *defaultUserEntity) Update(ctx context.Context, req *UpdateUserReq) (*UserModel, error) {
 	db := ue.conn.WithContext(ctx)
-
-	// Check role existence
-	var roleName string
-	if err := db.
-		Model(&role.RoleModel{}).
-		Select("role_name").
-		Where("id = ?", req.RoleModelID).
-		Take(&roleName).Error; err != nil {
-
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, errors.New("角色不存在")
-		}
-		return nil, fmt.Errorf("check role failed: %w", err)
-	}
 
 	// Update user
 	updates := map[string]interface{}{
@@ -183,22 +162,13 @@ func (ue *defaultUserEntity) Update(ctx context.Context, req *UpdateUserReq) (*U
 		return nil, errors.New("记录不存在")
 	}
 
-	// Build response directly
-	resp := &UserResp{
-		UserModel: UserModel{
-			Td27Model: common.Td27Model{
-				ID: req.ID,
-			},
-			Username:    req.Username,
-			Phone:       req.Phone,
-			Email:       req.Email,
-			Active:      req.Active,
-			RoleModelID: req.RoleModelID,
-		},
-		RoleName: roleName,
+	// Fetch updated record
+	var user UserModel
+	if err := db.Where("id = ?", req.ID).First(&user).Error; err != nil {
+		return nil, err
 	}
 
-	return resp, nil
+	return &user, nil
 }
 
 func (ue *defaultUserEntity) ModifyPasswd(ctx context.Context, req *ModifyPasswdReq) (err error) {

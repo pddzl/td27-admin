@@ -1,4 +1,4 @@
-package user
+package authority
 
 import (
 	"server/internal/model/common"

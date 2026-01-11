@@ -1,4 +1,4 @@
-package menu
+package authority
 
 import (
 	"context"

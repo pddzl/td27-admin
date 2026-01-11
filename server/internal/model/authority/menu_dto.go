@@ -1,4 +1,4 @@
-package menu
+package authority
 
 type Menu struct {
 	Pid       uint   `json:"pid"`                          // 默认0 根目录

@@ -5,7 +5,7 @@ import (
 	"go.uber.org/zap"
 
 	"server/internal/global"
-	"server/internal/model/authority/menu"
+	"server/internal/model/authority"
 	"server/internal/model/common"
 	"server/internal/pkg"
 	serviceAuthority "server/internal/service/authority"
@@ -52,7 +52,7 @@ func (ma *MenuApi) List(c *gin.Context) {
 // @Success   200   {object}  common.Response{msg=string}
 // @Router    /menu/create [post]
 func (ma *MenuApi) Create(c *gin.Context) {
-	var req menu.Menu
+	var req authority.Menu
 	if err := c.ShouldBindJSON(&req); err != nil {
 		common.FailReq(err.Error(), c)
 		return
@@ -75,7 +75,7 @@ func (ma *MenuApi) Create(c *gin.Context) {
 // @Success   200   {object}  common.Response{msg=string}
 // @Router    /menu/update [post]
 func (ma *MenuApi) Update(c *gin.Context) {
-	var req menu.UpdateMenuReq
+	var req authority.UpdateMenuReq
 	if err := c.ShouldBindJSON(&req); err != nil {
 		common.FailReq(err.Error(), c)
 		return
@@ -133,7 +133,7 @@ func (ma *MenuApi) GetElTreeMenus(c *gin.Context) {
 		common.FailWithMessage(err.Error(), c)
 		global.TD27_LOG.Error("获取失败!", zap.Error(err))
 	} else {
-		common.OkWithDetailed(menu.MenuResp{
+		common.OkWithDetailed(authority.MenuResp{
 			List:    list,
 			MenuIds: ids,
 		}, "获取成功", c)

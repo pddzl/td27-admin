@@ -4,10 +4,8 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"server/internal/model/authority"
 	"server/internal/model/authority/api"
-	"server/internal/model/authority/menu"
-	"server/internal/model/authority/role"
-	"server/internal/model/authority/user"
 	modelFileM "server/internal/model/fileM"
 	modelMonitor "server/internal/model/monitor"
 	"server/internal/model/sysSet"
@@ -88,9 +86,9 @@ func Gorm() *gorm.DB {
 func RegisterTables(db *gorm.DB) {
 	err := db.AutoMigrate(
 		// 权限
-		user.UserModel{},
-		role.RoleModel{},
-		menu.MenuModel{},
+		authority.UserModel{},
+		authority.RoleModel{},
+		authority.MenuModel{},
 		api.ApiModel{},
 		// 监控
 		modelMonitor.OperationLogModel{},

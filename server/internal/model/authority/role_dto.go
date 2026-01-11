@@ -1,4 +1,4 @@
-package role
+package authority
 
 //type Role struct {
 //	RoleName string `json:"roleName" binding:"required"` // 角色名称

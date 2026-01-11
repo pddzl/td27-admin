@@ -1,4 +1,4 @@
-package role
+package authority
 
 import (
 	"context"
@@ -6,16 +6,16 @@ import (
 
 	"gorm.io/gorm"
 
-	"server/internal/model/authority/menu"
 	"server/internal/model/common"
 )
 
 type RoleEntity interface {
+	FindOne(ctx context.Context, id uint) (*RoleModel, error)
 	List(ctx context.Context, req *common.PageInfo) ([]RoleModel, int64, error)
 	Create(ctx context.Context, req *RoleModel) (*RoleModel, error)
 	Delete(ctx context.Context, id uint) error
 	Update(ctx context.Context, req *UpdateRoleReq) error
-	UpdateRoleMenu(ctx context.Context, menus []*menu.MenuModel) error
+	UpdateRoleMenu(ctx context.Context, menus []*MenuModel) error
 }
 
 type defaultRoleEntity struct {
@@ -24,6 +24,17 @@ type defaultRoleEntity struct {
 
 func NewDefaultRoleEntity(conn *gorm.DB) RoleEntity {
 	return &defaultRoleEntity{conn: conn}
+}
+
+func (re *defaultRoleEntity) FindOne(ctx context.Context, id uint) (*RoleModel, error) {
+	result := re.conn.WithContext(ctx).Find(&RoleModel{}, "id=?", id)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	if result.RowsAffected == 0 {
+		return nil, gorm.ErrRecordNotFound
+	}
+	return nil, nil
 }
 
 func (re *defaultRoleEntity) List(ctx context.Context, req *common.PageInfo) ([]RoleModel, int64, error) {
@@ -124,7 +135,7 @@ func (re *defaultRoleEntity) Update(ctx context.Context, req *UpdateRoleReq) err
 }
 
 // UpdateRoleMenu 编辑用户menu
-func (re *defaultRoleEntity) UpdateRoleMenu(ctx context.Context, menus []*menu.MenuModel) error {
+func (re *defaultRoleEntity) UpdateRoleMenu(ctx context.Context, menus []*MenuModel) error {
 	var roleModel RoleModel
 	//if errors.Is(re.conn.WithContext(ctx).Where("id = ?", roleId).First(&roleModel).Error, gorm.ErrRecordNotFound) {
 	//	return errors.New("记录不存在")

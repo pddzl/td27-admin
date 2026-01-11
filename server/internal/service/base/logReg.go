@@ -3,9 +3,8 @@ package base
 import (
 	"errors"
 	"fmt"
-	modelAuthority "server/internal/model/authority/user"
-
 	"server/internal/global"
+	modelAuthority "server/internal/model/authority"
 	"server/internal/pkg"
 )
 

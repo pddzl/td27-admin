@@ -1,4 +1,4 @@
-package user
+package authority
 
 import (
 	"regexp"

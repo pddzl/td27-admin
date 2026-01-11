@@ -2,7 +2,7 @@ package middleware
 
 import (
 	"errors"
-	modelAuthority "server/internal/model/authority/user"
+	modelAuthority "server/internal/model/authority"
 	"server/internal/model/common"
 	"strconv"
 	"time"

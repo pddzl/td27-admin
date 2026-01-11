@@ -4,22 +4,22 @@ import (
 	"context"
 
 	"server/internal/global"
-	"server/internal/model/authority/menu"
+	"server/internal/model/authority"
 )
 
 type MenuService struct {
-	repository menu.MenuEntity
+	repository authority.MenuEntity
 	ctx        context.Context
 }
 
 func NewMenuService() *MenuService {
 	return &MenuService{
-		repository: menu.NewDefaultMenuEntity(global.TD27_DB),
+		repository: authority.NewDefaultMenuEntity(global.TD27_DB),
 		ctx:        context.Background(),
 	}
 }
 
-func (ms *MenuService) List(userId uint) ([]*menu.MenuModel, error) {
+func (ms *MenuService) List(userId uint) ([]*authority.MenuModel, error) {
 	// todo 查找用户对应角色
 	list, err := ms.repository.List(ms.ctx, userId)
 	if err != nil {
@@ -28,11 +28,11 @@ func (ms *MenuService) List(userId uint) ([]*menu.MenuModel, error) {
 	return list, nil
 }
 
-func (ms *MenuService) Create(req *menu.Menu) error {
+func (ms *MenuService) Create(req *authority.Menu) error {
 	return ms.repository.Create(ms.ctx, req)
 }
 
-func (ms *MenuService) Update(req *menu.UpdateMenuReq) error {
+func (ms *MenuService) Update(req *authority.UpdateMenuReq) error {
 	return ms.repository.Update(ms.ctx, req)
 }
 
@@ -41,7 +41,7 @@ func (ms *MenuService) Delete(id uint) error {
 }
 
 // GetElTreeMenus 获取所有menu
-func (ms *MenuService) GetElTreeMenus(roleId uint) ([]*menu.MenuModel, []uint, error) {
+func (ms *MenuService) GetElTreeMenus(roleId uint) ([]*authority.MenuModel, []uint, error) {
 	menus, i, err := ms.repository.GetElTreeMenus(ms.ctx, roleId)
 	if err != nil {
 		return nil, nil, err

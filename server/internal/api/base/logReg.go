@@ -3,7 +3,7 @@ package base
 import (
 	"context"
 	"fmt"
-	modelAuthority "server/internal/model/authority/user"
+	modelAuthority "server/internal/model/authority"
 	"server/internal/model/base/request"
 	baseResp "server/internal/model/base/response"
 	"server/internal/model/common"

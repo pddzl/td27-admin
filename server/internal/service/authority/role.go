@@ -7,23 +7,23 @@ import (
 	"gorm.io/gorm"
 
 	"server/internal/global"
-	"server/internal/model/authority/role"
+	"server/internal/model/authority"
 	"server/internal/model/common"
 )
 
 type RoleService struct {
-	repository role.RoleEntity
+	repository authority.RoleEntity
 	ctx        context.Context
 }
 
 func NewRoleService() *RoleService {
 	return &RoleService{
-		repository: role.NewDefaultRoleEntity(global.TD27_DB),
+		repository: authority.NewDefaultRoleEntity(global.TD27_DB),
 		ctx:        context.Background(),
 	}
 }
 
-func (rs *RoleService) List(req *common.PageInfo) ([]role.RoleModel, int64, error) {
+func (rs *RoleService) List(req *common.PageInfo) ([]authority.RoleModel, int64, error) {
 	list, count, err := rs.repository.List(rs.ctx, req)
 	if err != nil {
 		return nil, 0, err
@@ -31,7 +31,7 @@ func (rs *RoleService) List(req *common.PageInfo) ([]role.RoleModel, int64, erro
 	return list, count, nil
 }
 
-func (rs *RoleService) Create(req *role.RoleModel) (*role.RoleModel, error) {
+func (rs *RoleService) Create(req *authority.RoleModel) (*authority.RoleModel, error) {
 	create, err := rs.repository.Create(rs.ctx, req)
 	if err != nil {
 		return nil, err
@@ -74,7 +74,7 @@ func (rs *RoleService) Delete(id uint) error {
 	return nil
 }
 
-func (rs *RoleService) Update(req *role.UpdateRoleReq) error {
+func (rs *RoleService) Update(req *authority.UpdateRoleReq) error {
 	err := rs.repository.Update(rs.ctx, req)
 	if err != nil {
 		return err
@@ -84,7 +84,7 @@ func (rs *RoleService) Update(req *role.UpdateRoleReq) error {
 
 // UpdateRoleMenu 编辑用户menu
 func (rs *RoleService) UpdateRoleMenu(roleId uint, ids []uint) (err error) {
-	var roleModel role.RoleModel
+	var roleModel authority.RoleModel
 	if errors.Is(global.TD27_DB.Where("id = ?", roleId).First(&roleModel).Error, gorm.ErrRecordNotFound) {
 		return errors.New("记录不存在")
 	}

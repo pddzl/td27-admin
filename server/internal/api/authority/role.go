@@ -1,11 +1,12 @@
 package authority
 
 import (
+	"server/internal/model/authority"
+
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 
 	"server/internal/global"
-	"server/internal/model/authority/role"
 	"server/internal/model/common"
 	serviceAuthority "server/internal/service/authority"
 )
@@ -55,7 +56,7 @@ func (ra *RoleApi) List(c *gin.Context) {
 // @Success   200   {object}  common.Response{data=role.RoleModel,msg=string}
 // @Router    /api/addRole [post]
 func (ra *RoleApi) Create(c *gin.Context) {
-	var roleModel role.RoleModel
+	var roleModel authority.RoleModel
 	if err := c.ShouldBindJSON(&roleModel); err != nil {
 		common.FailReq(err.Error(), c)
 		return
@@ -103,7 +104,7 @@ func (ra *RoleApi) Delete(c *gin.Context) {
 // @Success   200   {object}  common.Response{msg=string}
 // @Router    /api/updateRole [post]
 func (ra *RoleApi) Update(c *gin.Context) {
-	var req role.UpdateRoleReq
+	var req authority.UpdateRoleReq
 	if err := c.ShouldBindJSON(&req); err != nil {
 		common.FailReq(err.Error(), c)
 		return
@@ -127,7 +128,7 @@ func (ra *RoleApi) Update(c *gin.Context) {
 // @Success   200   {object}  common.Response{msg=string}
 // @Router    /api/editRoleMenu [post]
 func (ra *RoleApi) UpdateRoleMenu(c *gin.Context) {
-	var req role.UpdateRoleMenuReq
+	var req authority.UpdateRoleMenuReq
 	if err := c.ShouldBindJSON(&req); err != nil {
 		common.FailWithMessage(err.Error(), c)
 		return
