@@ -22,7 +22,9 @@ func NewMenuService() *MenuService {
 }
 
 func (ms *MenuService) List(userId uint) ([]*authority.MenuModel, error) {
-	user, err := ms.userRepository.FindOne(ms.ctx, userId)
+	var findOneUserReq authority.FindOneUserReq
+	findOneUserReq.ID = userId
+	user, err := ms.userRepository.FindOne(ms.ctx, &findOneUserReq)
 	if err != nil {
 		return nil, err
 	}

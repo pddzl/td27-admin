@@ -10,12 +10,13 @@ import (
 )
 
 type RoleEntity interface {
-	FindOne(ctx context.Context, id uint) (*RoleModel, error)
-	List(ctx context.Context, req *common.PageInfo) ([]RoleModel, int64, error)
-	Create(ctx context.Context, req *RoleModel) (*RoleModel, error)
-	Delete(ctx context.Context, id uint) error
-	Update(ctx context.Context, req *UpdateRoleReq) error
-	UpdateRoleMenu(ctx context.Context, menus []*MenuModel) error
+	FindOne(context.Context, uint) (*RoleModel, error)
+	List(context.Context, *common.PageInfo) ([]RoleModel, int64, error)
+	Create(context.Context, *RoleModel) (*RoleModel, error)
+	Delete(context.Context, uint) error
+	Update(context.Context, *UpdateRoleReq) error
+	UpdateRoleMenu(context.Context, []*MenuModel) error
+	DeleteRoleMenu(context.Context, uint) error
 }
 
 type defaultRoleEntity struct {
@@ -151,9 +152,12 @@ func (re *defaultRoleEntity) UpdateRoleMenu(ctx context.Context, menus []*MenuMo
 
 	err := re.conn.WithContext(ctx).Model(&roleModel).Association("Menus").Replace(menus)
 	if err != nil {
-		//global.TD27_LOG.Error("EditRoleMenu 替换menu", zap.Error(err))
-		return fmt.Errorf("edit menu failed: %w", err)
+		return fmt.Errorf("update menu failed: %w", err)
 	}
 
 	return nil
+}
+
+func (re *defaultRoleEntity) DeleteRoleMenu(ctx context.Context, roleId uint) error {
+	return re.conn.WithContext(ctx).Where("role_model_id =?", roleId).Delete(&RoleMenu{}).Error
 }

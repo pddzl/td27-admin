@@ -15,6 +15,7 @@ type MenuEntity interface {
 	Delete(context.Context, uint) error
 	Update(context.Context, *UpdateMenuReq) error
 	GetElTreeMenus(context.Context, uint) ([]*MenuModel, []uint, error)
+	FindByIds(context.Context, []uint) ([]*MenuModel, error)
 }
 
 type defaultMenuEntity struct {
@@ -206,4 +207,18 @@ func (e *defaultMenuEntity) GetElTreeMenus(ctx context.Context, roleId uint) ([]
 	}
 
 	return rootMenus, checkedIDs, nil
+}
+
+func (e *defaultMenuEntity) FindByIds(ctx context.Context, ids []uint) ([]*MenuModel, error) {
+	// Guard: avoid full table scan
+	if len(ids) == 0 {
+		return []*MenuModel{}, nil
+	}
+
+	var menus []*MenuModel
+	err := e.conn.WithContext(ctx).Where("id IN ?", ids).Find(&menus).Error
+	if err != nil {
+		return nil, fmt.Errorf("find menus by ids failed: %v", err)
+	}
+	return menus, nil
 }

@@ -13,14 +13,14 @@ import (
 )
 
 type UserEntity interface {
-	FindOne(context.Context, uint) (*UserModel, error)
-	List(ctx context.Context, req *common.PageInfo) ([]*UserResp, int64, error)
-	Delete(ctx context.Context, id uint) error
-	Create(ctx context.Context, req *AddUserReq) error
-	Update(ctx context.Context, req *UpdateUserReq) (*UserModel, error)
-	GetUserInfo(ctx context.Context, userId uint) (userResults *UserResp, err error)
-	ModifyPasswd(ctx context.Context, req *ModifyPasswdReq) error
-	SwitchActive(ctx context.Context, req *SwitchActiveReq) error
+	FindOne(context.Context, *FindOneUserReq) (*UserModel, error)
+	List(context.Context, *common.PageInfo) ([]*UserResp, int64, error)
+	Delete(context.Context, uint) error
+	Create(context.Context, *AddUserReq) error
+	Update(context.Context, *UpdateUserReq) (*UserModel, error)
+	GetUserInfo(context.Context, uint) (userResults *UserResp, err error)
+	ModifyPasswd(context.Context, *ModifyPasswdReq) error
+	SwitchActive(context.Context, *SwitchActiveReq) error
 }
 
 type defaultUserEntity struct {
@@ -31,15 +31,26 @@ func NewDefaultUserEntity(conn *gorm.DB) UserEntity {
 	return &defaultUserEntity{conn: conn}
 }
 
-func (ue *defaultUserEntity) FindOne(ctx context.Context, id uint) (*UserModel, error) {
+func (ue *defaultUserEntity) FindOne(ctx context.Context, req *FindOneUserReq) (*UserModel, error) {
+	db := ue.conn.WithContext(ctx)
+	query := db.Model(&UserModel{})
+	// OR conditions
+	if req.ID != 0 && req.RoleModelID != 0 {
+		query = query.Where("id = ? OR role_model_id = ?", req.ID, req.RoleModelID)
+	} else if req.ID != 0 {
+		query = query.Where("id = ?", req.ID)
+	} else {
+		query = query.Where("role_model_id = ?", req.RoleModelID)
+	}
+
 	var userModel UserModel
-	result := ue.conn.WithContext(ctx).Where("id = ?", id).Find(&userModel)
-	if result.Error != nil {
-		return nil, result.Error
+	if err := query.First(&userModel).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, gorm.ErrRecordNotFound
+		}
+		return nil, err
 	}
-	if result.RowsAffected == 0 {
-		return nil, gorm.ErrRecordNotFound
-	}
+
 	return &userModel, nil
 }
 

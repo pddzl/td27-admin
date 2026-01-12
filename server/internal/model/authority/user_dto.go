@@ -22,6 +22,11 @@ func PhoneValidation(fl validator.FieldLevel) bool {
 	return re.MatchString(phone)
 }
 
+type FindOneUserReq struct {
+	ID          uint `json:"id"`     // 用户 ID
+	RoleModelID uint `json:"roleId"` // 角色 ID
+}
+
 type UpdateUserReq struct {
 	ID          uint   `json:"id" binding:"required"`           // 用户 ID
 	Username    string `json:"username" binding:"required"`     // 用户名

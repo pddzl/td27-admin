@@ -3,8 +3,7 @@ package authority
 import (
 	"context"
 	"errors"
-
-	"gorm.io/gorm"
+	"fmt"
 
 	"server/internal/global"
 	"server/internal/model/authority"
@@ -12,27 +11,31 @@ import (
 )
 
 type RoleService struct {
-	repository authority.RoleEntity
-	ctx        context.Context
+	roleRepository authority.RoleEntity
+	userRepository authority.UserEntity
+	menuRepository authority.MenuEntity
+	ctx            context.Context
 }
 
 func NewRoleService() *RoleService {
 	return &RoleService{
-		repository: authority.NewDefaultRoleEntity(global.TD27_DB),
-		ctx:        context.Background(),
+		roleRepository: authority.NewDefaultRoleEntity(global.TD27_DB),
+		userRepository: authority.NewDefaultUserEntity(global.TD27_DB),
+		menuRepository: authority.NewDefaultMenuEntity(global.TD27_DB),
+		ctx:            context.Background(),
 	}
 }
 
-func (rs *RoleService) List(req *common.PageInfo) ([]authority.RoleModel, int64, error) {
-	list, count, err := rs.repository.List(rs.ctx, req)
+func (s *RoleService) List(req *common.PageInfo) ([]authority.RoleModel, int64, error) {
+	list, count, err := s.roleRepository.List(s.ctx, req)
 	if err != nil {
 		return nil, 0, err
 	}
 	return list, count, nil
 }
 
-func (rs *RoleService) Create(req *authority.RoleModel) (*authority.RoleModel, error) {
-	create, err := rs.repository.Create(rs.ctx, req)
+func (s *RoleService) Create(req *authority.RoleModel) (*authority.RoleModel, error) {
+	create, err := s.roleRepository.Create(s.ctx, req)
 	if err != nil {
 		return nil, err
 	}
@@ -45,24 +48,29 @@ func (rs *RoleService) Create(req *authority.RoleModel) (*authority.RoleModel, e
 
 }
 
-func (rs *RoleService) Delete(id uint) error {
-	// todo
+func (s *RoleService) Delete(id uint) error {
 	// check users exist
-	//if !errors.Is(global.TD27_DB.Where("role_model_id = ?", id).First(&authority2.UserModel{}).Error, gorm.ErrRecordNotFound) {
-	//	return errors.New("该角色下面还有所属用户")
-	//}
+	var userReq authority.FindOneUserReq
+	userReq.RoleModelID = id
+	user, err := s.userRepository.FindOne(s.ctx, &userReq)
+	if err != nil {
+		return err
+	}
+	if user != nil {
+		return errors.New("该角色下面还有所属用户")
+	}
 
-	err := rs.repository.Delete(rs.ctx, id)
+	err = s.roleRepository.Delete(s.ctx, id)
 	if err != nil {
 		return err
 	}
 
-	// todo
 	// 清空menus关联
 	//err = global.TD27_DB.Model(&roleModel).Association("Menus").Clear()
-	//if err != nil {
-	//	return fmt.Errorf("删除role关联menus err: %v", err)
-	//}
+	err = s.roleRepository.DeleteRoleMenu(s.ctx, id)
+	if err != nil {
+		return fmt.Errorf("删除role关联menus err: %v", err)
+	}
 
 	// todo
 	// 删除对应casbin rule
@@ -74,8 +82,8 @@ func (rs *RoleService) Delete(id uint) error {
 	return nil
 }
 
-func (rs *RoleService) Update(req *authority.UpdateRoleReq) error {
-	err := rs.repository.Update(rs.ctx, req)
+func (s *RoleService) Update(req *authority.UpdateRoleReq) error {
+	err := s.roleRepository.Update(s.ctx, req)
 	if err != nil {
 		return err
 	}
@@ -83,26 +91,23 @@ func (rs *RoleService) Update(req *authority.UpdateRoleReq) error {
 }
 
 // UpdateRoleMenu 编辑用户menu
-func (rs *RoleService) UpdateRoleMenu(roleId uint, ids []uint) (err error) {
-	var roleModel authority.RoleModel
-	if errors.Is(global.TD27_DB.Where("id = ?", roleId).First(&roleModel).Error, gorm.ErrRecordNotFound) {
-		return errors.New("记录不存在")
+func (s *RoleService) UpdateRoleMenu(roleId uint, menuIds []uint) error {
+	_, err := s.roleRepository.FindOne(s.ctx, roleId)
+	if err != nil {
+		return err
 	}
 
-	// todo
 	// search menu
-	//var menuModel []menu.MenuModel
-	//err = global.TD27_DB.Where("id in ?", ids).Find(&menuModel).Error
-	//if err != nil {
-	//	global.TD27_LOG.Error("EditRoleMenu 查询menu", zap.Error(err))
-	//	return err
-	//}
+	menus, err := s.menuRepository.FindByIds(s.ctx, menuIds)
+	if err != nil {
+		return fmt.Errorf("FindByIds err: %v", err)
+	}
 
-	//err = global.TD27_DB.Model(&roleModel).Association("Menus").Replace(menuModel)
-	//if err != nil {
-	//	global.TD27_LOG.Error("EditRoleMenu 替换menu", zap.Error(err))
-	//	return err
-	//}
+	// update role_menus
+	err = s.roleRepository.UpdateRoleMenu(s.ctx, menus)
+	if err != nil {
+		return err
+	}
 
 	return err
 }

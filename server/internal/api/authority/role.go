@@ -1,12 +1,11 @@
 package authority
 
 import (
-	"server/internal/model/authority"
-
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 
 	"server/internal/global"
+	modelAuthority "server/internal/model/authority"
 	"server/internal/model/common"
 	serviceAuthority "server/internal/service/authority"
 )
@@ -24,7 +23,7 @@ func NewRoleApi() *RoleApi {
 // @Summary   获取所有角色
 // @Security  ApiKeyAuth
 // @Produce   application/json
-// @Success   200   {object}  common.Response{data=[]role.RoleModel,msg=string}
+// @Success   200   {object}  common.Response{data=[]modelAuthority.RoleModel,msg=string}
 // @Router    /role/getRoles [post]
 func (ra *RoleApi) List(c *gin.Context) {
 	var pageInfo common.PageInfo
@@ -52,11 +51,11 @@ func (ra *RoleApi) List(c *gin.Context) {
 // @Security  ApiKeyAuth
 // @accept    application/json
 // @Produce   application/json
-// @Param     data  body      role.RoleModel true "请求参数"
-// @Success   200   {object}  common.Response{data=role.RoleModel,msg=string}
-// @Router    /api/addRole [post]
+// @Param     data  body      modelAuthority.RoleModel true "请求参数"
+// @Success   200   {object}  common.Response{data=modelAuthority.RoleModel,msg=string}
+// @Router    /role/addRole [post]
 func (ra *RoleApi) Create(c *gin.Context) {
-	var roleModel authority.RoleModel
+	var roleModel modelAuthority.RoleModel
 	if err := c.ShouldBindJSON(&roleModel); err != nil {
 		common.FailReq(err.Error(), c)
 		return
@@ -78,7 +77,7 @@ func (ra *RoleApi) Create(c *gin.Context) {
 // @Produce   application/json
 // @Param     data  body      common.CId true "请求参数"
 // @Success   200   {object}  common.Response{msg=string}
-// @Router    /api/deleteRole [post]
+// @Router    /role/deleteRole [post]
 func (ra *RoleApi) Delete(c *gin.Context) {
 	var cId common.CId
 	if err := c.ShouldBindJSON(&cId); err != nil {
@@ -100,11 +99,11 @@ func (ra *RoleApi) Delete(c *gin.Context) {
 // @Security  ApiKeyAuth
 // @accept    application/json
 // @Produce   application/json
-// @Param     data  body      role.UpdateRoleReq true "请求参数"
+// @Param     data  body      modelAuthority.UpdateRoleReq true "请求参数"
 // @Success   200   {object}  common.Response{msg=string}
-// @Router    /api/updateRole [post]
+// @Router    /role/updateRole [post]
 func (ra *RoleApi) Update(c *gin.Context) {
-	var req authority.UpdateRoleReq
+	var req modelAuthority.UpdateRoleReq
 	if err := c.ShouldBindJSON(&req); err != nil {
 		common.FailReq(err.Error(), c)
 		return
@@ -124,11 +123,11 @@ func (ra *RoleApi) Update(c *gin.Context) {
 // @Security  ApiKeyAuth
 // @accept    application/json
 // @Produce   application/json
-// @Param     data  body      role.UpdateRoleMenuReq true "请求参数"
+// @Param     data  body      modelAuthority.UpdateRoleMenuReq true "请求参数"
 // @Success   200   {object}  common.Response{msg=string}
-// @Router    /api/editRoleMenu [post]
+// @Router    /role/editRoleMenu [post]
 func (ra *RoleApi) UpdateRoleMenu(c *gin.Context) {
-	var req authority.UpdateRoleMenuReq
+	var req modelAuthority.UpdateRoleMenuReq
 	if err := c.ShouldBindJSON(&req); err != nil {
 		common.FailWithMessage(err.Error(), c)
 		return
