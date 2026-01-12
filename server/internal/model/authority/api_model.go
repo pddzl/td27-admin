@@ -1,4 +1,4 @@
-package api
+package authority
 
 import (
 	"server/internal/model/common"

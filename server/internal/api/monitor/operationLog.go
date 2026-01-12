@@ -8,7 +8,6 @@ import (
 	"go.uber.org/zap"
 
 	"server/internal/global"
-	_ "server/internal/model/entity/monitor"
 	serviceMonitor "server/internal/service/monitor"
 )
 

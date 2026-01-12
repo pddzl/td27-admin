@@ -1,14 +1,12 @@
 package authority
 
 import (
-	entityAuthority "server/internal/model/authority/api"
-	authorityResp "server/internal/model/authority/response"
-	"server/internal/model/common"
-
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 
 	"server/internal/global"
+	modelAuthority "server/internal/model/authority"
+	"server/internal/model/common"
 	serviceAuthority "server/internal/service/authority"
 )
 
@@ -26,18 +24,18 @@ func NewApiApi() *ApiApi {
 // @Security  ApiKeyAuth
 // @accept    application/json
 // @Produce   application/json
-// @Param     data  body      entityAuthority.ApiModel true "请求参数"
-// @Success   200   {object}  commonResp.Response{data=entityAuthority.ApiModel,msg=string}
+// @Param     data  body      modelAuthority.ApiModel true "请求参数"
+// @Success   200   {object}  common.Response{data=modelAuthority.ApiModel,msg=string}
 // @Router    /api/create [post]
-func (aa *ApiApi) Create(c *gin.Context) {
-	var apiModel entityAuthority.ApiModel
-	if err := c.ShouldBindJSON(&apiModel); err != nil {
+func (a *ApiApi) Create(c *gin.Context) {
+	var req modelAuthority.ApiModel
+	if err := c.ShouldBindJSON(&req); err != nil {
 		common.FailReq(err.Error(), c)
 		return
 	}
 
-	if instance, err := aa.apiService.Create(&apiModel); err != nil {
-		common.Fail(c)
+	if instance, err := a.apiService.Create(&req); err != nil {
+		common.FailWithMessage(err.Error(), c)
 		global.TD27_LOG.Error("添加失败", zap.Error(err))
 	} else {
 		common.OkWithDetailed(instance, "添加成功", c)
@@ -50,25 +48,25 @@ func (aa *ApiApi) Create(c *gin.Context) {
 // @Security  ApiKeyAuth
 // @accept    application/json
 // @Produce   application/json
-// @Param     data  body      authorityReq.ApiSearchParams true  "请求参数"
-// @Success   200   {object}  commonResp.Response{data=commonResp.Page{list=[]entityAuthority.ApiModel},msg=string}
+// @Param     data  body      modelAuthority.ListApiReq true  "请求参数"
+// @Success   200   {object}  common.Response{data=common.Page{list=[]modelAuthority.ApiModel},msg=string}
 // @Router    /api/list [post]
-func (aa *ApiApi) List(c *gin.Context) {
-	var apiSp entityAuthority.ApiSearchParams
-	if err := c.ShouldBindJSON(&apiSp); err != nil {
+func (a *ApiApi) List(c *gin.Context) {
+	var req modelAuthority.ListApiReq
+	if err := c.ShouldBindJSON(&req); err != nil {
 		common.FailReq(err.Error(), c)
 		return
 	}
 
-	if list, total, err := aa.apiService.List(apiSp); err != nil {
+	if list, total, err := a.apiService.List(&req); err != nil {
 		common.FailWithMessage("获取失败", c)
 		global.TD27_LOG.Error("获取失败", zap.Error(err))
 	} else {
 		common.OkWithDetailed(common.Page{
 			List:     list,
 			Total:    total,
-			Page:     apiSp.Page,
-			PageSize: apiSp.PageSize,
+			Page:     req.Page,
+			PageSize: req.PageSize,
 		}, "获取成功", c)
 	}
 }
@@ -79,18 +77,18 @@ func (aa *ApiApi) List(c *gin.Context) {
 // @Security  ApiKeyAuth
 // @accept    application/json
 // @Produce   application/json
-// @Param     data  body      commonReq.CId true "请求参数"
-// @Success   200   {object}  commonResp.Response{msg=string}
+// @Param     data  body      common.CId true "请求参数"
+// @Success   200   {object}  common.Response{msg=string}
 // @Router    /api/delete [post]
-func (aa *ApiApi) Delete(c *gin.Context) {
-	var cId common.CId
-	if err := c.ShouldBindJSON(&cId); err != nil {
+func (a *ApiApi) Delete(c *gin.Context) {
+	var req common.CId
+	if err := c.ShouldBindJSON(&req); err != nil {
 		common.FailReq(err.Error(), c)
 		return
 	}
 
-	if err := aa.apiService.Delete(cId.ID); err != nil {
-		common.Fail(c)
+	if err := a.apiService.Delete(req.ID); err != nil {
+		common.FailWithMessage(err.Error(), c)
 		global.TD27_LOG.Error("删除失败", zap.Error(err))
 	} else {
 		common.Ok(c)
@@ -103,18 +101,18 @@ func (aa *ApiApi) Delete(c *gin.Context) {
 // @Security  ApiKeyAuth
 // @accept    application/json
 // @Produce   application/json
-// @Param     data  body      commonReq.CIds true "请求参数"
-// @Success   200   {object}  commonResp.Response{msg=string}
+// @Param     data  body      common.CIds true "请求参数"
+// @Success   200   {object}  common.Response{msg=string}
 // @Router    /api/deleteApiById [post]
-func (aa *ApiApi) DeleteByIds(c *gin.Context) {
-	var cIds common.CIds
-	if err := c.ShouldBindJSON(&cIds); err != nil {
+func (a *ApiApi) DeleteByIds(c *gin.Context) {
+	var req common.CIds
+	if err := c.ShouldBindJSON(&req); err != nil {
 		common.FailReq(err.Error(), c)
 		return
 	}
 
-	if err := aa.apiService.DeleteByIds(cIds.IDs); err != nil {
-		common.Fail(c)
+	if err := a.apiService.DeleteByIds(req.IDs); err != nil {
+		common.FailWithMessage(err.Error(), c)
 		global.TD27_LOG.Error("批量删除失败", zap.Error(err))
 	} else {
 		common.Ok(c)
@@ -127,19 +125,19 @@ func (aa *ApiApi) DeleteByIds(c *gin.Context) {
 // @Security  ApiKeyAuth
 // @accept    application/json
 // @Produce   application/json
-// @Param     data  body      entityAuthority.ApiModel true "请求参数"
-// @Success   200   {object}  commonResp.Response{msg=string}
+// @Param     data  body      modelAuthority.ApiModel true "请求参数"
+// @Success   200   {object}  common.Response{msg=string}
 // @Router    /api/editApi [post]
-func (aa *ApiApi) Update(c *gin.Context) {
-	var apiModel entityAuthority.ApiModel
-	if err := c.ShouldBindJSON(&apiModel); err != nil {
+func (a *ApiApi) Update(c *gin.Context) {
+	var req modelAuthority.ApiModel
+	if err := c.ShouldBindJSON(&req); err != nil {
 		common.FailReq(err.Error(), c)
 		return
 	}
 
-	if err := aa.apiService.Update(&apiModel); err != nil {
-		common.Fail(c)
-		global.TD27_LOG.Error("编辑失败", zap.Error(err))
+	if err := a.apiService.Update(&req); err != nil {
+		common.FailWithMessage(err.Error(), c)
+		global.TD27_LOG.Error("更新失败", zap.Error(err))
 	} else {
 		common.Ok(c)
 	}
@@ -151,21 +149,21 @@ func (aa *ApiApi) Update(c *gin.Context) {
 // @Security  ApiKeyAuth
 // @accept    application/json
 // @Produce   application/json
-// @Param     data  body      commonReq.CId true "请求参数"
-// @Success   200   {object}  commonResp.Response{data=authorityResp.ApiTree{list=[]entityAuthority.ApiTree,checkedKey=[]string},msg=string}
+// @Param     data  body      common.CId true "请求参数"
+// @Success   200   {object}  common.Response{data=modelAuthority.ApiTreeResp{list=[]modelAuthority.ApiTree,checkedKey=[]string},msg=string}
 // @Router    /api/getElTreeApis [post]
-func (aa *ApiApi) GetElTree(c *gin.Context) {
-	var cId common.CId
-	if err := c.ShouldBindJSON(&cId); err != nil {
+func (a *ApiApi) GetElTree(c *gin.Context) {
+	var req common.CId
+	if err := c.ShouldBindJSON(&req); err != nil {
 		common.FailReq(err.Error(), c)
 		return
 	}
 
-	list, checkedKey, err := aa.apiService.GetElTree(cId.ID)
+	list, checkedKey, err := a.apiService.GetElTree(req.ID)
 	if err != nil {
 		common.FailWithMessage("获取失败", c)
 	} else {
-		common.OkWithDetailed(authorityResp.ApiTree{
+		common.OkWithDetailed(modelAuthority.ApiTreeResp{
 			List:       list,
 			CheckedKey: checkedKey,
 		}, "获取成功", c)

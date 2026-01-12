@@ -1,4 +1,4 @@
-package api
+package authority
 
 type Children struct {
 	Key         string `json:"key"`      // for 前端el-tree node-key (path + method)

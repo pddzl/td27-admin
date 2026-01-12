@@ -5,7 +5,6 @@ import (
 	"log"
 	"os"
 	"server/internal/model/authority"
-	"server/internal/model/authority/api"
 	modelFileM "server/internal/model/fileM"
 	modelMonitor "server/internal/model/monitor"
 	"server/internal/model/sysSet"
@@ -89,7 +88,7 @@ func RegisterTables(db *gorm.DB) {
 		authority.UserModel{},
 		authority.RoleModel{},
 		authority.MenuModel{},
-		api.ApiModel{},
+		authority.ApiModel{},
 		// 监控
 		modelMonitor.OperationLogModel{},
 		// fileM

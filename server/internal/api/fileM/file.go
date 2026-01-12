@@ -10,7 +10,6 @@ import (
 	"go.uber.org/zap"
 
 	"server/internal/global"
-	_ "server/internal/model/entity/fileM"
 	serviceFileM "server/internal/service/fileM"
 )
 

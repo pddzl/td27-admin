@@ -1,130 +1,54 @@
 package authority
 
 import (
+	"context"
 	"errors"
 	"fmt"
-	modelAuthority "server/internal/model/authority/api"
 	"strconv"
-	"strings"
-
-	"go.uber.org/zap"
-	"gorm.io/gorm"
 
 	"server/internal/global"
+	modelAuthority "server/internal/model/authority"
 )
 
-type ApiService struct{}
+type ApiService struct {
+	repository modelAuthority.ApiEntity
+	ctx        context.Context
+}
 
 func NewApiService() *ApiService {
-	return &ApiService{}
+	return &ApiService{
+		repository: modelAuthority.NewDefaultApiEntity(global.TD27_DB),
+		ctx:        context.Background(),
+	}
 }
 
-func (as *ApiService) Create(api *modelAuthority.ApiModel) (*modelAuthority.ApiModel, error) {
-	if !errors.Is(global.TD27_DB.Where("path = ? AND method = ?", api.Path, api.Method).First(&api.ApiModel{}).Error, gorm.ErrRecordNotFound) {
-		return nil, errors.New("存在相同api")
-	}
-
-	err := global.TD27_DB.Create(api).Error
-
-	return api, err
-}
-
-func (as *ApiService) List(apiSp modelAuthority.ApiSearchParams) ([]modelAuthority.ApiModel, int64, error) {
-	limit := apiSp.PageSize
-	offset := apiSp.PageSize * (apiSp.Page - 1)
-	db := global.TD27_DB.Model(&modelAuthority.ApiModel{})
-	var apiList []modelAuthority.ApiModel
-
-	if apiSp.Path != "" {
-		db = db.Where("path LIKE ?", "%"+apiSp.Path+"%")
-	}
-
-	if apiSp.Description != "" {
-		db = db.Where("description LIKE ?", "%"+apiSp.Description+"%")
-	}
-
-	if apiSp.Method != "" {
-		db = db.Where("method = ?", apiSp.Method)
-	}
-
-	if apiSp.ApiGroup != "" {
-		db = db.Where("api_group LIKE ?", "%"+apiSp.ApiGroup+"%")
-	}
-
-	var total int64
-	err := db.Count(&total).Error
-
+func (s *ApiService) Create(req *modelAuthority.ApiModel) (*modelAuthority.ApiModel, error) {
+	instance, err := s.repository.Create(s.ctx, req)
 	if err != nil {
-		return apiList, total, err
-	} else {
-		db = db.Limit(limit).Offset(offset)
-		if apiSp.OrderKey != "" {
-			var orderStr string
-			// 设置有效排序key 防止sql注入
-			orderMap := make(map[string]bool, 4)
-			orderMap["path"] = true
-			orderMap["api_group"] = true
-			orderMap["description"] = true
-			orderMap["method"] = true
-			if orderMap[apiSp.OrderKey] {
-				if apiSp.Desc {
-					orderStr = apiSp.OrderKey + " desc"
-				} else {
-					orderStr = apiSp.OrderKey
-				}
-			} else { // didn't match any order key in `orderMap`
-				err = fmt.Errorf("非法的排序字段: %v", apiSp.OrderKey)
-				return apiList, total, err
-			}
-
-			err = db.Order(orderStr).Find(&apiList).Error
-		} else {
-			err = db.Find(&apiList).Error
-		}
+		return nil, err
 	}
-	return apiList, total, err
+
+	return instance, err
+}
+
+func (s *ApiService) List(req *modelAuthority.ListApiReq) ([]*modelAuthority.ApiModel, int64, error) {
+	list, count, err := s.repository.List(s.ctx, req)
+	if err != nil {
+		return nil, 0, err
+	}
+	return list, count, err
 }
 
 // GetElTree 获取所有api tree
 // element-plus el-tree的数据格式
-func (as *ApiService) GetElTree(roleId uint) (list []modelAuthority.ApiTree, checkedKey []string, err error) {
-	var apiModels []modelAuthority.ApiModel
-	err = global.TD27_DB.Find(&apiModels).Error
+func (s *ApiService) GetElTree(roleId uint) ([]*modelAuthority.ApiTree, []string, error) {
+	list, err := s.repository.GetElTree(s.ctx)
 	if err != nil {
-		return nil, nil, fmt.Errorf("GetElTreeApis: find -> %v", err)
-	}
-
-	var apiGroup []string
-	err = global.TD27_DB.Model(&modelAuthority.ApiModel{}).Distinct().Pluck("api_group", &apiGroup).Error
-	if err != nil {
-		return nil, nil, fmt.Errorf("GetElTreeApis: apiGroup -> %v", err)
-	}
-
-	// 前端 el-tree data
-	treeData := make(map[string][]modelAuthority.Children, len(apiModels))
-	for _, model := range apiModels {
-		var children modelAuthority.Children
-		sPath := strings.Split(model.Path, fmt.Sprintf("%s/", model.ApiGroup))
-		var tPath string
-		if len(sPath) == 2 {
-			tPath = sPath[1]
-		}
-		children.Key = fmt.Sprintf("%s,%s", model.Path, model.Method)
-		children.ApiGroup = fmt.Sprintf("%s | %s", tPath, model.Description)
-		children.Path = model.Path
-		children.Method = model.Method
-		children.Description = model.Description
-		treeData[model.ApiGroup] = append(treeData[model.ApiGroup], children)
-	}
-
-	for _, value := range apiGroup {
-		var apiTree modelAuthority.ApiTree
-		apiTree.ApiGroup = value
-		apiTree.Children = treeData[value]
-		list = append(list, apiTree)
+		return nil, nil, err
 	}
 
 	// 前端 el-tree default-checked-keys
+	checkedKey := make([]string, 0)
 	e := casbinService.Casbin()
 	authorityId := strconv.Itoa(int(roleId))
 	cData, _ := e.GetFilteredPolicy(0, authorityId)
@@ -132,62 +56,60 @@ func (as *ApiService) GetElTree(roleId uint) (list []modelAuthority.ApiTree, che
 		checkedKey = append(checkedKey, fmt.Sprintf("%s,%s", v[1], v[2]))
 	}
 
-	return
+	return list, checkedKey, nil
 }
 
-func (as *ApiService) Delete(id uint) (err error) {
-	var apiModel modelAuthority.ApiModel
-	if errors.Is(global.TD27_DB.Where("id = ?", id).First(&apiModel).Error, gorm.ErrRecordNotFound) {
-		global.TD27_LOG.Error("deleteApi -> 查找id", zap.Error(err))
-		return err
-	}
-
-	err = global.TD27_DB.Unscoped().Delete(&apiModel).Error
+func (s *ApiService) Delete(id uint) error {
+	err := s.repository.Delete(s.ctx, id)
 	if err != nil {
-		global.TD27_LOG.Error("deleteApi -> 删除id", zap.Error(err))
 		return err
 	}
 
-	ok := casbinService.ClearCasbin(1, apiModel.Path, apiModel.Method)
+	one, err := s.repository.FindOne(s.ctx, id)
+	if err != nil {
+		return err
+	}
+
+	// clean corresponding casbin entity
+	ok := casbinService.ClearCasbin(1, one.Path, one.Method)
 	if !ok {
-		return errors.New(apiModel.Path + ":" + apiModel.Method + "casbin同步清理失败")
+		return errors.New(one.Path + ":" + one.Method + "同步清理 Casbin失败")
 	}
 
 	return nil
 }
 
-func (as *ApiService) DeleteByIds(ids []uint) (err error) {
-	var apis []modelAuthority.ApiModel
-	err = global.TD27_DB.Find(&apis, "id in ?", ids).Unscoped().Delete(&apis).Error
-	// 删除对应casbin条目
-	if err == nil {
-		for _, sysApi := range apis {
-			ok := casbinService.ClearCasbin(1, sysApi.Path, sysApi.Method)
-			if !ok {
-				global.TD27_LOG.Error(fmt.Sprintf("%s:%s casbin同步清理失败", sysApi.Path, sysApi.Method))
-			}
+func (s *ApiService) DeleteByIds(ids []uint) error {
+	err := s.repository.DeleteByIds(s.ctx, ids)
+	if err != nil {
+		return err
+	}
+
+	apis, err := s.repository.FindByIds(s.ctx, ids)
+	if err != nil {
+		return err
+	}
+
+	// clean corresponding casbin entity
+	for _, sysApi := range apis {
+		ok := casbinService.ClearCasbin(1, sysApi.Path, sysApi.Method)
+		if !ok {
+			global.TD27_LOG.Error(fmt.Sprintf("%s:%s 同步清理 casbin失败", sysApi.Path, sysApi.Method))
 		}
 	}
 
-	return
+	return nil
 }
 
-func (as *ApiService) Update(instance *modelAuthority.ApiModel) (err error) {
-	var apiModel modelAuthority.ApiModel
-	if errors.Is(global.TD27_DB.Where("id = ?", instance.ID).First(&apiModel).Error, gorm.ErrRecordNotFound) {
-		return errors.New("记录不存在")
-	}
-
-	if apiModel.Path != instance.Path || apiModel.Method != instance.Method {
-		if !errors.Is(global.TD27_DB.Where("path = ? AND method = ?", instance.Path, instance.Method).First(&modelAuthority.ApiModel{}).Error, gorm.ErrRecordNotFound) {
-			return errors.New("存在相同接口")
-		}
-	}
-
-	err = casbinService.UpdateCasbinApi(apiModel.Path, instance.Path, apiModel.Method, instance.Method)
+func (s *ApiService) Update(req *modelAuthority.ApiModel) error {
+	one, err := s.repository.Update(s.ctx, req)
 	if err != nil {
-		return fmt.Errorf("更新casbin rule err: %v", err)
+		return err
 	}
 
-	return global.TD27_DB.Omit("created_at").Save(instance).Error
+	err = casbinService.UpdateCasbinApi(one.Path, one.Path, one.Method, one.Method)
+	if err != nil {
+		return fmt.Errorf("更新casbin rule err: %w", err)
+	}
+	return nil
 }
