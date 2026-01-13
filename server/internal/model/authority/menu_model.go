@@ -17,7 +17,7 @@ type MenuModel struct {
 	Sort      uint         `json:"sort" gorm:"not null"`      // 排序
 	Meta      Meta         `json:"meta" gorm:"type:json"`     // 元数据
 	Children  []*MenuModel `json:"children,omitempty" gorm:"-"`
-	//Roles     []*role.RoleModel `json:"-" gorm:"many2many:role_menus;"`
+	Roles     []*RoleModel `json:"-" gorm:"many2many:role_menus;"`
 }
 
 type Meta struct {

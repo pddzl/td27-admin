@@ -49,9 +49,8 @@ func (s *ApiService) GetElTree(roleId uint) ([]*modelAuthority.ApiTree, []string
 
 	// 前端 el-tree default-checked-keys
 	checkedKey := make([]string, 0)
-	e := casbinService.Casbin()
 	authorityId := strconv.Itoa(int(roleId))
-	cData, _ := e.GetFilteredPolicy(0, authorityId)
+	cData, _ := casbinService.Casbin().GetFilteredPolicy(0, authorityId)
 	for _, v := range cData {
 		checkedKey = append(checkedKey, fmt.Sprintf("%s,%s", v[1], v[2]))
 	}

@@ -21,36 +21,36 @@ func NewMenuService() *MenuService {
 	}
 }
 
-func (ms *MenuService) List(userId uint) ([]*authority.MenuModel, error) {
+func (s *MenuService) List(userId uint) ([]*authority.MenuModel, error) {
 	var findOneUserReq authority.FindOneUserReq
 	findOneUserReq.ID = userId
-	user, err := ms.userRepository.FindOne(ms.ctx, &findOneUserReq)
+	user, err := s.userRepository.FindOne(s.ctx, &findOneUserReq)
 	if err != nil {
 		return nil, err
 	}
 
-	list, err := ms.menuRepository.List(ms.ctx, user.RoleModelID)
+	list, err := s.menuRepository.List(s.ctx, user.RoleModelID)
 	if err != nil {
 		return nil, err
 	}
 	return list, nil
 }
 
-func (ms *MenuService) Create(req *authority.Menu) error {
-	return ms.menuRepository.Create(ms.ctx, req)
+func (s *MenuService) Create(req *authority.Menu) error {
+	return s.menuRepository.Create(s.ctx, req)
 }
 
-func (ms *MenuService) Update(req *authority.UpdateMenuReq) error {
-	return ms.menuRepository.Update(ms.ctx, req)
+func (s *MenuService) Update(req *authority.UpdateMenuReq) error {
+	return s.menuRepository.Update(s.ctx, req)
 }
 
-func (ms *MenuService) Delete(id uint) error {
-	return ms.menuRepository.Delete(ms.ctx, id)
+func (s *MenuService) Delete(id uint) error {
+	return s.menuRepository.Delete(s.ctx, id)
 }
 
 // GetElTreeMenus 获取所有menu
-func (ms *MenuService) GetElTreeMenus(roleId uint) ([]*authority.MenuModel, []uint, error) {
-	menus, i, err := ms.menuRepository.GetElTreeMenus(ms.ctx, roleId)
+func (s *MenuService) GetElTreeMenus(roleId uint) ([]*authority.MenuModel, []uint, error) {
+	menus, i, err := s.menuRepository.GetElTreeMenus(s.ctx, roleId)
 	if err != nil {
 		return nil, nil, err
 	}

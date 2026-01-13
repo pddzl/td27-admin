@@ -10,12 +10,12 @@ import (
 )
 
 type MenuEntity interface {
-	List(context.Context, uint) ([]*MenuModel, error)
-	Create(context.Context, *Menu) error
-	Delete(context.Context, uint) error
-	Update(context.Context, *UpdateMenuReq) error
-	GetElTreeMenus(context.Context, uint) ([]*MenuModel, []uint, error)
-	FindByIds(context.Context, []uint) ([]*MenuModel, error)
+	List(ctx context.Context, roleId uint) ([]*MenuModel, error)
+	Create(ctx context.Context, req *Menu) error
+	Delete(ctx context.Context, id uint) error
+	Update(ctx context.Context, req *UpdateMenuReq) error
+	GetElTreeMenus(ctx context.Context, roleId uint) ([]*MenuModel, []uint, error)
+	FindByIds(ctx context.Context, ids []uint) ([]*MenuModel, error)
 }
 
 type defaultMenuEntity struct {
@@ -134,26 +134,25 @@ func (e *defaultMenuEntity) Update(ctx context.Context, req *UpdateMenuReq) erro
 }
 
 func (e *defaultMenuEntity) Delete(ctx context.Context, id uint) error {
-	tx := e.conn.WithContext(ctx).Unscoped().Select("Roles").Delete(&MenuModel{})
+	var menuModel MenuModel
+	db := e.conn.WithContext(ctx)
 
-	if err := tx.Error; err != nil {
-		return fmt.Errorf("delete menu failed, id=%d: %w", id, err)
-	}
-
-	if tx.RowsAffected == 0 {
+	if errors.Is(db.Where("id = ?", id).First(&menuModel).Error, gorm.ErrRecordNotFound) {
 		return errors.New("菜单不存在")
 	}
 
-	return nil
+	err := db.Unscoped().Select("Roles").Delete(&menuModel).Error
+
+	return err
 }
 
 // GetElTreeMenus 获取所有menu
 func (e *defaultMenuEntity) GetElTreeMenus(ctx context.Context, roleId uint) ([]*MenuModel, []uint, error) {
+	db := e.conn.WithContext(ctx)
+
 	// Query all menus
 	var allMenus []*MenuModel
-	if err := e.conn.WithContext(ctx).
-		Order("sort ASC").
-		Find(&allMenus).Error; err != nil {
+	if err := db.Find(&allMenus).Error; err != nil {
 		return nil, nil, fmt.Errorf("query menus failed: %w", err)
 	}
 
@@ -169,7 +168,7 @@ func (e *defaultMenuEntity) GetElTreeMenus(ctx context.Context, roleId uint) ([]
 
 	// Query role-menu relations
 	var relations []RoleMenu
-	if err := e.conn.WithContext(ctx).
+	if err := db.
 		Table("role_menus").
 		Select("menu_model_id").
 		Where("role_model_id = ?", roleId).

@@ -178,14 +178,6 @@ func (e *defaultApiEntity) GetElTree(ctx context.Context) ([]*ApiTree, error) {
 		})
 	}
 
-	// 前端 el-tree default-checked-keys
-	//e := casbinService.Casbin()
-	//authorityId := strconv.Itoa(int(roleId))
-	//cData, _ := e.GetFilteredPolicy(0, authorityId)
-	//for _, v := range cData {
-	//	checkedKey = append(checkedKey, fmt.Sprintf("%s,%s", v[1], v[2]))
-	//}
-
 	return list, nil
 }
 
@@ -208,11 +200,6 @@ func (e *defaultApiEntity) Delete(ctx context.Context, id uint) error {
 		return fmt.Errorf("api not found, id=%d", id)
 	}
 	return nil
-
-	// optional: casbin cleanup
-	// if ok := casbinService.ClearCasbin(1, api.Path, api.Method); !ok {
-	//     return fmt.Errorf("casbin cleanup failed: %s:%s", api.Path, api.Method)
-	// }
 }
 
 func (e *defaultApiEntity) DeleteByIds(ctx context.Context, ids []uint) error {
@@ -233,15 +220,6 @@ func (e *defaultApiEntity) DeleteByIds(ctx context.Context, ids []uint) error {
 	}
 
 	return nil
-	// 删除对应casbin条目
-	//if err == nil {
-	//	for _, sysApi := range apis {
-	//		ok := casbinService.ClearCasbin(1, sysApi.Path, sysApi.Method)
-	//		if !ok {
-	//			global.TD27_LOG.Error(fmt.Sprintf("%s:%s casbin同步清理失败", sysApi.Path, sysApi.Method))
-	//		}
-	//	}
-	//}
 }
 
 func (e *defaultApiEntity) Update(ctx context.Context, req *ApiModel) (*ApiModel, error) {

@@ -22,7 +22,7 @@ func (rr *RoleRouter) InitRoleRouter(rg *gin.RouterGroup) {
 	record.POST("create", rr.roleApi.Create)
 	record.POST("delete", rr.roleApi.Delete)
 	record.POST("update", rr.roleApi.Update)
-	record.POST("editRoleMenu", rr.roleApi.UpdateRoleMenu)
+	record.POST("updateRoleMenu", rr.roleApi.UpdateRoleMenu)
 	// without record
 	base.POST("list", rr.roleApi.List)
 }

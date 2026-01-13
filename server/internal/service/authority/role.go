@@ -4,10 +4,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	baseReq "server/internal/model/base/request"
+	"strconv"
 
 	"server/internal/global"
 	"server/internal/model/authority"
 	"server/internal/model/common"
+
+	"go.uber.org/zap"
 )
 
 type RoleService struct {
@@ -39,11 +43,11 @@ func (s *RoleService) Create(req *authority.RoleModel) (*authority.RoleModel, er
 	if err != nil {
 		return nil, err
 	}
-	// todo
+
 	// 更新casbin rule
-	//if err = casbinService.EditCasbin(instance.ID, baseReq.DefaultCasbin()); err != nil {
-	//	global.TD27_LOG.Error("更新casbin rule失败", zap.Error(err))
-	//}
+	if err = casbinService.EditCasbin(create.ID, baseReq.DefaultCasbin()); err != nil {
+		global.TD27_LOG.Error("更新casbin rule失败", zap.Error(err))
+	}
 	return create, err
 
 }
@@ -72,13 +76,13 @@ func (s *RoleService) Delete(id uint) error {
 		return fmt.Errorf("删除role关联menus err: %v", err)
 	}
 
-	// todo
 	// 删除对应casbin rule
-	//authorityId := strconv.Itoa(int(roleModel.ID))
-	//ok := casbinService.ClearCasbin(0, authorityId)
-	//if !ok {
-	//	global.TD27_LOG.Warn("删除role关联casbin_rule失败")
-	//}
+	authorityId := strconv.Itoa(int(id))
+	ok := casbinService.ClearCasbin(0, authorityId)
+	if !ok {
+		global.TD27_LOG.Warn("删除role关联casbin_rule失败")
+	}
+
 	return nil
 }
 
@@ -92,6 +96,7 @@ func (s *RoleService) Update(req *authority.UpdateRoleReq) error {
 
 // UpdateRoleMenu 编辑用户menu
 func (s *RoleService) UpdateRoleMenu(roleId uint, menuIds []uint) error {
+	// check role existence
 	_, err := s.roleRepository.FindOne(s.ctx, roleId)
 	if err != nil {
 		return err

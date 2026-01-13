@@ -24,7 +24,7 @@ func NewRoleApi() *RoleApi {
 // @Security  ApiKeyAuth
 // @Produce   application/json
 // @Success   200   {object}  common.Response{data=[]modelAuthority.RoleModel,msg=string}
-// @Router    /role/getRoles [post]
+// @Router    /role/list [post]
 func (ra *RoleApi) List(c *gin.Context) {
 	var pageInfo common.PageInfo
 	if err := c.ShouldBindJSON(&pageInfo); err != nil {
@@ -53,7 +53,7 @@ func (ra *RoleApi) List(c *gin.Context) {
 // @Produce   application/json
 // @Param     data  body      modelAuthority.RoleModel true "请求参数"
 // @Success   200   {object}  common.Response{data=modelAuthority.RoleModel,msg=string}
-// @Router    /role/addRole [post]
+// @Router    /role/create [post]
 func (ra *RoleApi) Create(c *gin.Context) {
 	var roleModel modelAuthority.RoleModel
 	if err := c.ShouldBindJSON(&roleModel); err != nil {
@@ -77,7 +77,7 @@ func (ra *RoleApi) Create(c *gin.Context) {
 // @Produce   application/json
 // @Param     data  body      common.CId true "请求参数"
 // @Success   200   {object}  common.Response{msg=string}
-// @Router    /role/deleteRole [post]
+// @Router    /role/delete [post]
 func (ra *RoleApi) Delete(c *gin.Context) {
 	var cId common.CId
 	if err := c.ShouldBindJSON(&cId); err != nil {
@@ -101,7 +101,7 @@ func (ra *RoleApi) Delete(c *gin.Context) {
 // @Produce   application/json
 // @Param     data  body      modelAuthority.UpdateRoleReq true "请求参数"
 // @Success   200   {object}  common.Response{msg=string}
-// @Router    /role/updateRole [post]
+// @Router    /role/update [post]
 func (ra *RoleApi) Update(c *gin.Context) {
 	var req modelAuthority.UpdateRoleReq
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -125,7 +125,7 @@ func (ra *RoleApi) Update(c *gin.Context) {
 // @Produce   application/json
 // @Param     data  body      modelAuthority.UpdateRoleMenuReq true "请求参数"
 // @Success   200   {object}  common.Response{msg=string}
-// @Router    /role/editRoleMenu [post]
+// @Router    /role/updateRoleMenu [post]
 func (ra *RoleApi) UpdateRoleMenu(c *gin.Context) {
 	var req modelAuthority.UpdateRoleMenuReq
 	if err := c.ShouldBindJSON(&req); err != nil {

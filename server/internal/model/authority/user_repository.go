@@ -31,8 +31,8 @@ func NewDefaultUserEntity(conn *gorm.DB) UserEntity {
 	return &defaultUserEntity{conn: conn}
 }
 
-func (ue *defaultUserEntity) FindOne(ctx context.Context, req *FindOneUserReq) (*UserModel, error) {
-	db := ue.conn.WithContext(ctx)
+func (e *defaultUserEntity) FindOne(ctx context.Context, req *FindOneUserReq) (*UserModel, error) {
+	db := e.conn.WithContext(ctx)
 	query := db.Model(&UserModel{})
 	// OR conditions
 	if req.ID != 0 && req.RoleModelID != 0 {
@@ -54,10 +54,10 @@ func (ue *defaultUserEntity) FindOne(ctx context.Context, req *FindOneUserReq) (
 	return &userModel, nil
 }
 
-func (ue *defaultUserEntity) GetUserInfo(ctx context.Context, userId uint) (listUserResp *UserResp, err error) {
+func (e *defaultUserEntity) GetUserInfo(ctx context.Context, userId uint) (listUserResp *UserResp, err error) {
 	var resp UserResp
 
-	tx := ue.conn.
+	tx := e.conn.
 		WithContext(ctx).
 		Table("authority_user").
 		Select(`
@@ -85,7 +85,7 @@ func (ue *defaultUserEntity) GetUserInfo(ctx context.Context, userId uint) (list
 	return &resp, nil
 }
 
-func (ue *defaultUserEntity) List(ctx context.Context, pageInfo *common.PageInfo) ([]*UserResp, int64, error) {
+func (e *defaultUserEntity) List(ctx context.Context, pageInfo *common.PageInfo) ([]*UserResp, int64, error) {
 	var users []*UserResp
 	var total int64
 
@@ -102,7 +102,7 @@ func (ue *defaultUserEntity) List(ctx context.Context, pageInfo *common.PageInfo
 	offset := (page - 1) * pageSize
 
 	// Base query (NO joins for count)
-	db := ue.conn.WithContext(ctx).Model(&UserModel{})
+	db := e.conn.WithContext(ctx).Model(&UserModel{})
 
 	// Count total
 	if err := db.Count(&total).Error; err != nil {
@@ -137,8 +137,8 @@ func (ue *defaultUserEntity) List(ctx context.Context, pageInfo *common.PageInfo
 	return users, total, nil
 }
 
-func (ue *defaultUserEntity) Delete(ctx context.Context, id uint) (err error) {
-	result := ue.conn.WithContext(ctx).Where("id = ?", id).Unscoped().Delete(&UserModel{})
+func (e *defaultUserEntity) Delete(ctx context.Context, id uint) (err error) {
+	result := e.conn.WithContext(ctx).Where("id = ?", id).Unscoped().Delete(&UserModel{})
 
 	if err = result.Error; err != nil {
 		return fmt.Errorf("delete user failed, id=%d: %w", id, err)
@@ -151,7 +151,7 @@ func (ue *defaultUserEntity) Delete(ctx context.Context, id uint) (err error) {
 	return nil
 }
 
-func (ue *defaultUserEntity) Create(ctx context.Context, req *AddUserReq) error {
+func (e *defaultUserEntity) Create(ctx context.Context, req *AddUserReq) error {
 	var userModel UserModel
 	userModel.Username = req.Username
 	userModel.Password = pkg.MD5V([]byte(req.Password))
@@ -160,11 +160,11 @@ func (ue *defaultUserEntity) Create(ctx context.Context, req *AddUserReq) error 
 	userModel.Active = req.Active
 	userModel.RoleModelID = req.RoleModelID
 
-	return ue.conn.WithContext(ctx).Create(&userModel).Error
+	return e.conn.WithContext(ctx).Create(&userModel).Error
 }
 
-func (ue *defaultUserEntity) Update(ctx context.Context, req *UpdateUserReq) (*UserModel, error) {
-	db := ue.conn.WithContext(ctx)
+func (e *defaultUserEntity) Update(ctx context.Context, req *UpdateUserReq) (*UserModel, error) {
+	db := e.conn.WithContext(ctx)
 
 	// Update user
 	updates := map[string]interface{}{
@@ -195,8 +195,8 @@ func (ue *defaultUserEntity) Update(ctx context.Context, req *UpdateUserReq) (*U
 	return &user, nil
 }
 
-func (ue *defaultUserEntity) ModifyPasswd(ctx context.Context, req *ModifyPasswdReq) (err error) {
-	db := ue.conn.WithContext(ctx)
+func (e *defaultUserEntity) ModifyPasswd(ctx context.Context, req *ModifyPasswdReq) (err error) {
+	db := e.conn.WithContext(ctx)
 
 	// Verify old password
 	tx := db.Model(&UserModel{}).
@@ -215,8 +215,8 @@ func (ue *defaultUserEntity) ModifyPasswd(ctx context.Context, req *ModifyPasswd
 }
 
 // SwitchActive 切换启用状态
-func (ue *defaultUserEntity) SwitchActive(ctx context.Context, req *SwitchActiveReq) (err error) {
-	tx := ue.conn.WithContext(ctx).Model(&UserModel{}).Where("id = ?", req.ID).Update("active", req.Active)
+func (e *defaultUserEntity) SwitchActive(ctx context.Context, req *SwitchActiveReq) (err error) {
+	tx := e.conn.WithContext(ctx).Model(&UserModel{}).Where("id = ?", req.ID).Update("active", req.Active)
 
 	if err = tx.Error; err != nil {
 		return fmt.Errorf("switch user active failed (id=%d): %w", req.ID, err)

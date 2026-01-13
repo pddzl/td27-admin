@@ -10,13 +10,13 @@ import (
 )
 
 type RoleEntity interface {
-	FindOne(context.Context, uint) (*RoleModel, error)
-	List(context.Context, *common.PageInfo) ([]RoleModel, int64, error)
-	Create(context.Context, *RoleModel) (*RoleModel, error)
-	Delete(context.Context, uint) error
-	Update(context.Context, *UpdateRoleReq) error
-	UpdateRoleMenu(context.Context, []*MenuModel) error
-	DeleteRoleMenu(context.Context, uint) error
+	FindOne(ctx context.Context, id uint) (*RoleModel, error)
+	List(ctx context.Context, req *common.PageInfo) ([]RoleModel, int64, error)
+	Create(ctx context.Context, req *RoleModel) (*RoleModel, error)
+	Delete(ctx context.Context, id uint) error
+	Update(ctx context.Context, req *UpdateRoleReq) error
+	UpdateRoleMenu(ctx context.Context, req []*MenuModel) error
+	DeleteRoleMenu(ctx context.Context, id uint) error
 }
 
 type defaultRoleEntity struct {
@@ -78,20 +78,11 @@ func (re *defaultRoleEntity) List(ctx context.Context, req *common.PageInfo) ([]
 
 func (re *defaultRoleEntity) Create(ctx context.Context, req *RoleModel) (*RoleModel, error) {
 	err := re.conn.WithContext(ctx).Create(req).Error
-	//if err == nil {
-	//	if err = casbinService.EditCasbin(instance.ID, baseReq.DefaultCasbin()); err != nil {
-	//		global.TD27_LOG.Error("更新casbin rule失败", zap.Error(err))
-	//	}
-	//}
+
 	return req, err
 }
 
 func (re *defaultRoleEntity) Delete(ctx context.Context, id uint) error {
-	// check user
-	//if !errors.Is(global.TD27_DB.Where("role_model_id = ?", id).First(&authority2.UserModel{}).Error, gorm.ErrRecordNotFound) {
-	//	return errors.New("该角色下面还有所属用户")
-	//}
-
 	tx := re.conn.WithContext(ctx)
 
 	result := tx.Unscoped().Delete(&RoleModel{}, id)
@@ -104,18 +95,6 @@ func (re *defaultRoleEntity) Delete(ctx context.Context, id uint) error {
 		return gorm.ErrRecordNotFound
 	}
 
-	// 清空menus关联
-	//err = global.TD27_DB.Model(&roleModel).Association("Menus").Clear()
-	//if err != nil {
-	//	return fmt.Errorf("删除role关联menus err: %v", err)
-	//}
-
-	// 删除对应casbin rule
-	//authorityId := strconv.Itoa(int(roleModel.ID))
-	//ok := casbinService.ClearCasbin(0, authorityId)
-	//if !ok {
-	//	global.TD27_LOG.Warn("删除role关联casbin_rule失败")
-	//}
 	return nil
 }
 
@@ -137,20 +116,10 @@ func (re *defaultRoleEntity) Update(ctx context.Context, req *UpdateRoleReq) err
 }
 
 // UpdateRoleMenu 编辑用户menu
-func (re *defaultRoleEntity) UpdateRoleMenu(ctx context.Context, menus []*MenuModel) error {
+func (re *defaultRoleEntity) UpdateRoleMenu(ctx context.Context, req []*MenuModel) error {
 	var roleModel RoleModel
-	//if errors.Is(re.conn.WithContext(ctx).Where("id = ?", roleId).First(&roleModel).Error, gorm.ErrRecordNotFound) {
-	//	return errors.New("记录不存在")
-	//}
 
-	//var menuModel []menu.MenuModel
-	//err = global.TD27_DB.Where("id in ?", ids).Find(&menuModel).Error
-	//if err != nil {
-	//	global.TD27_LOG.Error("EditRoleMenu 查询menu", zap.Error(err))
-	//	return err
-	//}
-
-	err := re.conn.WithContext(ctx).Model(&roleModel).Association("Menus").Replace(menus)
+	err := re.conn.WithContext(ctx).Model(&roleModel).Association("Menus").Replace(req)
 	if err != nil {
 		return fmt.Errorf("update menu failed: %w", err)
 	}

@@ -22,44 +22,44 @@ func NewUserService() *UserService {
 	}
 }
 
-func (us *UserService) GetUserInfo(userId uint) (*authority.UserResp, error) {
-	resp, err := us.userRepository.GetUserInfo(us.ctx, userId)
+func (s *UserService) GetUserInfo(userId uint) (*authority.UserResp, error) {
+	resp, err := s.userRepository.GetUserInfo(s.ctx, userId)
 	if err != nil {
 		return resp, err
 	}
 	return resp, nil
 }
 
-func (us *UserService) List(req *common.PageInfo) ([]*authority.UserResp, int64, error) {
-	list, count, err := us.userRepository.List(us.ctx, req)
+func (s *UserService) List(req *common.PageInfo) ([]*authority.UserResp, int64, error) {
+	list, count, err := s.userRepository.List(s.ctx, req)
 	if err != nil {
 		return nil, 0, err
 	}
 	return list, count, nil
 }
 
-func (us *UserService) Delete(id uint) error {
-	return us.userRepository.Delete(us.ctx, id)
+func (s *UserService) Delete(id uint) error {
+	return s.userRepository.Delete(s.ctx, id)
 }
 
-func (us *UserService) Create(req *authority.AddUserReq) error {
+func (s *UserService) Create(req *authority.AddUserReq) error {
 	// check role existence
-	_, err := us.roleRepository.FindOne(us.ctx, req.RoleModelID)
+	_, err := s.roleRepository.FindOne(s.ctx, req.RoleModelID)
 	if err != nil {
 		return err
 	}
 
-	return us.userRepository.Create(us.ctx, req)
+	return s.userRepository.Create(s.ctx, req)
 }
 
-func (us *UserService) Update(req *authority.UpdateUserReq) (*authority.UserResp, error) {
+func (s *UserService) Update(req *authority.UpdateUserReq) (*authority.UserResp, error) {
 	// check role existence
-	role, err := us.roleRepository.FindOne(us.ctx, req.RoleModelID)
+	role, err := s.roleRepository.FindOne(s.ctx, req.RoleModelID)
 	if err != nil {
 		return nil, err
 	}
 
-	update, err := us.userRepository.Update(us.ctx, req)
+	update, err := s.userRepository.Update(s.ctx, req)
 	if err != nil {
 		return nil, err
 	}
@@ -73,11 +73,11 @@ func (us *UserService) Update(req *authority.UpdateUserReq) (*authority.UserResp
 }
 
 // ModifyPasswd 修改用户密码
-func (us *UserService) ModifyPasswd(req *authority.ModifyPasswdReq) error {
-	return us.userRepository.ModifyPasswd(us.ctx, req)
+func (s *UserService) ModifyPasswd(req *authority.ModifyPasswdReq) error {
+	return s.userRepository.ModifyPasswd(s.ctx, req)
 }
 
 // SwitchActive 切换启用状态
-func (us *UserService) SwitchActive(req *authority.SwitchActiveReq) error {
-	return us.userRepository.SwitchActive(us.ctx, req)
+func (s *UserService) SwitchActive(req *authority.SwitchActiveReq) error {
+	return s.userRepository.SwitchActive(s.ctx, req)
 }

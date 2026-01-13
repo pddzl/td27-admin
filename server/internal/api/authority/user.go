@@ -101,7 +101,7 @@ func (ua *UserApi) Delete(c *gin.Context) {
 // @Security  ApiKeyAuth
 // @accept    application/json
 // @Produce   application/json
-// @Param     data  body      modelAuthority.AddUser true "请求参数"
+// @Param     data  body      modelAuthority.AddUserReq true "请求参数"
 // @Success   200   {object}  common.Response{msg=string}
 // @Router    /user/create [post]
 func (ua *UserApi) Create(c *gin.Context) {
@@ -177,7 +177,7 @@ func (ua *UserApi) Update(c *gin.Context) {
 	}
 }
 
-// ModifyPass
+// ModifyPasswd
 // @Tags      UserApi
 // @Summary   修改用户密码
 // @Security  ApiKeyAuth
@@ -185,8 +185,8 @@ func (ua *UserApi) Update(c *gin.Context) {
 // @Produce   application/json
 // @Param     data  body      modelAuthority.ModifyPasswdReq true "请求参数"
 // @Success   200   {object}  common.Response{msg=string}
-// @Router    /user/modifyPass [post]
-func (ua *UserApi) ModifyPass(c *gin.Context) {
+// @Router    /user/modifyPasswd [post]
+func (ua *UserApi) ModifyPasswd(c *gin.Context) {
 	var req modelAuthority.ModifyPasswdReq
 	if err := c.ShouldBindJSON(&req); err != nil {
 		common.FailReq(err.Error(), c)
