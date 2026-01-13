@@ -3,10 +3,6 @@ package base
 import (
 	"context"
 	"fmt"
-	modelAuthority "server/internal/model/authority"
-	"server/internal/model/base/request"
-	baseResp "server/internal/model/base/response"
-	"server/internal/model/common"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -15,6 +11,10 @@ import (
 	"go.uber.org/zap"
 
 	"server/internal/global"
+	modelAuthority "server/internal/model/authority"
+	"server/internal/model/base/request"
+	baseResp "server/internal/model/base/response"
+	"server/internal/model/common"
 	"server/internal/pkg"
 	"server/internal/service/base"
 )
@@ -38,7 +38,7 @@ func NewLogRegApi() *LogRegApi {
 // @Summary   生成验证码
 // @Security  ApiKeyAuth
 // @Produce   application/json
-// @Success   200  {object}  response.Response{data=baseReq.CaptchaResponse,msg=string}
+// @Success   200  {object}  common.Response{data=request.CaptchaResponse,msg=string}
 // @Router    /logReg/captcha [post]
 func (ba *LogRegApi) Captcha(c *gin.Context) {
 	// 字符,公式,验证码配置
@@ -64,8 +64,8 @@ func (ba *LogRegApi) Captcha(c *gin.Context) {
 // @Summary  用户登录
 // @accept    application/json
 // @Produce   application/json
-// @Param    data  body      baseReq.Login true "请求参数"
-// @Success  200   {object}  response.Response{data=baseResp.LoginResponse,msg=string}
+// @Param    data  body      request.Login true "请求参数"
+// @Success  200   {object}  common.Response{data=baseResp.LoginResponse,msg=string}
 // @Router   /logReg/login [post]
 func (ba *LogRegApi) Login(c *gin.Context) {
 	var login request.Login
@@ -83,7 +83,7 @@ func (ba *LogRegApi) Login(c *gin.Context) {
 			global.TD27_LOG.Error("登录失败", zap.Error(err))
 			return
 		}
-		// 获取token
+		// 获取 token
 		ba.tokenNext(c, user)
 	} else {
 		common.FailWithMessage("验证码错误", c)
@@ -133,7 +133,7 @@ func (ba *LogRegApi) tokenNext(c *gin.Context, user *modelAuthority.UserModel) {
 // @Summary  用户登出
 // @accept    application/json
 // @Produce   application/json
-// @Success  200   {object}  response.Response{msg=string}
+// @Success  200   {object}  common.Response{msg=string}
 // @Router   /logReg/logout [post]
 func (ba *LogRegApi) LogOut(c *gin.Context) {
 	token := c.Request.Header.Get("x-token")

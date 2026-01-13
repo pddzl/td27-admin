@@ -3,13 +3,13 @@ package fileM
 import (
 	"fmt"
 	"os"
-	"server/internal/model/common"
-	fileMReq "server/internal/model/fileM/request"
 
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 
 	"server/internal/global"
+	"server/internal/model/common"
+	fileMReq "server/internal/model/fileM/request"
 	serviceFileM "server/internal/service/fileM"
 )
 
@@ -30,7 +30,7 @@ func NewFileApi() *FileApi {
 // @accept    mpfd
 // @Produce   application/json
 // @Param     file formData file true "The file to upload"
-// @Success   200   {object}  commonResp.Response{msg=string}
+// @Success   200   {object}  common.Response{msg=string}
 // @Router    /file/upload [post]
 func (fa *FileApi) Upload(c *gin.Context) {
 	file, err := c.FormFile("file")
@@ -60,7 +60,7 @@ func (fa *FileApi) Upload(c *gin.Context) {
 // @accept    application/json
 // @Produce   application/json
 // @Param     data  body      fileMReq.FileSearchParams true  "请求参数"
-// @Success   200   {object}  commonResp.Response{data=commonResp.Page{list=[]fileM.FileModel},msg=string}
+// @Success   200   {object}  common.Response{data=[],msg=string}
 // @Router    /file/getFileList [post]
 func (fa *FileApi) GetFileList(c *gin.Context) {
 	var params fileMReq.FileSearchParams
@@ -116,7 +116,7 @@ func (fa *FileApi) Download(c *gin.Context) {
 // @accept    application/json
 // @Produce   application/json
 // @Param     name query string true "文件名"
-// @Success   200   {object}  commonResp.Response{msg=string}
+// @Success   200   {object}  common.Response{msg=string}
 // @Router    /file/delete [get]
 func (fa *FileApi) Delete(c *gin.Context) {
 	fileName := c.Query("name")
