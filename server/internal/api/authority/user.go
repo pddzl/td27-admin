@@ -49,7 +49,7 @@ func (ua *UserApi) GetUserInfo(c *gin.Context) {
 // @accept    application/json
 // @Produce   application/json
 // @Param     data  body      common.PageInfo true "请求参数"
-// @Success   200   {object}  common.Response{data=common.Page{list=[]response.UserResult},msg=string}
+// @Success   200   {object}  common.Response{data=[]modelAuthority.UserResp,msg=string}
 // @Router    /user/list [post]
 func (ua *UserApi) List(c *gin.Context) {
 	var pageInfo common.PageInfo

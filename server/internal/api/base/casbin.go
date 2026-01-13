@@ -26,7 +26,7 @@ func NewCasbinApi() *CasbinApi {
 // @accept    application/json
 // @Produce   application/json
 // @Param     data  body      authorityReq.ReqCasbin true "请求参数"
-// @Success   200   {object}  response.Response{msg=string}
+// @Success   200   {object}  common.Response{msg=string}
 // @Router    /casbin/editCasbin [post]
 func (ca *CasbinApi) EditCasbin(c *gin.Context) {
 	var reqCasbin authorityReq.ReqCasbin

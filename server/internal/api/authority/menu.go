@@ -48,7 +48,7 @@ func (ma *MenuApi) List(c *gin.Context) {
 // @Security  ApiKeyAuth
 // @accept    application/json
 // @Produce   application/json
-// @Param     data  body      req modelAuthority.Menu true "请求参数"
+// @Param     data  body      modelAuthority.Menu true "请求参数"
 // @Success   200   {object}  common.Response{msg=string}
 // @Router    /menu/create [post]
 func (ma *MenuApi) Create(c *gin.Context) {
@@ -71,7 +71,7 @@ func (ma *MenuApi) Create(c *gin.Context) {
 // @Security  ApiKeyAuth
 // @accept    application/json
 // @Produce   application/json
-// @Param     data  body      req modelAuthority.UpdateMenuReq true "请求参数"
+// @Param     data  body      modelAuthority.UpdateMenuReq true "请求参数"
 // @Success   200   {object}  common.Response{msg=string}
 // @Router    /menu/update [post]
 func (ma *MenuApi) Update(c *gin.Context) {
