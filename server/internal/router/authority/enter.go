@@ -3,6 +3,8 @@ package authority
 import "github.com/gin-gonic/gin"
 
 type RouterGroup struct {
+	*LogRegRouter
+	*CasbinRouter
 	*UserRouter
 	*RoleRouter
 	*MenuRouter
@@ -11,18 +13,23 @@ type RouterGroup struct {
 
 func NewRouterGroup() *RouterGroup {
 	return &RouterGroup{
-		UserRouter: NewUserRouter(),
-		RoleRouter: NewRoleRouter(),
-		MenuRouter: NewMenuRouter(),
-		ApiRouter:  NewApiRouter(),
+		LogRegRouter: NewLogRegRouter(),
+		CasbinRouter: NewCasbinRouter(),
+		UserRouter:   NewUserRouter(),
+		RoleRouter:   NewRoleRouter(),
+		MenuRouter:   NewMenuRouter(),
+		ApiRouter:    NewApiRouter(),
 	}
 }
 
-func (rg *RouterGroup) InitPublic(group *gin.RouterGroup) {}
+func (r *RouterGroup) InitPublic(group *gin.RouterGroup) {
+	r.InitLogRegRouter(group)
+}
 
-func (rg *RouterGroup) InitPrivate(group *gin.RouterGroup) {
-	rg.InitApiRouter(group)
-	rg.InitMenuRouter(group)
-	rg.InitRoleRouter(group)
-	rg.InitUserRouter(group)
+func (r *RouterGroup) InitPrivate(group *gin.RouterGroup) {
+	r.InitCasbinRouter(group)
+	r.InitUserRouter(group)
+	r.InitRoleRouter(group)
+	r.InitMenuRouter(group)
+	r.InitApiRouter(group)
 }

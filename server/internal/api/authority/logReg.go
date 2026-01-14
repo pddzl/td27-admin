@@ -1,8 +1,9 @@
-package base
+package authority
 
 import (
 	"context"
 	"fmt"
+	jwt2 "server/internal/pkg/jwt"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -12,24 +13,21 @@ import (
 
 	"server/internal/global"
 	modelAuthority "server/internal/model/authority"
-	"server/internal/model/base/request"
-	baseResp "server/internal/model/base/response"
 	"server/internal/model/common"
-	"server/internal/pkg"
-	"server/internal/service/base"
+	"server/internal/service/authority"
 )
 
 var store = base64Captcha.DefaultMemStore
 
 type LogRegApi struct {
-	logRegService *base.LogRegService
-	jwtService    *base.JwtService
+	logRegService *authority.LogRegService
+	jwtService    *authority.JwtService
 }
 
 func NewLogRegApi() *LogRegApi {
 	return &LogRegApi{
-		logRegService: base.NewLogRegService(),
-		jwtService:    base.NewJwtService(),
+		logRegService: authority.NewLogRegService(),
+		jwtService:    authority.NewJwtService(),
 	}
 }
 
@@ -52,7 +50,7 @@ func (ba *LogRegApi) Captcha(c *gin.Context) {
 		common.FailWithMessage("验证码获取失败", c)
 		return
 	}
-	common.OkWithDetailed(request.CaptchaResponse{
+	common.OkWithDetailed(modelAuthority.CaptchaResponse{
 		CaptchaId:     id,
 		PicPath:       b64s,
 		CaptchaLength: global.TD27_CONFIG.Captcha.KeyLong,
@@ -68,7 +66,7 @@ func (ba *LogRegApi) Captcha(c *gin.Context) {
 // @Success  200   {object}  common.Response{data=baseResp.LoginResponse,msg=string}
 // @Router   /logReg/login [post]
 func (ba *LogRegApi) Login(c *gin.Context) {
-	var login request.Login
+	var login modelAuthority.Login
 	if err := c.ShouldBindJSON(&login); err != nil {
 		common.FailReq(err.Error(), c)
 		return
@@ -92,9 +90,9 @@ func (ba *LogRegApi) Login(c *gin.Context) {
 
 // 生成jwt token
 func (ba *LogRegApi) tokenNext(c *gin.Context, user *modelAuthority.UserModel) {
-	j := &pkg.JWT{SigningKey: []byte(global.TD27_CONFIG.JWT.SigningKey)} // 唯一签名
+	j := &jwt2.JWT{SigningKey: []byte(global.TD27_CONFIG.JWT.SigningKey)} // 唯一签名
 
-	claims := request.CustomClaims{
+	claims := modelAuthority.CustomClaims{
 		ID:         user.ID,
 		Username:   user.Username,
 		RoleId:     user.RoleModelID,
@@ -121,7 +119,7 @@ func (ba *LogRegApi) tokenNext(c *gin.Context, user *modelAuthority.UserModel) {
 	}
 
 	// 登录成功
-	common.OkWithDetailed(baseResp.LoginResponse{
+	common.OkWithDetailed(modelAuthority.LoginResponse{
 		User:      *user,
 		Token:     token,
 		ExpiresAt: claims.RegisteredClaims.ExpiresAt.Unix(),
@@ -137,7 +135,7 @@ func (ba *LogRegApi) tokenNext(c *gin.Context, user *modelAuthority.UserModel) {
 // @Router   /logReg/logout [post]
 func (ba *LogRegApi) LogOut(c *gin.Context) {
 	token := c.Request.Header.Get("x-token")
-	j := pkg.NewJWT()
+	j := jwt2.NewJWT()
 	// parseToken 解析token包含的信息
 	claims, err := j.ParseToken(token)
 	if err != nil {

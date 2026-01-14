@@ -1,4 +1,4 @@
-package request
+package sysTool
 
 type ExtraParams struct {
 	TableInfo []ClearTable `json:"tableInfo"` // for clearTable

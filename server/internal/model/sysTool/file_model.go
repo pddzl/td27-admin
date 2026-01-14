@@ -1,4 +1,4 @@
-package fileM
+package sysTool
 
 import (
 	"server/internal/model/common"

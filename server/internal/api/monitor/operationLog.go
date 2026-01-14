@@ -2,7 +2,7 @@ package monitor
 
 import (
 	"server/internal/model/common"
-	monitorReq "server/internal/model/monitor/request"
+	monitorReq "server/internal/model/monitor"
 
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"

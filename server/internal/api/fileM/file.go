@@ -3,13 +3,13 @@ package fileM
 import (
 	"fmt"
 	"os"
+	fileMReq "server/internal/model/sysTool"
 
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 
 	"server/internal/global"
 	"server/internal/model/common"
-	fileMReq "server/internal/model/fileM/request"
 	serviceFileM "server/internal/service/fileM"
 )
 

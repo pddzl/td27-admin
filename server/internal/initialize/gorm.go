@@ -5,7 +5,6 @@ import (
 	"log"
 	"os"
 	"server/internal/model/authority"
-	modelFileM "server/internal/model/fileM"
 	modelMonitor "server/internal/model/monitor"
 	"server/internal/model/sysSet"
 	modelSysTool "server/internal/model/sysTool"
@@ -92,7 +91,7 @@ func RegisterTables(db *gorm.DB) {
 		// 监控
 		modelMonitor.OperationLogModel{},
 		// fileM
-		modelFileM.FileModel{},
+		modelSysTool.FileModel{},
 		// 系统工具
 		modelSysTool.CronModel{},
 		// system settings

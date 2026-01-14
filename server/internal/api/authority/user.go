@@ -9,7 +9,6 @@ import (
 	"server/internal/global"
 	modelAuthority "server/internal/model/authority"
 	"server/internal/model/common"
-	"server/internal/pkg"
 	serviceAuthority "server/internal/service/authority"
 )
 
@@ -29,7 +28,7 @@ func NewUserApi() *UserApi {
 // @Success   200   {object}  common.Response{msg=string}
 // @Router    /user/getUserInfo [post]
 func (ua *UserApi) GetUserInfo(c *gin.Context) {
-	userInfo, err := pkg.GetUserInfo(c)
+	userInfo, err := GetUserInfo(c)
 	if err != nil {
 		common.FailWithMessage("获取失败", c)
 	}

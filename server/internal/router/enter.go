@@ -4,16 +4,11 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"server/internal/router/authority"
-	"server/internal/router/base"
 	"server/internal/router/fileM"
 	"server/internal/router/monitor"
 	"server/internal/router/sysSet"
 	"server/internal/router/sysTool"
 )
-
-func NewBaseRouterGroup() *base.RouterGroup {
-	return base.NewRouterGroup()
-}
 
 func NewMonitorRouterGroup() *monitor.RouterGroup {
 	return monitor.NewRouterGroup()
@@ -52,7 +47,6 @@ func GetAllModules() []ModuleRouter {
 
 func init() {
 	Register(NewAuthorityRouterGroup())
-	Register(NewBaseRouterGroup())
 	Register(NewFileMRouterGroup())
 	Register(NewMonitorRouterGroup())
 	Register(NewSysSetRouterGroup())

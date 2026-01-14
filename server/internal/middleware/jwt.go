@@ -2,8 +2,6 @@ package middleware
 
 import (
 	"errors"
-	modelAuthority "server/internal/model/authority"
-	"server/internal/model/common"
 	"strconv"
 	"time"
 
@@ -11,12 +9,14 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 
 	"server/internal/global"
-	"server/internal/pkg"
-	"server/internal/service/base"
+	modelAuthority "server/internal/model/authority"
+	"server/internal/model/common"
+	pkgJwt "server/internal/pkg/jwt"
+	"server/internal/service/authority"
 )
 
 var (
-	jwtService = base.NewJwtService()
+	jwtService = authority.NewJwtService()
 )
 
 func JWTAuth() gin.HandlerFunc {
@@ -29,11 +29,11 @@ func JWTAuth() gin.HandlerFunc {
 			return
 		}
 
-		j := pkg.NewJWT()
+		j := pkgJwt.NewJWT()
 		// parseToken 解析token包含的信息
 		claims, err := j.ParseToken(token)
 		if err != nil {
-			if errors.Is(err, pkg.TokenExpired) {
+			if errors.Is(err, pkgJwt.TokenExpired) {
 				common.FailWithDetailed(gin.H{"reload": true}, "授权已过期", c)
 				c.Abort()
 				return

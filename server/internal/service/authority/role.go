@@ -4,14 +4,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	baseReq "server/internal/model/base/request"
 	"strconv"
+
+	"go.uber.org/zap"
 
 	"server/internal/global"
 	"server/internal/model/authority"
 	"server/internal/model/common"
-
-	"go.uber.org/zap"
 )
 
 type RoleService struct {
@@ -45,7 +44,7 @@ func (s *RoleService) Create(req *authority.RoleModel) (*authority.RoleModel, er
 	}
 
 	// 更新casbin rule
-	if err = casbinService.EditCasbin(create.ID, baseReq.DefaultCasbin()); err != nil {
+	if err = casbinService.EditCasbin(create.ID, authority.DefaultCasbin()); err != nil {
 		global.TD27_LOG.Error("更新casbin rule失败", zap.Error(err))
 	}
 	return create, err

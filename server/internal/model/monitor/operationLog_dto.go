@@ -1,4 +1,4 @@
-package request
+package monitor
 
 import (
 	"server/internal/model/common"

@@ -1,4 +1,4 @@
-package request
+package sysTool
 
 import (
 	"server/internal/model/common"

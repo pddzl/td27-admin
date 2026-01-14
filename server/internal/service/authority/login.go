@@ -1,8 +1,9 @@
-package base
+package authority
 
 import (
 	"errors"
 	"fmt"
+
 	"server/internal/global"
 	modelAuthority "server/internal/model/authority"
 	"server/internal/pkg"

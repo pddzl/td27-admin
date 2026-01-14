@@ -1,25 +1,25 @@
 package middleware
 
 import (
+	authority2 "server/internal/api/authority"
 	"server/internal/model/common"
+	"server/internal/service/authority"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 
 	"server/internal/global"
-	"server/internal/pkg"
-	"server/internal/service/base"
 )
 
 var (
-	casbinService = base.NewCasbinService()
+	casbinService = authority.NewCasbinService()
 )
 
 // CasbinHandler 拦截器
 func CasbinHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if global.TD27_CONFIG.System.Env != "dev" {
-			waitUse, _ := pkg.GetClaims(c)
+			waitUse, _ := authority2.GetClaims(c)
 			//获取请求的PATH
 			obj := c.Request.URL.Path
 			// 获取请求方法

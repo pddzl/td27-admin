@@ -5,8 +5,7 @@ import (
 	"io"
 	"mime/multipart"
 	"os"
-	modelFileM "server/internal/model/fileM"
-	fileMReq "server/internal/model/fileM/request"
+	"server/internal/model/sysTool"
 
 	"github.com/google/uuid"
 
@@ -21,8 +20,8 @@ func NewFileService() *FileService {
 }
 
 // Upload 上传文件
-func (fs *FileService) Upload(file *multipart.FileHeader) (*modelFileM.FileModel, error) {
-	var uploadModel modelFileM.FileModel
+func (fs *FileService) Upload(file *multipart.FileHeader) (*sysTool.FileModel, error) {
+	var uploadModel sysTool.FileModel
 	uploadModel.Mime = file.Header.Get("Content-Type")
 	// 读取文件、文件后缀
 	fileName, fileExt := pkg.GetFileAndExt(file.Filename)
@@ -58,11 +57,11 @@ func (fs *FileService) Upload(file *multipart.FileHeader) (*modelFileM.FileModel
 }
 
 // GetFileList 分页获取文件信息
-func (fs *FileService) GetFileList(params fileMReq.FileSearchParams) ([]modelFileM.FileModel, int64, error) {
+func (fs *FileService) GetFileList(params sysTool.FileSearchParams) ([]sysTool.FileModel, int64, error) {
 	limit := params.PageSize
 	offset := params.PageSize * (params.Page - 1)
-	db := global.TD27_DB.Model(&modelFileM.FileModel{})
-	var fileList []modelFileM.FileModel
+	db := global.TD27_DB.Model(&sysTool.FileModel{})
+	var fileList []sysTool.FileModel
 
 	if params.Name != "" {
 		db = db.Where("file_name LIKE ?", "%"+params.Name+"%")
@@ -106,7 +105,7 @@ func (fs *FileService) Delete(fileName string) (err error) {
 
 	// 删除数据库记录
 	if err == nil {
-		err = global.TD27_DB.Where("file_name = ?", fileName).Delete(&modelFileM.FileModel{}).Error
+		err = global.TD27_DB.Where("file_name = ?", fileName).Delete(&sysTool.FileModel{}).Error
 	}
 
 	return

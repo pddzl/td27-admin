@@ -1,19 +1,19 @@
-package base
+package authority
 
 import (
 	"github.com/gin-gonic/gin"
 
-	"server/internal/api/base"
+	"server/internal/api/authority"
 	"server/internal/middleware"
 )
 
 type CasbinRouter struct {
-	casbinApi *base.CasbinApi
+	casbinApi *authority.CasbinApi
 }
 
 func NewCasbinRouter() *CasbinRouter {
 	return &CasbinRouter{
-		casbinApi: base.NewCasbinApi(),
+		casbinApi: authority.NewCasbinApi(),
 	}
 }
 

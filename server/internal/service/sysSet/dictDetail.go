@@ -3,7 +3,6 @@ package sysSet
 import (
 	"errors"
 	modelSysSet "server/internal/model/sysSet"
-	sysSetReq "server/internal/model/sysSet/request"
 
 	"gorm.io/gorm"
 
@@ -16,7 +15,7 @@ func NewDictDetailService() *DictDetailService {
 	return &DictDetailService{}
 }
 
-func (dds *DictDetailService) GetDictDetail(searchParams sysSetReq.DictDetailSearchParams) ([]*modelSysSet.DictDetailModel, int64, error) {
+func (dds *DictDetailService) GetDictDetail(searchParams modelSysSet.DictDetailSearchParams) ([]*modelSysSet.DictDetailModel, int64, error) {
 	var roots []modelSysSet.DictDetailModel
 	var total int64
 

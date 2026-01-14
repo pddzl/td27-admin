@@ -1,4 +1,4 @@
-package request
+package authority
 
 type CasbinInfo struct {
 	Path   string `json:"path"`   // 路径
@@ -6,7 +6,7 @@ type CasbinInfo struct {
 }
 
 type ReqCasbin struct {
-	RoleId      uint         `json:"roleId" binding:"required"` // 角色ID
+	RoleId      uint         `json:"roleId" binding:"required"` // 角色 ID
 	CasbinInfos []CasbinInfo `json:"casbinInfos"`
 }
 

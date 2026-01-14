@@ -1,8 +1,7 @@
-package base
+package authority
 
 import (
 	"errors"
-	baseReq "server/internal/model/base/request"
 	"strconv"
 	"sync"
 
@@ -12,6 +11,7 @@ import (
 	"go.uber.org/zap"
 
 	"server/internal/global"
+	baseReq "server/internal/model/authority"
 )
 
 type CasbinService struct{}
@@ -98,7 +98,7 @@ func (cs *CasbinService) EditCasbin(roleId uint, casbinInfos []baseReq.CasbinInf
 	e := cs.Casbin()
 	ok, _ := e.AddPolicies(rules)
 	if !ok {
-		return errors.New("存在相同api")
+		return errors.New("存在相同 api")
 	}
 	return
 }

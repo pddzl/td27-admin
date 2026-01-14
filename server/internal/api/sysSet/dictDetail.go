@@ -3,7 +3,6 @@ package sysSet
 import (
 	"server/internal/model/common"
 	entitySysSet "server/internal/model/sysSet"
-	sysSetReq "server/internal/model/sysSet/request"
 
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
@@ -23,7 +22,7 @@ func NewDictDetailApi() *DictDetailApi {
 }
 
 func (dda *DictDetailApi) GetDictDetail(c *gin.Context) {
-	var ddsParams sysSetReq.DictDetailSearchParams
+	var ddsParams entitySysSet.DictDetailSearchParams
 	if err := c.ShouldBindJSON(&ddsParams); err != nil {
 		common.FailReq(err.Error(), c)
 		return
@@ -43,7 +42,7 @@ func (dda *DictDetailApi) GetDictDetail(c *gin.Context) {
 }
 
 func (dda *DictDetailApi) GetDictDetailFlat(c *gin.Context) {
-	var flatReq sysSetReq.DictDetailFlatReq
+	var flatReq entitySysSet.DictDetailFlatReq
 	if err := c.ShouldBindJSON(&flatReq); err != nil {
 		common.FailReq(err.Error(), c)
 		return

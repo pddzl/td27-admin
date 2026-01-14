@@ -7,7 +7,6 @@ import (
 	"server/internal/global"
 	modelAuthority "server/internal/model/authority"
 	"server/internal/model/common"
-	"server/internal/pkg"
 	serviceAuthority "server/internal/service/authority"
 )
 
@@ -27,7 +26,7 @@ func NewMenuApi() *MenuApi {
 // @Success   200   {object}  common.Response{data=[]modelAuthority.MenuModel,msg=string}
 // @Router    /menu/list [post]
 func (ma *MenuApi) List(c *gin.Context) {
-	userInfo, err := pkg.GetUserInfo(c)
+	userInfo, err := GetUserInfo(c)
 	if err != nil {
 		common.FailWithMessage("获取失败", c)
 		global.TD27_LOG.Error("获取失败!", zap.Error(err))

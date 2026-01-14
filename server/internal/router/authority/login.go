@@ -1,17 +1,18 @@
-package base
+package authority
 
 import (
+	"server/internal/api/authority"
+
 	"github.com/gin-gonic/gin"
-	"server/internal/api/base"
 )
 
 type LogRegRouter struct {
-	logRegApi *base.LogRegApi
+	logRegApi *authority.LogRegApi
 }
 
 func NewLogRegRouter() *LogRegRouter {
 	return &LogRegRouter{
-		logRegApi: base.NewLogRegApi(),
+		logRegApi: authority.NewLogRegApi(),
 	}
 }
 

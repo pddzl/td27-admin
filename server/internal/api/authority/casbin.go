@@ -1,22 +1,21 @@
-package base
+package authority
 
 import (
-	authorityReq "server/internal/model/base/request"
-	"server/internal/model/common"
-
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 
 	"server/internal/global"
-	"server/internal/service/base"
+	modelAuthority "server/internal/model/authority"
+	"server/internal/model/common"
+	"server/internal/service/authority"
 )
 
 type CasbinApi struct {
-	casbinService *base.CasbinService
+	casbinService *authority.CasbinService
 }
 
 func NewCasbinApi() *CasbinApi {
-	return &CasbinApi{casbinService: base.NewCasbinService()}
+	return &CasbinApi{casbinService: authority.NewCasbinService()}
 }
 
 // EditCasbin
@@ -25,11 +24,11 @@ func NewCasbinApi() *CasbinApi {
 // @Security  ApiKeyAuth
 // @accept    application/json
 // @Produce   application/json
-// @Param     data  body      authorityReq.ReqCasbin true "请求参数"
+// @Param     data  body      modelAuthority.ReqCasbin true "请求参数"
 // @Success   200   {object}  common.Response{msg=string}
 // @Router    /casbin/editCasbin [post]
 func (ca *CasbinApi) EditCasbin(c *gin.Context) {
-	var reqCasbin authorityReq.ReqCasbin
+	var reqCasbin modelAuthority.ReqCasbin
 	if err := c.ShouldBindJSON(&reqCasbin); err != nil {
 		common.FailReq(err.Error(), c)
 		return

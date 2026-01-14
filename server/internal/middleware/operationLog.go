@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"server/internal/api/authority"
 	modelMonitor "server/internal/model/monitor"
 	"strings"
 	"time"
@@ -14,7 +15,6 @@ import (
 	"go.uber.org/zap"
 
 	"server/internal/global"
-	"server/internal/pkg"
 	"server/internal/service/monitor"
 )
 
@@ -62,7 +62,7 @@ func OperationRecord() gin.HandlerFunc {
 		}
 
 		// 解析token
-		claims, _ := pkg.GetClaims(c)
+		claims, _ := authority.GetClaims(c)
 
 		record := modelMonitor.OperationLogModel{
 			Ip:        c.ClientIP(),

@@ -3,7 +3,6 @@ package sysTool
 import (
 	"server/internal/model/common"
 	entitySysTool "server/internal/model/sysTool"
-	sysToolReq "server/internal/model/sysTool/request"
 
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
@@ -149,7 +148,7 @@ func (ca *CronApi) EditCron(c *gin.Context) {
 // @Success   200   {object}  commonResp.Response{data=map[string]int, msg=string}
 // @Router    /cron/switchOpen [post]
 func (ca *CronApi) SwitchOpen(c *gin.Context) {
-	var switchReq sysToolReq.SwitchReq
+	var switchReq entitySysTool.SwitchReq
 	if err := c.ShouldBindJSON(&switchReq); err != nil {
 		common.FailReq(err.Error(), c)
 		return

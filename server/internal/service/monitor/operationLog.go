@@ -3,7 +3,6 @@ package monitor
 import (
 	"server/internal/global"
 	modelMonitor "server/internal/model/monitor"
-	monitorReq "server/internal/model/monitor/request"
 )
 
 type OperationLogService struct{}
@@ -18,7 +17,7 @@ func (o *OperationLogService) CreateOperationLog(operationRecord modelMonitor.Op
 }
 
 // GetOperationLogList 分页获取操作日志
-func (o *OperationLogService) GetOperationLogList(orSp monitorReq.OrSearchParams) ([]modelMonitor.OperationLogModel, int64, error) {
+func (o *OperationLogService) GetOperationLogList(orSp modelMonitor.OrSearchParams) ([]modelMonitor.OperationLogModel, int64, error) {
 	limit := orSp.PageSize
 	offset := orSp.PageSize * (orSp.Page - 1)
 	db := global.TD27_DB.Model(&modelMonitor.OperationLogModel{})
