@@ -16,7 +16,7 @@ import (
 )
 
 var (
-	jwtService = authority.NewJwtService()
+	jwtService = sysManagement.NewJwtService()
 )
 
 func JWTAuth() gin.HandlerFunc {

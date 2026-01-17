@@ -10,8 +10,8 @@ import (
 	"server/internal/router/sysTool"
 )
 
-func NewMonitorRouterGroup() *monitor.RouterGroup {
-	return monitor.NewRouterGroup()
+func NewMonitorRouterGroup() *sysMonitor.RouterGroup {
+	return sysMonitor.NewRouterGroup()
 }
 
 func NewSysSetRouterGroup() *sysSet.RouterGroup {
@@ -22,8 +22,8 @@ func NewSysToolRouterGroup() *sysTool.RouterGroup {
 	return sysTool.NewRouterGroup()
 }
 
-func NewAuthorityRouterGroup() *authority.RouterGroup {
-	return authority.NewRouterGroup()
+func NewAuthorityRouterGroup() *sysManagement.RouterGroup {
+	return sysManagement.NewRouterGroup()
 }
 
 func NewFileMRouterGroup() *fileM.RouterGroup {

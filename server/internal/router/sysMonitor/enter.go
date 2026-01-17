@@ -1,21 +1,19 @@
-package sysTool
+package sysMonitor
 
 import "github.com/gin-gonic/gin"
 
 type RouterGroup struct {
-	*CronRouter
-	*FileRouter
+	*OperationLogRouter
 }
 
 func NewRouterGroup() *RouterGroup {
 	return &RouterGroup{
-		CronRouter: NewCronRouter(),
-		FileRouter: NewFileRouter(),
+		OperationLogRouter: NewOperationLogRouter(),
 	}
 }
 
 func (rg *RouterGroup) InitPublic(group *gin.RouterGroup) {}
 
 func (rg *RouterGroup) InitPrivate(group *gin.RouterGroup) {
-	rg.InitCronRouter(group)
+	rg.InitOperationLogRouter(group)
 }

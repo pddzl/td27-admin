@@ -6,7 +6,7 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 
 	"server/internal/global"
-	modelAuthority "server/internal/model/authority"
+	"server/internal/model/sysManagement"
 )
 
 type JWT struct {
@@ -27,14 +27,14 @@ func NewJWT() *JWT {
 }
 
 // CreateToken 创建一个token
-func (j *JWT) CreateToken(claims modelAuthority.CustomClaims) (string, error) {
+func (j *JWT) CreateToken(claims sysManagement.CustomClaims) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	return token.SignedString(j.SigningKey)
 }
 
 // ParseToken 解析 token
-func (j *JWT) ParseToken(tokenString string) (*modelAuthority.CustomClaims, error) {
-	token, err := jwt.ParseWithClaims(tokenString, &modelAuthority.CustomClaims{}, func(token *jwt.Token) (i interface{}, e error) {
+func (j *JWT) ParseToken(tokenString string) (*sysManagement.CustomClaims, error) {
+	token, err := jwt.ParseWithClaims(tokenString, &sysManagement.CustomClaims{}, func(token *jwt.Token) (i interface{}, e error) {
 		return j.SigningKey, nil
 	})
 	if err != nil {
@@ -52,7 +52,7 @@ func (j *JWT) ParseToken(tokenString string) (*modelAuthority.CustomClaims, erro
 		}
 	}
 	if token != nil {
-		if claims, ok := token.Claims.(*modelAuthority.CustomClaims); ok && token.Valid {
+		if claims, ok := token.Claims.(*sysManagement.CustomClaims); ok && token.Valid {
 			return claims, nil
 		}
 		return nil, TokenInvalid
@@ -63,7 +63,7 @@ func (j *JWT) ParseToken(tokenString string) (*modelAuthority.CustomClaims, erro
 }
 
 // CreateTokenByOldToken 旧token 换新token 使用归并回源避免并发问题
-func (j *JWT) CreateTokenByOldToken(oldToken string, claims modelAuthority.CustomClaims) (string, error) {
+func (j *JWT) CreateTokenByOldToken(oldToken string, claims sysManagement.CustomClaims) (string, error) {
 	v, err, _ := global.TD27_Concurrency_Control.Do("JWT:"+oldToken, func() (interface{}, error) {
 		return j.CreateToken(claims)
 	})

@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	casbinService = authority.NewCasbinService()
+	casbinService = sysManagement.NewCasbinService()
 )
 
 // CasbinHandler 拦截器

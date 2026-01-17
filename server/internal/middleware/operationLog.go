@@ -19,7 +19,7 @@ import (
 )
 
 var (
-	operationLogService = monitor.NewOperationLogService()
+	operationLogService = sysMonitor.NewOperationLogService()
 )
 
 type responseProxyWriter struct {
@@ -62,7 +62,7 @@ func OperationRecord() gin.HandlerFunc {
 		}
 
 		// 解析token
-		claims, _ := authority.GetClaims(c)
+		claims, _ := sysManagement.GetClaims(c)
 
 		record := modelMonitor.OperationLogModel{
 			Ip:        c.ClientIP(),

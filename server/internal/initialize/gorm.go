@@ -4,9 +4,8 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"server/internal/model/authority"
 	modelMonitor "server/internal/model/monitor"
-	"server/internal/model/sysSet"
+	"server/internal/model/sysManagement"
 	modelSysTool "server/internal/model/sysTool"
 	"time"
 
@@ -84,10 +83,10 @@ func Gorm() *gorm.DB {
 func RegisterTables(db *gorm.DB) {
 	err := db.AutoMigrate(
 		// 权限
-		authority.UserModel{},
-		authority.RoleModel{},
-		authority.MenuModel{},
-		authority.ApiModel{},
+		sysManagement.UserModel{},
+		sysManagement.RoleModel{},
+		sysManagement.MenuModel{},
+		sysManagement.ApiModel{},
 		// 监控
 		modelMonitor.OperationLogModel{},
 		// fileM
@@ -95,8 +94,8 @@ func RegisterTables(db *gorm.DB) {
 		// 系统工具
 		modelSysTool.CronModel{},
 		// system settings
-		sysSet.DictModel{},
-		sysSet.DictDetailModel{},
+		sysManagement.DictModel{},
+		sysManagement.DictDetailModel{},
 	)
 
 	if err != nil {
