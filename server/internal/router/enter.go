@@ -3,31 +3,21 @@ package router
 import (
 	"github.com/gin-gonic/gin"
 
-	"server/internal/router/authority"
-	"server/internal/router/fileM"
-	"server/internal/router/monitor"
-	"server/internal/router/sysSet"
+	"server/internal/router/sysManagement"
+	"server/internal/router/sysMonitor"
 	"server/internal/router/sysTool"
 )
 
-func NewMonitorRouterGroup() *sysMonitor.RouterGroup {
+func NewSysMonitorRouterGroup() *sysMonitor.RouterGroup {
 	return sysMonitor.NewRouterGroup()
-}
-
-func NewSysSetRouterGroup() *sysSet.RouterGroup {
-	return sysSet.NewRouterGroup()
 }
 
 func NewSysToolRouterGroup() *sysTool.RouterGroup {
 	return sysTool.NewRouterGroup()
 }
 
-func NewAuthorityRouterGroup() *sysManagement.RouterGroup {
+func NewSysManagementRouterGroup() *sysManagement.RouterGroup {
 	return sysManagement.NewRouterGroup()
-}
-
-func NewFileMRouterGroup() *fileM.RouterGroup {
-	return fileM.NewRouterGroup()
 }
 
 type ModuleRouter interface {
@@ -46,9 +36,7 @@ func GetAllModules() []ModuleRouter {
 }
 
 func init() {
-	Register(NewAuthorityRouterGroup())
-	Register(NewFileMRouterGroup())
-	Register(NewMonitorRouterGroup())
-	Register(NewSysSetRouterGroup())
+	Register(NewSysManagementRouterGroup())
+	Register(NewSysMonitorRouterGroup())
 	Register(NewSysToolRouterGroup())
 }
