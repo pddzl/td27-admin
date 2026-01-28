@@ -4,13 +4,13 @@ import (
 	"database/sql/driver"
 	"encoding/json"
 	"fmt"
-	"server/internal/model/common"
 	"time"
 
 	"github.com/robfig/cron/v3"
 	"go.uber.org/zap"
 
 	"server/internal/global"
+	"server/internal/model/common"
 )
 
 type Method struct {
