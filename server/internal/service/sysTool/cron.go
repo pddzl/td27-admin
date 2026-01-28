@@ -1,145 +1,71 @@
 package sysTool
 
 import (
-	"errors"
-	"fmt"
-	"server/internal/model/common"
-	modelSysTool "server/internal/model/sysTool"
-
-	"github.com/robfig/cron/v3"
-	"gorm.io/gorm"
+	"context"
 
 	"server/internal/global"
-	"server/internal/pkg"
+	"server/internal/model/common"
+	"server/internal/model/sysTool"
 )
 
-type CronService struct{}
+type CronService struct {
+	repository sysTool.CronRepository
+	ctx        context.Context
+}
 
 func NewCronService() *CronService {
-	return &CronService{}
+	return &CronService{
+		repository: sysTool.NewCronRepository(global.TD27_DB),
+		ctx:        context.Background(),
+	}
 }
 
-// GetCronList 分页获取cron
-func (cs *CronService) GetCronList(pageInfo common.PageInfo) (cronModelList []modelSysTool.CronModel, total int64, err error) {
-	db := global.TD27_DB.Model(&modelSysTool.CronModel{})
-
-	// 计算记录数量
-	err = db.Count(&total).Error
+// List 分页获取cron
+func (s *CronService) List(req *common.PageInfo) ([]*sysTool.CronModel, int64, error) {
+	list, count, err := s.repository.List(s.ctx, req)
 	if err != nil {
-		return nil, 0, fmt.Errorf("count err %v", err)
+		return nil, 0, err
 	}
-
-	// 分页
-	limit := pageInfo.PageSize
-	offset := pageInfo.PageSize * (pageInfo.Page - 1)
-	if pageInfo.PageSize >= 0 && pageInfo.Page > 0 {
-		db = db.Limit(limit).Offset(offset)
-	}
-	err = db.Find(&cronModelList).Error
-	return
+	return list, count, err
 }
 
-// AddCron 添加cron
-func (cs *CronService) AddCron(cronModel *modelSysTool.CronModel) (*modelSysTool.CronModel, error) {
-	// 开启cron
-	if cronModel.Open {
-		entryId, err := global.TD27_CRON.AddJob(cronModel.Expression, cronModel)
-		if err != nil {
-			return nil, err
-		} else {
-			cronModel.EntryId = int(entryId)
-		}
+func (s *CronService) Create(req *sysTool.CronModel) (*sysTool.CronModel, error) {
+	create, err := s.repository.Create(s.ctx, req)
+	if err != nil {
+		return nil, err
 	}
-	err := global.TD27_DB.Create(cronModel).Error
-	return cronModel, err
+	return create, nil
 }
 
-// DeleteCron 删除cron
-func (cs *CronService) DeleteCron(id uint) error {
-	var cronModel modelSysTool.CronModel
-	if errors.Is(global.TD27_DB.Where("id = ?", id).First(&cronModel).Error, gorm.ErrRecordNotFound) {
-		return errors.New("记录未找到")
+func (s *CronService) Delete(id uint) error {
+	err := s.repository.Delete(s.ctx, id)
+	if err != nil {
+		return err
 	}
-	// 删除定时任务
-	global.TD27_CRON.Remove(cron.EntryID(cronModel.EntryId))
-	// 删除数据库记录
-	return global.TD27_DB.Unscoped().Delete(&cronModel).Error
+	return nil
 }
 
-// DeleteCronByIds 批量删除cron
-func (cs *CronService) DeleteCronByIds(ids []uint) error {
-	var cronModels []modelSysTool.CronModel
-	global.TD27_DB.Find(&cronModels, ids)
-	// 删除定时任务
-	for _, value := range cronModels {
-		global.TD27_CRON.Remove(cron.EntryID(value.EntryId))
+func (s *CronService) DeleteByIds(ids []uint) error {
+	err := s.repository.DeleteByIds(s.ctx, ids)
+	if err != nil {
+		return err
 	}
-	// 删除数据库记录
-	return global.TD27_DB.Unscoped().Delete(&cronModels).Error
+	return nil
 }
 
-// EditCron 编辑cron
-func (cs *CronService) EditCron(instance *modelSysTool.CronModel) (*modelSysTool.CronModel, error) {
-	if errors.Is(global.TD27_DB.Where("id = ?", instance.ID).First(&modelSysTool.CronModel{}).Error, gorm.ErrRecordNotFound) {
-		return nil, errors.New("记录不存在")
+func (s *CronService) Update(req *sysTool.CronModel) (*sysTool.CronModel, error) {
+	update, err := s.repository.Update(s.ctx, req)
+	if err != nil {
+		return nil, err
 	}
-
-	// params 拼接
-	var extraParams modelSysTool.ExtraParams
-	for _, v := range instance.ExtraParams.TableInfo {
-		var clearTable modelSysTool.ClearTable
-		clearTable.TableName = v.TableName
-		clearTable.CompareField = v.CompareField
-		clearTable.Interval = v.Interval
-		extraParams.TableInfo = append(extraParams.TableInfo, clearTable)
-	}
-	instance.ExtraParams = extraParams
-
-	if instance.Open {
-		if !pkg.IsContain(pkg.GetEntries(), instance.EntryId) {
-			entryId, err := global.TD27_CRON.AddJob(instance.Expression, instance)
-			if err != nil {
-				return nil, err
-			} else {
-				instance.Open = true
-				instance.EntryId = int(entryId)
-			}
-		}
-	} else {
-		if instance.EntryId != 0 {
-			global.TD27_CRON.Remove(cron.EntryID(instance.EntryId))
-			instance.EntryId = 0
-		}
-		instance.Open = false
-	}
-	err := global.TD27_DB.Omit("created_at").Save(instance).Error
-
-	return instance, err
+	return update, nil
 }
 
 // SwitchOpen 切换cron活跃状态
-func (cs *CronService) SwitchOpen(id uint, open bool) (resId int, err error) {
-	var cronModel modelSysTool.CronModel
-	if errors.Is(global.TD27_DB.Where("id = ?", id).First(&cronModel).Error, gorm.ErrRecordNotFound) {
-		return 0, errors.New("记录未找到")
+func (s *CronService) SwitchOpen(id uint, open bool) (int, error) {
+	switchOpen, err := s.repository.SwitchOpen(s.ctx, id, open)
+	if err != nil {
+		return 0, err
 	}
-
-	// 判断cron是否已经运行
-	if open && !pkg.IsContain(pkg.GetEntries(), cronModel.EntryId) {
-		entryId, err := global.TD27_CRON.AddJob(cronModel.Expression, &cronModel)
-		if err != nil {
-			return cronModel.EntryId, err
-		} else {
-			err = global.TD27_DB.Model(&cronModel).Updates(map[string]interface{}{"open": true, "entryId": entryId}).Error
-		}
-		resId = int(entryId)
-	} else {
-		if cronModel.EntryId != 0 {
-			global.TD27_CRON.Remove(cron.EntryID(cronModel.EntryId))
-		}
-		err = global.TD27_DB.Model(&cronModel).Updates(map[string]interface{}{"open": false, "entryId": 0}).Error
-		resId = 0
-	}
-
-	return
+	return switchOpen, nil
 }

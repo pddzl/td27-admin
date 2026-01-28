@@ -21,11 +21,11 @@ func (cr *CronRouter) InitCronRouter(rg *gin.RouterGroup) {
 	base := rg.Group("cron")
 	record := base.Use(middleware.OperationRecord())
 	// record
-	record.POST("addCron", cr.cronApi.AddCron)
-	record.POST("deleteCron", cr.cronApi.DeleteCron)
-	record.POST("deleteCronByIds", cr.cronApi.DeleteCronByIds)
-	record.POST("editCron", cr.cronApi.EditCron)
+	record.POST("create", cr.cronApi.Create)
+	record.POST("delete", cr.cronApi.Delete)
+	record.POST("deleteByIds", cr.cronApi.DeleteByIds)
+	record.POST("update", cr.cronApi.Update)
 	record.POST("switchOpen", cr.cronApi.SwitchOpen)
 	// not record
-	base.POST("getCronList", cr.cronApi.GetCronList)
+	base.POST("list", cr.cronApi.List)
 }
