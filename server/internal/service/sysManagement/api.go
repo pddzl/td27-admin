@@ -17,7 +17,7 @@ type ApiService struct {
 
 func NewApiService() *ApiService {
 	return &ApiService{
-		repository: sysManagement.NewApiRepository(global.TD27_DB),
+		repository: sysManagement.NewApiEntity(global.TD27_DB),
 		ctx:        context.Background(),
 	}
 }

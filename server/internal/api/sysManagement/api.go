@@ -103,7 +103,7 @@ func (a *ApiApi) Delete(c *gin.Context) {
 // @Produce   application/json
 // @Param     data  body      common.CIds true "请求参数"
 // @Success   200   {object}  common.Response{msg=string}
-// @Router    /api/deleteApiById [post]
+// @Router    /api/deleteByIds [post]
 func (a *ApiApi) DeleteByIds(c *gin.Context) {
 	var req common.CIds
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -127,7 +127,7 @@ func (a *ApiApi) DeleteByIds(c *gin.Context) {
 // @Produce   application/json
 // @Param     data  body      modelSysManagement.ApiModel true "请求参数"
 // @Success   200   {object}  common.Response{msg=string}
-// @Router    /api/editApi [post]
+// @Router    /api/update [post]
 func (a *ApiApi) Update(c *gin.Context) {
 	var req modelSysManagement.ApiModel
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -151,7 +151,7 @@ func (a *ApiApi) Update(c *gin.Context) {
 // @Produce   application/json
 // @Param     data  body      common.CId true "请求参数"
 // @Success   200   {object}  common.Response{data=modelSysManagement.ApiTreeResp{list=[]modelSysManagement.ApiTree,checkedKey=[]string},msg=string}
-// @Router    /api/getElTreeApis [post]
+// @Router    /api/getElTree [post]
 func (a *ApiApi) GetElTree(c *gin.Context) {
 	var req common.CId
 	if err := c.ShouldBindJSON(&req); err != nil {

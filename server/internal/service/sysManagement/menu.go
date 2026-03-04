@@ -15,8 +15,8 @@ type MenuService struct {
 
 func NewMenuService() *MenuService {
 	return &MenuService{
-		menuRepository: sysManagement.NewMenuRepository(global.TD27_DB),
-		userRepository: sysManagement.NewUserRepository(global.TD27_DB),
+		menuRepository: sysManagement.NewMenuEntity(global.TD27_DB),
+		userRepository: sysManagement.NewUserEntity(global.TD27_DB),
 		ctx:            context.Background(),
 	}
 }

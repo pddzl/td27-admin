@@ -19,7 +19,7 @@ type dictDetailEntity struct {
 	conn *gorm.DB
 }
 
-func NewDictDetailRepository(conn *gorm.DB) DictDetailRepository {
+func NewDictDetailEntity(conn *gorm.DB) DictDetailRepository {
 	return &dictDetailEntity{conn: conn}
 }
 

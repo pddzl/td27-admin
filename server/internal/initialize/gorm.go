@@ -4,9 +4,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	modelMonitor "server/internal/model/monitor"
-	"server/internal/model/sysManagement"
-	modelSysTool "server/internal/model/sysTool"
 	"time"
 
 	"go.uber.org/zap"
@@ -15,6 +12,9 @@ import (
 	"gorm.io/gorm/logger"
 
 	"server/internal/global"
+	"server/internal/model/sysManagement"
+	modelMonitor "server/internal/model/sysMonitor"
+	modelSysTool "server/internal/model/sysTool"
 )
 
 type writer struct {

@@ -1,14 +1,13 @@
 package sysMonitor
 
 import (
-	"server/internal/model/common"
-	monitorReq "server/internal/model/monitor"
-
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 
 	"server/internal/global"
-	serviceMonitor "server/internal/service/monitor"
+	"server/internal/model/common"
+	modelMonitor "server/internal/model/sysMonitor"
+	serviceMonitor "server/internal/service/sysMonitor"
 )
 
 type OperationLogApi struct {
@@ -21,52 +20,52 @@ func NewOperationLogApi() *OperationLogApi {
 	}
 }
 
-// GetOperationLogList
+// List
 // @Tags      OperationLogApi
 // @Summary   分页获取操作记录
 // @Security  ApiKeyAuth
 // @accept    application/json
 // @Produce   application/json
-// @Param     data  body      monitorReq.OrSearchParams true "请求参数"
-// @Success   200   {object}  commonResp.Response{data=commonResp.Page{list=[]monitor.OperationLogModel},msg=string}
-// @Router    /opl/getOperationLogList [post]
-func (oa *OperationLogApi) GetOperationLogList(c *gin.Context) {
-	var orSp monitorReq.OrSearchParams
-	if err := c.ShouldBindJSON(&orSp); err != nil {
+// @Param     data  body      modelMonitor.OrListReq true "请求参数"
+// @Success   200   {object}  common.Response{data=common.Page{list=[]modelMonitor.OperationLogModel},msg=string}
+// @Router    /opl/list [post]
+func (a *OperationLogApi) List(c *gin.Context) {
+	var req modelMonitor.OrListReq
+	if err := c.ShouldBindJSON(&req); err != nil {
 		common.FailReq(err.Error(), c)
 		return
 	}
 
-	if list, total, err := oa.operationLogService.GetOperationLogList(orSp); err != nil {
+	if list, total, err := a.operationLogService.List(&req); err != nil {
 		common.FailWithMessage("获取失败", c)
 		global.TD27_LOG.Error("获取失败", zap.Error(err))
 	} else {
 		common.OkWithDetailed(common.Page{
 			List:     list,
 			Total:    total,
-			Page:     orSp.Page,
-			PageSize: orSp.PageSize,
+			Page:     req.Page,
+			PageSize: req.PageSize,
 		}, "获取成功", c)
 	}
 }
 
-// DeleteOperationLog
+// Delete
 // @Tags      OperationLogApi
 // @Summary   删除操作记录
 // @Security  ApiKeyAuth
 // @accept    application/json
 // @Produce   application/json
-// @Param     data  body      commonReq.CId true "请求参数"
-// @Success   200   {object}  commonResp.Response{msg=string}
-// @Router    /opl/deleteOperationLog [post]
-func (oa *OperationLogApi) DeleteOperationLog(c *gin.Context) {
+// @Param     data  body      common.CId true "请求参数"
+// @Success   200   {object}  common.Response{msg=string}
+// @Router    /opl/delete [post]
+func (a *OperationLogApi) Delete(c *gin.Context) {
 	var cId common.CId
 	if err := c.ShouldBindJSON(&cId); err != nil {
 		common.FailReq(err.Error(), c)
 		return
 	}
 
-	if err := oa.operationLogService.DeleteOperationLog(cId.ID); err != nil {
+	if err := a.operationLogService.Delete(cId.ID); err != nil {
 		common.FailWithMessage("删除失败", c)
 		global.TD27_LOG.Error("删除失败", zap.Error(err))
 	} else {
@@ -74,23 +73,25 @@ func (oa *OperationLogApi) DeleteOperationLog(c *gin.Context) {
 	}
 }
 
-// DeleteOperationLogByIds
+// DeleteByIds
 // @Tags      OperationLogApi
 // @Summary   批量删除操作记录
 // @Security  ApiKeyAuth
 // @accept    application/json
 // @Produce   application/json
-// @Param     data  body      commonReq.CIds true "请求参数"
-// @Success   200   {object}  commonResp.Response{msg=string}
-// @Router    /opl/deleteOperationLogByIds [post]
-func (oa *OperationLogApi) DeleteOperationLogByIds(c *gin.Context) {
+// @Param     data  body      common.CIds true "请求参数"
+// @Success   200   {object}  common.Response{msg=string}
+// @Router    /opl/deleteByIds [post]
+func (a *OperationLogApi) DeleteByIds(c *gin.Context) {
 	var cIds common.CIds
 	if err := c.ShouldBindJSON(&cIds); err != nil {
 		common.FailReq(err.Error(), c)
 		return
 	}
 
-	if err := oa.operationLogService.DeleteOperationLogByIds(cIds.IDs); err != nil {
+	// todo
+	// response delete row nums
+	if _, err := a.operationLogService.DeleteByIds(cIds.IDs); err != nil {
 		common.FailWithMessage("删除失败", c)
 		global.TD27_LOG.Error("删除失败", zap.Error(err))
 	} else {

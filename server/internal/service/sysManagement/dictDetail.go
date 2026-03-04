@@ -2,7 +2,7 @@ package sysManagement
 
 import (
 	"context"
-	
+
 	"server/internal/global"
 	"server/internal/model/sysManagement"
 )
@@ -14,7 +14,7 @@ type DictDetailService struct {
 
 func NewDictDetailService() *DictDetailService {
 	return &DictDetailService{
-		repository: sysManagement.NewDictDetailRepository(global.TD27_DB),
+		repository: sysManagement.NewDictDetailEntity(global.TD27_DB),
 		ctx:        context.Background(),
 	}
 }

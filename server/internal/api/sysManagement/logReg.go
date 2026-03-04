@@ -36,7 +36,7 @@ func NewLogRegApi() *LogRegApi {
 // @Summary   生成验证码
 // @Security  ApiKeyAuth
 // @Produce   application/json
-// @Success   200  {object}  common.Response{data=request.CaptchaResponse,msg=string}
+// @Success   200  {object}  common.Response{data=modelSysManagement.CaptchaResponse,msg=string}
 // @Router    /logReg/captcha [post]
 func (ba *LogRegApi) Captcha(c *gin.Context) {
 	// 字符,公式,验证码配置
@@ -62,8 +62,8 @@ func (ba *LogRegApi) Captcha(c *gin.Context) {
 // @Summary  用户登录
 // @accept    application/json
 // @Produce   application/json
-// @Param    data  body      request.Login true "请求参数"
-// @Success  200   {object}  common.Response{data=baseResp.LoginResponse,msg=string}
+// @Param    data  body      modelSysManagement.Login true "请求参数"
+// @Success  200   {object}  common.Response{data=modelSysManagement.LoginResponse,msg=string}
 // @Router   /logReg/login [post]
 func (ba *LogRegApi) Login(c *gin.Context) {
 	var login modelSysManagement.Login

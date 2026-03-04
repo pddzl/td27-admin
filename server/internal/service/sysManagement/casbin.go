@@ -81,8 +81,8 @@ func (cs *CasbinService) ClearCasbin(v int, p ...string) bool {
 	return ok
 }
 
-// EditCasbin 更新casbin rule
-func (cs *CasbinService) EditCasbin(roleId uint, casbinInfos []sysManagement.CasbinInfo) (err error) {
+// Update 更新casbin rule
+func (cs *CasbinService) Update(roleId uint, casbinInfos []sysManagement.CasbinInfo) (err error) {
 	authorityId := strconv.Itoa(int(roleId))
 	cs.ClearCasbin(0, authorityId)
 	var rules [][]string

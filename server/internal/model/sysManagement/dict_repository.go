@@ -22,7 +22,7 @@ type dictEntity struct {
 	conn *gorm.DB
 }
 
-func NewDictRepository(conn *gorm.DB) DictRepository {
+func NewDictEntity(conn *gorm.DB) DictRepository {
 	return &dictEntity{conn: conn}
 }
 

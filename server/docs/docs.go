@@ -15,59 +15,6 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/api/addRole": {
-            "post": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "RoleApi"
-                ],
-                "summary": "添加角色",
-                "parameters": [
-                    {
-                        "description": "请求参数",
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/server_internal_model_entity_authority.RoleModel"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/server_internal_model_common_response.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/server_internal_model_entity_authority.RoleModel"
-                                        },
-                                        "msg": {
-                                            "type": "string"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            }
-        },
         "/api/create": {
             "post": {
                 "security": [
@@ -92,7 +39,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/server_internal_model_entity_authority.ApiModel"
+                            "$ref": "#/definitions/server_internal_model_sysManagement.ApiModel"
                         }
                     }
                 ],
@@ -102,13 +49,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/server_internal_model_common_response.Response"
+                                    "$ref": "#/definitions/server_internal_model_common.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/server_internal_model_entity_authority.ApiModel"
+                                            "$ref": "#/definitions/server_internal_model_sysManagement.ApiModel"
                                         },
                                         "msg": {
                                             "type": "string"
@@ -145,7 +92,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/server_internal_model_common_request.CId"
+                            "$ref": "#/definitions/server_internal_model_common.CId"
                         }
                     }
                 ],
@@ -155,7 +102,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/server_internal_model_common_response.Response"
+                                    "$ref": "#/definitions/server_internal_model_common.Response"
                                 },
                                 {
                                     "type": "object",
@@ -171,7 +118,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/deleteApiById": {
+        "/api/deleteByIds": {
             "post": {
                 "security": [
                     {
@@ -195,7 +142,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/server_internal_model_common_request.CIds"
+                            "$ref": "#/definitions/server_internal_model_common.CIds"
                         }
                     }
                 ],
@@ -205,7 +152,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/server_internal_model_common_response.Response"
+                                    "$ref": "#/definitions/server_internal_model_common.Response"
                                 },
                                 {
                                     "type": "object",
@@ -221,157 +168,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/deleteRole": {
-            "post": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "RoleApi"
-                ],
-                "summary": "删除角色",
-                "parameters": [
-                    {
-                        "description": "请求参数",
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/server_internal_model_common_request.CId"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/server_internal_model_common_response.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "msg": {
-                                            "type": "string"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            }
-        },
-        "/api/editApi": {
-            "post": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Update"
-                ],
-                "summary": "编辑api",
-                "parameters": [
-                    {
-                        "description": "请求参数",
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/server_internal_model_entity_authority.ApiModel"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/server_internal_model_common_response.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "msg": {
-                                            "type": "string"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            }
-        },
-        "/api/editRoleMenu": {
-            "post": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "RoleApi"
-                ],
-                "summary": "编辑用户菜单",
-                "parameters": [
-                    {
-                        "description": "请求参数",
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/server_internal_model_entity_authority_request.EditRoleMenu"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/server_internal_model_common_response.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "msg": {
-                                            "type": "string"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            }
-        },
-        "/api/getElTreeApis": {
+        "/api/getElTree": {
             "post": {
                 "security": [
                     {
@@ -395,7 +192,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/server_internal_model_common_request.CId"
+                            "$ref": "#/definitions/server_internal_model_common.CId"
                         }
                     }
                 ],
@@ -405,7 +202,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/server_internal_model_common_response.Response"
+                                    "$ref": "#/definitions/server_internal_model_common.Response"
                                 },
                                 {
                                     "type": "object",
@@ -413,7 +210,7 @@ const docTemplate = `{
                                         "data": {
                                             "allOf": [
                                                 {
-                                                    "$ref": "#/definitions/server_internal_model_entity_authority_response.ApiTree"
+                                                    "$ref": "#/definitions/server_internal_model_sysManagement.ApiTreeResp"
                                                 },
                                                 {
                                                     "type": "object",
@@ -427,7 +224,7 @@ const docTemplate = `{
                                                         "list": {
                                                             "type": "array",
                                                             "items": {
-                                                                "$ref": "#/definitions/server_internal_model_entity_authority.ApiTree"
+                                                                "$ref": "#/definitions/server_internal_model_sysManagement.ApiTree"
                                                             }
                                                         }
                                                     }
@@ -469,7 +266,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/server_internal_model_entity_authority_request.ApiSearchParams"
+                            "$ref": "#/definitions/server_internal_model_sysManagement.ListApiReq"
                         }
                     }
                 ],
@@ -479,7 +276,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/server_internal_model_common_response.Response"
+                                    "$ref": "#/definitions/server_internal_model_common.Response"
                                 },
                                 {
                                     "type": "object",
@@ -487,7 +284,7 @@ const docTemplate = `{
                                         "data": {
                                             "allOf": [
                                                 {
-                                                    "$ref": "#/definitions/server_internal_model_common_response.Page"
+                                                    "$ref": "#/definitions/server_internal_model_common.Page"
                                                 },
                                                 {
                                                     "type": "object",
@@ -495,7 +292,7 @@ const docTemplate = `{
                                                         "list": {
                                                             "type": "array",
                                                             "items": {
-                                                                "$ref": "#/definitions/server_internal_model_entity_authority.ApiModel"
+                                                                "$ref": "#/definitions/server_internal_model_sysManagement.ApiModel"
                                                             }
                                                         }
                                                     }
@@ -527,9 +324,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "RoleApi"
+                    "Update"
                 ],
-                "summary": "编辑角色",
+                "summary": "编辑api",
                 "parameters": [
                     {
                         "description": "请求参数",
@@ -537,7 +334,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/server_internal_model_entity_authority_request.EditRole"
+                            "$ref": "#/definitions/server_internal_model_sysManagement.ApiModel"
                         }
                     }
                 ],
@@ -547,7 +344,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/server_internal_model_common_response.Response"
+                                    "$ref": "#/definitions/server_internal_model_common.Response"
                                 },
                                 {
                                     "type": "object",
@@ -563,7 +360,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/casbin/editCasbin": {
+        "/casbin/update": {
             "post": {
                 "security": [
                     {
@@ -587,7 +384,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/server_internal_model_entity_base_request.ReqCasbin"
+                            "$ref": "#/definitions/server_internal_model_sysManagement.ReqCasbin"
                         }
                     }
                 ],
@@ -597,7 +394,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/server_internal_model_common_response.Response"
+                                    "$ref": "#/definitions/server_internal_model_common.Response"
                                 },
                                 {
                                     "type": "object",
@@ -613,7 +410,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/cron/addCron": {
+        "/cron/create": {
             "post": {
                 "security": [
                     {
@@ -637,7 +434,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/server_internal_model_entity_sysTool.CronModel"
+                            "$ref": "#/definitions/server_internal_model_sysTool.CronModel"
                         }
                     }
                 ],
@@ -647,13 +444,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/server_internal_model_common_response.Response"
+                                    "$ref": "#/definitions/server_internal_model_common.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/server_internal_model_entity_sysTool.CronModel"
+                                            "$ref": "#/definitions/server_internal_model_sysTool.CronModel"
                                         },
                                         "msg": {
                                             "type": "string"
@@ -666,7 +463,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/cron/deleteCron": {
+        "/cron/delete": {
             "post": {
                 "security": [
                     {
@@ -690,7 +487,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/server_internal_model_common_request.CId"
+                            "$ref": "#/definitions/server_internal_model_common.CId"
                         }
                     }
                 ],
@@ -700,7 +497,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/server_internal_model_common_response.Response"
+                                    "$ref": "#/definitions/server_internal_model_common.Response"
                                 },
                                 {
                                     "type": "object",
@@ -716,60 +513,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/cron/editCron": {
-            "post": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "CronApi"
-                ],
-                "summary": "编辑cron",
-                "parameters": [
-                    {
-                        "description": "id（必须），名称，方法，cron表达式，策略，开关，额外参数，备注",
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/server_internal_model_entity_sysTool.CronModel"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/server_internal_model_common_response.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/server_internal_model_entity_sysTool.CronModel"
-                                        },
-                                        "msg": {
-                                            "type": "string"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            }
-        },
-        "/cron/getCronList": {
+        "/cron/list": {
             "post": {
                 "security": [
                     {
@@ -793,7 +537,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/server_internal_model_common_request.PageInfo"
+                            "$ref": "#/definitions/server_internal_model_common.PageInfo"
                         }
                     }
                 ],
@@ -803,7 +547,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/server_internal_model_common_response.Response"
+                                    "$ref": "#/definitions/server_internal_model_common.Response"
                                 },
                                 {
                                     "type": "object",
@@ -811,7 +555,7 @@ const docTemplate = `{
                                         "data": {
                                             "allOf": [
                                                 {
-                                                    "$ref": "#/definitions/server_internal_model_common_response.Page"
+                                                    "$ref": "#/definitions/server_internal_model_common.Page"
                                                 },
                                                 {
                                                     "type": "object",
@@ -819,7 +563,7 @@ const docTemplate = `{
                                                         "list": {
                                                             "type": "array",
                                                             "items": {
-                                                                "$ref": "#/definitions/server_internal_model_entity_sysTool.CronModel"
+                                                                "$ref": "#/definitions/server_internal_model_sysTool.CronModel"
                                                             }
                                                         }
                                                     }
@@ -861,7 +605,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/server_internal_model_entity_sysTool_request.SwitchReq"
+                            "$ref": "#/definitions/server_internal_model_sysTool.SwitchReq"
                         }
                     }
                 ],
@@ -871,7 +615,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/server_internal_model_common_response.Response"
+                                    "$ref": "#/definitions/server_internal_model_common.Response"
                                 },
                                 {
                                     "type": "object",
@@ -884,6 +628,59 @@ const docTemplate = `{
                                             "additionalProperties": {
                                                 "type": "integer"
                                             }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/cron/update": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "CronApi"
+                ],
+                "summary": "编辑cron",
+                "parameters": [
+                    {
+                        "description": "id（必须），名称，方法，cron表达式，策略，开关，额外参数，备注",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/server_internal_model_sysTool.CronModel"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/server_internal_model_common.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/server_internal_model_sysTool.CronModel"
+                                        },
+                                        "msg": {
+                                            "type": "string"
                                         }
                                     }
                                 }
@@ -925,7 +722,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/server_internal_model_common_response.Response"
+                                    "$ref": "#/definitions/server_internal_model_common.Response"
                                 },
                                 {
                                     "type": "object",
@@ -977,7 +774,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/file/getFileList": {
+        "/file/list": {
             "post": {
                 "security": [
                     {
@@ -1001,7 +798,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/server_internal_model_entity_fileM_request.FileSearchParams"
+                            "$ref": "#/definitions/server_internal_model_sysTool.ListFileReq"
                         }
                     }
                 ],
@@ -1011,28 +808,16 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/server_internal_model_common_response.Response"
+                                    "$ref": "#/definitions/server_internal_model_common.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "allOf": [
-                                                {
-                                                    "$ref": "#/definitions/server_internal_model_common_response.Page"
-                                                },
-                                                {
-                                                    "type": "object",
-                                                    "properties": {
-                                                        "list": {
-                                                            "type": "array",
-                                                            "items": {
-                                                                "$ref": "#/definitions/server_internal_model_entity_fileM.FileModel"
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            ]
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/server_internal_model_sysTool.FileModel"
+                                            }
                                         },
                                         "msg": {
                                             "type": "string"
@@ -1077,7 +862,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/server_internal_model_common_response.Response"
+                                    "$ref": "#/definitions/server_internal_model_common.Response"
                                 },
                                 {
                                     "type": "object",
@@ -1113,13 +898,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/server_internal_model_common_response.Response"
+                                    "$ref": "#/definitions/server_internal_model_common.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/server_internal_model_entity_base_request.CaptchaResponse"
+                                            "$ref": "#/definitions/server_internal_model_sysManagement.CaptchaResponse"
                                         },
                                         "msg": {
                                             "type": "string"
@@ -1151,7 +936,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/server_internal_model_entity_base_request.Login"
+                            "$ref": "#/definitions/server_internal_model_sysManagement.Login"
                         }
                     }
                 ],
@@ -1161,13 +946,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/server_internal_model_common_response.Response"
+                                    "$ref": "#/definitions/server_internal_model_common.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/server_internal_model_entity_base_response.LoginResponse"
+                                            "$ref": "#/definitions/server_internal_model_sysManagement.LoginResponse"
                                         },
                                         "msg": {
                                             "type": "string"
@@ -1198,7 +983,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/server_internal_model_common_response.Response"
+                                    "$ref": "#/definitions/server_internal_model_common.Response"
                                 },
                                 {
                                     "type": "object",
@@ -1238,7 +1023,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/server_internal_model_entity_authority_request.EditMenuReq"
+                            "$ref": "#/definitions/server_internal_model_sysManagement.Menu"
                         }
                     }
                 ],
@@ -1248,7 +1033,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/server_internal_model_common_response.Response"
+                                    "$ref": "#/definitions/server_internal_model_common.Response"
                                 },
                                 {
                                     "type": "object",
@@ -1288,7 +1073,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/server_internal_model_common_request.CId"
+                            "$ref": "#/definitions/server_internal_model_common.CId"
                         }
                     }
                 ],
@@ -1298,7 +1083,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/server_internal_model_common_response.Response"
+                                    "$ref": "#/definitions/server_internal_model_common.Response"
                                 },
                                 {
                                     "type": "object",
@@ -1338,7 +1123,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/server_internal_model_common_request.CId"
+                            "$ref": "#/definitions/server_internal_model_common.CId"
                         }
                     }
                 ],
@@ -1348,7 +1133,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/server_internal_model_common_response.Response"
+                                    "$ref": "#/definitions/server_internal_model_common.Response"
                                 },
                                 {
                                     "type": "object",
@@ -1356,7 +1141,7 @@ const docTemplate = `{
                                         "data": {
                                             "allOf": [
                                                 {
-                                                    "$ref": "#/definitions/server_internal_model_entity_authority_response.Menu"
+                                                    "$ref": "#/definitions/server_internal_model_sysManagement.MenuResp"
                                                 },
                                                 {
                                                     "type": "object",
@@ -1364,7 +1149,7 @@ const docTemplate = `{
                                                         "list": {
                                                             "type": "array",
                                                             "items": {
-                                                                "$ref": "#/definitions/server_internal_model_entity_authority.MenuModel"
+                                                                "$ref": "#/definitions/server_internal_model_sysManagement.MenuModel"
                                                             }
                                                         },
                                                         "menuIds": {
@@ -1408,7 +1193,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/server_internal_model_common_response.Response"
+                                    "$ref": "#/definitions/server_internal_model_common.Response"
                                 },
                                 {
                                     "type": "object",
@@ -1416,7 +1201,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/server_internal_model_entity_authority.MenuModel"
+                                                "$ref": "#/definitions/server_internal_model_sysManagement.MenuModel"
                                             }
                                         },
                                         "msg": {
@@ -1454,7 +1239,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/server_internal_model_entity_authority_request.EditMenuReq"
+                            "$ref": "#/definitions/server_internal_model_sysManagement.UpdateMenuReq"
                         }
                     }
                 ],
@@ -1464,7 +1249,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/server_internal_model_common_response.Response"
+                                    "$ref": "#/definitions/server_internal_model_common.Response"
                                 },
                                 {
                                     "type": "object",
@@ -1480,7 +1265,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/opl/deleteOperationLog": {
+        "/opl/delete": {
             "post": {
                 "security": [
                     {
@@ -1504,7 +1289,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/server_internal_model_common_request.CId"
+                            "$ref": "#/definitions/server_internal_model_common.CId"
                         }
                     }
                 ],
@@ -1514,7 +1299,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/server_internal_model_common_response.Response"
+                                    "$ref": "#/definitions/server_internal_model_common.Response"
                                 },
                                 {
                                     "type": "object",
@@ -1530,7 +1315,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/opl/deleteOperationLogByIds": {
+        "/opl/deleteByIds": {
             "post": {
                 "security": [
                     {
@@ -1554,7 +1339,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/server_internal_model_common_request.CIds"
+                            "$ref": "#/definitions/server_internal_model_common.CIds"
                         }
                     }
                 ],
@@ -1564,7 +1349,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/server_internal_model_common_response.Response"
+                                    "$ref": "#/definitions/server_internal_model_common.Response"
                                 },
                                 {
                                     "type": "object",
@@ -1580,7 +1365,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/opl/getOperationLogList": {
+        "/opl/list": {
             "post": {
                 "security": [
                     {
@@ -1604,7 +1389,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/server_internal_model_entity_monitor_request.OrSearchParams"
+                            "$ref": "#/definitions/server_internal_model_sysMonitor.OrListReq"
                         }
                     }
                 ],
@@ -1614,7 +1399,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/server_internal_model_common_response.Response"
+                                    "$ref": "#/definitions/server_internal_model_common.Response"
                                 },
                                 {
                                     "type": "object",
@@ -1622,7 +1407,7 @@ const docTemplate = `{
                                         "data": {
                                             "allOf": [
                                                 {
-                                                    "$ref": "#/definitions/server_internal_model_common_response.Page"
+                                                    "$ref": "#/definitions/server_internal_model_common.Page"
                                                 },
                                                 {
                                                     "type": "object",
@@ -1630,7 +1415,7 @@ const docTemplate = `{
                                                         "list": {
                                                             "type": "array",
                                                             "items": {
-                                                                "$ref": "#/definitions/server_internal_model_entity_monitor.OperationLogModel"
+                                                                "$ref": "#/definitions/server_internal_model_sysMonitor.OperationLogModel"
                                                             }
                                                         }
                                                     }
@@ -1648,7 +1433,110 @@ const docTemplate = `{
                 }
             }
         },
-        "/role/getRoles": {
+        "/role/create": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "RoleApi"
+                ],
+                "summary": "添加角色",
+                "parameters": [
+                    {
+                        "description": "请求参数",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/server_internal_model_sysManagement.RoleModel"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/server_internal_model_common.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/server_internal_model_sysManagement.RoleModel"
+                                        },
+                                        "msg": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/role/delete": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "RoleApi"
+                ],
+                "summary": "删除角色",
+                "parameters": [
+                    {
+                        "description": "请求参数",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/server_internal_model_common.CId"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/server_internal_model_common.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "msg": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/role/list": {
             "post": {
                 "security": [
                     {
@@ -1668,7 +1556,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/server_internal_model_common_response.Response"
+                                    "$ref": "#/definitions/server_internal_model_common.Response"
                                 },
                                 {
                                     "type": "object",
@@ -1676,9 +1564,109 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/server_internal_model_entity_authority.RoleModel"
+                                                "$ref": "#/definitions/server_internal_model_sysManagement.RoleModel"
                                             }
                                         },
+                                        "msg": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/role/update": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "RoleApi"
+                ],
+                "summary": "编辑角色",
+                "parameters": [
+                    {
+                        "description": "请求参数",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/server_internal_model_sysManagement.UpdateRoleReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/server_internal_model_common.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "msg": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/role/updateRoleMenu": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "UpdateRoleMenu"
+                ],
+                "summary": "编辑用户菜单",
+                "parameters": [
+                    {
+                        "description": "请求参数",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/server_internal_model_sysManagement.UpdateRoleMenuReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/server_internal_model_common.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
                                         "msg": {
                                             "type": "string"
                                         }
@@ -1714,7 +1702,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/server_internal_model_entity_authority_request.AddUser"
+                            "$ref": "#/definitions/server_internal_model_sysManagement.AddUserReq"
                         }
                     }
                 ],
@@ -1724,7 +1712,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/server_internal_model_common_response.Response"
+                                    "$ref": "#/definitions/server_internal_model_common.Response"
                                 },
                                 {
                                     "type": "object",
@@ -1764,7 +1752,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/server_internal_model_common_request.CId"
+                            "$ref": "#/definitions/server_internal_model_common.CId"
                         }
                     }
                 ],
@@ -1774,7 +1762,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/server_internal_model_common_response.Response"
+                                    "$ref": "#/definitions/server_internal_model_common.Response"
                                 },
                                 {
                                     "type": "object",
@@ -1810,7 +1798,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/server_internal_model_common_response.Response"
+                                    "$ref": "#/definitions/server_internal_model_common.Response"
                                 },
                                 {
                                     "type": "object",
@@ -1850,7 +1838,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/server_internal_model_common_request.PageInfo"
+                            "$ref": "#/definitions/server_internal_model_common.PageInfo"
                         }
                     }
                 ],
@@ -1860,28 +1848,16 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/server_internal_model_common_response.Response"
+                                    "$ref": "#/definitions/server_internal_model_common.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "allOf": [
-                                                {
-                                                    "$ref": "#/definitions/server_internal_model_common_response.Page"
-                                                },
-                                                {
-                                                    "type": "object",
-                                                    "properties": {
-                                                        "list": {
-                                                            "type": "array",
-                                                            "items": {
-                                                                "$ref": "#/definitions/server_internal_model_entity_authority_response.UserResult"
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            ]
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/server_internal_model_sysManagement.UserResp"
+                                            }
                                         },
                                         "msg": {
                                             "type": "string"
@@ -1894,7 +1870,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/user/modifyPass": {
+        "/user/modifyPasswd": {
             "post": {
                 "security": [
                     {
@@ -1918,7 +1894,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/server_internal_model_entity_authority_request.ModifyPass"
+                            "$ref": "#/definitions/server_internal_model_sysManagement.ModifyPasswdReq"
                         }
                     }
                 ],
@@ -1928,7 +1904,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/server_internal_model_common_response.Response"
+                                    "$ref": "#/definitions/server_internal_model_common.Response"
                                 },
                                 {
                                     "type": "object",
@@ -1968,7 +1944,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/server_internal_model_entity_authority_request.SwitchActive"
+                            "$ref": "#/definitions/server_internal_model_sysManagement.SwitchActiveReq"
                         }
                     }
                 ],
@@ -1978,7 +1954,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/server_internal_model_common_response.Response"
+                                    "$ref": "#/definitions/server_internal_model_common.Response"
                                 },
                                 {
                                     "type": "object",
@@ -2018,7 +1994,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/server_internal_model_entity_authority_request.EditUser"
+                            "$ref": "#/definitions/server_internal_model_sysManagement.UpdateUserReq"
                         }
                     }
                 ],
@@ -2028,7 +2004,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/server_internal_model_common_response.Response"
+                                    "$ref": "#/definitions/server_internal_model_common.Response"
                                 },
                                 {
                                     "type": "object",
@@ -2046,19 +2022,19 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "server_internal_model_common_request.CId": {
+        "server_internal_model_common.CId": {
             "type": "object",
             "required": [
                 "id"
             ],
             "properties": {
                 "id": {
-                    "description": "主键ID",
+                    "description": "主键 ID",
                     "type": "integer"
                 }
             }
         },
-        "server_internal_model_common_request.CIds": {
+        "server_internal_model_common.CIds": {
             "type": "object",
             "required": [
                 "ids"
@@ -2072,20 +2048,7 @@ const docTemplate = `{
                 }
             }
         },
-        "server_internal_model_common_request.PageInfo": {
-            "type": "object",
-            "properties": {
-                "page": {
-                    "description": "页码",
-                    "type": "integer"
-                },
-                "pageSize": {
-                    "description": "每页大小",
-                    "type": "integer"
-                }
-            }
-        },
-        "server_internal_model_common_response.Page": {
+        "server_internal_model_common.Page": {
             "type": "object",
             "properties": {
                 "list": {},
@@ -2100,7 +2063,20 @@ const docTemplate = `{
                 }
             }
         },
-        "server_internal_model_common_response.Response": {
+        "server_internal_model_common.PageInfo": {
+            "type": "object",
+            "properties": {
+                "page": {
+                    "description": "页码",
+                    "type": "integer"
+                },
+                "pageSize": {
+                    "description": "每页大小",
+                    "type": "integer"
+                }
+            }
+        },
+        "server_internal_model_common.Response": {
             "type": "object",
             "properties": {
                 "code": {
@@ -2112,240 +2088,7 @@ const docTemplate = `{
                 }
             }
         },
-        "server_internal_model_entity_authority.ApiModel": {
-            "type": "object",
-            "required": [
-                "apiGroup",
-                "description",
-                "method",
-                "path"
-            ],
-            "properties": {
-                "apiGroup": {
-                    "description": "api组",
-                    "type": "string"
-                },
-                "createdAt": {
-                    "description": "创建时间",
-                    "type": "string"
-                },
-                "description": {
-                    "description": "api中文描述",
-                    "type": "string"
-                },
-                "id": {
-                    "description": "主键ID",
-                    "type": "integer"
-                },
-                "method": {
-                    "description": "方法:创建POST(默认)|查看GET|更新PUT|删除DELETE",
-                    "type": "string"
-                },
-                "path": {
-                    "description": "api路径",
-                    "type": "string"
-                },
-                "updatedAt": {
-                    "description": "更新时间",
-                    "type": "string"
-                }
-            }
-        },
-        "server_internal_model_entity_authority.ApiTree": {
-            "type": "object",
-            "properties": {
-                "apiGroup": {
-                    "type": "string"
-                },
-                "children": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/server_internal_model_entity_authority.Children"
-                    }
-                }
-            }
-        },
-        "server_internal_model_entity_authority.Children": {
-            "type": "object",
-            "properties": {
-                "apiGroup": {
-                    "description": "for 前端el-tree label (path + description)",
-                    "type": "string"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "key": {
-                    "description": "for 前端el-tree node-key (path + method)",
-                    "type": "string"
-                },
-                "method": {
-                    "type": "string"
-                },
-                "path": {
-                    "type": "string"
-                }
-            }
-        },
-        "server_internal_model_entity_authority.MenuModel": {
-            "type": "object",
-            "properties": {
-                "children": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/server_internal_model_entity_authority.MenuModel"
-                    }
-                },
-                "component": {
-                    "description": "前端组件",
-                    "type": "string"
-                },
-                "createdAt": {
-                    "description": "创建时间",
-                    "type": "string"
-                },
-                "id": {
-                    "description": "主键ID",
-                    "type": "integer"
-                },
-                "meta": {
-                    "description": "元数据",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/server_internal_model_entity_authority.Meta"
-                        }
-                    ]
-                },
-                "name": {
-                    "description": "路由名称",
-                    "type": "string"
-                },
-                "path": {
-                    "description": "路由路径",
-                    "type": "string"
-                },
-                "pid": {
-                    "description": "父菜单ID",
-                    "type": "integer"
-                },
-                "redirect": {
-                    "description": "重定向",
-                    "type": "string"
-                },
-                "sort": {
-                    "description": "排序",
-                    "type": "integer"
-                },
-                "updatedAt": {
-                    "description": "更新时间",
-                    "type": "string"
-                }
-            }
-        },
-        "server_internal_model_entity_authority.Meta": {
-            "type": "object",
-            "properties": {
-                "affix": {
-                    "description": "是否固定",
-                    "type": "boolean"
-                },
-                "alwaysShow": {
-                    "description": "是否一直显示根路由",
-                    "type": "boolean"
-                },
-                "elIcon": {
-                    "description": "element-plus图标",
-                    "type": "string"
-                },
-                "hidden": {
-                    "description": "菜单是否隐藏",
-                    "type": "boolean"
-                },
-                "keepAlive": {
-                    "type": "boolean"
-                },
-                "svgIcon": {
-                    "description": "svg图标",
-                    "type": "string"
-                },
-                "title": {
-                    "description": "菜单名",
-                    "type": "string"
-                }
-            }
-        },
-        "server_internal_model_entity_authority.RoleModel": {
-            "type": "object",
-            "required": [
-                "roleName"
-            ],
-            "properties": {
-                "createdAt": {
-                    "description": "创建时间",
-                    "type": "string"
-                },
-                "id": {
-                    "description": "主键ID",
-                    "type": "integer"
-                },
-                "menus": {
-                    "description": "Users    []*UserModel ` + "`" + `json:\"users\"` + "`" + `",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/server_internal_model_entity_authority.MenuModel"
-                    }
-                },
-                "roleName": {
-                    "type": "string"
-                },
-                "updatedAt": {
-                    "description": "更新时间",
-                    "type": "string"
-                }
-            }
-        },
-        "server_internal_model_entity_authority.UserModel": {
-            "type": "object",
-            "required": [
-                "roleId",
-                "username"
-            ],
-            "properties": {
-                "active": {
-                    "description": "是否活跃",
-                    "type": "boolean"
-                },
-                "createdAt": {
-                    "description": "创建时间",
-                    "type": "string"
-                },
-                "email": {
-                    "description": "邮箱",
-                    "type": "string"
-                },
-                "id": {
-                    "description": "主键ID",
-                    "type": "integer"
-                },
-                "phone": {
-                    "description": "手机号",
-                    "type": "string"
-                },
-                "roleId": {
-                    "description": "角色ID",
-                    "type": "integer"
-                },
-                "updatedAt": {
-                    "description": "更新时间",
-                    "type": "string"
-                },
-                "username": {
-                    "description": "用户名",
-                    "type": "string"
-                }
-            }
-        },
-        "server_internal_model_entity_authority_request.AddUser": {
+        "server_internal_model_sysManagement.AddUserReq": {
             "type": "object",
             "required": [
                 "password",
@@ -2370,7 +2113,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "roleId": {
-                    "description": "角色ID",
+                    "description": "角色 ID",
                     "type": "integer"
                 },
                 "username": {
@@ -2379,11 +2122,125 @@ const docTemplate = `{
                 }
             }
         },
-        "server_internal_model_entity_authority_request.ApiSearchParams": {
+        "server_internal_model_sysManagement.ApiModel": {
+            "type": "object",
+            "required": [
+                "apiGroup",
+                "description",
+                "method",
+                "path"
+            ],
+            "properties": {
+                "apiGroup": {
+                    "description": "API 组",
+                    "type": "string"
+                },
+                "createdAt": {
+                    "description": "创建时间",
+                    "type": "string"
+                },
+                "description": {
+                    "description": "API 中文描述",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "主键 ID",
+                    "type": "integer"
+                },
+                "method": {
+                    "description": "方法:创建POST(默认)|查看GET|更新PUT|删除DELETE",
+                    "type": "string"
+                },
+                "path": {
+                    "description": "API 路径",
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "description": "更新时间",
+                    "type": "string"
+                }
+            }
+        },
+        "server_internal_model_sysManagement.ApiTree": {
             "type": "object",
             "properties": {
                 "apiGroup": {
-                    "description": "API分组",
+                    "type": "string"
+                },
+                "children": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/server_internal_model_sysManagement.Children"
+                    }
+                }
+            }
+        },
+        "server_internal_model_sysManagement.ApiTreeResp": {
+            "type": "object",
+            "properties": {
+                "checkedKey": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "list": {}
+            }
+        },
+        "server_internal_model_sysManagement.CaptchaResponse": {
+            "type": "object",
+            "properties": {
+                "captchaId": {
+                    "type": "string"
+                },
+                "captchaLength": {
+                    "type": "integer"
+                },
+                "picPath": {
+                    "type": "string"
+                }
+            }
+        },
+        "server_internal_model_sysManagement.CasbinInfo": {
+            "type": "object",
+            "properties": {
+                "method": {
+                    "description": "方法",
+                    "type": "string"
+                },
+                "path": {
+                    "description": "路径",
+                    "type": "string"
+                }
+            }
+        },
+        "server_internal_model_sysManagement.Children": {
+            "type": "object",
+            "properties": {
+                "apiGroup": {
+                    "description": "for 前端el-tree label (path + description)",
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "key": {
+                    "description": "for 前端el-tree node-key (path + method)",
+                    "type": "string"
+                },
+                "method": {
+                    "type": "string"
+                },
+                "path": {
+                    "type": "string"
+                }
+            }
+        },
+        "server_internal_model_sysManagement.ListApiReq": {
+            "type": "object",
+            "properties": {
+                "apiGroup": {
+                    "description": "API 分组",
                     "type": "string"
                 },
                 "desc": {
@@ -2422,11 +2279,57 @@ const docTemplate = `{
                 }
             }
         },
-        "server_internal_model_entity_authority_request.EditMenuReq": {
+        "server_internal_model_sysManagement.Login": {
+            "type": "object",
+            "required": [
+                "captcha",
+                "captchaId",
+                "password",
+                "username"
+            ],
+            "properties": {
+                "captcha": {
+                    "description": "验证码",
+                    "type": "string"
+                },
+                "captchaId": {
+                    "description": "验证码 ID",
+                    "type": "string"
+                },
+                "password": {
+                    "description": "密码",
+                    "type": "string"
+                },
+                "username": {
+                    "description": "用户名",
+                    "type": "string"
+                }
+            }
+        },
+        "server_internal_model_sysManagement.LoginResponse": {
+            "type": "object",
+            "properties": {
+                "expiresAt": {
+                    "description": "过期时间",
+                    "type": "integer"
+                },
+                "token": {
+                    "type": "string"
+                },
+                "user": {
+                    "description": "用户",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/server_internal_model_sysManagement.UserModel"
+                        }
+                    ]
+                }
+            }
+        },
+        "server_internal_model_sysManagement.Menu": {
             "type": "object",
             "required": [
                 "component",
-                "id",
                 "path",
                 "sort"
             ],
@@ -2435,12 +2338,8 @@ const docTemplate = `{
                     "description": "前端组件",
                     "type": "string"
                 },
-                "id": {
-                    "description": "菜单ID",
-                    "type": "integer"
-                },
                 "meta": {
-                    "$ref": "#/definitions/server_internal_model_entity_authority_request.meta"
+                    "$ref": "#/definitions/server_internal_model_sysManagement.meta"
                 },
                 "name": {
                     "description": "名称",
@@ -2464,7 +2363,250 @@ const docTemplate = `{
                 }
             }
         },
-        "server_internal_model_entity_authority_request.EditRole": {
+        "server_internal_model_sysManagement.MenuModel": {
+            "type": "object",
+            "properties": {
+                "children": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/server_internal_model_sysManagement.MenuModel"
+                    }
+                },
+                "component": {
+                    "description": "前端组件",
+                    "type": "string"
+                },
+                "createdAt": {
+                    "description": "创建时间",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "主键 ID",
+                    "type": "integer"
+                },
+                "meta": {
+                    "description": "元数据",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/server_internal_model_sysManagement.Meta"
+                        }
+                    ]
+                },
+                "name": {
+                    "description": "路由名称",
+                    "type": "string"
+                },
+                "path": {
+                    "description": "路由路径",
+                    "type": "string"
+                },
+                "pid": {
+                    "description": "父菜单 ID",
+                    "type": "integer"
+                },
+                "redirect": {
+                    "description": "重定向",
+                    "type": "string"
+                },
+                "sort": {
+                    "description": "排序",
+                    "type": "integer"
+                },
+                "updatedAt": {
+                    "description": "更新时间",
+                    "type": "string"
+                }
+            }
+        },
+        "server_internal_model_sysManagement.MenuResp": {
+            "type": "object",
+            "properties": {
+                "list": {},
+                "menuIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                }
+            }
+        },
+        "server_internal_model_sysManagement.Meta": {
+            "type": "object",
+            "properties": {
+                "affix": {
+                    "description": "是否固定",
+                    "type": "boolean"
+                },
+                "alwaysShow": {
+                    "description": "是否一直显示根路由",
+                    "type": "boolean"
+                },
+                "elIcon": {
+                    "description": "element-plus图标",
+                    "type": "string"
+                },
+                "hidden": {
+                    "description": "菜单是否隐藏",
+                    "type": "boolean"
+                },
+                "keepAlive": {
+                    "type": "boolean"
+                },
+                "svgIcon": {
+                    "description": "svg 图标",
+                    "type": "string"
+                },
+                "title": {
+                    "description": "菜单名",
+                    "type": "string"
+                }
+            }
+        },
+        "server_internal_model_sysManagement.ModifyPasswdReq": {
+            "type": "object",
+            "required": [
+                "id",
+                "newPassword",
+                "oldPassword"
+            ],
+            "properties": {
+                "id": {
+                    "description": "用户 ID",
+                    "type": "integer"
+                },
+                "newPassword": {
+                    "description": "新密码",
+                    "type": "string"
+                },
+                "oldPassword": {
+                    "description": "旧密码",
+                    "type": "string"
+                }
+            }
+        },
+        "server_internal_model_sysManagement.ReqCasbin": {
+            "type": "object",
+            "required": [
+                "roleId"
+            ],
+            "properties": {
+                "casbinInfos": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/server_internal_model_sysManagement.CasbinInfo"
+                    }
+                },
+                "roleId": {
+                    "description": "角色 ID",
+                    "type": "integer"
+                }
+            }
+        },
+        "server_internal_model_sysManagement.RoleModel": {
+            "type": "object",
+            "required": [
+                "roleName"
+            ],
+            "properties": {
+                "createdAt": {
+                    "description": "创建时间",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "主键 ID",
+                    "type": "integer"
+                },
+                "menus": {
+                    "description": "Users    []*UserModel ` + "`" + `json:\"users\"` + "`" + `",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/server_internal_model_sysManagement.MenuModel"
+                    }
+                },
+                "roleName": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "description": "更新时间",
+                    "type": "string"
+                }
+            }
+        },
+        "server_internal_model_sysManagement.SwitchActiveReq": {
+            "type": "object",
+            "required": [
+                "id"
+            ],
+            "properties": {
+                "active": {
+                    "description": "是否启用",
+                    "type": "boolean"
+                },
+                "id": {
+                    "description": "用户 ID",
+                    "type": "integer"
+                }
+            }
+        },
+        "server_internal_model_sysManagement.UpdateMenuReq": {
+            "type": "object",
+            "required": [
+                "component",
+                "id",
+                "path",
+                "sort"
+            ],
+            "properties": {
+                "component": {
+                    "description": "前端组件",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "菜单 ID",
+                    "type": "integer"
+                },
+                "meta": {
+                    "$ref": "#/definitions/server_internal_model_sysManagement.meta"
+                },
+                "name": {
+                    "description": "名称",
+                    "type": "string"
+                },
+                "path": {
+                    "description": "路径",
+                    "type": "string"
+                },
+                "pid": {
+                    "description": "默认0 根目录",
+                    "type": "integer"
+                },
+                "redirect": {
+                    "description": "重定向",
+                    "type": "string"
+                },
+                "sort": {
+                    "description": "排序",
+                    "type": "integer"
+                }
+            }
+        },
+        "server_internal_model_sysManagement.UpdateRoleMenuReq": {
+            "type": "object",
+            "properties": {
+                "ids": {
+                    "description": "菜单 ID",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "roleId": {
+                    "description": "角色 ID",
+                    "type": "integer"
+                }
+            }
+        },
+        "server_internal_model_sysManagement.UpdateRoleReq": {
             "type": "object",
             "required": [
                 "id",
@@ -2481,23 +2623,7 @@ const docTemplate = `{
                 }
             }
         },
-        "server_internal_model_entity_authority_request.EditRoleMenu": {
-            "type": "object",
-            "properties": {
-                "ids": {
-                    "description": "菜单ID",
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
-                },
-                "roleId": {
-                    "description": "角色ID",
-                    "type": "integer"
-                }
-            }
-        },
-        "server_internal_model_entity_authority_request.EditUser": {
+        "server_internal_model_sysManagement.UpdateUserReq": {
             "type": "object",
             "required": [
                 "id",
@@ -2514,7 +2640,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
-                    "description": "用户ID",
+                    "description": "用户 ID",
                     "type": "integer"
                 },
                 "phone": {
@@ -2522,7 +2648,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "roleId": {
-                    "description": "角色ID",
+                    "description": "角色 ID",
                     "type": "integer"
                 },
                 "username": {
@@ -2531,98 +2657,7 @@ const docTemplate = `{
                 }
             }
         },
-        "server_internal_model_entity_authority_request.ModifyPass": {
-            "type": "object",
-            "required": [
-                "id",
-                "newPassword",
-                "oldPassword"
-            ],
-            "properties": {
-                "id": {
-                    "description": "用户ID",
-                    "type": "integer"
-                },
-                "newPassword": {
-                    "description": "新密码",
-                    "type": "string"
-                },
-                "oldPassword": {
-                    "description": "旧密码",
-                    "type": "string"
-                }
-            }
-        },
-        "server_internal_model_entity_authority_request.SwitchActive": {
-            "type": "object",
-            "required": [
-                "id"
-            ],
-            "properties": {
-                "active": {
-                    "description": "是否启用",
-                    "type": "boolean"
-                },
-                "id": {
-                    "description": "用户ID",
-                    "type": "integer"
-                }
-            }
-        },
-        "server_internal_model_entity_authority_request.meta": {
-            "type": "object",
-            "properties": {
-                "affix": {
-                    "description": "组件固定",
-                    "type": "boolean"
-                },
-                "alwaysShow": {
-                    "description": "是否一直显示根路由",
-                    "type": "boolean"
-                },
-                "hidden": {
-                    "description": "隐藏菜单",
-                    "type": "boolean"
-                },
-                "icon": {
-                    "description": "element图标",
-                    "type": "string"
-                },
-                "keepAlive": {
-                    "description": "组件缓存",
-                    "type": "boolean"
-                },
-                "title": {
-                    "description": "菜单名",
-                    "type": "string"
-                }
-            }
-        },
-        "server_internal_model_entity_authority_response.ApiTree": {
-            "type": "object",
-            "properties": {
-                "checkedKey": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "list": {}
-            }
-        },
-        "server_internal_model_entity_authority_response.Menu": {
-            "type": "object",
-            "properties": {
-                "list": {},
-                "menuIds": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
-                }
-            }
-        },
-        "server_internal_model_entity_authority_response.UserResult": {
+        "server_internal_model_sysManagement.UserModel": {
             "type": "object",
             "required": [
                 "roleId",
@@ -2642,7 +2677,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
-                    "description": "主键ID",
+                    "description": "主键 ID",
                     "type": "integer"
                 },
                 "phone": {
@@ -2650,7 +2685,48 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "roleId": {
-                    "description": "角色ID",
+                    "description": "角色 ID",
+                    "type": "integer"
+                },
+                "updatedAt": {
+                    "description": "更新时间",
+                    "type": "string"
+                },
+                "username": {
+                    "description": "用户名",
+                    "type": "string"
+                }
+            }
+        },
+        "server_internal_model_sysManagement.UserResp": {
+            "type": "object",
+            "required": [
+                "roleId",
+                "username"
+            ],
+            "properties": {
+                "active": {
+                    "description": "是否活跃",
+                    "type": "boolean"
+                },
+                "createdAt": {
+                    "description": "创建时间",
+                    "type": "string"
+                },
+                "email": {
+                    "description": "邮箱",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "主键 ID",
+                    "type": "integer"
+                },
+                "phone": {
+                    "description": "手机号",
+                    "type": "string"
+                },
+                "roleId": {
+                    "description": "角色 ID",
                     "type": "integer"
                 },
                 "roleName": {
@@ -2667,149 +2743,36 @@ const docTemplate = `{
                 }
             }
         },
-        "server_internal_model_entity_base_request.CaptchaResponse": {
+        "server_internal_model_sysManagement.meta": {
             "type": "object",
             "properties": {
-                "captchaId": {
-                    "type": "string"
-                },
-                "captchaLength": {
-                    "type": "integer"
-                },
-                "picPath": {
-                    "type": "string"
-                }
-            }
-        },
-        "server_internal_model_entity_base_request.CasbinInfo": {
-            "type": "object",
-            "properties": {
-                "method": {
-                    "description": "方法",
-                    "type": "string"
-                },
-                "path": {
-                    "description": "路径",
-                    "type": "string"
-                }
-            }
-        },
-        "server_internal_model_entity_base_request.Login": {
-            "type": "object",
-            "required": [
-                "captcha",
-                "captchaId",
-                "password",
-                "username"
-            ],
-            "properties": {
-                "captcha": {
-                    "description": "验证码",
-                    "type": "string"
-                },
-                "captchaId": {
-                    "description": "验证码ID",
-                    "type": "string"
-                },
-                "password": {
-                    "description": "密码",
-                    "type": "string"
-                },
-                "username": {
-                    "description": "用户名",
-                    "type": "string"
-                }
-            }
-        },
-        "server_internal_model_entity_base_request.ReqCasbin": {
-            "type": "object",
-            "required": [
-                "roleId"
-            ],
-            "properties": {
-                "casbinInfos": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/server_internal_model_entity_base_request.CasbinInfo"
-                    }
-                },
-                "roleId": {
-                    "description": "角色ID",
-                    "type": "integer"
-                }
-            }
-        },
-        "server_internal_model_entity_base_response.LoginResponse": {
-            "type": "object",
-            "properties": {
-                "expiresAt": {
-                    "description": "过期时间",
-                    "type": "integer"
-                },
-                "token": {
-                    "type": "string"
-                },
-                "user": {
-                    "description": "用户",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/server_internal_model_entity_authority.UserModel"
-                        }
-                    ]
-                }
-            }
-        },
-        "server_internal_model_entity_fileM.FileModel": {
-            "type": "object",
-            "properties": {
-                "createdAt": {
-                    "description": "创建时间",
-                    "type": "string"
-                },
-                "fileName": {
-                    "type": "string"
-                },
-                "fullPath": {
-                    "type": "string"
-                },
-                "id": {
-                    "description": "主键ID",
-                    "type": "integer"
-                },
-                "mime": {
-                    "type": "string"
-                },
-                "updatedAt": {
-                    "description": "更新时间",
-                    "type": "string"
-                }
-            }
-        },
-        "server_internal_model_entity_fileM_request.FileSearchParams": {
-            "type": "object",
-            "properties": {
-                "desc": {
-                    "description": "排序方式:升序false(默认)|降序true",
+                "affix": {
+                    "description": "组件固定",
                     "type": "boolean"
                 },
-                "name": {
+                "alwaysShow": {
+                    "description": "是否一直显示根路由",
+                    "type": "boolean"
+                },
+                "hidden": {
+                    "description": "隐藏菜单",
+                    "type": "boolean"
+                },
+                "icon": {
+                    "description": "element 图标",
                     "type": "string"
                 },
-                "orderKey": {
-                    "description": "排序",
+                "keepAlive": {
+                    "description": "组件缓存",
+                    "type": "boolean"
+                },
+                "title": {
+                    "description": "菜单名",
                     "type": "string"
-                },
-                "page": {
-                    "description": "页码",
-                    "type": "integer"
-                },
-                "pageSize": {
-                    "description": "每页大小",
-                    "type": "integer"
                 }
             }
         },
-        "server_internal_model_entity_monitor.OperationLogModel": {
+        "server_internal_model_sysMonitor.OperationLogModel": {
             "type": "object",
             "properties": {
                 "createdAt": {
@@ -2817,7 +2780,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
-                    "description": "主键ID",
+                    "description": "主键 ID",
                     "type": "integer"
                 },
                 "ip": {
@@ -2866,7 +2829,7 @@ const docTemplate = `{
                 }
             }
         },
-        "server_internal_model_entity_monitor_request.OrSearchParams": {
+        "server_internal_model_sysMonitor.OrListReq": {
             "type": "object",
             "properties": {
                 "asc": {
@@ -2895,7 +2858,7 @@ const docTemplate = `{
                 }
             }
         },
-        "server_internal_model_entity_sysTool.ClearTable": {
+        "server_internal_model_sysTool.ClearTable": {
             "type": "object",
             "properties": {
                 "compareField": {
@@ -2909,7 +2872,7 @@ const docTemplate = `{
                 }
             }
         },
-        "server_internal_model_entity_sysTool.CronModel": {
+        "server_internal_model_sysTool.CronModel": {
             "type": "object",
             "required": [
                 "expression",
@@ -2931,10 +2894,10 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "extraParams": {
-                    "$ref": "#/definitions/server_internal_model_entity_sysTool.ExtraParams"
+                    "$ref": "#/definitions/server_internal_model_sysTool.ExtraParams"
                 },
                 "id": {
-                    "description": "主键ID",
+                    "description": "主键 ID",
                     "type": "integer"
                 },
                 "method": {
@@ -2959,7 +2922,7 @@ const docTemplate = `{
                 }
             }
         },
-        "server_internal_model_entity_sysTool.ExtraParams": {
+        "server_internal_model_sysTool.ExtraParams": {
             "type": "object",
             "properties": {
                 "command": {
@@ -2970,12 +2933,58 @@ const docTemplate = `{
                     "description": "for clearTable",
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/server_internal_model_entity_sysTool.ClearTable"
+                        "$ref": "#/definitions/server_internal_model_sysTool.ClearTable"
                     }
                 }
             }
         },
-        "server_internal_model_entity_sysTool_request.SwitchReq": {
+        "server_internal_model_sysTool.FileModel": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "description": "创建时间",
+                    "type": "string"
+                },
+                "fileName": {
+                    "type": "string"
+                },
+                "fullPath": {
+                    "type": "string"
+                },
+                "id": {
+                    "description": "主键 ID",
+                    "type": "integer"
+                },
+                "mime": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "description": "更新时间",
+                    "type": "string"
+                }
+            }
+        },
+        "server_internal_model_sysTool.ListFileReq": {
+            "type": "object",
+            "properties": {
+                "desc": {
+                    "description": "排序方式:升序false(默认)|降序true",
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "page": {
+                    "description": "页码",
+                    "type": "integer"
+                },
+                "pageSize": {
+                    "description": "每页大小",
+                    "type": "integer"
+                }
+            }
+        },
+        "server_internal_model_sysTool.SwitchReq": {
             "type": "object",
             "required": [
                 "id"

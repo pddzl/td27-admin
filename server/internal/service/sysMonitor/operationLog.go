@@ -1,62 +1,44 @@
 package sysMonitor
 
 import (
+	"context"
+
 	"server/internal/global"
-	modelMonitor "server/internal/model/monitor"
+	"server/internal/model/sysMonitor"
 )
 
-type OperationLogService struct{}
+type OperationLogService struct {
+	repository sysMonitor.OperationLogRepository
+	ctx        context.Context
+}
 
 func NewOperationLogService() *OperationLogService {
-	return &OperationLogService{}
+	return &OperationLogService{
+		repository: sysMonitor.NewOperationLogEntity(global.TD27_DB),
+		ctx:        context.Background(),
+	}
 }
 
-// CreateOperationLog 创建操作日志
-func (o *OperationLogService) CreateOperationLog(operationRecord modelMonitor.OperationLogModel) error {
-	return global.TD27_DB.Create(&operationRecord).Error
+func (s *OperationLogService) Create(req *sysMonitor.OperationLogModel) error {
+	return s.repository.Create(s.ctx, req)
 }
 
-// GetOperationLogList 分页获取操作日志
-func (o *OperationLogService) GetOperationLogList(orSp modelMonitor.OrSearchParams) ([]modelMonitor.OperationLogModel, int64, error) {
-	limit := orSp.PageSize
-	offset := orSp.PageSize * (orSp.Page - 1)
-	db := global.TD27_DB.Model(&modelMonitor.OperationLogModel{})
-	var olList []modelMonitor.OperationLogModel
-
-	if orSp.Path != "" {
-		db = db.Where("path LIKE ?", "%"+orSp.Path+"%")
-	}
-
-	if orSp.Method != "" {
-		db = db.Where("method = ?", orSp.Method)
-	}
-
-	if orSp.Status != 0 {
-		db = db.Where("status = ?", orSp.Status)
-	}
-
-	var total int64
-	err := db.Count(&total).Error
-
+func (s *OperationLogService) List(req *sysMonitor.OrListReq) ([]*sysMonitor.OperationLogModel, int64, error) {
+	list, i, err := s.repository.List(s.ctx, req)
 	if err != nil {
-		return olList, total, err
-	} else {
-		db = db.Limit(limit).Offset(offset)
-		if orSp.Asc {
-			err = db.Find(&olList).Error
-		} else {
-			err = db.Order("id desc").Find(&olList).Error
-		}
+		return nil, 0, err
 	}
-	return olList, total, err
+	return list, i, nil
 }
 
-// DeleteOperationLog 删除操作日志
-func (o *OperationLogService) DeleteOperationLog(id uint) error {
-	return global.TD27_DB.Unscoped().Delete(&modelMonitor.OperationLogModel{}, id).Error
+func (s *OperationLogService) Delete(id uint) error {
+	return s.repository.Delete(s.ctx, id)
 }
 
-// DeleteOperationLogByIds 批量删除操作日志
-func (o *OperationLogService) DeleteOperationLogByIds(ids []uint) error {
-	return global.TD27_DB.Unscoped().Delete(&[]modelMonitor.OperationLogModel{}, ids).Error
+func (s *OperationLogService) DeleteByIds(ids []uint) (int64, error) {
+	rowNums, err := s.repository.DeleteByIds(s.ctx, ids)
+	if err != nil {
+		return 0, err
+	}
+	return rowNums, nil
 }

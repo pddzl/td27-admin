@@ -22,9 +22,9 @@ type RoleService struct {
 
 func NewRoleService() *RoleService {
 	return &RoleService{
-		roleRepository: sysManagement.NewRoleRepository(global.TD27_DB),
-		userRepository: sysManagement.NewUserRepository(global.TD27_DB),
-		menuRepository: sysManagement.NewMenuRepository(global.TD27_DB),
+		roleRepository: sysManagement.NewRoleEntity(global.TD27_DB),
+		userRepository: sysManagement.NewUserEntity(global.TD27_DB),
+		menuRepository: sysManagement.NewMenuEntity(global.TD27_DB),
 		ctx:            context.Background(),
 	}
 }
@@ -44,7 +44,7 @@ func (s *RoleService) Create(req *sysManagement.RoleModel) (*sysManagement.RoleM
 	}
 
 	// 更新casbin rule
-	if err = casbinService.EditCasbin(create.ID, sysManagement.DefaultCasbin()); err != nil {
+	if err = casbinService.Update(create.ID, sysManagement.DefaultCasbin()); err != nil {
 		global.TD27_LOG.Error("更新casbin rule失败", zap.Error(err))
 	}
 	return create, err

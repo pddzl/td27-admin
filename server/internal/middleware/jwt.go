@@ -9,10 +9,10 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 
 	"server/internal/global"
-	modelAuthority "server/internal/model/authority"
 	"server/internal/model/common"
+	modelSysManagement "server/internal/model/sysManagement"
 	pkgJwt "server/internal/pkg/jwt"
-	"server/internal/service/authority"
+	"server/internal/service/sysManagement"
 )
 
 var (
@@ -52,7 +52,7 @@ func JWTAuth() gin.HandlerFunc {
 		}
 
 		// 用户是否存在
-		var userModel modelAuthority.UserModel
+		var userModel modelSysManagement.UserModel
 		err = global.TD27_DB.Where("id = ?", claims.ID).First(&userModel).Error
 		if err != nil {
 			common.FailWithMessage("用户不存在", c)

@@ -26,7 +26,7 @@ type cronEntity struct {
 	conn *gorm.DB
 }
 
-func NewCronRepository(conn *gorm.DB) CronRepository {
+func NewCronEntity(conn *gorm.DB) CronRepository {
 	return &cronEntity{conn: conn}
 }
 

@@ -10,8 +10,7 @@ type orStruct struct {
 	Status int    // http code
 }
 
-// OrSearchParams api分页条件查询及排序结构体
-type OrSearchParams struct {
+type OrListReq struct {
 	orStruct
 	common.PageInfo
 	Asc bool `json:"asc"` // 排序方式:升序true|降序true(默认)

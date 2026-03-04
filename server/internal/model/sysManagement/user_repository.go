@@ -27,7 +27,7 @@ type userEntity struct {
 	conn *gorm.DB
 }
 
-func NewUserRepository(conn *gorm.DB) UserRepository {
+func NewUserEntity(conn *gorm.DB) UserRepository {
 	return &userEntity{conn: conn}
 }
 

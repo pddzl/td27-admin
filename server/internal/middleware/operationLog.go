@@ -6,16 +6,16 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-	"server/internal/api/authority"
-	modelMonitor "server/internal/model/monitor"
 	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 
+	"server/internal/api/sysManagement"
 	"server/internal/global"
-	"server/internal/service/monitor"
+	modelSysMonitor "server/internal/model/sysMonitor"
+	"server/internal/service/sysMonitor"
 )
 
 var (
@@ -64,7 +64,7 @@ func OperationRecord() gin.HandlerFunc {
 		// 解析token
 		claims, _ := sysManagement.GetClaims(c)
 
-		record := modelMonitor.OperationLogModel{
+		record := modelSysMonitor.OperationLogModel{
 			Ip:        c.ClientIP(),
 			Method:    c.Request.Method,
 			Path:      c.Request.URL.Path,
@@ -87,7 +87,7 @@ func OperationRecord() gin.HandlerFunc {
 		record.RespTime = time.Since(now).Milliseconds()
 		record.RespData = writer.body.String()
 
-		if err := operationLogService.CreateOperationLog(record); err != nil {
+		if err := operationLogService.Create(&record); err != nil {
 			global.TD27_LOG.Error("create operation record error:", zap.Error(err))
 		}
 	}

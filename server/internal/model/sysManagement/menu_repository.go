@@ -22,7 +22,7 @@ type menuEntity struct {
 	conn *gorm.DB
 }
 
-func NewMenuRepository(conn *gorm.DB) MenuRepository {
+func NewMenuEntity(conn *gorm.DB) MenuRepository {
 	return &menuEntity{conn: conn}
 }
 

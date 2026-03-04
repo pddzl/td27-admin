@@ -23,7 +23,7 @@ type roleEntity struct {
 	conn *gorm.DB
 }
 
-func NewRoleRepository(conn *gorm.DB) RoleRepository {
+func NewRoleEntity(conn *gorm.DB) RoleRepository {
 	return &roleEntity{conn: conn}
 }
 

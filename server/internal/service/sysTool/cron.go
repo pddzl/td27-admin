@@ -15,7 +15,7 @@ type CronService struct {
 
 func NewCronService() *CronService {
 	return &CronService{
-		repository: sysTool.NewCronRepository(global.TD27_DB),
+		repository: sysTool.NewCronEntity(global.TD27_DB),
 		ctx:        context.Background(),
 	}
 }

@@ -20,5 +20,5 @@ func NewCasbinRouter() *CasbinRouter {
 func (cr *CasbinRouter) InitCasbinRouter(rg *gin.RouterGroup) {
 	baseG := rg.Group("casbin")
 	record := baseG.Use(middleware.OperationRecord())
-	record.POST("update", cr.casbinApi.EditCasbin)
+	record.POST("update", cr.casbinApi.Update)
 }

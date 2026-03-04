@@ -24,7 +24,7 @@ type apiEntity struct {
 	conn *gorm.DB
 }
 
-func NewApiRepository(conn *gorm.DB) ApiRepository {
+func NewApiEntity(conn *gorm.DB) ApiRepository {
 	return &apiEntity{conn: conn}
 }
 

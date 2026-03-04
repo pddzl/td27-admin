@@ -26,7 +26,7 @@ type fileEntity struct {
 	conn *gorm.DB
 }
 
-func NewUserRepository(conn *gorm.DB) FileRepository {
+func NewFileEntity(conn *gorm.DB) FileRepository {
 	return &fileEntity{conn: conn}
 }
 

@@ -60,8 +60,8 @@ func (a *FileApi) Upload(c *gin.Context) {
 // @accept    application/json
 // @Produce   application/json
 // @Param     data  body      modelSysTool.ListFileReq true  "请求参数"
-// @Success   200   {object}  common.Response{data=[],msg=string}
-// @Router    /file/getFileList [post]
+// @Success   200   {object}  common.Response{data=[]modelSysTool.FileModel,msg=string}
+// @Router    /file/list [post]
 func (a *FileApi) List(c *gin.Context) {
 	var req modelSysTool.ListFileReq
 	if err := c.ShouldBindJSON(&req); err != nil {

@@ -16,8 +16,8 @@ type UserService struct {
 
 func NewUserService() *UserService {
 	return &UserService{
-		userRepository: sysManagement.NewUserRepository(global.TD27_DB),
-		roleRepository: sysManagement.NewRoleRepository(global.TD27_DB),
+		userRepository: sysManagement.NewUserEntity(global.TD27_DB),
+		roleRepository: sysManagement.NewRoleEntity(global.TD27_DB),
 		ctx:            context.Background(),
 	}
 }

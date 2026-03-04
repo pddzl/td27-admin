@@ -15,7 +15,7 @@ type DictService struct {
 
 func NewDictService() *DictService {
 	return &DictService{
-		repository: sysManagement.NewDictRepository(global.TD27_DB),
+		repository: sysManagement.NewDictEntity(global.TD27_DB),
 		ctx:        context.Background(),
 	}
 }

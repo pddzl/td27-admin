@@ -18,7 +18,7 @@ func NewCasbinApi() *CasbinApi {
 	return &CasbinApi{casbinService: serviceSysManagement.NewCasbinService()}
 }
 
-// EditCasbin
+// Update
 // @Tags      CasbinApi
 // @Summary   编辑casbin
 // @Security  ApiKeyAuth
@@ -26,15 +26,15 @@ func NewCasbinApi() *CasbinApi {
 // @Produce   application/json
 // @Param     data  body      modelSysManagement.ReqCasbin true "请求参数"
 // @Success   200   {object}  common.Response{msg=string}
-// @Router    /casbin/editCasbin [post]
-func (ca *CasbinApi) EditCasbin(c *gin.Context) {
+// @Router    /casbin/update [post]
+func (ca *CasbinApi) Update(c *gin.Context) {
 	var reqCasbin modelSysManagement.ReqCasbin
 	if err := c.ShouldBindJSON(&reqCasbin); err != nil {
 		common.FailReq(err.Error(), c)
 		return
 	}
 
-	if err := ca.casbinService.EditCasbin(reqCasbin.RoleId, reqCasbin.CasbinInfos); err != nil {
+	if err := ca.casbinService.Update(reqCasbin.RoleId, reqCasbin.CasbinInfos); err != nil {
 		common.Fail(c)
 		global.TD27_LOG.Error("更新失败", zap.Error(err))
 	} else {

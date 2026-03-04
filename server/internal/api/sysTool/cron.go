@@ -142,7 +142,7 @@ func (ca *CronApi) Update(c *gin.Context) {
 // @Security  ApiKeyAuth
 // @accept    application/json
 // @Produce   application/json
-// @Param     data  body      sysToolReq.SwitchReq true  "id, open"
+// @Param     data  body      modelSysTool.SwitchReq true  "id, open"
 // @Success   200   {object}  common.Response{data=map[string]int, msg=string}
 // @Router    /cron/switchOpen [post]
 func (ca *CronApi) SwitchOpen(c *gin.Context) {

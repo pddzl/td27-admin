@@ -15,7 +15,7 @@ type FileService struct {
 
 func NewFileService() *FileService {
 	return &FileService{
-		repository: sysTool.NewUserRepository(global.TD27_DB),
+		repository: sysTool.NewFileEntity(global.TD27_DB),
 		ctx:        context.Background(),
 	}
 }
