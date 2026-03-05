@@ -44,25 +44,25 @@ export interface cronDataModel extends cronData, Td27Model {}
 export type cronListData = ListData<cronDataModel[]>
 
 // 分页获取cron
-export function getCronListApi(data?: PageInfo) {
+export function cronListApi(data?: PageInfo) {
   return request<ApiResponseData<cronListData>>({
-    url: "/cron/getCronList",
+    url: "/cron/list",
     method: "post",
     data
   })
 }
 
 // 添加cron
-export function addCronApi(data: addCronData) {
+export function cronCreateApi(data: addCronData) {
   return request<ApiResponseData<cronDataModel>>({
-    url: "/cron/addCron",
+    url: "/cron/create",
     method: "post",
     data
   })
 }
 
 // 切换cron
-export function switchCronApi(data: { open: boolean } & CId) {
+export function cronSwitchOpenApi(data: { open: boolean } & CId) {
   return request<ApiResponseData<{ entryId: number }>>({
     url: "/cron/switchOpen",
     method: "post",
@@ -71,27 +71,27 @@ export function switchCronApi(data: { open: boolean } & CId) {
 }
 
 // 删除
-export function deleteCronApi(data: CId) {
+export function cronDeleteApi(data: CId) {
   return request<ApiResponseData<null>>({
-    url: "/cron/deleteCron",
+    url: "/cron/delete",
     method: "post",
     data
   })
 }
 
 // 批量删除
-export function deleteCronByIds(data: CIds) {
+export function cronDeleteByIds(data: CIds) {
   return request<ApiResponseData<null>>({
-    url: "/cron/deleteCronByIds",
+    url: "/cron/deleteByIds",
     method: "post",
     data
   })
 }
 
 // 编辑
-export function editCronApi(data: addCronData & CId) {
+export function cronUpdateApi(data: addCronData & CId) {
   return request<ApiResponseData<cronDataModel>>({
-    url: "/cron/editCron",
+    url: "/cron/update",
     method: "post",
     data
   })

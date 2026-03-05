@@ -87,6 +87,7 @@ func RegisterTables(db *gorm.DB) {
 		sysManagement.RoleModel{},
 		sysManagement.MenuModel{},
 		sysManagement.ApiModel{},
+		sysManagement.RoleMenu{},
 		// 监控
 		modelMonitor.OperationLogModel{},
 		// fileM

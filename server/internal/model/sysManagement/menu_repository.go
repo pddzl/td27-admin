@@ -170,8 +170,8 @@ func (e *menuEntity) GetElTreeMenus(ctx context.Context, roleId uint) ([]*MenuMo
 	var relations []RoleMenu
 	if err := db.
 		Table("role_menus").
-		Select("menu_model_id").
-		Where("role_model_id = ?", roleId).
+		Select("menu_id").
+		Where("role_id = ?", roleId).
 		Scan(&relations).Error; err != nil {
 		return nil, nil, fmt.Errorf("query role menus failed: %w", err)
 	}

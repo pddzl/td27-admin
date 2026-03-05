@@ -35,7 +35,7 @@ func GetAllModules() []ModuleRouter {
 	return modules
 }
 
-func init() {
+func RegisterAllModuleRouter() {
 	Register(NewSysManagementRouterGroup())
 	Register(NewSysMonitorRouterGroup())
 	Register(NewSysToolRouterGroup())

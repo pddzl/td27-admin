@@ -1,7 +1,7 @@
-import type { dictDataModel } from "@/api/sysSet/dict"
-import type { dictDetailDataModel } from "@/api/sysSet/dictDetail"
-import { getDictApi } from "@/api/sysSet/dict"
-import { getDictDetailFlatApi } from "@/api/sysSet/dictDetail"
+import type { dictDataModel } from "@/api/sysManagement/dict"
+import type { dictDetailDataModel } from "@/api/sysManagement/dictDetail"
+import { dictListApi } from "@/api/sysManagement/dict"
+import { dictDetailFlatApi } from "@/api/sysManagement/dictDetail"
 
 export const useDictionaryStore = defineStore("dictionary", () => {
   const dictionaries = ref<dictDataModel[]>([])
@@ -11,7 +11,7 @@ export const useDictionaryStore = defineStore("dictionary", () => {
   const fetchDictionaries = async () => {
     if (dictionaries.value.length > 0) return
     try {
-      const res = await getDictApi()
+      const res = await dictListApi()
       if (res.code === 0) {
         dictionaries.value = res.data
       }
@@ -23,7 +23,7 @@ export const useDictionaryStore = defineStore("dictionary", () => {
   const fetchDictionaryDetail = async (dictId: number) => {
     if (detailsMap.value[dictId]) return // ✅ cached
     try {
-      const res = await getDictDetailFlatApi({ dictId })
+      const res = await dictDetailFlatApi({ dictId })
       if (res.code === 0) {
         detailsMap.value[dictId] = res.data.list
       }

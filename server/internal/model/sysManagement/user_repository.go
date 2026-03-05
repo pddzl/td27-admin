@@ -36,11 +36,11 @@ func (e *userEntity) FindOne(ctx context.Context, req *FindOneUserReq) (*UserMod
 	query := db.Model(&UserModel{})
 	// OR conditions
 	if req.ID != 0 && req.RoleModelID != 0 {
-		query = query.Where("id = ? OR role_model_id = ?", req.ID, req.RoleModelID)
+		query = query.Where("id = ? OR role_id = ?", req.ID, req.RoleModelID)
 	} else if req.ID != 0 {
 		query = query.Where("id = ?", req.ID)
 	} else {
-		query = query.Where("role_model_id = ?", req.RoleModelID)
+		query = query.Where("role_id = ?", req.RoleModelID)
 	}
 
 	var userModel UserModel
@@ -59,7 +59,7 @@ func (e *userEntity) GetUserInfo(ctx context.Context, userId uint) (listUserResp
 
 	tx := e.conn.
 		WithContext(ctx).
-		Table("authority_user").
+		Model(&UserModel{}).
 		Select(`
 			authority_user.id,
 			authority_user.created_at,
@@ -67,10 +67,10 @@ func (e *userEntity) GetUserInfo(ctx context.Context, userId uint) (listUserResp
 			authority_user.phone,
 			authority_user.email,
 			authority_user.active,
-			authority_user.role_model_id,
+			authority_user.role_id,
 			authority_role.role_name
 		`).
-		Joins("JOIN authority_role ON authority_user.role_model_id = authority_role.id").
+		Joins("JOIN authority_role ON authority_user.role_id = authority_role.id").
 		Where("authority_user.id = ?", userId).
 		Scan(&resp)
 
@@ -119,12 +119,12 @@ func (e *userEntity) List(ctx context.Context, pageInfo *common.PageInfo) ([]*Us
 			authority_user.phone,
 			authority_user.email,
 			authority_user.active,
-			authority_user.role_model_id,
+			authority_user.role_id,
 			authority_role.role_name AS role_name
 		`).
 		Joins(`
 			LEFT JOIN authority_role
-			ON authority_user.role_model_id = authority_role.id
+			ON authority_user.role_id = authority_role.id
 		`).
 		Limit(pageSize).
 		Offset(offset).
@@ -158,7 +158,7 @@ func (e *userEntity) Create(ctx context.Context, req *AddUserReq) error {
 	userModel.Phone = req.Phone
 	userModel.Email = req.Email
 	userModel.Active = req.Active
-	userModel.RoleModelID = req.RoleModelID
+	userModel.RoleID = req.RoleModelID
 
 	return e.conn.WithContext(ctx).Create(&userModel).Error
 }
@@ -168,12 +168,12 @@ func (e *userEntity) Update(ctx context.Context, req *UpdateUserReq) (*UserModel
 
 	// Update user
 	updates := map[string]interface{}{
-		"username":      req.Username,
-		"phone":         req.Phone,
-		"email":         req.Email,
-		"active":        req.Active,
-		"role_model_id": req.RoleModelID,
-		"updated_at":    time.Now(),
+		"username":   req.Username,
+		"phone":      req.Phone,
+		"email":      req.Email,
+		"active":     req.Active,
+		"role_id":    req.RoleModelID,
+		"updated_at": time.Now(),
 	}
 
 	tx := db.Model(&UserModel{}).Where("id = ?", req.ID).Updates(updates)

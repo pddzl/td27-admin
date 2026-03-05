@@ -40,6 +40,8 @@ func (re *roleEntity) FindOne(ctx context.Context, id uint) (*RoleModel, error) 
 }
 
 func (re *roleEntity) List(ctx context.Context, req *common.PageInfo) ([]RoleModel, int64, error) {
+	req.Normalize()
+
 	var roles []RoleModel
 	var total int64
 
@@ -50,24 +52,11 @@ func (re *roleEntity) List(ctx context.Context, req *common.PageInfo) ([]RoleMod
 		return nil, 0, fmt.Errorf("count roles failed: %w", err)
 	}
 
-	// Pagination
-	page := req.Page
-	pageSize := req.PageSize
-
-	if page <= 0 {
-		page = 1
-	}
-	if pageSize <= 0 {
-		pageSize = 10
-	}
-
-	offset := (page - 1) * pageSize
-
 	// Query data with preload
 	if err := db.
 		Preload("Menus").
-		Limit(pageSize).
-		Offset(offset).
+		Limit(req.PageSize).
+		Offset(req.Offset()).
 		//Order("id DESC").
 		Find(&roles).Error; err != nil {
 		return nil, 0, fmt.Errorf("list roles failed: %w", err)
@@ -128,5 +117,5 @@ func (re *roleEntity) UpdateRoleMenu(ctx context.Context, req []*MenuModel) erro
 }
 
 func (re *roleEntity) DeleteRoleMenu(ctx context.Context, roleId uint) error {
-	return re.conn.WithContext(ctx).Where("role_model_id =?", roleId).Delete(&RoleMenu{}).Error
+	return re.conn.WithContext(ctx).Where("role_id =?", roleId).Delete(&RoleMenu{}).Error
 }

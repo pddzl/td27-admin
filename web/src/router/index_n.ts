@@ -41,7 +41,7 @@ export const constantRoutes: RouteRecordRaw[] = [
   },
   {
     path: "/login",
-    component: () => import("@/pages/login/index.vue"),
+    component: () => import("@/pages/sysManagement/login/index.vue"),
     meta: {
       hidden: true
     }
@@ -71,7 +71,7 @@ export const constantRoutes: RouteRecordRaw[] = [
     children: [
       {
         path: "index",
-        component: () => import("@/pages/profile/index.vue"),
+        component: () => import("@/pages/sysManagement/profile/index.vue"),
         name: "Profile",
         meta: {
           title: "个人中心"

@@ -5,13 +5,13 @@ import { usePagination } from "@@/composables/usePagination_n"
 import { Delete, Plus } from "@element-plus/icons-vue"
 import { reactive, ref } from "vue"
 import {
-  addCronApi,
-  deleteCronApi,
-  deleteCronByIds,
-  editCronApi,
-  getCronListApi,
-  METHOD,
-  switchCronApi
+  cronCreateApi,
+  cronDeleteApi,
+  cronDeleteByIds,
+  cronListApi,
+  cronSwitchOpenApi,
+  cronUpdateApi,
+  METHOD
 } from "@/api/sysTool/cron"
 import { strategyFilter } from "./filter"
 
@@ -33,7 +33,7 @@ const tableData = ref<cronDataModel[]>([])
 async function getTableData() {
   loading.value = true
   try {
-    const res = await getCronListApi({
+    const res = await cronListApi({
       page: paginationData.currentPage,
       pageSize: paginationData.pageSize
     })
@@ -151,13 +151,13 @@ function operateAction(formEl: FormInstance | undefined) {
     .validate(async (valid) => {
       if (valid) {
         if (oKind === "Add") {
-          const res = await addCronApi({ ...opFormData })
+          const res = await cronCreateApi({ ...opFormData })
           if (res.code === 0) {
             ElMessage({ type: "success", message: res.msg })
             tableData.value.push(res.data)
           }
         } else if (oKind === "Edit") {
-          const res = await editCronApi({ id: activeRow.id, ...opFormData })
+          const res = await cronUpdateApi({ id: activeRow.id, ...opFormData })
           if (res.code === 0) {
             ElMessage({ type: "success", message: res.msg })
             // 修改对应数据
@@ -180,7 +180,7 @@ function handleDelete(row: cronDataModel) {
     type: "warning"
   })
     .then(() => {
-      deleteCronApi({ id: row.id }).then((res) => {
+      cronDeleteApi({ id: row.id }).then((res) => {
         if (res.code === 0) {
           ElMessage({ type: "success", message: res.msg })
           const index = tableData.value.indexOf(row)
@@ -217,7 +217,7 @@ async function onDelete() {
     })
     return
   }
-  const res = await deleteCronByIds({ ids: ids.value })
+  const res = await cronDeleteByIds({ ids: ids.value })
   if (res.code === 0) {
     ElMessage({
       type: "success",
@@ -246,7 +246,7 @@ function removeTableInfo(item: TableInfo) {
 
 function switchAction(row: cronDataModel) {
   return new Promise<boolean>((resolve, reject) => {
-    switchCronApi({ id: row.id, open: !row.open })
+    cronSwitchOpenApi({ id: row.id, open: !row.open })
       .then((res) => {
         if (res.code === 0) {
           if (!row.open) {

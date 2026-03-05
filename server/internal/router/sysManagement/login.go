@@ -17,7 +17,7 @@ func NewLogRegRouter() *LogRegRouter {
 }
 
 func (r *LogRegRouter) InitLogRegRouter(rg *gin.RouterGroup) {
-	baseG := rg.Group("logReg")
+	baseG := rg.Group("")
 	baseG.POST("captcha", r.logRegApi.Captcha)
 	baseG.POST("login", r.logRegApi.Login)
 	baseG.POST("logout", r.logRegApi.LogOut)

@@ -35,6 +35,9 @@ func Routers() *gin.Engine {
 	privateGroup := r.Group(global.TD27_CONFIG.Router.Prefix)
 	privateGroup.Use(middleware.JWTAuth(), middleware.CasbinHandler())
 
+	// register all router
+	router.RegisterAllModuleRouter()
+
 	// Automatically load ALL router modules
 	for _, m := range router.GetAllModules() {
 		m.InitPublic(publicGroup)

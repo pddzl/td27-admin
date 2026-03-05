@@ -3,6 +3,7 @@ package sysMonitor
 import (
 	"context"
 	"errors"
+	"server/internal/global"
 
 	"gorm.io/gorm"
 )
@@ -23,12 +24,14 @@ func NewOperationLogEntity(conn *gorm.DB) OperationLogRepository {
 }
 
 func (e *operationLogEntity) Create(ctx context.Context, req *OperationLogModel) error {
-
 	if req == nil {
 		return errors.New("operation log is nil")
 	}
 
-	result := e.conn.WithContext(ctx).Create(req)
+	// result := e.conn.WithContext(ctx).Model(&OperationLogModel{}).Create(req)
+	// middleware use it by global variable, so it must use global.TD27_DB
+	// instead of e.conn
+	result := global.TD27_DB.WithContext(ctx).Model(&OperationLogModel{}).Create(req)
 
 	if result.Error != nil {
 		return result.Error

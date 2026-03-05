@@ -95,7 +95,7 @@ func (ba *LogRegApi) tokenNext(c *gin.Context, user *modelSysManagement.UserMode
 	claims := modelSysManagement.CustomClaims{
 		ID:         user.ID,
 		Username:   user.Username,
-		RoleId:     user.RoleModelID,
+		RoleId:     user.RoleID,
 		BufferTime: global.TD27_CONFIG.JWT.BufferTime,
 		RegisteredClaims: jwt.RegisteredClaims{
 			NotBefore: jwt.NewNumericDate(time.Now().Add(-time.Duration(1000))),

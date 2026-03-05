@@ -44,8 +44,8 @@ func (MenuModel) TableName() string {
 }
 
 type RoleMenu struct {
-	MenuID uint `gorm:"column:menu_model_id"`
-	RoleID uint `gorm:"column:role_model_id"`
+	MenuID uint `gorm:"column:menu_id;primaryKey"`
+	RoleID uint `gorm:"column:role_id;primaryKey"`
 }
 
 func (RoleMenu) TableName() string {

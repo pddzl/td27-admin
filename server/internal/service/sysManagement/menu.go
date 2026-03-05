@@ -29,7 +29,7 @@ func (s *MenuService) List(userId uint) ([]*sysManagement.MenuModel, error) {
 		return nil, err
 	}
 
-	list, err := s.menuRepository.List(s.ctx, user.RoleModelID)
+	list, err := s.menuRepository.List(s.ctx, user.RoleID)
 	if err != nil {
 		return nil, err
 	}
