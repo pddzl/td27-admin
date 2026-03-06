@@ -18,4 +18,5 @@ func (rg *RouterGroup) InitPublic(group *gin.RouterGroup) {}
 
 func (rg *RouterGroup) InitPrivate(group *gin.RouterGroup) {
 	rg.InitCronRouter(group)
+	rg.InitFileRouter(group)
 }
