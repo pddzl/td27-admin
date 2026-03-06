@@ -15,7 +15,7 @@ type RoleRepository interface {
 	Create(ctx context.Context, req *RoleModel) (*RoleModel, error)
 	Delete(ctx context.Context, id uint) error
 	Update(ctx context.Context, req *UpdateRoleReq) error
-	UpdateRoleMenu(ctx context.Context, req []*MenuModel) error
+	UpdateRoleMenu(ctx context.Context, role *RoleModel, req []*MenuModel) error
 	DeleteRoleMenu(ctx context.Context, id uint) error
 }
 
@@ -27,9 +27,9 @@ func NewRoleEntity(conn *gorm.DB) RoleRepository {
 	return &roleEntity{conn: conn}
 }
 
-func (re *roleEntity) FindOne(ctx context.Context, id uint) (*RoleModel, error) {
+func (e *roleEntity) FindOne(ctx context.Context, id uint) (*RoleModel, error) {
 	var roleModel RoleModel
-	result := re.conn.WithContext(ctx).Find(&roleModel, "id=?", id)
+	result := e.conn.WithContext(ctx).Find(&roleModel, "id=?", id)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -39,13 +39,13 @@ func (re *roleEntity) FindOne(ctx context.Context, id uint) (*RoleModel, error) 
 	return &roleModel, nil
 }
 
-func (re *roleEntity) List(ctx context.Context, req *common.PageInfo) ([]RoleModel, int64, error) {
+func (e *roleEntity) List(ctx context.Context, req *common.PageInfo) ([]RoleModel, int64, error) {
 	req.Normalize()
 
 	var roles []RoleModel
 	var total int64
 
-	db := re.conn.WithContext(ctx).Model(&RoleModel{})
+	db := e.conn.WithContext(ctx).Model(&RoleModel{})
 
 	// Count total
 	if err := db.Count(&total).Error; err != nil {
@@ -65,14 +65,14 @@ func (re *roleEntity) List(ctx context.Context, req *common.PageInfo) ([]RoleMod
 	return roles, total, nil
 }
 
-func (re *roleEntity) Create(ctx context.Context, req *RoleModel) (*RoleModel, error) {
-	err := re.conn.WithContext(ctx).Create(req).Error
+func (e *roleEntity) Create(ctx context.Context, req *RoleModel) (*RoleModel, error) {
+	err := e.conn.WithContext(ctx).Create(req).Error
 
 	return req, err
 }
 
-func (re *roleEntity) Delete(ctx context.Context, id uint) error {
-	tx := re.conn.WithContext(ctx)
+func (e *roleEntity) Delete(ctx context.Context, id uint) error {
+	tx := e.conn.WithContext(ctx)
 
 	result := tx.Unscoped().Delete(&RoleModel{}, id)
 
@@ -87,8 +87,8 @@ func (re *roleEntity) Delete(ctx context.Context, id uint) error {
 	return nil
 }
 
-func (re *roleEntity) Update(ctx context.Context, req *UpdateRoleReq) error {
-	result := re.conn.WithContext(ctx).
+func (e *roleEntity) Update(ctx context.Context, req *UpdateRoleReq) error {
+	result := e.conn.WithContext(ctx).
 		Model(&RoleModel{}).
 		Where("id = ?", req.ID).
 		Update("role_name", req.RoleName)
@@ -105,10 +105,8 @@ func (re *roleEntity) Update(ctx context.Context, req *UpdateRoleReq) error {
 }
 
 // UpdateRoleMenu 编辑用户menu
-func (re *roleEntity) UpdateRoleMenu(ctx context.Context, req []*MenuModel) error {
-	var roleModel RoleModel
-
-	err := re.conn.WithContext(ctx).Model(&roleModel).Association("Menus").Replace(req)
+func (e *roleEntity) UpdateRoleMenu(ctx context.Context, role *RoleModel, req []*MenuModel) error {
+	err := e.conn.WithContext(ctx).Model(role).Association("Menus").Replace(req)
 	if err != nil {
 		return fmt.Errorf("update menu failed: %w", err)
 	}
@@ -116,6 +114,6 @@ func (re *roleEntity) UpdateRoleMenu(ctx context.Context, req []*MenuModel) erro
 	return nil
 }
 
-func (re *roleEntity) DeleteRoleMenu(ctx context.Context, roleId uint) error {
-	return re.conn.WithContext(ctx).Where("role_id =?", roleId).Delete(&RoleMenu{}).Error
+func (e *roleEntity) DeleteRoleMenu(ctx context.Context, roleId uint) error {
+	return e.conn.WithContext(ctx).Where("role_id =?", roleId).Delete(&RoleMenu{}).Error
 }

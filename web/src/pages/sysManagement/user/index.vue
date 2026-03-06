@@ -233,9 +233,9 @@ interface option {
 }
 const roleOptions: option[] = []
 async function getRoleOption() {
-  const res = await roleListApi()
+  const res = await roleListApi({ page: 1, pageSize: 100 })
   if (res.code === 0) {
-    res.data.forEach((element) => {
+    res.data.list.forEach((element) => {
       roleOptions.push({ ID: String(element.id), roleName: element.roleName })
     })
   }

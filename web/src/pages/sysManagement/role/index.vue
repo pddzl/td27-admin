@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import type { FormInstance, FormRules } from "element-plus"
 import type { roleDataModel } from "@/api/sysManagement/role"
+import { usePagination } from "@@/composables/usePagination_n"
 import { reactive, ref } from "vue"
 import { roleCreateApi, roleDeleteApi, roleListApi, roleUpdateApi } from "@/api/sysManagement/role"
 import Apis from "./components/apis.vue"
@@ -11,14 +12,27 @@ defineOptions({
 })
 
 const loading = ref<boolean>(false)
+const { paginationData, changeCurrentPage, changePageSize } = usePagination()
 const tableData = ref<roleDataModel[]>([])
 let activeRow: roleDataModel
 
+// 分页
+function handleSizeChange(value: number) {
+  changePageSize(value)
+  getTableData()
+}
+
+function handleCurrentChange(value: number) {
+  changeCurrentPage(value)
+  getTableData()
+}
+
 async function getTableData() {
   loading.value = true
-  const res = await roleListApi()
+  const res = await roleListApi({ page: paginationData.currentPage, pageSize: paginationData.pageSize })
   if (res.code === 0) {
     tableData.value = res.data.list
+    paginationData.total = res.data.total
   }
   loading.value = false
 }
@@ -159,6 +173,18 @@ function openDrawer(row: roleDataModel) {
             </template>
           </el-table-column>
         </el-table>
+      </div>
+      <div class="pager-wrapper">
+        <el-pagination
+          background
+          :layout="paginationData.layout"
+          :page-sizes="paginationData.pageSizes"
+          :total="paginationData.total"
+          :page-size="paginationData.pageSize"
+          :current-page="paginationData.currentPage"
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+        />
       </div>
     </el-card>
     <el-dialog v-model="dialogVisible" :title="title" :before-close="handleClose" width="30%">

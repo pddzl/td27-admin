@@ -96,7 +96,7 @@ func (s *RoleService) Update(req *sysManagement.UpdateRoleReq) error {
 // UpdateRoleMenu 编辑用户menu
 func (s *RoleService) UpdateRoleMenu(roleId uint, menuIds []uint) error {
 	// check role existence
-	_, err := s.roleRepository.FindOne(s.ctx, roleId)
+	role, err := s.roleRepository.FindOne(s.ctx, roleId)
 	if err != nil {
 		return err
 	}
@@ -108,7 +108,7 @@ func (s *RoleService) UpdateRoleMenu(roleId uint, menuIds []uint) error {
 	}
 
 	// update role_menus
-	err = s.roleRepository.UpdateRoleMenu(s.ctx, menus)
+	err = s.roleRepository.UpdateRoleMenu(s.ctx, role, menus)
 	if err != nil {
 		return err
 	}

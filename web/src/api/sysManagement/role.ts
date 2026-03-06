@@ -11,11 +11,11 @@ export interface roleDataModel extends roleData, Td27Model {}
 export type roleListData = ListData<roleDataModel[]>
 
 /** 获取用户详情 */
-export function roleListApi() {
+export function roleListApi(data: PageInfo) {
   return request<ApiResponseData<roleListData>>({
     url: "/role/list",
     method: "post",
-    data: {}
+    data
   })
 }
 

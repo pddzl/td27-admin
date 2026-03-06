@@ -12,12 +12,12 @@ type ReqCasbin struct {
 
 func DefaultCasbin() []CasbinInfo {
 	return []CasbinInfo{
-		{Path: "/logReg/captcha", Method: "POST"},
-		{Path: "/logReg/login", Method: "POST"},
-		{Path: "/logReg/logout", Method: "POST"},
+		{Path: "/captcha", Method: "POST"},
+		{Path: "/login", Method: "POST"},
+		{Path: "/logout", Method: "POST"},
 		{Path: "/user/getUserInfo", Method: "GET"},
-		{Path: "/user/editUser", Method: "POST"},
-		{Path: "/user/modifyPass", Method: "POST"},
-		{Path: "/menu/getMenus", Method: "GET"},
+		{Path: "/user/update", Method: "POST"},
+		{Path: "/user/modifyPasswd", Method: "POST"},
+		{Path: "/menu/list", Method: "GET"},
 	}
 }
