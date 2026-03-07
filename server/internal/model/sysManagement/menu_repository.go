@@ -48,10 +48,10 @@ func getTreeMap(menuListFormat []*MenuModel, menuList []*MenuModel) {
 func (e *menuEntity) List(ctx context.Context, roleId uint) ([]*MenuModel, error) {
 	var menuModels []*MenuModel
 	err := e.conn.WithContext(ctx).
-		Table("authority_menu").
-		Joins("JOIN role_menus rm ON rm.menu_id = authority_menu.id").
+		Model(&MenuModel{}).
+		Joins("JOIN sys_management_role_menus rm ON rm.menu_id = sys_management_menu.id").
 		Where("rm.role_id = ?", roleId).
-		Order("authority_menu.sort ASC").
+		Order("sys_management_menu.sort ASC").
 		Find(&menuModels).Error
 
 	if err != nil {
@@ -169,7 +169,7 @@ func (e *menuEntity) GetElTreeMenus(ctx context.Context, roleId uint) ([]*MenuMo
 	// Query role-menu relations
 	var relations []RoleMenu
 	if err := db.
-		Table("role_menus").
+		Model(&RoleMenu{}).
 		Select("menu_id").
 		Where("role_id = ?", roleId).
 		Scan(&relations).Error; err != nil {

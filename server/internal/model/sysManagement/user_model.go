@@ -15,5 +15,5 @@ type UserModel struct {
 }
 
 func (UserModel) TableName() string {
-	return "authority_user"
+	return "sys_management_user"
 }

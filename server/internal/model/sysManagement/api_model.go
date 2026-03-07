@@ -13,5 +13,5 @@ type ApiModel struct {
 }
 
 func (ApiModel) TableName() string {
-	return "authority_api"
+	return "sys_management_api"
 }

@@ -86,6 +86,6 @@ crontab:
     - tableName: base_jwtBlackList
       compareField: created_at
       interval: 168h
-    - tableName: monitor_operationLog
+    - tableName: sys_monitor_operationLog
       compareField: created_at
       interval: 2160h

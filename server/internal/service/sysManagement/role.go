@@ -107,7 +107,7 @@ func (s *RoleService) UpdateRoleMenu(roleId uint, menuIds []uint) error {
 		return fmt.Errorf("FindByIds err: %v", err)
 	}
 
-	// update role_menus
+	// update sys_management_role_menus
 	err = s.roleRepository.UpdateRoleMenu(s.ctx, role, menus)
 	if err != nil {
 		return err

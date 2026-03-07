@@ -56,7 +56,7 @@ type ClearTable struct {
 }
 
 func (cm *CronModel) TableName() string {
-	return "sysTool_cron"
+	return "sys_tool_cron"
 }
 
 func (cm *CronModel) Run() {

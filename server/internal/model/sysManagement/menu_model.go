@@ -17,7 +17,7 @@ type MenuModel struct {
 	Sort      uint         `json:"sort" gorm:"not null"`      // 排序
 	Meta      Meta         `json:"meta" gorm:"type:json"`     // 元数据
 	Children  []*MenuModel `json:"children,omitempty" gorm:"-"`
-	Roles     []*RoleModel `json:"-" gorm:"many2many:role_menus;"`
+	Roles     []*RoleModel `json:"-" gorm:"many2many:sys_management_role_menus;"`
 }
 
 type Meta struct {
@@ -40,7 +40,7 @@ func (m *Meta) Scan(input interface{}) error {
 }
 
 func (MenuModel) TableName() string {
-	return "authority_menu"
+	return "sys_management_menu"
 }
 
 type RoleMenu struct {
@@ -49,5 +49,5 @@ type RoleMenu struct {
 }
 
 func (RoleMenu) TableName() string {
-	return "role_menus"
+	return "sys_management_role_menus"
 }

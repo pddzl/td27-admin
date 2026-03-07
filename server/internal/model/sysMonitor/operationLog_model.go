@@ -19,5 +19,5 @@ type OperationLogModel struct {
 }
 
 func (ol *OperationLogModel) TableName() string {
-	return "monitor_operationLog"
+	return "sys_monitor_operationLog"
 }

@@ -25,5 +25,5 @@ func (r *DictRouter) InitDictRouter(rg *gin.RouterGroup) {
 	record.POST("create", r.dictApi.Create)
 	record.POST("update", r.dictApi.Update)
 	// not record
-	base.GET("list", r.dictApi.List)
+	base.POST("list", r.dictApi.List)
 }

@@ -61,17 +61,17 @@ func (e *userEntity) GetUserInfo(ctx context.Context, userId uint) (listUserResp
 		WithContext(ctx).
 		Model(&UserModel{}).
 		Select(`
-			authority_user.id,
-			authority_user.created_at,
-			authority_user.username,
-			authority_user.phone,
-			authority_user.email,
-			authority_user.active,
-			authority_user.role_id,
-			authority_role.role_name
+			sys_management_user.id,
+			sys_management_user.created_at,
+			sys_management_user.username,
+			sys_management_user.phone,
+			sys_management_user.email,
+			sys_management_user.active,
+			sys_management_user.role_id,
+			sys_management_role.role_name
 		`).
-		Joins("JOIN authority_role ON authority_user.role_id = authority_role.id").
-		Where("authority_user.id = ?", userId).
+		Joins("JOIN sys_management_role ON sys_management_user.role_id = sys_management_role.id").
+		Where("sys_management_user.id = ?", userId).
 		Scan(&resp)
 
 	if err = tx.Error; err != nil {
@@ -112,19 +112,19 @@ func (e *userEntity) List(ctx context.Context, pageInfo *common.PageInfo) ([]*Us
 	// Query list with join
 	err := db.
 		Select(`
-			authority_user.id,
-			authority_user.created_at,
-			authority_user.updated_at,
-			authority_user.username,
-			authority_user.phone,
-			authority_user.email,
-			authority_user.active,
-			authority_user.role_id,
-			authority_role.role_name AS role_name
+			sys_management_user.id,
+			sys_management_user.created_at,
+			sys_management_user.updated_at,
+			sys_management_user.username,
+			sys_management_user.phone,
+			sys_management_user.email,
+			sys_management_user.active,
+			sys_management_user.role_id,
+			sys_management_role.role_name AS role_name
 		`).
 		Joins(`
-			LEFT JOIN authority_role
-			ON authority_user.role_id = authority_role.id
+			LEFT JOIN sys_management_role
+			ON sys_management_user.role_id = sys_management_role.id
 		`).
 		Limit(pageSize).
 		Offset(offset).

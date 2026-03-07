@@ -12,5 +12,5 @@ type FileModel struct {
 }
 
 func (FileModel) TableName() string {
-	return "fileM_file"
+	return "sys_tool_file"
 }
