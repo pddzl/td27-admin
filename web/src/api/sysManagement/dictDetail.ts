@@ -4,7 +4,7 @@ interface dictDetailData {
   label: string
   value: string
   sort: number
-  dictId: number
+  dictId: number | null
   parentId?: number
   children?: dictDetailDataModel[]
   description: string

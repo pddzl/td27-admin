@@ -10,11 +10,27 @@ import {
 } from "@/api/sysManagement/dict"
 import { usePagination } from "@/common/composables/usePagination_n"
 
+import DictDetail from "./dictDetail.vue"
+
 defineOptions({
   name: "Dict"
 })
 
 const { paginationData, changeCurrentPage, changePageSize } = usePagination()
+
+const drawer = ref(false)
+const currentId = ref<number | null>(null)
+const dictName = ref("")
+
+function openDrawer(id: number, name: string) {
+  currentId.value = id
+  drawer.value = true
+  dictName.value = name
+}
+
+// function rowClick(row: DictModel) {
+//   openDrawer(row.id, row.cn_name)
+// }
 
 const loading = ref(false)
 const searchFormData = reactive({
@@ -193,9 +209,19 @@ function editDialogHandle(row: DictModel) {
       </div>
       <div class="table-wrapper">
         <el-table :data="tableData.list">
-          <el-table-column type="selection" width="60" />
+          <!-- <el-table-column type="selection" width="60" /> -->
           <el-table-column prop="id" label="ID" width="80" />
-          <el-table-column prop="cn_name" label="中文名称" />
+          <el-table-column prop="cn_name" label="中文名称">
+            <template #default="scope">
+              <el-button
+                type="primary"
+                link
+                @click="openDrawer(scope.row.id, scope.row.cn_name)"
+              >
+                {{ scope.row.cn_name }}
+              </el-button>
+            </template>
+          </el-table-column>
           <el-table-column prop="en_name" label="英文名称" />
           <el-table-column label="操作">
             <template #default="scope">
@@ -242,6 +268,7 @@ function editDialogHandle(row: DictModel) {
         </div>
       </template>
     </el-dialog>
+    <DictDetail v-model:drawer="drawer" :dict-id="currentId" :dict-name="dictName" />
   </div>
 </template>
 

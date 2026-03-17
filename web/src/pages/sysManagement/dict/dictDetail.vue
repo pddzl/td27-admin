@@ -15,12 +15,17 @@ defineOptions({
   name: "DictDetail"
 })
 
-const props = defineProps({
-  dictId: {
-    type: Number,
-    default: 0
-  }
-})
+const props = defineProps<{
+  drawer: boolean
+  dictId: number | null
+  dictName: string | ""
+}>()
+
+const emit = defineEmits(["update:drawer"])
+
+function closeDrawer() {
+  emit("update:drawer", false)
+}
 
 const { paginationData, changeCurrentPage, changePageSize } = usePagination()
 
@@ -217,92 +222,94 @@ watch(
 </script>
 
 <template>
-  <div>
-    <el-card shadow="never">
-      <div class="toolbar-wrapper">
-        <el-button type="primary" icon="plus" @click="openAddDialog()">
-          新增字典项
-        </el-button>
-        <div>
-          <el-tooltip content="刷新" effect="light">
-            <el-button type="primary" icon="RefreshRight" circle plain @click="getTableData" />
-          </el-tooltip>
+  <el-drawer :model-value="props.drawer" :title="props.dictName" @close="closeDrawer" size="80%">
+    <div>
+      <el-card shadow="never">
+        <div class="toolbar-wrapper">
+          <el-button type="primary" icon="plus" @click="openAddDialog()">
+            新增字典项
+          </el-button>
+          <div>
+            <el-tooltip content="刷新" effect="light">
+              <el-button type="primary" icon="RefreshRight" circle plain @click="getTableData" />
+            </el-tooltip>
+          </div>
         </div>
-      </div>
-      <div class="table-wrapper">
-        <el-table
-          :data="tableData" style="width: 100%" row-key="id" border default-expand-all
-          :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
-        >
-          <el-table-column prop="label" label="展示值" />
-          <el-table-column prop="value" label="字典值" />
-          <el-table-column prop="sort" label="排序标记" />
-          <el-table-column prop="description" label="描述" />
-          <el-table-column label="创建日期" width="180">
-            <template #default="scope">
-              {{ formatDateTime(scope.row.createdAt) }}
-            </template>
-          </el-table-column>
-          <el-table-column label="更新日期" width="180">
-            <template #default="scope">
-              {{ formatDateTime(scope.row.updatedAt) }}
-            </template>
-          </el-table-column>
-          <el-table-column label="操作" width="260">
-            <template #default="scope">
-              <el-button type="primary" icon="edit" link @click="editDictDetailApiFunc(scope.row)">
-                编辑
-              </el-button>
-              <el-button type="primary" icon="Plus" link @click="openAddDialog(scope.row)">
-                新增子项
-              </el-button>
-              <el-button type="danger" icon="Delete" link @click="delDictDetailApiFunc(scope.row.id)">
-                删除
-              </el-button>
-            </template>
-          </el-table-column>
-        </el-table>
-      </div>
-      <div class="pager-wrapper">
-        <el-pagination
-          background :layout="paginationData.layout" :page-sizes="paginationData.pageSizes"
-          :total="paginationData.total" :page-size="paginationData.pageSize" :current-page="paginationData.currentPage"
-          @size-change="handleSizeChange" @current-change="handleCurrentChange"
-        />
-      </div>
-    </el-card>
-
-    <el-dialog v-model="dialogVisible" :show-close="false" :before-close="closeDialog" width="600">
-      <el-form ref="formRef" :model="formData" :rules="rules">
-        <el-form-item label="父级" prop="parentId">
-          <el-cascader
-            v-model="formData.parentId" style="width: 100%" :options="treeOptions" placeholder="选择父级字典项" clearable
-            :props="{ checkStrictly: true, emitPath: false }"
+        <div class="table-wrapper">
+          <el-table
+            :data="tableData" style="width: 100%" row-key="id" border default-expand-all
+            :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
+          >
+            <el-table-column prop="label" label="展示值" />
+            <el-table-column prop="value" label="字典值" />
+            <el-table-column prop="sort" label="排序标记" />
+            <el-table-column prop="description" label="描述" />
+            <!-- <el-table-column label="创建日期" width="180">
+              <template #default="scope">
+                {{ formatDateTime(scope.row.createdAt) }}
+              </template>
+            </el-table-column> -->
+            <el-table-column label="更新日期" width="180">
+              <template #default="scope">
+                {{ formatDateTime(scope.row.updatedAt) }}
+              </template>
+            </el-table-column>
+            <el-table-column label="操作" width="260">
+              <template #default="scope">
+                <el-button type="primary" icon="edit" link @click="editDictDetailApiFunc(scope.row)">
+                  编辑
+                </el-button>
+                <el-button type="primary" icon="Plus" link @click="openAddDialog(scope.row)">
+                  新增子项
+                </el-button>
+                <el-button type="danger" icon="Delete" link @click="delDictDetailApiFunc(scope.row.id)">
+                  删除
+                </el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
+        <div class="pager-wrapper">
+          <el-pagination
+            background :layout="paginationData.layout" :page-sizes="paginationData.pageSizes"
+            :total="paginationData.total" :page-size="paginationData.pageSize" :current-page="paginationData.currentPage"
+            @size-change="handleSizeChange" @current-change="handleCurrentChange"
           />
-        </el-form-item>
-        <el-form-item label="展示值" prop="label">
-          <el-input v-model="formData.label" placeholder="请输入展示值" clearable />
-        </el-form-item>
-        <el-form-item label="字典值" prop="value">
-          <el-input v-model="formData.value" placeholder="请输入字典值" clearable :disabled="oKind === operationKind.Edit" />
-        </el-form-item>
-        <el-form-item label="排序标记" prop="sort">
-          <el-input-number v-model.number="formData.sort" placeholder="排序标记" />
-        </el-form-item>
-        <el-form-item label="描述" prop="description">
-          <el-input type="textarea" v-model="formData.description" placeholder="描述" />
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <div>
-          <el-button @click="closeDialog">
-            取 消
-          </el-button>
-          <el-button type="primary" @click="operateAction(formRef)">
-            确 定
-          </el-button>
         </div>
-      </template>
-    </el-dialog>
-  </div>
+      </el-card>
+
+      <el-dialog v-model="dialogVisible" :show-close="false" :before-close="closeDialog" width="600">
+        <el-form ref="formRef" :model="formData" :rules="rules">
+          <el-form-item label="父级" prop="parentId">
+            <el-cascader
+              v-model="formData.parentId" style="width: 100%" :options="treeOptions" placeholder="选择父级字典项" clearable
+              :props="{ checkStrictly: true, emitPath: false }"
+            />
+          </el-form-item>
+          <el-form-item label="展示值" prop="label">
+            <el-input v-model="formData.label" placeholder="请输入展示值" clearable />
+          </el-form-item>
+          <el-form-item label="字典值" prop="value">
+            <el-input v-model="formData.value" placeholder="请输入字典值" clearable :disabled="oKind === operationKind.Edit" />
+          </el-form-item>
+          <el-form-item label="排序标记" prop="sort">
+            <el-input-number v-model.number="formData.sort" placeholder="排序标记" />
+          </el-form-item>
+          <el-form-item label="描述" prop="description">
+            <el-input type="textarea" v-model="formData.description" placeholder="描述" />
+          </el-form-item>
+        </el-form>
+        <template #footer>
+          <div>
+            <el-button @click="closeDialog">
+              取 消
+            </el-button>
+            <el-button type="primary" @click="operateAction(formRef)">
+              确 定
+            </el-button>
+          </div>
+        </template>
+      </el-dialog>
+    </div>
+  </el-drawer>
 </template>
