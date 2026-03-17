@@ -1,21 +1,27 @@
 import { request } from "@/http/axios_n"
 
 interface dictData {
-  chName: string
-  enName: string
+  cn_name: string
+  en_name: string
 }
 
-export interface dictDataModel extends dictData, Td27Model {}
+export interface DictModel extends dictData, Td27Model {}
 
-export function dictListApi() {
-  return request<ApiResponseData<dictDataModel[]>>({
+interface listReq extends PageInfo {
+  cn_name?: string
+  en_name?: string
+}
+
+export function DictListApi(data: listReq) {
+  return request<ApiResponseData<ListData<DictModel[]>>>({
     url: "/dict/list",
-    method: "get"
+    method: "post",
+    data
   })
 }
 
 export function dictCreateApi(data: dictData) {
-  return request<ApiResponseData<dictDataModel>>({
+  return request<ApiResponseData<DictModel>>({
     url: "/dict/create",
     method: "post",
     data
@@ -23,7 +29,7 @@ export function dictCreateApi(data: dictData) {
 }
 
 export function dictDeleteApi(data: CId) {
-  return request<ApiResponseData<dictDataModel>>({
+  return request<ApiResponseData<DictModel>>({
     url: "/dict/delete",
     method: "post",
     data
@@ -31,7 +37,7 @@ export function dictDeleteApi(data: CId) {
 }
 
 export function dictUpdateApi(data: dictData & CId) {
-  return request<ApiResponseData<dictDataModel>>({
+  return request<ApiResponseData<null>>({
     url: "/dict/update",
     method: "post",
     data

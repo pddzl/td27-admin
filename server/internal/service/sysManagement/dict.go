@@ -40,10 +40,10 @@ func (s *DictService) Delete(id uint) error {
 	return s.repository.Delete(s.ctx, id)
 }
 
-func (s *DictService) Update(req *sysManagement.DictModel) (*sysManagement.DictModel, error) {
-	update, err := s.repository.Update(s.ctx, req)
+func (s *DictService) Update(req *sysManagement.UpdateDictReq) error {
+	err := s.repository.Update(s.ctx, req)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	return update, nil
+	return nil
 }

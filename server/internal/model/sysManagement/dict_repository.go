@@ -15,7 +15,7 @@ type DictRepository interface {
 	List(context.Context, *common.PageInfo) ([]*DictModel, int64, error)
 	Create(context.Context, *DictModel) (*DictModel, error)
 	Delete(context.Context, uint) error
-	Update(context.Context, *DictModel) (*DictModel, error)
+	Update(context.Context, *UpdateDictReq) error
 }
 
 type dictEntity struct {
@@ -68,7 +68,7 @@ func (e *dictEntity) Create(ctx context.Context, req *DictModel) (*DictModel, er
 	db := e.conn.WithContext(ctx)
 
 	err := db.
-		Where("ch_name = ? OR en_name = ?", req.CHName, req.ENName).
+		Where("cn_name = ? OR en_name = ?", req.CNName, req.ENName).
 		First(&DictModel{}).Error
 
 	if err == nil {
@@ -112,9 +112,7 @@ func (e *dictEntity) Delete(ctx context.Context, id uint) (err error) {
 	return result.Error
 }
 
-func (e *dictEntity) Update(ctx context.Context, req *DictModel) (*DictModel, error) {
-	var dictModel DictModel
+func (e *dictEntity) Update(ctx context.Context, req *UpdateDictReq) error {
 
-	err := e.conn.WithContext(ctx).Model(&dictModel).Update("ch_name", req.CHName).Error
-	return req, err
+	return e.conn.WithContext(ctx).Model(&DictModel{}).Where("id = ?", req.ID).Update("cn_name", req.CNName).Error
 }

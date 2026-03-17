@@ -6,8 +6,8 @@ import (
 
 type DictModel struct {
 	common.Td27Model
-	CHName      string            `json:"chName" gorm:"column:ch_name;unique" binding:"required"`
-	ENName      string            `json:"enName" gorm:"column:en_name;unique" binding:"required"`
+	CNName      string            `json:"cn_name" gorm:"column:cn_name;unique" binding:"required"`
+	ENName      string            `json:"en_name" gorm:"column:en_name;unique" binding:"required"`
 	DictDetails []DictDetailModel `json:"dictDetails"`
 }
 

@@ -1,17 +1,17 @@
-import type { dictDataModel } from "@/api/sysManagement/dict"
+import type { DictModel } from "@/api/sysManagement/dict"
 import type { dictDetailDataModel } from "@/api/sysManagement/dictDetail"
-import { dictListApi } from "@/api/sysManagement/dict"
+import { DictListApi } from "@/api/sysManagement/dict"
 import { dictDetailFlatApi } from "@/api/sysManagement/dictDetail"
 
 export const useDictionaryStore = defineStore("dictionary", () => {
-  const dictionaries = ref<dictDataModel[]>([])
+  const dictionaries = ref<DictModel[]>([])
   // cache details by dictId
   const detailsMap = ref<Record<number, dictDetailDataModel[]>>({})
 
   const fetchDictionaries = async () => {
     if (dictionaries.value.length > 0) return
     try {
-      const res = await dictListApi()
+      const res = await DictListApi()
       if (res.code === 0) {
         dictionaries.value = res.data
       }
@@ -32,13 +32,13 @@ export const useDictionaryStore = defineStore("dictionary", () => {
     }
   }
 
-  // ✅ Helper: get options by enName
-  const getOptions = async (enName: string) => {
+  // ✅ Helper: get options by en_name
+  const getOptions = async (en_name: string) => {
     // find dictId
     if (dictionaries.value.length === 0) {
       await fetchDictionaries()
     }
-    const dict = dictionaries.value.find(d => d.enName === enName)
+    const dict = dictionaries.value.find(d => d.en_name === en_name)
     if (!dict) return []
 
     // fetch details if needed

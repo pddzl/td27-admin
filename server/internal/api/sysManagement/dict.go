@@ -71,16 +71,16 @@ func (a *DictApi) Delete(c *gin.Context) {
 }
 
 func (a *DictApi) Update(c *gin.Context) {
-	var req modelSysManagement.DictModel
+	var req modelSysManagement.UpdateDictReq
 	if err := c.ShouldBindJSON(&req); err != nil {
 		common.FailReq(err.Error(), c)
 		return
 	}
 
-	if instance, err := a.dictService.Update(&req); err != nil {
+	if err := a.dictService.Update(&req); err != nil {
 		common.FailWithMessage(err.Error(), c)
 		global.TD27_LOG.Error("update failed", zap.Error(err))
 	} else {
-		common.OkWithDetailed(instance, "success", c)
+		common.OkWithMessage("update success", c)
 	}
 }
