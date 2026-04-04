@@ -7,6 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
+	"go.uber.org/zap"
 
 	"server/internal/global"
 	"server/internal/model/common"
@@ -43,22 +44,33 @@ func JWTAuth() gin.HandlerFunc {
 			return
 		}
 
-		// x-token与redis存的token做对比
-		redisJwtToken, err := jwtService.GetRedisJWT(claims.Username)
-		if redisJwtToken != token {
-			common.FailWithDetailed(gin.H{"reload": true}, "您的帐户异地登陆或令牌失效", c)
+		// 验证token是否有效（支持单设备/多设备模式切换）
+		if !jwtService.ValidateToken(claims.Username, token) {
+			if global.TD27_CONFIG.JWT.MultiLogin {
+				common.FailWithDetailed(gin.H{"reload": true}, "登录已过期，请重新登录", c)
+			} else {
+				common.FailWithDetailed(gin.H{"reload": true}, "您的帐户异地登陆或令牌失效", c)
+			}
 			c.Abort()
 			return
 		}
 
-		// 用户是否存在
-		var userModel modelSysManagement.UserModel
-		err = global.TD27_DB.Where("id = ?", claims.ID).First(&userModel).Error
+		// 从Redis缓存获取用户信息，避免每次请求都查询数据库
+		userModel, err := jwtService.GetCachedUser(claims.ID)
 		if err != nil {
-			common.FailWithMessage("用户不存在", c)
-			c.Abort()
-			global.TD27_LOG.Error("用户不存在")
-			return
+			// 缓存未命中，从数据库查询
+			userModel = &modelSysManagement.UserModel{}
+			err = global.TD27_DB.Where("id = ?", claims.ID).First(userModel).Error
+			if err != nil {
+				common.FailWithMessage("用户不存在", c)
+				c.Abort()
+				global.TD27_LOG.Error("用户不存在")
+				return
+			}
+			// 缓存用户信息
+			if cacheErr := jwtService.CacheUser(userModel); cacheErr != nil {
+				global.TD27_LOG.Error("缓存用户信息失败", zap.Error(cacheErr))
+			}
 		}
 
 		// 已登录用户是否禁用

@@ -28,11 +28,11 @@ func Routers() *gin.Engine {
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	// Public group
-	publicGroup := r.Group(global.TD27_CONFIG.Router.Prefix)
+	publicGroup := r.Group(global.TD27_CONFIG.System.RouterPrefix)
 	publicGroup.GET("/health", func(c *gin.Context) { c.JSON(200, "ok") })
 
 	// Private group
-	privateGroup := r.Group(global.TD27_CONFIG.Router.Prefix)
+	privateGroup := r.Group(global.TD27_CONFIG.System.RouterPrefix)
 	privateGroup.Use(middleware.JWTAuth(), middleware.CasbinHandler())
 
 	// register all router

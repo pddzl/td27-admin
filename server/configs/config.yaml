@@ -3,7 +3,16 @@ jwt:
   signing-key: pddzl
   expires-time: 86400
   buffer-time: 43200
-  issuer: pddZl
+  issuer: pddzl
+  multi-login: true       # 是否允许多设备同时登录：true-允许，false-只允许单设备
+  multi-login-limit: 0    # 多设备登录数量限制：0-无限制，>0-限制数量
+
+# casbin RBAC configuration
+casbin:
+  cache-ttl: 3600              # 策略缓存TTL（秒）
+  auto-load-interval: 60       # 自动加载策略间隔（秒）
+  enable-role-hierarchy: true  # 启用角色继承
+  enable-data-permission: true # 启用数据权限
 
 # zap logger configuration
 zap:
@@ -25,36 +34,28 @@ rotateLogs:
 
 # system configuration
 system:
-  env: 'prod' # prod 生产环境、dev 开发环境
+  env: 'dev' # prod 生产环境、dev 开发环境
   host: '0.0.0.0'
   port: 8888
+  router-prefix: "" # global router prefix
+  disable-auto-migrate: false # permit auto migrate table
   stack: true
 
 file:
   upload: './resource/upload' # 本地上传目录
 
-router:
-  prefix: "" # 全局路由前缀
-
-# mysql configuration
-mysql:
-  host: 'mysql'
-  port: 3306
-  config: 'charset=utf8mb4&parseTime=True&loc=Local'
+# pgsql configuration
+pgsql:
+  host: 'db-host'
+  port: '5432'
+  config: 'sslmode=disable TimeZone=Asia/Shanghai'
   db-name: 'td27'
-  username: 'root'
+  username: 'postgres'
   password: 'td27admin'
   max-idle-conns: 10
   max-open-conns: 100
   log-mode: false
   log-zap: true
-
-# redis configuration
-redis:
-  db: 0
-  host: 'redis'
-  port: 6379
-  password: ''
 
 # captcha configuration
 captcha:
@@ -86,6 +87,6 @@ crontab:
     - tableName: base_jwtBlackList
       compareField: created_at
       interval: 168h
-    - tableName: sys_monitor_operationLog
+    - tableName: sys_monitor_operation_log
       compareField: created_at
       interval: 2160h

@@ -3,13 +3,16 @@ package initialize
 import (
 	"context"
 	"errors"
-	"go.uber.org/zap"
 	"net/http"
 	"os"
 	"os/signal"
-	"server/internal/global"
 	"syscall"
 	"time"
+
+	"go.uber.org/zap"
+
+	"server/internal/global"
+	"server/internal/pkg/async"
 )
 
 // RunServer starts the HTTP server and handles graceful shutdown
@@ -35,6 +38,9 @@ func RunServer(addr string, handler http.Handler) {
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
 	global.TD27_LOG.Info("shutting down server...")
+
+	// 优雅关闭异步日志处理器
+	async.GetAsyncLogger().Stop()
 
 	// Graceful shutdown with timeout
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)

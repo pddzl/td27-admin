@@ -1,13 +1,33 @@
 <script lang="ts" setup>
 import type { FormInstance, FormRules } from "element-plus"
 import type { LoginRequestData } from "@/api/sysManagement/login"
-import { reactive, ref } from "vue"
+import { reactive, ref, onMounted } from "vue"
 import { useRouter } from "vue-router"
 import { captchaApi } from "@/api/sysManagement/login"
 import { useUserStore } from "@/pinia/stores/user_n"
+import { useTheme, type ThemeName } from "@@/composables/useTheme"
+import { Sunny, Moon } from "@element-plus/icons-vue"
 
 const router = useRouter()
 const loginFormRef = ref<FormInstance | null>(null)
+
+// Theme
+const { activeThemeName, setTheme, initTheme } = useTheme()
+
+// Initialize theme on mount
+onMounted(() => {
+  initTheme()
+})
+
+// Toggle between light and dark theme
+function toggleTheme() {
+  const newTheme: ThemeName = activeThemeName.value === "dark" ? "normal" : "dark"
+  const event = new MouseEvent("click", {
+    clientX: window.innerWidth / 2,
+    clientY: window.innerHeight / 2
+  })
+  setTheme(event, newTheme)
+}
 
 /** 登录按钮 Loading */
 const loading = ref(false)
@@ -73,6 +93,18 @@ createCode()
 
 <template>
   <div class="login-container bg">
+    <!-- Theme Switch Button -->
+    <div class="theme-switch-wrapper">
+      <el-tooltip :content="activeThemeName === 'dark' ? '切换亮色模式' : '切换暗黑模式'" placement="left">
+        <el-button
+          circle
+          :icon="activeThemeName === 'dark' ? Sunny : Moon"
+          @click="toggleTheme"
+          class="theme-switch-btn"
+        />
+      </el-tooltip>
+    </div>
+    
     <div class="login-card">
       <p class="p1">
         TD27 ADMIN
@@ -201,5 +233,49 @@ createCode()
 .bg {
   background: #f0f2f5 url(@@/assets/images/layouts/background.svg) no-repeat 50%;
   background-size: 100%;
+}
+
+// Dark mode styles
+:global(.dark) .login-container,
+:global(.dark-blue) .login-container {
+  &.bg {
+    background: #141414;
+  }
+  
+  .login-card {
+    background: #1f1f1f;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    
+    .p1 {
+      color: rgba(255, 255, 255, 0.85);
+    }
+    
+    .p2 {
+      color: rgba(255, 255, 255, 0.45);
+    }
+  }
+  
+  .footer span {
+    color: rgba(255, 255, 255, 0.45);
+  }
+}
+
+// Theme switch button styles
+.theme-switch-wrapper {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  z-index: 10;
+}
+
+.theme-switch-btn {
+  width: 44px;
+  height: 44px;
+  font-size: 20px;
+  transition: all 0.3s;
+  
+  &:hover {
+    transform: scale(1.1);
+  }
 }
 </style>

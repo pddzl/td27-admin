@@ -30,8 +30,19 @@ func (s *UserService) GetUserInfo(userId uint) (*sysManagement.UserResp, error) 
 	return resp, nil
 }
 
-func (s *UserService) List(req *common.PageInfo) ([]*sysManagement.UserResp, int64, error) {
-	list, count, err := s.userRepository.List(s.ctx, req)
+func (s *UserService) List(req *common.PageInfo, currentUserID uint) ([]*sysManagement.UserResp, int64, error) {
+	// 获取当前用户的数据权限
+	dataPermService := NewDataPermissionService()
+	dataPerm, err := dataPermService.GetUserDataPermission(s.ctx, currentUserID, "sys_management_user")
+	if err != nil {
+		// 如果获取失败，默认只能看自己的数据
+		dataPerm = &sysManagement.DataPermission{
+			Scope:  sysManagement.DataScopeSelf,
+			UserID: currentUserID,
+		}
+	}
+
+	list, count, err := s.userRepository.List(s.ctx, req, dataPerm)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -39,24 +50,38 @@ func (s *UserService) List(req *common.PageInfo) ([]*sysManagement.UserResp, int
 }
 
 func (s *UserService) Delete(id uint) error {
+	// 删除用户前清除缓存
+	jwtService := NewJwtService()
+	if err := jwtService.DeleteUserCache(id); err != nil {
+		// 缓存删除失败不影响主流程
+	}
 	return s.userRepository.Delete(s.ctx, id)
 }
 
 func (s *UserService) Create(req *sysManagement.AddUserReq) error {
-	// check role existence
-	_, err := s.roleRepository.FindOne(s.ctx, req.RoleModelID)
-	if err != nil {
-		return err
+	// check roles existence
+	for _, roleID := range req.RoleIDs {
+		_, err := s.roleRepository.FindOne(s.ctx, roleID)
+		if err != nil {
+			return err
+		}
 	}
 
-	return s.userRepository.Create(s.ctx, req)
+	_, err := s.userRepository.Create(s.ctx, req)
+	return err
 }
 
 func (s *UserService) Update(req *sysManagement.UpdateUserReq) (*sysManagement.UserResp, error) {
-	// check role existence
-	role, err := s.roleRepository.FindOne(s.ctx, req.RoleModelID)
-	if err != nil {
-		return nil, err
+	// check roles existence
+	var primaryRole *sysManagement.RoleModel
+	for _, roleID := range req.RoleIDs {
+		role, err := s.roleRepository.FindOne(s.ctx, roleID)
+		if err != nil {
+			return nil, err
+		}
+		if primaryRole == nil {
+			primaryRole = role
+		}
 	}
 
 	update, err := s.userRepository.Update(s.ctx, req)
@@ -64,9 +89,18 @@ func (s *UserService) Update(req *sysManagement.UpdateUserReq) (*sysManagement.U
 		return nil, err
 	}
 
+	// 更新用户后清除缓存，下次请求会重新加载
+	jwtService := NewJwtService()
+	if cacheErr := jwtService.DeleteUserCache(req.ID); cacheErr != nil {
+		// 缓存删除失败不影响主流程
+	}
+
 	userResp := &sysManagement.UserResp{
 		UserModel: *update,
-		RoleName:  role.RoleName,
+	}
+	if primaryRole != nil {
+		userResp.RoleName = primaryRole.RoleName
+		userResp.RoleID = primaryRole.ID
 	}
 
 	return userResp, nil
@@ -79,5 +113,10 @@ func (s *UserService) ModifyPasswd(req *sysManagement.ModifyPasswdReq) error {
 
 // SwitchActive 切换启用状态
 func (s *UserService) SwitchActive(req *sysManagement.SwitchActiveReq) error {
+	// 切换状态前清除缓存
+	jwtService := NewJwtService()
+	if err := jwtService.DeleteUserCache(req.ID); err != nil {
+		// 缓存删除失败不影响主流程
+	}
 	return s.userRepository.SwitchActive(s.ctx, req)
 }

@@ -16,5 +16,5 @@ type DictDetailModel struct {
 }
 
 func (ddm *DictDetailModel) TableName() string {
-	return "sys_management_dictDetail"
+	return "sys_management_dict_detail"
 }

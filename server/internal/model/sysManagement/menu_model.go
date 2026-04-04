@@ -11,13 +11,13 @@ type MenuModel struct {
 	common.Td27Model
 	Pid       uint         `json:"pid"`                       // 父菜单 ID
 	Name      string       `json:"name,omitempty"`            // 路由名称
-	Path      string       `json:"path" gorm:"unique"`        // 路由路径
+	Path      string       `json:"path" gorm:"unique;size:191"`        // 路由路径
 	Redirect  string       `json:"redirect,omitempty"`        // 重定向
 	Component string       `json:"component" gorm:"not null"` // 前端组件
 	Sort      uint         `json:"sort" gorm:"not null"`      // 排序
 	Meta      Meta         `json:"meta" gorm:"type:json"`     // 元数据
 	Children  []*MenuModel `json:"children,omitempty" gorm:"-"`
-	Roles     []*RoleModel `json:"-" gorm:"many2many:sys_management_role_menus;"`
+	// 权限通过 sys_management_role_permissions 关联，不再使用 sys_management_role_menus
 }
 
 type Meta struct {
@@ -41,13 +41,4 @@ func (m *Meta) Scan(input interface{}) error {
 
 func (MenuModel) TableName() string {
 	return "sys_management_menu"
-}
-
-type RoleMenu struct {
-	MenuID uint `gorm:"column:menu_id;primaryKey"`
-	RoleID uint `gorm:"column:role_id;primaryKey"`
-}
-
-func (RoleMenu) TableName() string {
-	return "sys_management_role_menus"
 }

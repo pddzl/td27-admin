@@ -12,32 +12,38 @@ import (
 
 type CasbinApi struct {
 	casbinService *serviceSysManagement.CasbinService
+	apiService    *serviceSysManagement.ApiService
 }
 
 func NewCasbinApi() *CasbinApi {
-	return &CasbinApi{casbinService: serviceSysManagement.NewCasbinService()}
+	return &CasbinApi{
+		casbinService: serviceSysManagement.NewCasbinService(),
+		apiService:    serviceSysManagement.NewApiService(),
+	}
 }
 
 // Update
 // @Tags      CasbinApi
-// @Summary   编辑casbin
+// @Summary   更新角色API权限（使用统一权限表）
 // @Security  ApiKeyAuth
 // @accept    application/json
 // @Produce   application/json
-// @Param     data  body      modelSysManagement.ReqCasbin true "请求参数"
+// @Param     data  body      modelSysManagement.UpdateRoleAPIReq true "请求参数"
 // @Success   200   {object}  common.Response{msg=string}
 // @Router    /casbin/update [post]
 func (ca *CasbinApi) Update(c *gin.Context) {
-	var reqCasbin modelSysManagement.ReqCasbin
-	if err := c.ShouldBindJSON(&reqCasbin); err != nil {
+	var req modelSysManagement.UpdateRoleAPIReq
+	if err := c.ShouldBindJSON(&req); err != nil {
 		common.FailReq(err.Error(), c)
 		return
 	}
 
-	if err := ca.casbinService.Update(reqCasbin.RoleId, reqCasbin.CasbinInfos); err != nil {
-		common.Fail(c)
-		global.TD27_LOG.Error("更新失败", zap.Error(err))
+	if err := ca.apiService.UpdateRoleAPIPermissions(req.RoleID, req.APIPermissionIDs); err != nil {
+		common.FailWithMessage(err.Error(), c)
+		global.TD27_LOG.Error("更新角色API权限失败", zap.Error(err))
 	} else {
-		common.Ok(c)
+		common.OkWithMessage("更新成功", c)
 	}
 }
+
+

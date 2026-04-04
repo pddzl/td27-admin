@@ -30,8 +30,9 @@ export function apiListApi(data: reqApis) {
   })
 }
 
-interface children {
-  key: string
+interface ApiChild {
+  id: number           // 权限ID
+  key: string          // path,method 组合
   apiGroup: string
   path: string
   method: string
@@ -40,12 +41,13 @@ interface children {
 
 export interface ApiTreeData {
   apiGroup: string
-  children: children[]
+  children: ApiChild[]
 }
 
 interface ApiTreeAll {
   list: ApiTreeData[]
-  checkedKey: string[]
+  checkedKey: string[]     // 选中的 key 列表 (path,method)
+  checkedIds: number[]     // 选中的权限ID列表
 }
 
 // 获取所有api 不分页

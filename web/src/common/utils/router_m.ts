@@ -4,7 +4,7 @@
  * 递归处理子路由
  */
 import type { RouteRecordRaw } from "vue-router"
-import type { MenuData } from "@/api/authority/menu"
+import type { MenuData } from "@/api/sysManagement/menu"
 
 const modules = import.meta.glob("@/pages/**/*.vue")
 

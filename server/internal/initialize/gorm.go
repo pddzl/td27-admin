@@ -4,10 +4,11 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 	"time"
 
 	"go.uber.org/zap"
-	"gorm.io/driver/mysql"
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 
@@ -28,7 +29,8 @@ func NewWriter(w logger.Writer) *writer {
 
 // Printf 格式化打印日志
 func (w *writer) Printf(message string, data ...interface{}) {
-	if global.TD27_CONFIG.Mysql.LogZap {
+	logZap := global.TD27_CONFIG.Pgsql.LogZap
+	if logZap {
 		global.TD27_LOG.Info(fmt.Sprintf(message+"\n", data...))
 	} else {
 		w.Writer.Printf(message, data...)
@@ -54,54 +56,100 @@ func gormConfig() *gorm.Config {
 
 // Gorm 初始化数据库并产生数据库全局变量
 func Gorm() *gorm.DB {
-	m := global.TD27_CONFIG.Mysql
-	if m.Dbname == "" {
+	p := global.TD27_CONFIG.Pgsql
+
+	if p.Dbname == "" {
 		return nil
 	}
 
-	dsn := m.Username + ":" + m.Password + "@tcp(" + fmt.Sprintf("%s:%s", m.Host, m.Port) + ")/" + m.Dbname + "?" + m.Config
-	mysqlConfig := mysql.Config{
-		DSN:                       dsn,   // DSN data source name
-		DefaultStringSize:         191,   // string 类型字段的默认长度
-		DisableDatetimePrecision:  true,  // 禁用 datetime 精度，MySQL 5.6 之前的数据库不支持
-		DontSupportRenameIndex:    true,  // 重命名索引时采用删除并新建的方式，MySQL 5.7 之前的数据库和 MariaDB 不支持重命名索引
-		DontSupportRenameColumn:   true,  // 用 `change` 重命名列，MySQL 8 之前的数据库和 MariaDB 不支持重命名列
-		SkipInitializeWithVersion: false, // 根据版本自动配置
+	// PostgreSQL DSN 格式
+	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s %s",
+		p.Host, p.Username, p.Password, p.Dbname, p.Port, p.Config)
+
+	pgConfig := postgres.Config{
+		DSN:                  dsn,
+		PreferSimpleProtocol: false, // 启用 prepared statement 缓存以提高性能
 	}
-	if db, err := gorm.Open(mysql.New(mysqlConfig), gormConfig()); err != nil {
-		global.TD27_LOG.Error("mysql连接失败", zap.Error(err))
+
+	if db, err := gorm.Open(postgres.New(pgConfig), gormConfig()); err != nil {
+		global.TD27_LOG.Error("pgsql连接失败", zap.Error(err))
 		return nil
 	} else {
 		sqlDB, _ := db.DB()
-		sqlDB.SetMaxIdleConns(m.MaxIdleConns)
-		sqlDB.SetMaxOpenConns(m.MaxOpenConns)
+		sqlDB.SetMaxIdleConns(p.MaxIdleConns)
+		sqlDB.SetMaxOpenConns(p.MaxOpenConns)
+		sqlDB.SetConnMaxLifetime(time.Hour)
+		sqlDB.SetConnMaxIdleTime(30 * time.Minute)
 		return db
 	}
 }
 
 // RegisterTables 初始化数据库表
 func RegisterTables(db *gorm.DB) {
-	err := db.AutoMigrate(
-		// 权限
-		sysManagement.UserModel{},
-		sysManagement.RoleModel{},
-		sysManagement.MenuModel{},
-		sysManagement.ApiModel{},
-		sysManagement.RoleMenu{},
-		// 监控
-		modelMonitor.OperationLogModel{},
-		// fileM
-		modelSysTool.FileModel{},
-		// 系统工具
-		modelSysTool.CronModel{},
-		// system settings
-		sysManagement.DictModel{},
-		sysManagement.DictDetailModel{},
-	)
+	if !global.TD27_CONFIG.System.DisableAutoMigrate {
+		err := db.AutoMigrate(
+			// 权限 - 用户和角色（多对多）
+			sysManagement.UserModel{},
+			sysManagement.RoleModel{},
+			sysManagement.UserRole{},
+			// 菜单模型（数据来自 permission 表 type='menu'）
+			sysManagement.MenuModel{},
+			// API权限（逐步迁移到统一权限模型）
+			sysManagement.ApiModel{},
+			// 统一权限模型
+			sysManagement.PermissionModel{},
+			sysManagement.RolePermission{},
+			// 部门（用于数据权限）
+			sysManagement.DeptModel{},
+			// 监控
+			modelMonitor.OperationLogModel{},
+			// fileM
+			modelSysTool.FileModel{},
+			// 系统工具
+			modelSysTool.CronModel{},
+			// 缓存表（替代 Redis）
+			modelSysTool.CacheModel{},
+			// system settings
+			sysManagement.DictModel{},
+			sysManagement.DictDetailModel{},
+		)
 
-	if err != nil {
-		global.TD27_LOG.Error("register table failed", zap.Error(err))
-		os.Exit(0)
+		if err != nil {
+			// 忽略"已存在"错误，这是正常的当init.sql已经创建了约束
+			if isAlreadyExistsError(err) {
+				global.TD27_LOG.Info("AutoMigrate: some constraints already exist (from init.sql), continuing...")
+			} else if isNotExistsError(err) {
+				// 忽略"不存在"错误，可能是GORM尝试删除不存在的约束
+				global.TD27_LOG.Info("AutoMigrate: constraint does not exist, continuing...")
+			} else {
+				global.TD27_LOG.Error("register table failed", zap.Error(err))
+				os.Exit(0)
+			}
+		}
 	}
 	global.TD27_LOG.Info("register table success")
+}
+
+// isAlreadyExistsError 检查错误是否是"已存在"错误
+func isAlreadyExistsError(err error) bool {
+	if err == nil {
+		return false
+	}
+	errStr := err.Error()
+	// MySQL: already exists
+	// PostgreSQL: already exists
+	return strings.Contains(errStr, "already exists") ||
+		strings.Contains(errStr, "Duplicate key name") ||
+		strings.Contains(errStr, "42P07") || // PostgreSQL: duplicate_table
+		strings.Contains(errStr, "42710") // PostgreSQL: duplicate_object
+}
+
+// isNotExistsError 检查错误是否是"不存在"错误（尝试删除不存在的约束）
+func isNotExistsError(err error) bool {
+	if err == nil {
+		return false
+	}
+	errStr := err.Error()
+	return strings.Contains(errStr, "does not exist") ||
+		strings.Contains(errStr, "42704") // PostgreSQL: undefined_object
 }

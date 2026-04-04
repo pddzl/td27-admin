@@ -28,5 +28,11 @@ func (lr *LogRegService) Login(u *sysManagement.UserModel) (userInter *sysManage
 	if userModel.Active == false {
 		return nil, errors.New("用户为禁用状态")
 	}
+	
+	// Preload roles for the user
+	if err = global.TD27_DB.Model(&userModel).Association("Roles").Find(&userModel.Roles); err != nil {
+		return nil, fmt.Errorf("failed to load user roles: %s", err.Error())
+	}
+	
 	return &userModel, err
 }

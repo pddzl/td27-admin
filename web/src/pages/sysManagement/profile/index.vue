@@ -43,7 +43,7 @@ function handleEditUser(formEl: FormInstance | undefined) {
         phone: userInfoForm.phone,
         email: userInfoForm.email,
         active: true,
-        roleId: userInfoForm.roleId
+        roleIds: [userInfoForm.roleId]
       })
         .then((res) => {
           if (res.code === 0) {

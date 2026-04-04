@@ -1,6 +1,6 @@
 import type { LoginRequestData } from "@/api/sysManagement/login"
 import { loginApi } from "@/api/sysManagement/login"
-import { getUserInfoApi } from "@/api/sysManagement/user"
+import { getUserInfoApi, type RoleInfo } from "@/api/sysManagement/user"
 import { pinia } from "@/pinia"
 import { usePermissionStoreOutside } from "@/pinia/stores/permission_n"
 import { useSettingsStore } from "./settings"
@@ -16,14 +16,16 @@ export const useUserStore = defineStore("user", () => {
   // mine start
   const token = ref<string>(window.localStorage.getItem("token") || "")
 
+  // 多角色支持
   const userInfo = reactive({
     id: 0,
     createdAt: "",
     username: "",
     phone: "",
     email: "",
-    role: "",
-    roleId: 0
+    role: "",        // 主角色名称（兼容旧版）
+    roleId: 0,       // 主角色ID（兼容旧版）
+    roles: [] as RoleInfo[]  // 多角色列表
   })
 
   const permissionStore = usePermissionStoreOutside()
@@ -51,9 +53,24 @@ export const useUserStore = defineStore("user", () => {
       userInfo.username = res.data.username
       userInfo.phone = res.data.phone
       userInfo.email = res.data.email
-      userInfo.role = res.data.roleName
-      userInfo.roleId = res.data.roleId
+      
+      // 多角色支持
+      userInfo.roles = res.data.roles || []
+      if (userInfo.roles.length > 0) {
+        userInfo.role = userInfo.roles[0].roleName
+        userInfo.roleId = userInfo.roles[0].id
+      }
     }
+  }
+
+  /** 获取所有角色ID */
+  const getAllRoleIds = () => {
+    return userInfo.roles.map(r => r.id)
+  }
+
+  /** 检查是否有指定角色 */
+  const hasRole = (roleId: number) => {
+    return userInfo.roles.some(r => r.id === roleId)
   }
 
   /** 登出 */
@@ -74,11 +91,11 @@ export const useUserStore = defineStore("user", () => {
     userInfo.username = ""
     userInfo.id = 0
     userInfo.createdAt = ""
-    userInfo.username = ""
     userInfo.phone = ""
     userInfo.email = ""
     userInfo.role = ""
     userInfo.roleId = 0
+    userInfo.roles = []
   }
   // mine end
 
@@ -97,12 +114,22 @@ export const useUserStore = defineStore("user", () => {
     }
   )
 
-  return { token, username, getInfo, userInfo, login, logout, resetToken }
+  return { 
+    token, 
+    username, 
+    getInfo, 
+    userInfo, 
+    login, 
+    logout, 
+    resetToken,
+    getAllRoleIds,
+    hasRole
+  }
 })
 
 /**
  * @description 在 SPA 应用中可用于在 pinia 实例被激活前使用 store
- * @description 在 SSR 应用中可用于在 setup 外使用 store
+ * @description 在 SSR 应用中可用于在 pinia 实例被激活前使用 store
  */
 export function useUserStoreOutside() {
   return useUserStore(pinia)

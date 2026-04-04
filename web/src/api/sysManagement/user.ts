@@ -1,15 +1,31 @@
 import { request } from "@/http/axios_n"
 
+// 角色信息
+export interface RoleInfo {
+  id: number
+  roleName: string
+}
+
 interface userData {
   username: string
   phone: string
   email: string
   active: boolean
-  roleId: number
+  roleIds: number[]  // 多角色支持
+  deptId?: number    // 部门ID（用于数据权限）
 }
 
-export interface userDataModel extends userData, Td27Model {
-  roleName: string
+export interface userDataModel extends Td27Model {
+  username: string
+  phone: string
+  email: string
+  active: boolean
+  deptId?: number
+  deptName?: string  // 部门名称
+  // 多角色支持
+  roles: RoleInfo[]
+  roleName: string  // 主角色名称（兼容旧版）
+  roleId: number    // 主角色ID（兼容旧版）
 }
 
 // 数据结构 - List
@@ -43,7 +59,7 @@ export function userDeleteApi(data: CId) {
 
 // 添加用户
 export function userCreateApi(data: userData & { password: string }) {
-  return request<ApiResponseData<null>>({
+  return request<ApiResponseData<userDataModel>>({
     url: "/user/create",
     method: "post",
     data
@@ -79,5 +95,13 @@ export function switchActiveApi(data: { active: boolean } & CId) {
     url: "/user/switchActive",
     method: "post",
     data
+  })
+}
+
+// 获取部门列表
+export function deptListApi() {
+  return request<ApiResponseData<any[]>>({
+    url: "/dept/list",
+    method: "get"
   })
 }

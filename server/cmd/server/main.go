@@ -18,21 +18,15 @@ func main() {
 	global.TD27_LOG = core.Zap()
 	zap.ReplaceGlobals(global.TD27_LOG)
 
-	// Initialize MySQL
+	// Initialize Database (MySQL or PostgreSQL)
 	global.TD27_DB = initialize.Gorm()
 	if global.TD27_DB == nil {
-		global.TD27_LOG.Fatal("mysql connection failed")
+		global.TD27_LOG.Fatal("database connection failed")
 	}
 	db, _ := global.TD27_DB.DB()
 	defer db.Close()
 
-	// Initialize Redis
-	global.TD27_REDIS = initialize.Redis()
-	if global.TD27_REDIS == nil {
-		global.TD27_LOG.Fatal("redis connection failed")
-	}
-
-	// Initialize Cron AFTER DB/Redis ready
+	// Initialize Cron AFTER DB ready
 	global.TD27_CRON = initialize.InitCron()
 	initialize.CheckCron()
 

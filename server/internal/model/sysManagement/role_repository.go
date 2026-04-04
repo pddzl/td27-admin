@@ -15,8 +15,8 @@ type RoleRepository interface {
 	Create(ctx context.Context, req *RoleModel) (*RoleModel, error)
 	Delete(ctx context.Context, id uint) error
 	Update(ctx context.Context, req *UpdateRoleReq) error
-	UpdateRoleMenu(ctx context.Context, role *RoleModel, req []*MenuModel) error
-	DeleteRoleMenu(ctx context.Context, id uint) error
+	UpdateRoleMenu(ctx context.Context, roleId uint, menuIds []uint) error
+	DeleteRoleMenu(ctx context.Context, roleId uint) error
 }
 
 type roleEntity struct {
@@ -52,12 +52,10 @@ func (e *roleEntity) List(ctx context.Context, req *common.PageInfo) ([]RoleMode
 		return nil, 0, fmt.Errorf("count roles failed: %w", err)
 	}
 
-	// Query data with preload
+	// Query data
 	if err := db.
-		Preload("Menus").
 		Limit(req.PageSize).
 		Offset(req.Offset()).
-		//Order("id DESC").
 		Find(&roles).Error; err != nil {
 		return nil, 0, fmt.Errorf("list roles failed: %w", err)
 	}
@@ -104,16 +102,48 @@ func (e *roleEntity) Update(ctx context.Context, req *UpdateRoleReq) error {
 	return nil
 }
 
-// UpdateRoleMenu 编辑用户menu
-func (e *roleEntity) UpdateRoleMenu(ctx context.Context, role *RoleModel, req []*MenuModel) error {
-	err := e.conn.WithContext(ctx).Model(role).Association("Menus").Replace(req)
-	if err != nil {
-		return fmt.Errorf("update menu failed: %w", err)
+// UpdateRoleMenu 编辑角色的菜单权限（使用统一权限表）
+func (e *roleEntity) UpdateRoleMenu(ctx context.Context, roleId uint, menuIds []uint) error {
+	// First, delete existing menu permissions for this role
+	if err := e.DeleteRoleMenu(ctx, roleId); err != nil {
+		return err
+	}
+
+	// If no menu IDs, just return
+	if len(menuIds) == 0 {
+		return nil
+	}
+
+	// Get permission IDs for the menu IDs (menu ID = permission ID)
+	var permissions []PermissionModel
+	if err := e.conn.WithContext(ctx).
+		Where("id IN ? AND type = 'menu'", menuIds).
+		Find(&permissions).Error; err != nil {
+		return fmt.Errorf("find menu permissions failed: %w", err)
+	}
+
+	// Create role-permission associations
+	for _, perm := range permissions {
+		rp := RolePermission{
+			RoleID:       roleId,
+			PermissionID: perm.ID,
+			DataScope:    "all", // default data scope for menus
+		}
+		if err := e.conn.WithContext(ctx).Create(&rp).Error; err != nil {
+			return fmt.Errorf("create role permission failed: %w", err)
+		}
 	}
 
 	return nil
 }
 
 func (e *roleEntity) DeleteRoleMenu(ctx context.Context, roleId uint) error {
-	return e.conn.WithContext(ctx).Where("role_id =?", roleId).Delete(&RoleMenu{}).Error
+	// Delete from role_permissions where permission is of type 'menu'
+	return e.conn.WithContext(ctx).
+		Exec(`
+			DELETE FROM sys_management_role_permissions 
+			WHERE role_id = ? AND permission_id IN (
+				SELECT id FROM sys_management_permission WHERE type = 'menu'
+			)
+		`, roleId).Error
 }

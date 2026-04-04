@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"strconv"
 
 	"go.uber.org/zap"
 
@@ -16,7 +15,6 @@ import (
 type RoleService struct {
 	roleRepository sysManagement.RoleRepository
 	userRepository sysManagement.UserRepository
-	menuRepository sysManagement.MenuRepository
 	ctx            context.Context
 }
 
@@ -24,7 +22,6 @@ func NewRoleService() *RoleService {
 	return &RoleService{
 		roleRepository: sysManagement.NewRoleEntity(global.TD27_DB),
 		userRepository: sysManagement.NewUserEntity(global.TD27_DB),
-		menuRepository: sysManagement.NewMenuEntity(global.TD27_DB),
 		ctx:            context.Background(),
 	}
 }
@@ -43,23 +40,20 @@ func (s *RoleService) Create(req *sysManagement.RoleModel) (*sysManagement.RoleM
 		return nil, err
 	}
 
-	// 更新casbin rule
-	if err = casbinService.Update(create.ID, sysManagement.DefaultCasbin()); err != nil {
-		global.TD27_LOG.Error("更新casbin rule失败", zap.Error(err))
-	}
+	// 新角色创建时，自动赋予默认的公开API权限（登录、验证码等）
+	// 这些权限在统一权限表中已存在，只需建立关联
+	global.TD27_LOG.Info("创建角色成功，默认API权限已通过统一权限表管理", zap.Uint("roleId", create.ID))
 	return create, err
-
 }
 
 func (s *RoleService) Delete(id uint) error {
-	// check users exist
-	var userReq sysManagement.FindOneUserReq
-	userReq.RoleModelID = id
-	user, err := s.userRepository.FindOne(s.ctx, &userReq)
+	// check users exist with this role
+	var count int64
+	err := s.userRepository.CountUsersByRole(s.ctx, id, &count)
 	if err != nil {
 		return err
 	}
-	if user != nil {
+	if count > 0 {
 		return errors.New("该角色下面还有所属用户")
 	}
 
@@ -75,12 +69,17 @@ func (s *RoleService) Delete(id uint) error {
 		return fmt.Errorf("删除role关联menus err: %v", err)
 	}
 
-	// 删除对应casbin rule
-	authorityId := strconv.Itoa(int(id))
-	ok := casbinService.ClearCasbin(0, authorityId)
-	if !ok {
-		global.TD27_LOG.Warn("删除role关联casbin_rule失败")
+	// 删除角色的所有权限关联（通过统一权限表）
+	if err := s.roleRepository.DeleteRoleMenu(s.ctx, id); err != nil {
+		global.TD27_LOG.Warn("删除role权限关联失败", zap.Error(err))
 	}
+
+	// 重新加载Casbin策略
+	go func() {
+		if err := casbinService.ReloadPolicy(); err != nil {
+			global.TD27_LOG.Error("重新加载Casbin策略失败", zap.Error(err))
+		}
+	}()
 
 	return nil
 }
@@ -96,22 +95,16 @@ func (s *RoleService) Update(req *sysManagement.UpdateRoleReq) error {
 // UpdateRoleMenu 编辑用户menu
 func (s *RoleService) UpdateRoleMenu(roleId uint, menuIds []uint) error {
 	// check role existence
-	role, err := s.roleRepository.FindOne(s.ctx, roleId)
+	_, err := s.roleRepository.FindOne(s.ctx, roleId)
 	if err != nil {
 		return err
 	}
 
-	// search menu
-	menus, err := s.menuRepository.FindByIds(s.ctx, menuIds)
-	if err != nil {
-		return fmt.Errorf("FindByIds err: %v", err)
-	}
-
-	// update sys_management_role_menus
-	err = s.roleRepository.UpdateRoleMenu(s.ctx, role, menus)
+	// update sys_management_role_permissions (menu permissions)
+	err = s.roleRepository.UpdateRoleMenu(s.ctx, roleId, menuIds)
 	if err != nil {
 		return err
 	}
 
-	return err
+	return nil
 }

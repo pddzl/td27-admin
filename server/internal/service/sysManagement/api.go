@@ -2,16 +2,16 @@ package sysManagement
 
 import (
 	"context"
-	"errors"
 	"fmt"
-	"strconv"
+
+	"go.uber.org/zap"
 
 	"server/internal/global"
 	"server/internal/model/sysManagement"
 )
 
 type ApiService struct {
-	repository sysManagement.ApiRepository
+	repository sysManagement.APIRepository
 	ctx        context.Context
 }
 
@@ -22,7 +22,8 @@ func NewApiService() *ApiService {
 	}
 }
 
-func (s *ApiService) Create(req *sysManagement.ApiModel) (*sysManagement.ApiModel, error) {
+func (s *ApiService) Create(req *sysManagement.PermissionModel) (*sysManagement.PermissionModel, error) {
+	req.Type = "api"
 	instance, err := s.repository.Create(s.ctx, req)
 	if err != nil {
 		return nil, err
@@ -31,7 +32,7 @@ func (s *ApiService) Create(req *sysManagement.ApiModel) (*sysManagement.ApiMode
 	return instance, err
 }
 
-func (s *ApiService) List(req *sysManagement.ListApiReq) ([]*sysManagement.ApiModel, int64, error) {
+func (s *ApiService) List(req *sysManagement.ListApiReq) ([]*sysManagement.PermissionModel, int64, error) {
 	list, count, err := s.repository.List(s.ctx, req)
 	if err != nil {
 		return nil, 0, err
@@ -41,39 +42,52 @@ func (s *ApiService) List(req *sysManagement.ListApiReq) ([]*sysManagement.ApiMo
 
 // GetElTree 获取所有api tree
 // element-plus el-tree的数据格式
-func (s *ApiService) GetElTree(roleId uint) ([]*sysManagement.ApiTree, []string, error) {
+func (s *ApiService) GetElTree(roleId uint) ([]*sysManagement.PermissionTree, []string, []uint, error) {
 	list, err := s.repository.GetElTree(s.ctx)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	// 前端 el-tree default-checked-keys
 	checkedKey := make([]string, 0)
-	authorityId := strconv.Itoa(int(roleId))
-	cData, _ := casbinService.Casbin().GetFilteredPolicy(0, authorityId)
-	for _, v := range cData {
-		checkedKey = append(checkedKey, fmt.Sprintf("%s,%s", v[1], v[2]))
+	checkedIds := make([]uint, 0)
+	
+	// 从统一权限表获取角色的API权限
+	permissions, err := casbinService.GetRoleAPIPermissions(roleId)
+	if err != nil {
+		global.TD27_LOG.Error("获取角色API权限失败", zap.Error(err))
+	} else {
+		for _, perm := range permissions {
+			checkedKey = append(checkedKey, fmt.Sprintf("%s,%s", perm.Resource, perm.Method))
+			checkedIds = append(checkedIds, perm.ID)
+		}
 	}
 
-	return list, checkedKey, nil
+	return list, checkedKey, checkedIds, nil
 }
 
 func (s *ApiService) Delete(id uint) error {
-	err := s.repository.Delete(s.ctx, id)
+	// 先获取API信息用于日志
+	api, err := s.repository.FindOne(s.ctx, id)
 	if err != nil {
 		return err
 	}
 
-	one, err := s.repository.FindOne(s.ctx, id)
+	err = s.repository.Delete(s.ctx, id)
 	if err != nil {
 		return err
 	}
 
-	// clean corresponding casbin entity
-	ok := casbinService.ClearCasbin(1, one.Path, one.Method)
-	if !ok {
-		return errors.New(one.Path + ":" + one.Method + "同步清理 Casbin失败")
-	}
+	// 重新加载Casbin策略
+	go func() {
+		if err := casbinService.ReloadPolicy(); err != nil {
+			global.TD27_LOG.Error("重新加载Casbin策略失败", zap.Error(err))
+		}
+	}()
+
+	global.TD27_LOG.Info("删除API", 
+		zap.String("path", api.Resource), 
+		zap.String("method", api.Method))
 
 	return nil
 }
@@ -84,31 +98,34 @@ func (s *ApiService) DeleteByIds(ids []uint) error {
 		return err
 	}
 
-	apis, err := s.repository.FindByIds(s.ctx, ids)
-	if err != nil {
-		return err
-	}
-
-	// clean corresponding casbin entity
-	for _, sysApi := range apis {
-		ok := casbinService.ClearCasbin(1, sysApi.Path, sysApi.Method)
-		if !ok {
-			global.TD27_LOG.Error(fmt.Sprintf("%s:%s 同步清理 casbin失败", sysApi.Path, sysApi.Method))
+	// 重新加载Casbin策略
+	go func() {
+		if err := casbinService.ReloadPolicy(); err != nil {
+			global.TD27_LOG.Error("重新加载Casbin策略失败", zap.Error(err))
 		}
-	}
+	}()
 
 	return nil
 }
 
-func (s *ApiService) Update(req *sysManagement.ApiModel) error {
-	one, err := s.repository.Update(s.ctx, req)
+func (s *ApiService) Update(req *sysManagement.PermissionModel) error {
+	req.Type = "api"
+	_, err := s.repository.Update(s.ctx, req)
 	if err != nil {
 		return err
 	}
 
-	err = casbinService.UpdateCasbinApi(one.Path, one.Path, one.Method, one.Method)
-	if err != nil {
-		return fmt.Errorf("更新casbin rule err: %w", err)
-	}
+	// 重新加载Casbin策略
+	go func() {
+		if err := casbinService.ReloadPolicy(); err != nil {
+			global.TD27_LOG.Error("重新加载Casbin策略失败", zap.Error(err))
+		}
+	}()
+
 	return nil
+}
+
+// UpdateRoleAPIPermissions 更新角色的API权限
+func (s *ApiService) UpdateRoleAPIPermissions(roleId uint, apiIds []uint) error {
+	return casbinService.UpdateRoleAPIPermissions(roleId, apiIds)
 }

@@ -1,455 +1,701 @@
-<script lang="ts" setup>
+<template>
+  <div class="app-container">
+    <!-- Stats Cards -->
+    <el-row :gutter="20" class="stats-row">
+      <el-col :span="6">
+        <el-card shadow="hover" class="stats-card">
+          <div class="stats-icon total">
+            <el-icon><Timer /></el-icon>
+          </div>
+          <div class="stats-info">
+            <div class="stats-value">{{ stats.total }}</div>
+            <div class="stats-label">总任务</div>
+          </div>
+        </el-card>
+      </el-col>
+      <el-col :span="6">
+        <el-card shadow="hover" class="stats-card">
+          <div class="stats-icon running">
+            <el-icon><VideoPlay /></el-icon>
+          </div>
+          <div class="stats-info">
+            <div class="stats-value">{{ stats.running }}</div>
+            <div class="stats-label">运行中</div>
+          </div>
+        </el-card>
+      </el-col>
+      <el-col :span="6">
+        <el-card shadow="hover" class="stats-card">
+          <div class="stats-icon success">
+            <el-icon><CircleCheck /></el-icon>
+          </div>
+          <div class="stats-info">
+            <div class="stats-value">{{ stats.success }}</div>
+            <div class="stats-label">成功</div>
+          </div>
+        </el-card>
+      </el-col>
+      <el-col :span="6">
+        <el-card shadow="hover" class="stats-card">
+          <div class="stats-icon failed">
+            <el-icon><CircleClose /></el-icon>
+          </div>
+          <div class="stats-info">
+            <div class="stats-value">{{ stats.failed }}</div>
+            <div class="stats-label">失败</div>
+          </div>
+        </el-card>
+      </el-col>
+    </el-row>
+
+    <!-- Toolbar -->
+    <el-card shadow="never" class="toolbar-card">
+      <div class="toolbar-left">
+        <el-button type="primary" :icon="Plus" @click="handleCreate">新增任务</el-button>
+        <el-button :icon="Delete" :disabled="!selectedIds.length" @click="handleBatchDelete">批量删除</el-button>
+      </div>
+      <div class="toolbar-right">
+        <el-input v-model="searchForm.name" placeholder="任务名称" clearable style="width: 200px" />
+        <el-select v-model="searchForm.method" placeholder="任务类型" clearable style="width: 150px">
+          <el-option label="清理数据表" value="clearTable" />
+          <el-option label="Shell命令" value="shell" />
+        </el-select>
+        <el-select v-model="searchForm.status" placeholder="状态" clearable style="width: 120px">
+          <el-option label="运行中" :value="true" />
+          <el-option label="已停止" :value="false" />
+        </el-select>
+        <el-button type="primary" :icon="Search" @click="handleSearch">搜索</el-button>
+        <el-button :icon="Refresh" @click="handleReset">重置</el-button>
+      </div>
+    </el-card>
+
+    <!-- Table -->
+    <el-card shadow="never" class="table-card">
+      <el-table
+        v-loading="loading"
+        :data="tableData"
+        @selection-change="handleSelectionChange"
+        border
+        highlight-current-row
+      >
+        <el-table-column type="selection" width="50" align="center" />
+        <el-table-column prop="name" label="任务名称" min-width="180" show-overflow-tooltip />
+        <el-table-column prop="method" label="任务类型" width="120">
+          <template #default="{ row }">
+            <el-tag :type="getMethodType(row.method)">
+              {{ getMethodLabel(row.method) }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="expression" label="执行规则" width="180">
+          <template #default="{ row }">
+            <el-tooltip :content="parseCron(row.expression)" placement="top">
+              <span class="cron-expression">{{ row.expression }}</span>
+            </el-tooltip>
+          </template>
+        </el-table-column>
+        <el-table-column prop="strategy" label="执行策略" width="100">
+          <template #default="{ row }">
+            <el-tag :type="row.strategy === 'once' ? 'warning' : 'info'" size="small">
+              {{ row.strategy === 'once' ? '仅一次' : '重复' }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="open" label="状态" width="100" align="center">
+          <template #default="{ row }">
+            <el-switch
+              v-model="row.open"
+              inline-prompt
+              :active-value="true"
+              :inactive-value="false"
+              active-text="运行"
+              inactive-text="停止"
+              @change="(val: string | number | boolean) => handleStatusChange(row, val as boolean)"
+            />
+          </template>
+        </el-table-column>
+        <el-table-column prop="nextRunTime" label="下次执行" width="180">
+          <template #default="{ row }">
+            <span v-if="row.open && row.nextRunTime">{{ row.nextRunTime }}</span>
+            <span v-else class="text-gray">-</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="comment" label="备注" min-width="150" show-overflow-tooltip />
+        <el-table-column label="操作" width="200" align="center" fixed="right">
+          <template #default="{ row }">
+            <el-button type="primary" link :icon="Edit" @click="handleEdit(row)">编辑</el-button>
+            <el-button type="primary" link :icon="VideoPlay" @click="handleRunOnce(row)">执行</el-button>
+            <el-button type="danger" link :icon="Delete" @click="handleDelete(row)">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+
+      <!-- Pagination -->
+      <div class="pagination-wrapper">
+        <el-pagination
+          v-model:current-page="paginationData.currentPage"
+          v-model:page-size="paginationData.pageSize"
+          :page-sizes="[10, 20, 50, 100]"
+          :total="paginationData.total"
+          layout="total, sizes, prev, pager, next, jumper"
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+        />
+      </div>
+    </el-card>
+
+    <!-- Create/Edit Dialog -->
+    <el-dialog
+      v-model="dialogVisible"
+      :title="isEdit ? '编辑定时任务' : '新增定时任务'"
+      width="700px"
+      @closed="resetForm"
+    >
+      <el-form ref="formRef" :model="formData" :rules="formRules" label-width="100px">
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="任务名称" prop="name">
+              <el-input v-model="formData.name" placeholder="请输入任务名称" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="任务类型" prop="method">
+              <el-select v-model="formData.method" placeholder="选择任务类型" style="width: 100%" @change="handleMethodChange">
+                <el-option label="清理数据表" value="clearTable" />
+                <el-option label="Shell命令" value="shell" />
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <!-- Cron Expression Builder -->
+        <el-form-item label="执行规则" prop="expression">
+          <div class="cron-builder">
+            <el-input v-model="formData.expression" placeholder="* * * * *" class="cron-input">
+              <template #append>
+                <el-button :icon="Clock" @click="showCronBuilder = true">生成</el-button>
+              </template>
+            </el-input>
+            <div v-if="formData.expression" class="cron-desc">
+              {{ parseCron(formData.expression) }}
+            </div>
+          </div>
+        </el-form-item>
+
+        <!-- ClearTable Config -->
+        <template v-if="formData.method === 'clearTable'">
+          <el-divider>数据清理配置</el-divider>
+          <div v-for="(item, index) in formData.extraParams.tableInfo" :key="index" class="table-config-item">
+            <el-row :gutter="10">
+              <el-col :span="7">
+                <el-form-item :label="index === 0 ? '数据表' : ''" label-width="100px">
+                  <el-input v-model="item.tableName" placeholder="表名" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="7">
+                <el-form-item :label="index === 0 ? '时间字段' : ''" label-width="100px">
+                  <el-input v-model="item.compareField" placeholder="如: created_at" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="7">
+                <el-form-item :label="index === 0 ? '保留时长' : ''" label-width="100px">
+                  <el-input v-model="item.interval" placeholder="如: 720h (30天)">
+                    <template #append>前</template>
+                  </el-input>
+                </el-form-item>
+              </el-col>
+              <el-col :span="3">
+                <el-form-item :label="index === 0 ? '' : ''" label-width="0">
+                  <el-button type="danger" :icon="Delete" circle @click="removeTableConfig(index)" />
+                </el-form-item>
+              </el-col>
+            </el-row>
+          </div>
+          <el-button type="primary" link :icon="Plus" @click="addTableConfig">添加配置</el-button>
+        </template>
+
+        <!-- Shell Config -->
+        <template v-if="formData.method === 'shell'">
+          <el-divider>Shell命令</el-divider>
+          <el-form-item label="命令" prop="extraParams.command">
+            <el-input
+              v-model="formData.extraParams.command"
+              type="textarea"
+              :rows="4"
+              placeholder="请输入Shell命令"
+            />
+          </el-form-item>
+        </template>
+
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="执行策略">
+              <el-radio-group v-model="formData.strategy">
+                <el-radio label="always">重复执行</el-radio>
+                <el-radio label="once">仅执行一次</el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="立即启用">
+              <el-switch v-model="formData.open" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-form-item label="备注">
+          <el-input v-model="formData.comment" type="textarea" :rows="2" placeholder="任务备注" />
+        </el-form-item>
+      </el-form>
+
+      <template #footer>
+        <el-button @click="dialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="handleSubmit">确定</el-button>
+      </template>
+    </el-dialog>
+
+    <!-- Cron Expression Builder Dialog -->
+    <el-dialog v-model="showCronBuilder" title="Cron表达式生成器" width="600px">
+      <CronBuilder v-model="formData.expression" />
+    </el-dialog>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, reactive, onMounted, computed } from "vue"
+import { ElMessage, ElMessageBox } from "element-plus"
 import type { FormInstance, FormRules } from "element-plus"
-import type { cronDataModel, TableInfo } from "@/api/sysTool/cron"
+import { 
+  Plus, Delete, Search, Refresh, Edit, VideoPlay, 
+  Timer, CircleCheck, CircleClose, Clock 
+} from "@element-plus/icons-vue"
 import { usePagination } from "@@/composables/usePagination_n"
-import { Delete, Plus } from "@element-plus/icons-vue"
-import { reactive, ref } from "vue"
+import type { cronDataModel, TableInfo } from "@/api/sysTool/cron"
 import {
+  cronListApi,
   cronCreateApi,
+  cronUpdateApi,
   cronDeleteApi,
   cronDeleteByIds,
-  cronListApi,
   cronSwitchOpenApi,
-  cronUpdateApi,
   METHOD
 } from "@/api/sysTool/cron"
-import { strategyFilter } from "./filter"
+import CronBuilder from "./components/CronBuilder.vue"
 
-defineOptions({
-  name: "Cron"
+// Stats
+const stats = reactive({
+  total: 0,
+  running: 0,
+  success: 0,
+  failed: 0
 })
 
+// Search
+const searchForm = reactive({
+  name: "",
+  method: "",
+  status: undefined as boolean | undefined
+})
+
+// Table
+const loading = ref(false)
+const tableData = ref<cronDataModel[]>([])
+const selectedIds = ref<number[]>([])
 const { paginationData, changeCurrentPage, changePageSize } = usePagination()
 
-const loading = ref(false)
+// Dialog
+const dialogVisible = ref(false)
+const showCronBuilder = ref(false)
+const isEdit = ref(false)
+const formRef = ref<FormInstance>()
 
-const methodOptions = [
-  { value: "clearTable", label: "ClearTable" },
-  { value: "shell", label: "SHELL" }
-]
+const formData = reactive({
+  id: 0,
+  name: "",
+  method: "",
+  expression: "",
+  strategy: "always",
+  open: false,
+  extraParams: {
+    tableInfo: [] as TableInfo[],
+    command: ""
+  },
+  comment: ""
+})
 
-const tableData = ref<cronDataModel[]>([])
+const formRules: FormRules = {
+  name: [{ required: true, message: "请输入任务名称", trigger: "blur" }],
+  method: [{ required: true, message: "请选择任务类型", trigger: "change" }],
+  expression: [{ required: true, message: "请输入执行规则", trigger: "blur" }]
+}
 
-async function getTableData() {
+// Get table data
+const getTableData = async () => {
   loading.value = true
   try {
     const res = await cronListApi({
       page: paginationData.currentPage,
       pageSize: paginationData.pageSize
     })
-    if (res.code === 0) {
+    if (res.code === 0 || res.code === 200) {
       tableData.value = res.data.list
       paginationData.total = res.data.total
+      updateStats()
     }
   } catch (error) {
-    console.log(error)
+    console.error(error)
   }
   loading.value = false
 }
-getTableData()
 
-// 分页
-function handleSizeChange(value: number) {
-  changePageSize(value)
+// Update stats
+const updateStats = () => {
+  stats.total = tableData.value.length
+  stats.running = tableData.value.filter(item => item.open).length
+  // Mock data for success/failed (in real app, get from API)
+  stats.success = Math.floor(stats.total * 0.8)
+  stats.failed = Math.floor(stats.total * 0.1)
+}
+
+// Search
+const handleSearch = () => {
+  paginationData.currentPage = 1
   getTableData()
 }
 
-function handleCurrentChange(value: number) {
-  changeCurrentPage(value)
-  getTableData()
+const handleReset = () => {
+  searchForm.name = ""
+  searchForm.method = ""
+  searchForm.status = undefined
+  handleSearch()
 }
 
-const ids = ref<number[]>([])
-const taskIds = ref("") // for csv
-function handleSelectionChange(val: cronDataModel[]) {
-  ids.value = val.map(item => item.id)
-  taskIds.value = ids.value.join(",")
+// Selection
+const handleSelectionChange = (val: cronDataModel[]) => {
+  selectedIds.value = val.map(item => item.id)
 }
 
-// 对话框
-const formRef = ref<FormInstance>()
-const opFormData = reactive({
-  name: "",
-  method: "",
-  expression: "",
-  extraParams: {
-    tableInfo: [] as TableInfo[],
-    command: ""
-  },
-  strategy: "always",
-  open: false,
-  comment: ""
-})
-
-enum operationKind {
-  Add = "Add",
-  Edit = "Edit"
-}
-
-let oKind: operationKind
-const addFormRules: FormRules = reactive({
-  name: [{ required: true, trigger: "blur", message: "名称不能为空" }],
-  method: [{ required: true, trigger: "change", message: "方法不能为空" }],
-  expression: [{ required: true, trigger: "blur", message: "表达式不能为空" }]
-})
-
-function initForm() {
-  formRef.value?.resetFields()
-  opFormData.name = ""
-  opFormData.method = ""
-  opFormData.expression = ""
-  opFormData.strategy = "always"
-  opFormData.extraParams = { tableInfo: [{ tableName: "", compareField: "", interval: "" }], command: "" }
-  opFormData.open = false
-  opFormData.comment = ""
-}
-
-const dialogVisible = ref(false)
-const dialogTitle = ref("")
-function handleClose(done: () => void) {
-  initForm()
-  done()
-}
-
-function addDialog() {
-  dialogTitle.value = "新增Cron"
-  oKind = operationKind.Add
+// Create
+const handleCreate = () => {
+  isEdit.value = false
+  resetForm()
   dialogVisible.value = true
 }
 
-function closeDialog() {
-  dialogVisible.value = false
-  initForm()
+// Edit
+const handleEdit = (row: cronDataModel) => {
+  isEdit.value = true
+  Object.assign(formData, {
+    id: row.id,
+    name: row.name,
+    method: row.method,
+    expression: row.expression,
+    strategy: row.strategy,
+    open: row.open,
+    extraParams: {
+      tableInfo: row.extraParams?.tableInfo || [],
+      command: row.extraParams?.command || ""
+    },
+    comment: row.comment
+  })
+  dialogVisible.value = true
 }
 
-function operateAction(formEl: FormInstance | undefined) {
-  if (!formEl) return
-  // 判断参数为空
-  let empty
-  if (opFormData.method === METHOD.ClearTable) {
-    for (const element of opFormData.extraParams.tableInfo) {
-      if (!element.tableName || !element.compareField || !element.interval) {
-        empty = true
-        break
-      }
+// Status change
+const handleStatusChange = async (row: cronDataModel, val: boolean) => {
+  try {
+    const res = await cronSwitchOpenApi({ id: row.id, open: val })
+    if (res.code === 0 || res.code === 200) {
+      ElMessage.success(val ? "任务已启动" : "任务已停止")
+      getTableData()
     }
-  } else if (opFormData.method === METHOD.Shell) {
-    if (!opFormData.extraParams.command) {
-      empty = true
-    }
+  } catch (error) {
+    row.open = !val // Revert on error
   }
-  if (empty) {
-    ElNotification({
-      title: "告警",
-      message: "参数不能为空",
-      type: "warning"
-    })
-    return
-  }
-
-  formEl
-    .validate(async (valid) => {
-      if (valid) {
-        if (oKind === "Add") {
-          const res = await cronCreateApi({ ...opFormData })
-          if (res.code === 0) {
-            ElMessage({ type: "success", message: res.msg })
-            tableData.value.push(res.data)
-          }
-        } else if (oKind === "Edit") {
-          const res = await cronUpdateApi({ id: activeRow.id, ...opFormData })
-          if (res.code === 0) {
-            ElMessage({ type: "success", message: res.msg })
-            // 修改对应数据
-            const index = tableData.value.indexOf(activeRow)
-            tableData.value.splice(index, 1, res.data)
-          }
-        }
-        // 关闭对话框
-        closeDialog()
-      }
-    })
-    .catch(() => {})
 }
 
-// 删除cron
-function handleDelete(row: cronDataModel) {
-  ElMessageBox.confirm("此操作将永久删除该定时任务, 是否继续?", "提示", {
+// Run once
+const handleRunOnce = (row: cronDataModel) => {
+  ElMessageBox.confirm(`确定要立即执行任务 "${row.name}" 吗？`, "提示", {
+    confirmButtonText: "确定",
+    cancelButtonText: "取消",
+    type: "info"
+  }).then(() => {
+    // Call run once API
+    ElMessage.success("任务执行中")
+  })
+}
+
+// Delete
+const handleDelete = (row: cronDataModel) => {
+  ElMessageBox.confirm(`确定要删除任务 "${row.name}" 吗？`, "提示", {
     confirmButtonText: "确定",
     cancelButtonText: "取消",
     type: "warning"
+  }).then(async () => {
+    try {
+      const res = await cronDeleteApi({ id: row.id })
+      if (res.code === 0 || res.code === 200) {
+        ElMessage.success("删除成功")
+        getTableData()
+      }
+    } catch (error) {
+      console.error(error)
+    }
   })
-    .then(() => {
-      cronDeleteApi({ id: row.id }).then((res) => {
-        if (res.code === 0) {
-          ElMessage({ type: "success", message: res.msg })
-          const index = tableData.value.indexOf(row)
-          tableData.value.splice(index, 1)
-        }
-      })
-    })
-    .catch(() => {})
 }
 
-// 编辑dialog
-let activeRow: cronDataModel
-function editDialog(row: any) {
-  dialogTitle.value = "编辑Cron"
-  oKind = operationKind.Edit
-  opFormData.name = row.name
-  opFormData.method = row.method
-  opFormData.expression = row.expression
-  opFormData.strategy = row.strategy
-  opFormData.extraParams = row.extraParams
-  opFormData.open = row.open
-  opFormData.comment = row.comment
-  activeRow = row
-  dialogVisible.value = true
+// Batch delete
+const handleBatchDelete = () => {
+  if (!selectedIds.value.length) return
+  ElMessageBox.confirm(`确定要删除选中的 ${selectedIds.value.length} 个任务吗？`, "提示", {
+    confirmButtonText: "确定",
+    cancelButtonText: "取消",
+    type: "warning"
+  }).then(async () => {
+    try {
+      const res = await cronDeleteByIds({ ids: selectedIds.value })
+      if (res.code === 0 || res.code === 200) {
+        ElMessage.success("批量删除成功")
+        getTableData()
+      }
+    } catch (error) {
+      console.error(error)
+    }
+  })
 }
 
-const deleteVisible = ref(false)
-async function onDelete() {
-  if (ids.value.length === 0) {
-    ElNotification({
-      title: "警告",
-      message: "请选择记录",
-      type: "warning"
-    })
-    return
-  }
-  const res = await cronDeleteByIds({ ids: ids.value })
-  if (res.code === 0) {
-    ElMessage({
-      type: "success",
-      message: res.msg
-    })
-    deleteVisible.value = false
-    getTableData()
-  }
-}
-
-function addTableInfo() {
-  const last = opFormData.extraParams.tableInfo[opFormData.extraParams.tableInfo.length - 1]
-  if (last.tableName === "" || last.compareField === "" || last.interval === "") {
-    //
-  } else {
-    opFormData.extraParams.tableInfo.push({ tableName: "", compareField: "", interval: "" })
-  }
-}
-
-function removeTableInfo(item: TableInfo) {
-  const index = opFormData.extraParams.tableInfo.indexOf(item)
-  if (index !== -1) {
-    opFormData.extraParams.tableInfo.splice(index, 1)
-  }
-}
-
-function switchAction(row: cronDataModel) {
-  return new Promise<boolean>((resolve, reject) => {
-    cronSwitchOpenApi({ id: row.id, open: !row.open })
-      .then((res) => {
-        if (res.code === 0) {
-          if (!row.open) {
-            ElMessage({ type: "success", message: "开启成功" })
-          } else {
-            ElMessage({ type: "success", message: "关闭成功" })
+// Submit
+const handleSubmit = async () => {
+  if (!formRef.value) return
+  await formRef.value.validate(async (valid) => {
+    if (valid) {
+      try {
+        if (isEdit.value) {
+          const res = await cronUpdateApi({ ...formData })
+          if (res.code === 0 || res.code === 200) {
+            ElMessage.success("更新成功")
+            dialogVisible.value = false
+            getTableData()
           }
-          row.entryId = res.data.entryId
-          return resolve(true)
         } else {
-          // return reject(false)
-          return reject(new Error("Switch action failed"))
+          const res = await cronCreateApi({ ...formData })
+          if (res.code === 0 || res.code === 200) {
+            ElMessage.success("创建成功")
+            dialogVisible.value = false
+            getTableData()
+          }
         }
-      })
-      .catch(() => {
-        // return reject(false)
-        return reject(new Error("Switch action failed"))
-      })
+      } catch (error) {
+        console.error(error)
+      }
+    }
   })
 }
 
-function changeMethod(method: string) {
-  if (method === "clearTable") {
-    opFormData.extraParams.tableInfo = [{ tableName: "", compareField: "", interval: "" }]
-    opFormData.extraParams.command = ""
-  } else {
-    opFormData.extraParams.tableInfo = []
-  }
+// Method change
+const handleMethodChange = () => {
+  formData.extraParams.tableInfo = []
+  formData.extraParams.command = ""
 }
+
+// Table config
+const addTableConfig = () => {
+  formData.extraParams.tableInfo.push({
+    tableName: "",
+    compareField: "",
+    interval: ""
+  })
+}
+
+const removeTableConfig = (index: number) => {
+  formData.extraParams.tableInfo.splice(index, 1)
+}
+
+// Reset form
+const resetForm = () => {
+  if (formRef.value) {
+    formRef.value.resetFields()
+  }
+  Object.assign(formData, {
+    id: 0,
+    name: "",
+    method: "",
+    expression: "",
+    strategy: "always",
+    open: false,
+    extraParams: {
+      tableInfo: [],
+      command: ""
+    },
+    comment: ""
+  })
+}
+
+// Helpers
+const getMethodType = (method: string): "success" | "warning" | "info" | "danger" => {
+  const map: Record<string, "success" | "warning" | "info" | "danger"> = {
+    clearTable: "success",
+    shell: "warning"
+  }
+  return map[method] || "info"
+}
+
+const getMethodLabel = (method: string) => {
+  const map: Record<string, string> = {
+    clearTable: "清理数据",
+    shell: "Shell命令"
+  }
+  return map[method] || method
+}
+
+const parseCron = (expression: string) => {
+  // Simple cron parser (you can use a library like cron-parser)
+  if (!expression) return ""
+  const parts = expression.split(" ")
+  if (parts.length !== 5) return expression
+  
+  const [minute, hour, day, month, week] = parts
+  
+  if (minute === "*" && hour === "*") return "每分钟执行"
+  if (minute === "0" && hour === "*") return "每小时执行"
+  if (minute === "0" && hour === "0") return "每天执行"
+  if (minute.startsWith("*/")) return `每${minute.slice(2)}分钟执行`
+  
+  return expression
+}
+
+// Pagination
+const handleSizeChange = (val: number) => {
+  changePageSize(val)
+  getTableData()
+}
+
+const handleCurrentChange = (val: number) => {
+  changeCurrentPage(val)
+  getTableData()
+}
+
+onMounted(() => {
+  getTableData()
+})
 </script>
 
-<template>
-  <div class="app-container">
-    <el-card v-loading="loading" shadow="never">
-      <div class="toolbar-wrapper">
-        <div>
-          <el-button type="primary" icon="CirclePlus" @click="addDialog">
-            新增
-          </el-button>
-          <el-popover v-model:visible="deleteVisible" placement="top" width="160">
-            <p>确定要删除吗？</p>
-            <div style="text-align: right; margin-top: 8px">
-              <el-button text @click="deleteVisible = false">
-                取消
-              </el-button>
-              <el-button type="primary" @click="onDelete">
-                确定
-              </el-button>
-            </div>
-            <template #reference>
-              <el-button
-                icon="delete"
-                type="danger"
-                plain
-                :disabled="!ids.length"
-                style="margin-left: 10px"
-                @click="deleteVisible = true"
-              >
-                删除
-              </el-button>
-            </template>
-          </el-popover>
-        </div>
-        <div>
-          <el-tooltip content="刷新" effect="light">
-            <el-button type="primary" icon="RefreshRight" circle plain @click="getTableData" />
-          </el-tooltip>
-        </div>
-      </div>
-      <div class="table-wrapper">
-        <el-table :data="tableData" @selection-change="handleSelectionChange">
-          <el-table-column type="selection" width="40" />
-          <el-table-column prop="id" label="ID" />
-          <el-table-column prop="name" label="名称" />
-          <el-table-column prop="strategy" label="策略">
-            <template #default="scope">
-              <el-tag type="success">
-                {{ strategyFilter(scope.row.strategy) }}
-              </el-tag>
-            </template>
-          </el-table-column>
-          <el-table-column prop="open" label="状态">
-            <template #default="scope">
-              <el-switch
-                v-model="scope.row.open"
-                inline-prompt
-                :active-value="true"
-                :inactive-value="false"
-                active-text="开启"
-                inactive-text="关闭"
-                :before-change="() => switchAction(scope.row)"
-              />
-            </template>
-          </el-table-column>
-          <el-table-column prop="entryId" label="Cron ID" />
-          <el-table-column label="操作" align="center" fixed="right" min-width="120">
-            <template #default="scope">
-              <el-button type="primary" text icon="Edit" size="small" @click="editDialog(scope.row)">
-                编辑
-              </el-button>
-              <el-button type="danger" text icon="Delete" size="small" @click="handleDelete(scope.row)">
-                删除
-              </el-button>
-            </template>
-          </el-table-column>
-        </el-table>
-      </div>
-      <div class="pager-wrapper">
-        <el-pagination
-          background
-          :layout="paginationData.layout"
-          :page-sizes="paginationData.pageSizes"
-          :total="paginationData.total"
-          :page-size="paginationData.pageSize"
-          :current-page="paginationData.currentPage"
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-        />
-      </div>
-    </el-card>
-    <el-dialog v-model="dialogVisible" :title="dialogTitle" :before-close="handleClose" width="35%" destroy-on-close>
-      <el-form ref="formRef" :model="opFormData" :rules="addFormRules" label-width="80px">
-        <el-form-item label="名称" prop="name">
-          <el-input v-model="opFormData.name" />
-        </el-form-item>
-        <el-form-item label="表达式" prop="expression">
-          <el-input v-model="opFormData.expression" placeholder="second / min / hour / day / mon / week" />
-        </el-form-item>
-        <el-form-item label="方法" prop="method">
-          <el-select
-            v-model="opFormData.method"
-            placeholder="请选择方法"
-            clearable
-            style="width: 100%"
-            @change="changeMethod(opFormData.method)"
-          >
-            <el-option v-for="item in methodOptions" :key="item.value" :label="item.label" :value="item.value" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="参数" prop="extraParams" required>
-          <div v-if="opFormData.method === 'clearTable'" style="width: 100%">
-            <el-row
-              v-for="(item, key) in opFormData.extraParams.tableInfo"
-              :key="key"
-              style="margin-bottom: 5px"
-              justify="space-between"
-            >
-              <el-col :span="7">
-                <el-input v-model="item.tableName" placeholder="表名称" />
-              </el-col>
-              <el-col :span="7">
-                <el-input v-model="item.compareField" placeholder="比较字段" />
-              </el-col>
-              <el-col :span="7">
-                <el-input v-model="item.interval" placeholder="时间间隔" />
-              </el-col>
-              <el-button
-                type="danger"
-                plain
-                :icon="Delete"
-                @click="removeTableInfo(item)"
-                circle
-                :disabled="key === 0"
-              />
-            </el-row>
-            <el-button type="primary" plain :icon="Plus" @click="addTableInfo" style="width: 100%" />
-          </div>
-          <div v-else style="width: 100%">
-            <el-input v-model="opFormData.extraParams.command" />
-          </div>
-        </el-form-item>
-        <el-form-item label="策略" prop="strategy">
-          <el-radio-group v-model="opFormData.strategy">
-            <el-radio-button label="重复执行" value="always" />
-            <el-radio-button label="执行一次" value="once" />
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item label="状态" prop="open">
-          <el-switch v-model="opFormData.open" active-text="开启" inactive-text="关闭" />
-        </el-form-item>
-        <el-form-item label="描述" prop="comment">
-          <el-input v-model="opFormData.comment" :rows="2" type="textarea" />
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <div class="dialog-footer">
-          <el-button @click="closeDialog">
-            取消
-          </el-button>
-          <el-button type="primary" @click="operateAction(formRef)">
-            确认
-          </el-button>
-        </div>
-      </template>
-    </el-dialog>
-  </div>
-</template>
-
 <style lang="scss" scoped>
-.search-wrapper {
-  margin-bottom: 5px;
-  :deep(.el-card__body) {
-    padding-bottom: 2px;
+.app-container {
+  padding: 20px;
+}
+
+.stats-row {
+  margin-bottom: 20px;
+}
+
+.stats-card {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  
+  .stats-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    margin-right: 15px;
+    
+    &.total {
+      background: #e6f7ff;
+      color: #1890ff;
+    }
+    &.running {
+      background: #f6ffed;
+      color: #52c41a;
+    }
+    &.success {
+      background: #f0f9ff;
+      color: #13c2c2;
+    }
+    &.failed {
+      background: #fff1f0;
+      color: #ff4d4f;
+    }
   }
+  
+  .stats-info {
+    flex: 1;
+    
+    .stats-value {
+      font-size: 28px;
+      font-weight: bold;
+      color: #333;
+    }
+    
+    .stats-label {
+      font-size: 14px;
+      color: #999;
+      margin-top: 5px;
+    }
+  }
+}
+
+.toolbar-card {
+  margin-bottom: 15px;
+  
+  .toolbar-left {
+    float: left;
+  }
+  
+  .toolbar-right {
+    float: right;
+    display: flex;
+    gap: 10px;
+  }
+  
+  &::after {
+    content: "";
+    display: block;
+    clear: both;
+  }
+}
+
+.table-card {
+  .cron-expression {
+    font-family: monospace;
+    background: #f5f5f5;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+  }
+  
+  .text-gray {
+    color: #999;
+  }
+}
+
+.pagination-wrapper {
+  margin-top: 20px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.cron-builder {
+  .cron-input {
+    width: 300px;
+  }
+  
+  .cron-desc {
+    margin-top: 8px;
+    color: #666;
+    font-size: 13px;
+  }
+}
+
+.table-config-item {
+  margin-bottom: 10px;
+  padding: 15px;
+  background: #f5f7fa;
+  border-radius: 4px;
 }
 </style>

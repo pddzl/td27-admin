@@ -22,14 +22,20 @@ func NewMenuService() *MenuService {
 }
 
 func (s *MenuService) List(userId uint) ([]*sysManagement.MenuModel, error) {
-	var findOneUserReq sysManagement.FindOneUserReq
-	findOneUserReq.ID = userId
-	user, err := s.userRepository.FindOne(s.ctx, &findOneUserReq)
+	// Get user with roles preloaded
+	user, err := s.userRepository.FindOneWithRoles(s.ctx, userId)
 	if err != nil {
 		return nil, err
 	}
 
-	list, err := s.menuRepository.List(s.ctx, user.RoleID)
+	// Get all role IDs from the user
+	roleIDs := user.GetAllRoleIDs()
+	if len(roleIDs) == 0 {
+		return []*sysManagement.MenuModel{}, nil
+	}
+
+	// Get menus from all roles (union of permissions)
+	list, err := s.menuRepository.ListByRoleIDs(s.ctx, roleIDs)
 	if err != nil {
 		return nil, err
 	}

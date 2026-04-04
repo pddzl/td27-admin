@@ -1,7 +1,7 @@
 package initialize
 
 import (
-	modelSysTool "server/internal/model/sysTool"
+	"context"
 
 	"github.com/robfig/cron/v3"
 	"go.uber.org/zap"
@@ -9,6 +9,8 @@ import (
 	"server/configs"
 	"server/internal/global"
 	"server/internal/pkg"
+	"server/internal/pkg/cache"
+	modelSysTool "server/internal/model/sysTool"
 )
 
 // Crontab 添加计划任务
@@ -28,6 +30,18 @@ func crontab() {
 				}
 			}(global.TD27_CONFIG.Crontab.Objects[index])
 		}
+		
+		// 添加缓存清理任务（每天执行一次）
+		_, err := ct.AddFunc("@daily", func() {
+			pgCache := cache.NewPGCache()
+			if err := pgCache.CleanupExpired(context.Background()); err != nil {
+				global.TD27_LOG.Error("cleanup expired cache", zap.Error(err))
+			}
+		})
+		if err != nil {
+			global.TD27_LOG.Error("cron add cache cleanup func", zap.Error(err))
+		}
+		
 		// 启动cron
 		ct.Start()
 	}
@@ -45,7 +59,7 @@ func InitCron() *cron.Cron {
 
 func CheckCron() {
 	var cronModelList []modelSysTool.CronModel
-	global.TD27_DB.Where("open = ?", 1).Find(&cronModelList)
+	global.TD27_DB.Where("open = ?", true).Find(&cronModelList)
 	for _, cronModel := range cronModelList {
 		entryId, err := global.TD27_CRON.AddJob(cronModel.Expression, &cronModel)
 		if err != nil {

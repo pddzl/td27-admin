@@ -1,7 +1,6 @@
 package sysManagement
 
 import (
-	"context"
 	"fmt"
 	"time"
 
@@ -38,7 +37,7 @@ func NewLogRegApi() *LogRegApi {
 // @Produce   application/json
 // @Success   200  {object}  common.Response{data=modelSysManagement.CaptchaResponse,msg=string}
 // @Router    /logReg/captcha [post]
-func (ba *LogRegApi) Captcha(c *gin.Context) {
+func (a *LogRegApi) Captcha(c *gin.Context) {
 	// 字符,公式,验证码配置
 	// 生成默认数字的driver
 	driver := base64Captcha.NewDriverDigit(global.TD27_CONFIG.Captcha.ImgHeight, global.TD27_CONFIG.Captcha.ImgWidth, global.TD27_CONFIG.Captcha.KeyLong, 0.7, 80)
@@ -65,7 +64,7 @@ func (ba *LogRegApi) Captcha(c *gin.Context) {
 // @Param    data  body      modelSysManagement.Login true "请求参数"
 // @Success  200   {object}  common.Response{data=modelSysManagement.LoginResponse,msg=string}
 // @Router   /logReg/login [post]
-func (ba *LogRegApi) Login(c *gin.Context) {
+func (a *LogRegApi) Login(c *gin.Context) {
 	var login modelSysManagement.Login
 	if err := c.ShouldBindJSON(&login); err != nil {
 		common.FailReq(err.Error(), c)
@@ -75,27 +74,27 @@ func (ba *LogRegApi) Login(c *gin.Context) {
 	// 验证码
 	if store.Verify(login.CaptchaId, login.Captcha, true) {
 		u := &modelSysManagement.UserModel{Username: login.Username, Password: login.Password}
-		user, err := ba.logRegService.Login(u)
+		user, err := a.logRegService.Login(u)
 		if err != nil {
 			common.FailWithMessage(fmt.Sprintf("登录失败: %s", err.Error()), c)
 			global.TD27_LOG.Error("登录失败", zap.Error(err))
 			return
 		}
 		// 获取 token
-		ba.tokenNext(c, user)
+		a.tokenNext(c, user)
 	} else {
 		common.FailWithMessage("验证码错误", c)
 	}
 }
 
 // 生成jwt token
-func (ba *LogRegApi) tokenNext(c *gin.Context, user *modelSysManagement.UserModel) {
+func (a *LogRegApi) tokenNext(c *gin.Context, user *modelSysManagement.UserModel) {
 	j := &jwt2.JWT{SigningKey: []byte(global.TD27_CONFIG.JWT.SigningKey)} // 唯一签名
 
 	claims := modelSysManagement.CustomClaims{
 		ID:         user.ID,
 		Username:   user.Username,
-		RoleId:     user.RoleID,
+		RoleId:     user.GetPrimaryRoleID(),
 		BufferTime: global.TD27_CONFIG.JWT.BufferTime,
 		RegisteredClaims: jwt.RegisteredClaims{
 			NotBefore: jwt.NewNumericDate(time.Now().Add(-time.Duration(1000))),
@@ -111,8 +110,8 @@ func (ba *LogRegApi) tokenNext(c *gin.Context, user *modelSysManagement.UserMode
 		return
 	}
 
-	// token写入redis，后续鉴权使用
-	if err = ba.jwtService.SetRedisJWT(user.Username, token); err != nil {
+	// token写入缓存，支持多设备登录
+	if err = a.jwtService.AddToken(user.Username, token, time.Duration(global.TD27_CONFIG.JWT.ExpiresTime)*time.Second); err != nil {
 		common.FailWithMessage("设置登录状态失败", c)
 		global.TD27_LOG.Error("设置登录状态失败", zap.Error(err))
 		return
@@ -133,7 +132,7 @@ func (ba *LogRegApi) tokenNext(c *gin.Context, user *modelSysManagement.UserMode
 // @Produce   application/json
 // @Success  200   {object}  common.Response{msg=string}
 // @Router   /logReg/logout [post]
-func (ba *LogRegApi) LogOut(c *gin.Context) {
+func (a *LogRegApi) LogOut(c *gin.Context) {
 	token := c.Request.Header.Get("x-token")
 	j := jwt2.NewJWT()
 	// parseToken 解析token包含的信息
@@ -141,9 +140,10 @@ func (ba *LogRegApi) LogOut(c *gin.Context) {
 	if err != nil {
 		global.TD27_LOG.Error("登出解析token失败", zap.Error(err))
 	} else {
-		err = global.TD27_REDIS.Del(context.Background(), claims.Username).Err()
+		jwtService := serviceSysManagement.NewJwtService()
+		err = jwtService.RemoveToken(claims.Username, token)
 		if err != nil {
-			global.TD27_LOG.Error("登出写入token失败", zap.Error(err))
+			global.TD27_LOG.Error("登出删除token失败", zap.Error(err))
 		}
 	}
 	common.OkWithMessage("登出失败", c)

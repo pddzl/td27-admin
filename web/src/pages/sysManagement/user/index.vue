@@ -1,10 +1,10 @@
 <script lang="ts" setup>
 import type { FormInstance, FormRules } from "element-plus"
-import type { userDataModel } from "@/api/sysManagement/user"
+import type { userDataModel, RoleInfo } from "@/api/sysManagement/user"
 import { usePagination } from "@@/composables/usePagination_n"
 import { useValidateEmail, useValidatePhone } from "@@/utils/useValidate"
 import { reactive, ref } from "vue"
-import { roleListApi } from "@/api/sysManagement/role"
+import { roleListApi, roleTreeApi } from "@/api/sysManagement/role"
 import {
   modifyPasswdApi,
   switchActiveApi,
@@ -13,6 +13,7 @@ import {
   userListApi,
   userUpdateApi
 } from "@/api/sysManagement/user"
+import { getElTreeDeptsApi, type Dept } from "@/api/sysManagement/dept"
 
 defineOptions({
   name: "User"
@@ -121,7 +122,8 @@ function initForm() {
   formData.phone = ""
   formData.email = ""
   formData.active = false
-  formData.roleId = ""
+  formData.roleIds = []
+  formData.deptId = undefined
 }
 
 const dialogVisible = ref<boolean>(false)
@@ -137,14 +139,15 @@ const formData = reactive({
   phone: "",
   email: "",
   active: false,
-  roleId: ""
+  roleIds: [] as number[],  // 多角色
+  deptId: undefined as number | undefined
 })
 const formRules: FormRules = reactive({
   username: [{ required: true, trigger: "blur", message: "请填写用户名" }],
   password: [{ required: true, trigger: "blur", message: "请填写密码" }],
   phone: [{ validator: useValidatePhone, trigger: "blur" }],
   email: [{ validator: useValidateEmail, trigger: "blur" }],
-  roleId: [{ required: true, trigger: "change", message: "请选择角色" }]
+  roleIds: [{ required: true, trigger: "change", message: "请选择角色", type: "array" }]
 })
 const kind = ref("")
 const title = ref("")
@@ -171,7 +174,8 @@ function operateAction(formEl: FormInstance | undefined) {
           phone: formData.phone,
           email: formData.email,
           active: formData.active,
-          roleId: Number(formData.roleId)
+          roleIds: formData.roleIds,
+          deptId: formData.deptId
         })
         if (res.code === 0) {
           ElMessage({ type: "success", message: res.msg })
@@ -184,7 +188,8 @@ function operateAction(formEl: FormInstance | undefined) {
           phone: formData.phone,
           email: formData.email,
           active: formData.active,
-          roleId: Number(formData.roleId)
+          roleIds: formData.roleIds,
+          deptId: formData.deptId
         })
         if (res.code === 0) {
           ElMessage({ type: "success", message: res.msg })
@@ -227,20 +232,32 @@ function handleCurrentChange(value: number) {
   getTableData()
 }
 
+// 角色选项（支持多选）
 interface option {
-  ID: string
+  id: number
   roleName: string
 }
-const roleOptions: option[] = []
+const roleOptions = ref<option[]>([])
 async function getRoleOption() {
   const res = await roleListApi({ page: 1, pageSize: 100 })
   if (res.code === 0) {
-    res.data.list.forEach((element) => {
-      roleOptions.push({ ID: String(element.id), roleName: element.roleName })
-    })
+    roleOptions.value = res.data.list.map((item: any) => ({
+      id: item.id,
+      roleName: item.roleName
+    }))
   }
 }
 getRoleOption()
+
+// 部门选项
+const deptOptions = ref<Dept[]>([])
+async function getDeptOptions() {
+  const res = await getElTreeDeptsApi()
+  if (res.code === 200) {
+    deptOptions.value = res.data.tree
+  }
+}
+getDeptOptions()
 
 function editDialog(row: userDataModel) {
   activeRow = row
@@ -248,7 +265,9 @@ function editDialog(row: userDataModel) {
   formData.phone = row.phone
   formData.email = row.email
   formData.active = row.active
-  formData.roleId = String(row.roleId)
+  // 多角色支持
+  formData.roleIds = row.roles ? row.roles.map((r: RoleInfo) => r.id) : []
+  formData.deptId = row.deptId
   kind.value = "Edit"
   title.value = "编辑用户"
   dialogVisible.value = true
@@ -267,6 +286,12 @@ function switchAction(id: number, active: boolean) {
       }
     })
     .catch(() => {})
+}
+
+// 格式化角色显示
+function formatRoles(roles: RoleInfo[]) {
+  if (!roles || roles.length === 0) return "-"
+  return roles.map(r => r.roleName).join(", ")
 }
 </script>
 
@@ -291,11 +316,16 @@ function switchAction(id: number, active: boolean) {
           <el-table-column prop="username" label="用户名" />
           <el-table-column prop="phone" label="手机号" />
           <el-table-column prop="email" label="邮箱" />
-          <el-table-column prop="roleName" label="角色">
+          <el-table-column label="角色">
             <template #default="scope">
-              <el-tag type="success">
-                {{ scope.row.roleName }}
+              <el-tag v-for="role in scope.row.roles" :key="role.id" type="success" style="margin-right: 5px;">
+                {{ role.roleName }}
               </el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column label="部门">
+            <template #default="scope">
+              <span>{{ scope.row.deptName || '-' }}</span>
             </template>
           </el-table-column>
           <el-table-column prop="active" label="状态">
@@ -308,7 +338,7 @@ function switchAction(id: number, active: boolean) {
                 active-text="启用"
                 inactive-text="禁用"
                 @change="switchAction(scope.row.id, scope.row.active)"
-                :disabled="scope.row.username === 'admin' && scope.row.role === 'root'"
+                :disabled="scope.row.username === 'admin'"
               />
             </template>
           </el-table-column>
@@ -347,7 +377,7 @@ function switchAction(id: number, active: boolean) {
         />
       </div>
     </el-card>
-    <el-dialog v-model="dialogVisible" :title="title" :before-close="handleClose" width="30%">
+    <el-dialog v-model="dialogVisible" :title="title" :before-close="handleClose" width="35%">
       <el-form
         ref="formRef"
         :model="formData"
@@ -371,10 +401,22 @@ function switchAction(id: number, active: boolean) {
         <el-form-item label="状态" prop="active">
           <el-switch v-model="formData.active" active-text="启用" inactive-text="禁用" />
         </el-form-item>
-        <el-form-item label="角色" prop="roleId" required>
-          <el-select v-model="formData.roleId">
-            <el-option v-for="role in roleOptions" :key="role.ID" :label="role.roleName" :value="role.ID" />
+        <el-form-item label="角色" prop="roleIds" required>
+          <el-select v-model="formData.roleIds" multiple placeholder="请选择角色" style="width: 100%">
+            <el-option v-for="role in roleOptions" :key="role.id" :label="role.roleName" :value="role.id" />
           </el-select>
+        </el-form-item>
+        <el-form-item label="部门">
+          <el-tree-select
+            v-model="formData.deptId"
+            :data="deptOptions"
+            :props="{ label: 'deptName', value: 'id', children: 'children' }"
+            placeholder="请选择部门"
+            clearable
+            check-strictly
+            :render-after-expand="false"
+            style="width: 100%"
+          />
         </el-form-item>
       </el-form>
       <template #footer>

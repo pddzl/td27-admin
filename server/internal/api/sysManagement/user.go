@@ -43,7 +43,7 @@ func (ua *UserApi) GetUserInfo(c *gin.Context) {
 
 // List
 // @Tags      UserApi
-// @Summary   分页获取用户
+// @Summary   分页获取用户（支持数据权限）
 // @Security  ApiKeyAuth
 // @accept    application/json
 // @Produce   application/json
@@ -57,7 +57,14 @@ func (ua *UserApi) List(c *gin.Context) {
 		return
 	}
 
-	if list, total, err := ua.userService.List(&pageInfo); err != nil {
+	// 获取当前用户ID
+	userInfo, err := GetUserInfo(c)
+	if err != nil {
+		common.FailWithMessage("获取当前用户失败", c)
+		return
+	}
+
+	if list, total, err := ua.userService.List(&pageInfo, userInfo.ID); err != nil {
 		common.FailWithMessage("获取失败", c)
 		global.TD27_LOG.Error("get users failed", zap.Error(err))
 	} else {

@@ -19,7 +19,4 @@ type ListApiReq struct {
 	Desc     bool   `json:"desc"`     // 排序方式:升序false(默认)|降序true
 }
 
-type ApiTreeResp struct {
-	List       interface{} `json:"list"`
-	CheckedKey []string    `json:"checkedKey"`
-}
+

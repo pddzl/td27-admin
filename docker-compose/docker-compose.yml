@@ -1,12 +1,5 @@
 version: "3"
 services:
-  redis:
-    container_name: td27_redis
-    image: redis:6.2.6
-    command: redis-server /usr/local/etc/redis/redis.conf
-    volumes:
-      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
-      - ./redis/data:/data
   mysql:
     container_name: td27_mysql
     image: mysql:8.0.28
@@ -17,6 +10,14 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: td27admin
       MYSQL_DATABASE: td27
+    networks:
+      - td27-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   server:
     sysctls:
       net.ipv4.ping_group_range: 0   2147483647
@@ -26,12 +27,14 @@ services:
       dockerfile: ./Dockerfile
     image: td27_server:2.0
     depends_on:
-      - redis
-      - mysql
+      mysql:
+        condition: service_healthy
     links:
-      - redis
       - mysql
     restart: on-failure
+    networks:
+      - td27-network
+
   web:
     container_name: td27_web
     build: 
@@ -46,3 +49,9 @@ services:
     depends_on:
       - server
     restart: on-failure
+    networks:
+      - td27-network
+
+networks:
+  td27-network:
+    driver: bridge

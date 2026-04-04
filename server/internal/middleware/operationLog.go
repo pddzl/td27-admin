@@ -10,16 +10,19 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"go.uber.org/zap"
 
 	"server/internal/api/sysManagement"
-	"server/internal/global"
 	modelSysMonitor "server/internal/model/sysMonitor"
-	"server/internal/service/sysMonitor"
+	"server/internal/pkg/async"
 )
 
+// GetAsyncLoggerBufferLen 获取异步日志缓冲区长度（用于监控）
+func GetAsyncLoggerBufferLen() int {
+	return asyncLogger.BufferLen()
+}
+
 var (
-	operationLogService = sysMonitor.NewOperationLogService()
+	asyncLogger = async.GetAsyncLogger()
 )
 
 type responseProxyWriter struct {
@@ -55,7 +58,7 @@ func OperationRecord() gin.HandlerFunc {
 			var err error
 			reqParam, err = io.ReadAll(c.Request.Body)
 			if err != nil {
-				global.TD27_LOG.Error("read body from request error:", zap.Error(err))
+				// 读取请求体失败，继续处理
 			} else {
 				c.Request.Body = io.NopCloser(bytes.NewBuffer(reqParam))
 			}
@@ -87,8 +90,7 @@ func OperationRecord() gin.HandlerFunc {
 		record.RespTime = time.Since(now).Milliseconds()
 		record.RespData = writer.body.String()
 
-		if err := operationLogService.Create(&record); err != nil {
-			global.TD27_LOG.Error("create operation record error:", zap.Error(err))
-		}
+		// 使用异步日志记录，不阻塞响应
+		asyncLogger.Log(&record)
 	}
 }

@@ -1,10 +1,9 @@
 <script lang="ts" setup>
 import type { ElTree as ElTree1 } from "element-plus"
 import type { ApiTreeData } from "@/api/sysManagement/api"
-import type { CasbinInfo } from "@/api/sysManagement/casbin"
 import { ref, watch } from "vue"
 import { apiGetElTreeApi } from "@/api/sysManagement/api"
-import { casbinUpdateApi } from "@/api/sysManagement/casbin"
+import { updateRoleAPIPermissionsApi } from "@/api/sysManagement/casbin"
 
 const props = defineProps({
   id: {
@@ -18,7 +17,7 @@ const treeRef = ref<InstanceType<typeof ElTree1>>()
 
 function filterNode(value: string, data: any) {
   if (!value) return true
-  return data.apiGroup.includes(value)
+  return data.apiGroup?.includes(value) || data.path?.includes(value)
 }
 
 watch(filterText, (val) => {
@@ -28,38 +27,53 @@ watch(filterText, (val) => {
 const apiDefaultProps = {
   children: "children",
   label(data: any) {
+    if (data.path && data.method) {
+      return `${data.path} [${data.method}]`
+    }
     return data.apiGroup
   }
 }
 
-const apiIds = ref<string[]>()
-// const apiIds = ["/base/login,POST"]
+const apiIds = ref<number[]>([])  // 使用权限ID而不是key
 const apisTreeData = ref<ApiTreeData[]>([])
+const apiKeyToId = ref<Map<string, number>>(new Map())  // key -> id 映射
+
 function getTreeData() {
   apiGetElTreeApi({ id: props.id })
     .then((res) => {
       apisTreeData.value = res.data.list
-      apiIds.value = res.data.checkedKey
+      apiIds.value = res.data.checkedIds || []  // 使用checkedIds
+      
+      // 构建 key -> id 映射
+      apiKeyToId.value.clear()
+      res.data.list.forEach((group: ApiTreeData) => {
+        group.children?.forEach((api: any) => {
+          if (api.id && api.key) {
+            apiKeyToId.value.set(api.key, api.id)
+          }
+        })
+      })
     })
     .catch(() => {})
 }
 getTreeData()
 
 function editAuthority() {
-  const casbinInfos: CasbinInfo[] = []
-  for (const item of treeRef.value?.getCheckedNodes() as any[]) {
-    if (item.path && item.method) {
-      const casbinInfo: CasbinInfo = {
-        path: item.path,
-        method: item.method
-      }
-      casbinInfos.push(casbinInfo)
+  // 获取选中的节点
+  const checkedNodes = treeRef.value?.getCheckedNodes(false, true) as any[]
+  const apiPermissionIds: number[] = []
+  
+  for (const item of checkedNodes) {
+    // 只添加API节点（有id的节点），不添加分组节点
+    if (item.id && item.path && item.method) {
+      apiPermissionIds.push(item.id)
     }
   }
-  casbinUpdateApi({ roleId: props.id, casbinInfos })
+  
+  updateRoleAPIPermissionsApi({ roleId: props.id, apiPermissionIds })
     .then((res) => {
-      if (res.code === 0) {
-        ElMessage({ type: "success", message: res.msg })
+      if (res.code === 0 || res.code === 200) {
+        ElMessage({ type: "success", message: "更新成功" })
       }
     })
     .catch(() => {})
@@ -69,7 +83,7 @@ function editAuthority() {
 <template>
   <div>
     <div class="clearfix">
-      <el-input v-model="filterText" class="fitler" placeholder="筛选" />
+      <el-input v-model="filterText" class="fitler" placeholder="筛选API" />
       <el-button type="primary" class="button" @click="editAuthority">
         更新
       </el-button>
@@ -79,8 +93,8 @@ function editAuthority() {
         ref="treeRef"
         :data="apisTreeData"
         :default-checked-keys="apiIds"
+        node-key="id"
         default-expand-all
-        node-key="key"
         highlight-current
         :props="apiDefaultProps"
         show-checkbox

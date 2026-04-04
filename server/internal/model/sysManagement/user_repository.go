@@ -14,13 +14,15 @@ import (
 
 type UserRepository interface {
 	FindOne(context.Context, *FindOneUserReq) (*UserModel, error)
-	List(context.Context, *common.PageInfo) ([]*UserResp, int64, error)
+	FindOneWithRoles(context.Context, uint) (*UserModel, error)
+	List(context.Context, *common.PageInfo, *DataPermission) ([]*UserResp, int64, error)
 	Delete(context.Context, uint) error
-	Create(context.Context, *AddUserReq) error
+	Create(context.Context, *AddUserReq) (*UserModel, error)
 	Update(context.Context, *UpdateUserReq) (*UserModel, error)
 	GetUserInfo(context.Context, uint) (userResults *UserResp, err error)
 	ModifyPasswd(context.Context, *ModifyPasswdReq) error
 	SwitchActive(context.Context, *SwitchActiveReq) error
+	CountUsersByRole(context.Context, uint, *int64) error
 }
 
 type userEntity struct {
@@ -34,16 +36,12 @@ func NewUserEntity(conn *gorm.DB) UserRepository {
 func (e *userEntity) FindOne(ctx context.Context, req *FindOneUserReq) (*UserModel, error) {
 	db := e.conn.WithContext(ctx)
 	query := db.Model(&UserModel{})
-	// OR conditions
-	if req.ID != 0 && req.RoleModelID != 0 {
-		query = query.Where("id = ? OR role_id = ?", req.ID, req.RoleModelID)
-	} else if req.ID != 0 {
-		query = query.Where("id = ?", req.ID)
-	} else {
-		query = query.Where("role_id = ?", req.RoleModelID)
-	}
 
 	var userModel UserModel
+	if req.ID != 0 {
+		query = query.Where("id = ?", req.ID)
+	}
+
 	if err := query.First(&userModel).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, gorm.ErrRecordNotFound
@@ -54,38 +52,59 @@ func (e *userEntity) FindOne(ctx context.Context, req *FindOneUserReq) (*UserMod
 	return &userModel, nil
 }
 
+func (e *userEntity) FindOneWithRoles(ctx context.Context, userId uint) (*UserModel, error) {
+	var user UserModel
+	err := e.conn.WithContext(ctx).
+		Preload("Roles").
+		Where("id = ?", userId).
+		First(&user).Error
+
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, gorm.ErrRecordNotFound
+		}
+		return nil, fmt.Errorf("find user with roles failed (id=%d): %w", userId, err)
+	}
+
+	return &user, nil
+}
+
 func (e *userEntity) GetUserInfo(ctx context.Context, userId uint) (listUserResp *UserResp, err error) {
 	var resp UserResp
 
-	tx := e.conn.
-		WithContext(ctx).
-		Model(&UserModel{}).
-		Select(`
-			sys_management_user.id,
-			sys_management_user.created_at,
-			sys_management_user.username,
-			sys_management_user.phone,
-			sys_management_user.email,
-			sys_management_user.active,
-			sys_management_user.role_id,
-			sys_management_role.role_name
-		`).
-		Joins("JOIN sys_management_role ON sys_management_user.role_id = sys_management_role.id").
-		Where("sys_management_user.id = ?", userId).
-		Scan(&resp)
+	// 查询用户及其角色
+	var user UserModel
+	err = e.conn.WithContext(ctx).
+		Preload("Roles").
+		Where("id = ?", userId).
+		First(&user).Error
 
-	if err = tx.Error; err != nil {
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, gorm.ErrRecordNotFound
+		}
 		return nil, fmt.Errorf("get user info failed (id=%d): %w", userId, err)
 	}
 
-	if tx.RowsAffected == 0 {
-		return nil, gorm.ErrRecordNotFound
+	// 填充响应
+	resp.UserModel = user
+	if len(user.Roles) > 0 {
+		resp.RoleName = user.Roles[0].RoleName
+		resp.RoleID = user.Roles[0].ID
+	}
+
+	// 获取部门名称
+	if user.DeptID > 0 {
+		var dept DeptModel
+		if err := e.conn.WithContext(ctx).First(&dept, user.DeptID).Error; err == nil {
+			resp.DeptName = dept.DeptName
+		}
 	}
 
 	return &resp, nil
 }
 
-func (e *userEntity) List(ctx context.Context, pageInfo *common.PageInfo) ([]*UserResp, int64, error) {
+func (e *userEntity) List(ctx context.Context, pageInfo *common.PageInfo, dataPerm *DataPermission) ([]*UserResp, int64, error) {
 	var users []*UserResp
 	var total int64
 
@@ -101,37 +120,60 @@ func (e *userEntity) List(ctx context.Context, pageInfo *common.PageInfo) ([]*Us
 
 	offset := (page - 1) * pageSize
 
-	// Base query (NO joins for count)
+	// Base query
 	db := e.conn.WithContext(ctx).Model(&UserModel{})
 
-	// Count total
+	// Apply data permission filter
+	if dataPerm != nil {
+		db = ApplyDataScope(db, dataPerm, "", "dept_id", "id")
+	}
+
+	// Count total (with data permission filter)
 	if err := db.Count(&total).Error; err != nil {
 		return nil, 0, fmt.Errorf("count users failed: %w", err)
 	}
 
-	// Query list with join
+	// Query list with roles and dept
+	var userModels []UserModel
 	err := db.
-		Select(`
-			sys_management_user.id,
-			sys_management_user.created_at,
-			sys_management_user.updated_at,
-			sys_management_user.username,
-			sys_management_user.phone,
-			sys_management_user.email,
-			sys_management_user.active,
-			sys_management_user.role_id,
-			sys_management_role.role_name AS role_name
-		`).
-		Joins(`
-			LEFT JOIN sys_management_role
-			ON sys_management_user.role_id = sys_management_role.id
-		`).
+		Preload("Roles").
 		Limit(pageSize).
 		Offset(offset).
-		Scan(&users).Error
+		Find(&userModels).Error
 
 	if err != nil {
 		return nil, total, fmt.Errorf("list users failed: %w", err)
+	}
+
+	// Get dept names for users with dept_id
+	var deptIDs []uint
+	for _, user := range userModels {
+		if user.DeptID > 0 {
+			deptIDs = append(deptIDs, user.DeptID)
+		}
+	}
+
+	deptMap := make(map[uint]string)
+	if len(deptIDs) > 0 {
+		var depts []DeptModel
+		if err := e.conn.WithContext(ctx).Where("id IN ?", deptIDs).Find(&depts).Error; err == nil {
+			for _, dept := range depts {
+				deptMap[dept.ID] = dept.DeptName
+			}
+		}
+	}
+
+	// Convert to response
+	for _, user := range userModels {
+		userResp := UserResp{
+			UserModel: user,
+			DeptName:  deptMap[user.DeptID],
+		}
+		if len(user.Roles) > 0 {
+			userResp.RoleName = user.Roles[0].RoleName
+			userResp.RoleID = user.Roles[0].ID
+		}
+		users = append(users, &userResp)
 	}
 
 	return users, total, nil
@@ -151,20 +193,46 @@ func (e *userEntity) Delete(ctx context.Context, id uint) (err error) {
 	return nil
 }
 
-func (e *userEntity) Create(ctx context.Context, req *AddUserReq) error {
+func (e *userEntity) Create(ctx context.Context, req *AddUserReq) (*UserModel, error) {
 	var userModel UserModel
 	userModel.Username = req.Username
 	userModel.Password = pkg.MD5V([]byte(req.Password))
 	userModel.Phone = req.Phone
 	userModel.Email = req.Email
 	userModel.Active = req.Active
-	userModel.RoleID = req.RoleModelID
+	userModel.DeptID = req.DeptID
 
-	return e.conn.WithContext(ctx).Create(&userModel).Error
+	// 开始事务
+	tx := e.conn.WithContext(ctx).Begin()
+
+	// 创建用户
+	if err := tx.Create(&userModel).Error; err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+
+	// 关联角色
+	if len(req.RoleIDs) > 0 {
+		var roles []RoleModel
+		if err := tx.Where("id IN ?", req.RoleIDs).Find(&roles).Error; err != nil {
+			tx.Rollback()
+			return nil, err
+		}
+		if err := tx.Model(&userModel).Association("Roles").Append(roles); err != nil {
+			tx.Rollback()
+			return nil, err
+		}
+	}
+
+	tx.Commit()
+	return &userModel, nil
 }
 
 func (e *userEntity) Update(ctx context.Context, req *UpdateUserReq) (*UserModel, error) {
 	db := e.conn.WithContext(ctx)
+
+	// 开始事务
+	tx := db.Begin()
 
 	// Update user
 	updates := map[string]interface{}{
@@ -172,23 +240,46 @@ func (e *userEntity) Update(ctx context.Context, req *UpdateUserReq) (*UserModel
 		"phone":      req.Phone,
 		"email":      req.Email,
 		"active":     req.Active,
-		"role_id":    req.RoleModelID,
+		"dept_id":    req.DeptID,
 		"updated_at": time.Now(),
 	}
 
-	tx := db.Model(&UserModel{}).Where("id = ?", req.ID).Updates(updates)
-
-	if err := tx.Error; err != nil {
+	if err := tx.Model(&UserModel{}).Where("id = ?", req.ID).Updates(updates).Error; err != nil {
+		tx.Rollback()
 		return nil, fmt.Errorf("update user failed: %w", err)
 	}
 
-	if tx.RowsAffected == 0 {
-		return nil, errors.New("记录不存在")
+	// 更新角色关联
+	if len(req.RoleIDs) > 0 {
+		var user UserModel
+		if err := tx.Where("id = ?", req.ID).First(&user).Error; err != nil {
+			tx.Rollback()
+			return nil, err
+		}
+
+		// 清除旧角色
+		if err := tx.Model(&user).Association("Roles").Clear(); err != nil {
+			tx.Rollback()
+			return nil, err
+		}
+
+		// 添加新角色
+		var roles []RoleModel
+		if err := tx.Where("id IN ?", req.RoleIDs).Find(&roles).Error; err != nil {
+			tx.Rollback()
+			return nil, err
+		}
+		if err := tx.Model(&user).Association("Roles").Append(roles); err != nil {
+			tx.Rollback()
+			return nil, err
+		}
 	}
 
-	// Fetch updated record
+	tx.Commit()
+
+	// Fetch updated record with roles
 	var user UserModel
-	if err := db.Where("id = ?", req.ID).First(&user).Error; err != nil {
+	if err := db.Preload("Roles").Where("id = ?", req.ID).First(&user).Error; err != nil {
 		return nil, err
 	}
 
@@ -199,15 +290,16 @@ func (e *userEntity) ModifyPasswd(ctx context.Context, req *ModifyPasswdReq) (er
 	db := e.conn.WithContext(ctx)
 
 	// Verify old password
-	tx := db.Model(&UserModel{}).
-		Where("id = ? AND password = ?", req.ID, pkg.MD5V([]byte(req.OldPassword)))
-
-	if tx.RowsAffected == 0 {
-		return errors.New("旧密码错误")
+	var user UserModel
+	if err := db.Where("id = ? AND password = ?", req.ID, pkg.MD5V([]byte(req.OldPassword))).First(&user).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return errors.New("旧密码错误")
+		}
+		return err
 	}
 
-	// 2. Update password
-	if err = tx.Update("password", pkg.MD5V([]byte(req.NewPassword))).Error; err != nil {
+	// Update password
+	if err = db.Model(&UserModel{}).Where("id = ?", req.ID).Update("password", pkg.MD5V([]byte(req.NewPassword))).Error; err != nil {
 		return fmt.Errorf("update password failed: %w", err)
 	}
 
@@ -227,4 +319,12 @@ func (e *userEntity) SwitchActive(ctx context.Context, req *SwitchActiveReq) (er
 	}
 
 	return nil
+}
+
+// CountUsersByRole 统计具有指定角色的用户数量
+func (e *userEntity) CountUsersByRole(ctx context.Context, roleID uint, count *int64) error {
+	return e.conn.WithContext(ctx).
+		Table("sys_management_user_roles").
+		Where("role_id = ?", roleID).
+		Count(count).Error
 }

@@ -47,7 +47,7 @@ getTreeData(props.id)
 function editRoleMenu() {
   updateRoleMenuApi({
     roleId: props.id,
-    ids: [...(treeRef.value?.getCheckedKeys() as number[]), ...(treeRef.value?.getHalfCheckedKeys() as number[])]
+    menuIds: [...(treeRef.value?.getCheckedKeys() as number[]), ...(treeRef.value?.getHalfCheckedKeys() as number[])]
   })
     .then((res) => {
       if (res.code === 0) {

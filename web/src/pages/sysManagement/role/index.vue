@@ -3,7 +3,14 @@ import type { FormInstance, FormRules } from "element-plus"
 import type { roleDataModel } from "@/api/sysManagement/role"
 import { usePagination } from "@@/composables/usePagination_n"
 import { reactive, ref } from "vue"
-import { roleCreateApi, roleDeleteApi, roleListApi, roleUpdateApi } from "@/api/sysManagement/role"
+import { 
+  roleCreateApi, 
+  roleDeleteApi, 
+  roleListApi, 
+  roleTreeApi,
+  roleUpdateApi,
+  setRoleInheritanceApi 
+} from "@/api/sysManagement/role"
 import Apis from "./components/apis.vue"
 import Menus from "./components/menus.vue"
 
@@ -40,6 +47,7 @@ getTableData()
 
 function initForm() {
   formData.roleName = ""
+  formData.parentId = undefined
 }
 
 const dialogVisible = ref<boolean>(false)
@@ -51,7 +59,8 @@ function handleClose(done: () => void) {
 const formRef = ref<FormInstance>()
 const formData = reactive({
   id: 0,
-  roleName: ""
+  roleName: "",
+  parentId: undefined as number | undefined  // 父角色ID
 })
 const formRules: FormRules = reactive({
   roleName: [{ required: true, trigger: "blur", message: "请填写角色名称" }]
@@ -70,6 +79,7 @@ function editDialog(row: roleDataModel) {
   title.value = "编辑角色"
   activeRow = row
   formData.roleName = row.roleName
+  formData.parentId = row.parentId
   dialogVisible.value = true
 }
 
@@ -83,22 +93,25 @@ function operateAction(formEl: FormInstance | undefined) {
   formEl.validate(async (valid) => {
     if (valid) {
       if (kind.value === "Add") {
-        const res = await roleCreateApi({ roleName: formData.roleName })
+        const res = await roleCreateApi({ 
+          roleName: formData.roleName,
+          parentId: formData.parentId 
+        })
         if (res.code === 0) {
           ElMessage({ type: "success", message: res.msg })
-          // const tempData = {
-          //   id: res.data.id,
-          //   roleName: res.data.roleName,
-          //   menus: []
-          // }
           tableData.value.push(res.data)
         }
       } else if (kind.value === "Edit") {
-        const res = await roleUpdateApi({ id: activeRow.id, roleName: formData.roleName })
+        const res = await roleUpdateApi({ 
+          id: activeRow.id, 
+          roleName: formData.roleName,
+          parentId: formData.parentId 
+        })
         if (res.code === 0) {
           ElMessage({ type: "success", message: res.msg })
           const index = tableData.value.indexOf(activeRow)
           tableData.value[index].roleName = formData.roleName
+          tableData.value[index].parentId = formData.parentId
         }
       }
       closeDialog()
@@ -131,6 +144,42 @@ function openDrawer(row: roleDataModel) {
   activeId = row.id
   drawer.value = true
 }
+
+// 角色继承设置
+const inheritDialogVisible = ref(false)
+const inheritForm = reactive({
+  childRoleId: 0,
+  parentRoleId: undefined as number | undefined
+})
+
+function openInheritDialog(row: roleDataModel) {
+  inheritForm.childRoleId = row.id
+  inheritForm.parentRoleId = row.parentId
+  inheritDialogVisible.value = true
+}
+
+async function saveInheritance() {
+  if (!inheritForm.parentRoleId) {
+    ElMessage.warning("请选择父角色")
+    return
+  }
+  const res = await setRoleInheritanceApi({
+    childRoleId: inheritForm.childRoleId,
+    parentRoleId: inheritForm.parentRoleId
+  })
+  if (res.code === 0) {
+    ElMessage.success("设置成功")
+    inheritDialogVisible.value = false
+    getTableData()
+  }
+}
+
+// 获取父角色名称
+function getParentName(parentId?: number) {
+  if (!parentId) return "-"
+  const parent = tableData.value.find(r => r.id === parentId)
+  return parent ? parent.roleName : "-"
+}
 </script>
 
 <template>
@@ -149,13 +198,24 @@ function openDrawer(row: roleDataModel) {
         </div>
       </div>
       <div class="table-wrapper">
-        <el-table :data="tableData">
-          <el-table-column prop="id" label="ID" />
-          <el-table-column prop="roleName" label="名称" />
-          <el-table-column fixed="right" label="操作" align="center">
+        <el-table :data="tableData" row-key="id" default-expand-all>
+          <el-table-column prop="id" label="ID" width="80" />
+          <el-table-column prop="roleName" label="角色名称" />
+          <el-table-column label="父角色" width="150">
+            <template #default="scope">
+              <el-tag v-if="scope.row.parentId" type="info">
+                {{ getParentName(scope.row.parentId) }}
+              </el-tag>
+              <span v-else>-</span>
+            </template>
+          </el-table-column>
+          <el-table-column fixed="right" label="操作" align="center" width="350">
             <template #default="scope">
               <el-button type="primary" text icon="Setting" size="small" @click="openDrawer(scope.row)">
                 设置权限
+              </el-button>
+              <el-button type="primary" text icon="Link" size="small" @click="openInheritDialog(scope.row)">
+                继承设置
               </el-button>
               <el-button type="primary" text icon="Edit" size="small" @click="editDialog(scope.row)">
                 编辑
@@ -187,7 +247,7 @@ function openDrawer(row: roleDataModel) {
         />
       </div>
     </el-card>
-    <el-dialog v-model="dialogVisible" :title="title" :before-close="handleClose" width="30%">
+    <el-dialog v-model="dialogVisible" :title="title" :before-close="handleClose" width="35%">
       <el-form
         ref="formRef"
         :model="formData"
@@ -198,6 +258,17 @@ function openDrawer(row: roleDataModel) {
       >
         <el-form-item label="角色名称" prop="roleName">
           <el-input v-model="formData.roleName" autocomplete="off" />
+        </el-form-item>
+        <el-form-item label="父角色">
+          <el-select v-model="formData.parentId" clearable placeholder="请选择父角色（可选）" style="width: 100%">
+            <el-option 
+              v-for="role in tableData.filter(r => r.id !== formData.id)" 
+              :key="role.id" 
+              :label="role.roleName" 
+              :value="role.id" 
+            />
+          </el-select>
+          <div class="el-form-item__tip">继承父角色的所有权限</div>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -221,5 +292,25 @@ function openDrawer(row: roleDataModel) {
         </el-tab-pane>
       </el-tabs>
     </el-drawer>
+    <el-dialog v-model="inheritDialogVisible" title="设置角色继承" width="30%">
+      <el-form label-width="100px">
+        <el-form-item label="父角色">
+          <el-select v-model="inheritForm.parentRoleId" clearable placeholder="请选择父角色" style="width: 100%">
+            <el-option 
+              v-for="role in tableData.filter(r => r.id !== inheritForm.childRoleId)" 
+              :key="role.id" 
+              :label="role.roleName" 
+              :value="role.id" 
+            />
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button @click="inheritDialogVisible = false">取消</el-button>
+          <el-button type="primary" @click="saveInheritance">确认</el-button>
+        </div>
+      </template>
+    </el-dialog>
   </div>
 </template>
