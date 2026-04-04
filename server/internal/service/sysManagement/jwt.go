@@ -188,30 +188,38 @@ func (jwtService *JwtService) ValidateToken(username string, token string) bool 
 		zap.String("tokenKey", tokenKey),
 		zap.Bool("multiLogin", jwtService.isMultiLogin()))
 
+	var err error
+	var cachedToken string
+
 	if jwtService.isMultiLogin() {
 		// 多设备模式：检查特定token
-		cachedToken, err := jwtService.cache.Get(ctx, tokenKey)
+		cachedToken, err = jwtService.cache.Get(ctx, tokenKey)
 		if err != nil {
-			global.TD27_LOG.Debug("Token验证失败",
+			global.TD27_LOG.Error("Get multi-login cacheToken failed",
 				zap.String("username", username),
-				zap.String("tokenKey", tokenKey),
 				zap.Error(err))
 			return false
 		}
-		valid := cachedToken == token
-		global.TD27_LOG.Debug("Token验证结果",
-			zap.String("username", username),
-			zap.Bool("valid", valid))
-		return valid
+	} else {
+		// 单设备模式：检查token是否匹配
+		tokenKey = jwtService.generateTokenKey(username, "")
+		cachedToken, err = jwtService.cache.Get(ctx, tokenKey)
+		if err != nil {
+			global.TD27_LOG.Error("Get single-login cacheToken failed",
+				zap.String("username", username),
+				zap.Error(err))
+			return false
+		}
 	}
 
-	// 单设备模式：检查token是否匹配
-	tokenKey = jwtService.generateTokenKey(username, "")
-	cachedToken, err := jwtService.cache.Get(ctx, tokenKey)
-	if err != nil {
-		return false
-	}
-	return cachedToken == token
+	valid := cachedToken == token
+
+	global.TD27_LOG.Debug("Token验证结果",
+		zap.String("username", username),
+		zap.String("tokenKey", tokenKey),
+		zap.Bool("valid", valid))
+
+	return valid
 }
 
 // RemoveToken 移除用户的某个token（用于登出）
@@ -294,7 +302,7 @@ func (jwtService *JwtService) GetCachedUser(userID uint) (*sysManagement.UserMod
 	}
 
 	var user sysManagement.UserModel
-	if err := json.Unmarshal([]byte(data), &user); err != nil {
+	if err = json.Unmarshal([]byte(data), &user); err != nil {
 		return nil, err
 	}
 	return &user, nil

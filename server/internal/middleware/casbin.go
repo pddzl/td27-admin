@@ -39,10 +39,6 @@ func CasbinHandler() gin.HandlerFunc {
 		
 		// 获取用户的所有角色ID
 		roleIDs := claims.GetAllRoleIDs()
-		if len(roleIDs) == 0 {
-			// 兼容旧版本：如果claims中没有roles，使用roleId
-			roleIDs = []uint{claims.RoleId}
-		}
 		
 		// 先检查权限缓存
 		cacheResult := permCache.CheckPermissionWithCache(claims.ID, obj, act)

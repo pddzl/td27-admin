@@ -3,6 +3,7 @@ package cache
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"time"
 
@@ -50,19 +51,19 @@ func (c *PGCache) Get(ctx context.Context, key string) (string, error) {
 	if db == nil {
 		return "", fmt.Errorf("database not initialized")
 	}
-	
+
 	var cache sysTool.CacheModel
 	err := db.WithContext(ctx).
 		Where("\"key\" = ? AND expires_at > ?", key, time.Now()).
 		First(&cache).Error
-	
+
 	if err != nil {
-		if err == gorm.ErrRecordNotFound {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return "", fmt.Errorf("cache miss")
 		}
 		return "", err
 	}
-	
+
 	return cache.Value, nil
 }
 
@@ -72,16 +73,16 @@ func (c *PGCache) Set(ctx context.Context, key string, value string, expiration 
 	if db == nil {
 		return fmt.Errorf("database not initialized")
 	}
-	
+
 	expiresAt := time.Now().Add(expiration)
-	
+
 	// 先尝试更新
 	result := db.WithContext(ctx).Exec(`
 		UPDATE sys_tool_cache 
 		SET "value" = ?, expires_at = ?, updated_at = ?
 		WHERE "key" = ?
 	`, value, expiresAt, time.Now(), key)
-	
+
 	// 如果没有记录被更新，则插入
 	if result.RowsAffected == 0 {
 		return db.WithContext(ctx).Exec(`
@@ -89,7 +90,7 @@ func (c *PGCache) Set(ctx context.Context, key string, value string, expiration 
 			VALUES (?, ?, ?, ?, ?)
 		`, key, value, expiresAt, time.Now(), time.Now()).Error
 	}
-	
+
 	return result.Error
 }
 
@@ -98,12 +99,12 @@ func (c *PGCache) Del(ctx context.Context, keys ...string) error {
 	if len(keys) == 0 {
 		return nil
 	}
-	
+
 	db := c.getDB()
 	if db == nil {
 		return fmt.Errorf("database not initialized")
 	}
-	
+
 	return db.WithContext(ctx).
 		Where("\"key\" IN ?", keys).
 		Delete(&sysTool.CacheModel{}).Error
@@ -133,19 +134,19 @@ func (c *PGCache) CleanupExpired(ctx context.Context) error {
 	if db == nil {
 		return fmt.Errorf("database not initialized")
 	}
-	
+
 	result := db.WithContext(ctx).
 		Where("expires_at <= ?", time.Now()).
 		Delete(&sysTool.CacheModel{})
-	
+
 	if result.Error != nil {
 		return result.Error
 	}
-	
+
 	if result.RowsAffected > 0 {
 		global.TD27_LOG.Info("清理过期缓存", zap.Int64("count", result.RowsAffected))
 	}
-	
+
 	return nil
 }
 
@@ -155,7 +156,7 @@ func (c *PGCache) Exists(ctx context.Context, key string) bool {
 	if db == nil {
 		return false
 	}
-	
+
 	var count int64
 	db.WithContext(ctx).
 		Model(&sysTool.CacheModel{}).
@@ -170,20 +171,20 @@ func (c *PGCache) TTL(ctx context.Context, key string) (time.Duration, error) {
 	if db == nil {
 		return 0, fmt.Errorf("database not initialized")
 	}
-	
+
 	var cache sysTool.CacheModel
 	err := db.WithContext(ctx).
 		Where("\"key\" = ? AND expires_at > ?", key, time.Now()).
 		Select("expires_at").
 		First(&cache).Error
-	
+
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
 			return -1, fmt.Errorf("key not found or expired")
 		}
 		return 0, err
 	}
-	
+
 	return time.Until(cache.ExpiresAt), nil
 }
 
@@ -193,21 +194,21 @@ func (c *PGCache) ListKeysByPrefix(ctx context.Context, prefix string) ([]string
 	if db == nil {
 		return nil, fmt.Errorf("database not initialized")
 	}
-	
+
 	var caches []sysTool.CacheModel
 	err := db.WithContext(ctx).
 		Where("\"key\" LIKE ? AND expires_at > ?", prefix+"%", time.Now()).
 		Select("\"key\"").
 		Find(&caches).Error
-	
+
 	if err != nil {
 		return nil, err
 	}
-	
+
 	keys := make([]string, len(caches))
 	for i, cache := range caches {
 		keys[i] = cache.Key
 	}
-	
+
 	return keys, nil
 }

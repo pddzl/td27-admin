@@ -91,10 +91,19 @@ func (a *LogRegApi) Login(c *gin.Context) {
 func (a *LogRegApi) tokenNext(c *gin.Context, user *modelSysManagement.UserModel) {
 	j := &jwt2.JWT{SigningKey: []byte(global.TD27_CONFIG.JWT.SigningKey)} // 唯一签名
 
+	// Convert roles to RoleInfo
+	roles := make([]modelSysManagement.RoleInfo, len(user.Roles))
+	for i, role := range user.Roles {
+		roles[i] = modelSysManagement.RoleInfo{
+			ID:       role.ID,
+			RoleName: role.RoleName,
+		}
+	}
+
 	claims := modelSysManagement.CustomClaims{
 		ID:         user.ID,
 		Username:   user.Username,
-		RoleId:     user.GetPrimaryRoleID(),
+		Roles:      roles,
 		BufferTime: global.TD27_CONFIG.JWT.BufferTime,
 		RegisteredClaims: jwt.RegisteredClaims{
 			NotBefore: jwt.NewNumericDate(time.Now().Add(-time.Duration(1000))),

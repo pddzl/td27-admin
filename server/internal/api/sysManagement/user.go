@@ -27,13 +27,14 @@ func NewUserApi() *UserApi {
 // @Produce   application/json
 // @Success   200   {object}  common.Response{msg=string}
 // @Router    /user/getUserInfo [post]
-func (ua *UserApi) GetUserInfo(c *gin.Context) {
+func (a *UserApi) GetUserInfo(c *gin.Context) {
 	userInfo, err := GetUserInfo(c)
 	if err != nil {
 		common.FailWithMessage("获取失败", c)
+		global.TD27_LOG.Error(err.Error())
 	}
 
-	if user, err := ua.userService.GetUserInfo(userInfo.ID); err != nil {
+	if user, err := a.userService.GetUserInfo(userInfo.ID); err != nil {
 		common.FailWithMessage("获取失败", c)
 		global.TD27_LOG.Error("获取失败", zap.Error(err))
 	} else {
@@ -50,7 +51,7 @@ func (ua *UserApi) GetUserInfo(c *gin.Context) {
 // @Param     data  body      common.PageInfo true "请求参数"
 // @Success   200   {object}  common.Response{data=[]modelSysManagement.UserResp,msg=string}
 // @Router    /user/list [post]
-func (ua *UserApi) List(c *gin.Context) {
+func (a *UserApi) List(c *gin.Context) {
 	var pageInfo common.PageInfo
 	if err := c.ShouldBindJSON(&pageInfo); err != nil {
 		common.FailReq(err.Error(), c)
@@ -64,7 +65,7 @@ func (ua *UserApi) List(c *gin.Context) {
 		return
 	}
 
-	if list, total, err := ua.userService.List(&pageInfo, userInfo.ID); err != nil {
+	if list, total, err := a.userService.List(&pageInfo, userInfo.ID); err != nil {
 		common.FailWithMessage("获取失败", c)
 		global.TD27_LOG.Error("get users failed", zap.Error(err))
 	} else {
@@ -86,14 +87,14 @@ func (ua *UserApi) List(c *gin.Context) {
 // @Param     data  body      common.CId true "请求参数"
 // @Success   200   {object}  common.Response{msg=string}
 // @Router    /user/delete [post]
-func (ua *UserApi) Delete(c *gin.Context) {
+func (a *UserApi) Delete(c *gin.Context) {
 	var cId common.CId
 	if err := c.ShouldBindJSON(&cId); err != nil {
 		common.FailReq(err.Error(), c)
 		return
 	}
 
-	if err := ua.userService.Delete(cId.ID); err != nil {
+	if err := a.userService.Delete(cId.ID); err != nil {
 		common.FailWithMessage(err.Error(), c)
 		global.TD27_LOG.Error("删除失败", zap.Error(err))
 	} else {
@@ -110,7 +111,7 @@ func (ua *UserApi) Delete(c *gin.Context) {
 // @Param     data  body      modelSysManagement.AddUserReq true "请求参数"
 // @Success   200   {object}  common.Response{msg=string}
 // @Router    /user/create [post]
-func (ua *UserApi) Create(c *gin.Context) {
+func (a *UserApi) Create(c *gin.Context) {
 	// 注册自定义校验函数
 	validate := validator.New()
 	err := validate.RegisterValidation("phone", modelSysManagement.PhoneValidation)
@@ -134,7 +135,7 @@ func (ua *UserApi) Create(c *gin.Context) {
 		return
 	}
 
-	if err = ua.userService.Create(&req); err != nil {
+	if err = a.userService.Create(&req); err != nil {
 		common.FailWithMessage("添加失败", c)
 		global.TD27_LOG.Error("添加失败", zap.Error(err))
 	} else {
@@ -151,7 +152,7 @@ func (ua *UserApi) Create(c *gin.Context) {
 // @Param     data  body      modelSysManagement.UpdateUserReq true "请求参数"
 // @Success   200   {object}  common.Response{msg=string}
 // @Router    /user/update [post]
-func (ua *UserApi) Update(c *gin.Context) {
+func (a *UserApi) Update(c *gin.Context) {
 	// 注册自定义校验函数
 	validate := validator.New()
 	err := validate.RegisterValidation("phone", modelSysManagement.PhoneValidation)
@@ -175,7 +176,7 @@ func (ua *UserApi) Update(c *gin.Context) {
 		return
 	}
 
-	if instance, err := ua.userService.Update(&req); err != nil {
+	if instance, err := a.userService.Update(&req); err != nil {
 		common.FailWithMessage(err.Error(), c)
 		global.TD27_LOG.Error("编辑失败", zap.Error(err))
 	} else {
@@ -192,14 +193,14 @@ func (ua *UserApi) Update(c *gin.Context) {
 // @Param     data  body      modelSysManagement.ModifyPasswdReq true "请求参数"
 // @Success   200   {object}  common.Response{msg=string}
 // @Router    /user/modifyPasswd [post]
-func (ua *UserApi) ModifyPasswd(c *gin.Context) {
+func (a *UserApi) ModifyPasswd(c *gin.Context) {
 	var req modelSysManagement.ModifyPasswdReq
 	if err := c.ShouldBindJSON(&req); err != nil {
 		common.FailReq(err.Error(), c)
 		return
 	}
 
-	if err := ua.userService.ModifyPasswd(&req); err != nil {
+	if err := a.userService.ModifyPasswd(&req); err != nil {
 		common.FailWithMessage(err.Error(), c)
 		global.TD27_LOG.Error("修改失败", zap.Error(err))
 	} else {
@@ -216,14 +217,14 @@ func (ua *UserApi) ModifyPasswd(c *gin.Context) {
 // @Param     data  body      modelSysManagement.SwitchActiveReq true "请求参数"
 // @Success   200   {object}  common.Response{msg=string}
 // @Router    /user/switchActive [post]
-func (ua *UserApi) SwitchActive(c *gin.Context) {
+func (a *UserApi) SwitchActive(c *gin.Context) {
 	var req modelSysManagement.SwitchActiveReq
 	if err := c.ShouldBindJSON(&req); err != nil {
 		common.FailReq(err.Error(), c)
 		return
 	}
 
-	if err := ua.userService.SwitchActive(&req); err != nil {
+	if err := a.userService.SwitchActive(&req); err != nil {
 		common.FailWithMessage(err.Error(), c)
 		global.TD27_LOG.Error("切换失败", zap.Error(err))
 	} else {

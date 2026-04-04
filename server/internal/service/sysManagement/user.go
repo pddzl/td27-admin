@@ -108,7 +108,14 @@ func (s *UserService) Update(req *sysManagement.UpdateUserReq) (*sysManagement.U
 
 // ModifyPasswd 修改用户密码
 func (s *UserService) ModifyPasswd(req *sysManagement.ModifyPasswdReq) error {
-	return s.userRepository.ModifyPasswd(s.ctx, req)
+	err := s.userRepository.ModifyPasswd(s.ctx, req)
+	if err != nil {
+		return err
+	}
+	// 修改密码后清除缓存，强制重新登录
+	jwtService := NewJwtService()
+	jwtService.DeleteUserCache(req.ID)
+	return nil
 }
 
 // SwitchActive 切换启用状态

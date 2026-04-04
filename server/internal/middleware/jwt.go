@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"errors"
+	"fmt"
 	"strconv"
 	"time"
 
@@ -55,8 +56,9 @@ func JWTAuth() gin.HandlerFunc {
 			return
 		}
 
-		// 从Redis缓存获取用户信息，避免每次请求都查询数据库
+		// 从缓存获取用户信息，避免每次请求都查询数据库
 		userModel, err := jwtService.GetCachedUser(claims.ID)
+		fmt.Println("userModel", userModel)
 		if err != nil {
 			// 缓存未命中，从数据库查询
 			userModel = &modelSysManagement.UserModel{}
@@ -87,6 +89,10 @@ func JWTAuth() gin.HandlerFunc {
 			newClaims, _ := j.ParseToken(newToken)
 			c.Header("new-token", newToken)
 			c.Header("new-expires-at", strconv.FormatInt(newClaims.ExpiresAt.Unix(), 10))
+			
+			// 更新缓存：删除旧token，存储新token
+			jwtService.RemoveToken(claims.Username, token)
+			jwtService.AddToken(claims.Username, newToken, time.Duration(global.TD27_CONFIG.JWT.ExpiresTime)*time.Second)
 		}
 		c.Set("claims", claims)
 		c.Next()
