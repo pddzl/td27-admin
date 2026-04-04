@@ -31,8 +31,8 @@ function toggleSidebar() {
 }
 
 /** 登出 */
-function logout() {
-  userStore.logout()
+async function logout() {
+  await userStore.logout()
   router.push("/login")
 }
 

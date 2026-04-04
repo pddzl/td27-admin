@@ -4,8 +4,8 @@ jwt:
   expires-time: 86400
   buffer-time: 43200
   issuer: pddzl
-  multi-login: true       # 是否允许多设备同时登录：true-允许，false-只允许单设备
-  multi-login-limit: 0    # 多设备登录数量限制：0-无限制，>0-限制数量
+  multi-login: false       # 是否允许多设备同时登录：true-允许，false-只允许单设备
+  multi-login-limit: 5    # 多设备登录数量限制：0-无限制，>0-限制数量
 
 # casbin RBAC configuration
 casbin:
@@ -78,15 +78,3 @@ cors:
       allow-methods: GET, POST
       expose-headers: Content-Length, Access-Control-Allow-Origin, Access-Control-Allow-Headers, Content-Type
       allow-credentials: true # 布尔值
-
-# crontab; clear table data
-crontab:
-  open: false
-  spec: "@daily"
-  objects:
-    - tableName: base_jwtBlackList
-      compareField: created_at
-      interval: 168h
-    - tableName: sys_monitor_operation_log
-      compareField: created_at
-      interval: 2160h

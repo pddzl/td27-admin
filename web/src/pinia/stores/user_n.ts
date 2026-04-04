@@ -1,5 +1,5 @@
 import type { LoginRequestData } from "@/api/sysManagement/login"
-import { loginApi } from "@/api/sysManagement/login"
+import { loginApi, logoutApi } from "@/api/sysManagement/login"
 import { getUserInfoApi, type RoleInfo } from "@/api/sysManagement/user"
 import { pinia } from "@/pinia"
 import { usePermissionStoreOutside } from "@/pinia/stores/permission_n"
@@ -74,7 +74,13 @@ export const useUserStore = defineStore("user", () => {
   }
 
   /** 登出 */
-  const logout = () => {
+  const logout = async () => {
+    // 调用后端登出接口，删除缓存中的token
+    try {
+      await logoutApi()
+    } catch (error) {
+      console.error("Logout API failed:", error)
+    }
     resetUserInfo()
     token.value = ""
     permissionStore.resetDynamicRouter()

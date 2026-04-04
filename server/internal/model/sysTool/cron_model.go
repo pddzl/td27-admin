@@ -15,11 +15,13 @@ import (
 
 type Method struct {
 	ClearTable string
+	ClearCache string
 	Shell      string
 }
 
 var CronMethod = Method{
 	ClearTable: "clearTable",
+	ClearCache: "clearCache",
 	Shell:      "shell",
 }
 
@@ -75,6 +77,14 @@ func (cm *CronModel) Run() {
 			if err != nil {
 				global.TD27_LOG.Error(fmt.Sprintf("delete err: %v", err))
 			}
+		}
+	case "clearCache":
+		// 清理过期缓存
+		result := global.TD27_DB.Where("expires_at <= ?", time.Now()).Delete(&CacheModel{})
+		if result.Error != nil {
+			global.TD27_LOG.Error("[CRON] clear cache error", zap.Error(result.Error))
+		} else if result.RowsAffected > 0 {
+			global.TD27_LOG.Info("[CRON] clear cache success", zap.Int64("rows", result.RowsAffected))
 		}
 	default:
 		global.TD27_LOG.Error("unsupport method")

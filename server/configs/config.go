@@ -9,6 +9,5 @@ type Server struct {
 	Pgsql      Pgsql      `mapstructure:"pgsql" json:"pgsql" yaml:"pgsql"`    // PostgreSQL 配置
 	Casbin     Casbin     `mapstructure:"casbin" json:"casbin" yaml:"casbin"` // Casbin RBAC配置
 	Captcha    Captcha    `mapstructure:"captcha" json:"captcha" yaml:"captcha"`
-	Cors       CORS       `mapstructure:"cors" json:"cors" yaml:"cors"`          // 跨域配置
-	Crontab    Crontab    `mapstructure:"crontab" json:"crontab" yaml:"crontab"` // 计划任务
+	Cors       CORS       `mapstructure:"cors" json:"cors" yaml:"cors"` // 跨域配置
 }
