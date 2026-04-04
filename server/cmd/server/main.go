@@ -18,7 +18,7 @@ func main() {
 	global.TD27_LOG = core.Zap()
 	zap.ReplaceGlobals(global.TD27_LOG)
 
-	// Initialize Database (MySQL or PostgreSQL)
+	// Initialize Database
 	global.TD27_DB = initialize.Gorm()
 	if global.TD27_DB == nil {
 		global.TD27_LOG.Fatal("database connection failed")

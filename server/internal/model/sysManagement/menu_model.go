@@ -1,42 +1,24 @@
 package sysManagement
 
 import (
-	"database/sql/driver"
-	"encoding/json"
-
 	"server/internal/model/common"
 )
 
+// MenuModel 菜单表（独立领域表）
 type MenuModel struct {
 	common.Td27Model
-	Pid       uint         `json:"pid"`                       // 父菜单 ID
-	Name      string       `json:"name,omitempty"`            // 路由名称
-	Path      string       `json:"path" gorm:"unique;size:191"`        // 路由路径
-	Redirect  string       `json:"redirect,omitempty"`        // 重定向
-	Component string       `json:"component" gorm:"not null"` // 前端组件
-	Sort      uint         `json:"sort" gorm:"not null"`      // 排序
-	Meta      Meta         `json:"meta" gorm:"type:json"`     // 元数据
-	Children  []*MenuModel `json:"children,omitempty" gorm:"-"`
-	// 权限通过 sys_management_role_permissions 关联，不再使用 sys_management_role_menus
-}
-
-type Meta struct {
-	Hidden     bool   `json:"hidden,omitempty"`  // 菜单是否隐藏
-	Title      string `json:"title,omitempty"`   // 菜单名
-	SvgIcon    string `json:"svgIcon,omitempty"` // svg 图标
-	ElIcon     string `json:"elIcon,omitempty"`  // element-plus图标
-	Affix      bool   `json:"affix,omitempty"`   // 是否固定
-	KeepAlive  bool   `json:"keepAlive,omitempty"`
-	AlwaysShow bool   `json:"alwaysShow,omitempty"` // 是否一直显示根路由
-}
-
-func (m Meta) Value() (driver.Value, error) {
-	b, err := json.Marshal(m)
-	return string(b), err
-}
-
-func (m *Meta) Scan(input interface{}) error {
-	return json.Unmarshal(input.([]byte), m)
+	MenuName  string `json:"menuName" gorm:"size:100;not null;comment:菜单名称"`
+	Icon      string `json:"icon" gorm:"size:100;comment:图标"`
+	Path      string `json:"path" gorm:"size:200;comment:路由路径"`
+	Component string `json:"component" gorm:"size:200;comment:前端组件"`
+	Redirect  string `json:"redirect" gorm:"size:200;comment:重定向"`
+	ParentID  uint   `json:"parentId" gorm:"index;comment:父菜单ID"`
+	Sort      uint   `json:"sort" gorm:"default:0;comment:排序"`
+	Hidden    bool   `json:"hidden" gorm:"default:false;comment:是否隐藏"`
+	KeepAlive bool   `json:"keepAlive" gorm:"default:false;comment:缓存"`
+	Status    bool   `json:"status" gorm:"default:true;comment:状态"`
+	// 关联的权限ID
+	PermissionID uint `json:"permissionId" gorm:"index;comment:关联权限ID"`
 }
 
 func (MenuModel) TableName() string {

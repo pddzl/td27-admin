@@ -2,7 +2,6 @@ package cache
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"time"
@@ -25,24 +24,6 @@ func NewPGCache() *PGCache {
 // getDB 获取数据库连接（延迟获取，避免初始化时 nil）
 func (c *PGCache) getDB() *gorm.DB {
 	return global.TD27_DB
-}
-
-// isMySQL 检查是否为MySQL数据库
-func (c *PGCache) isMySQL() bool {
-	db := c.getDB()
-	if db == nil {
-		return false
-	}
-	return db.Dialector.Name() == "mysql"
-}
-
-// isPostgreSQL 检查是否为PostgreSQL数据库
-func (c *PGCache) isPostgreSQL() bool {
-	db := c.getDB()
-	if db == nil {
-		return false
-	}
-	return db.Dialector.Name() == "postgres" || db.Dialector.Name() == "postgresql"
 }
 
 // Get 获取缓存值
@@ -80,7 +61,7 @@ func (c *PGCache) Set(ctx context.Context, key string, value string, expiration 
 	result := db.WithContext(ctx).Exec(`
 		UPDATE sys_tool_cache 
 		SET "value" = ?, expires_at = ?, updated_at = ?
-		WHERE "key" = ?
+		WHERE "key" = ? and "deleted_at" = null
 	`, value, expiresAt, time.Now(), key)
 
 	// 如果没有记录被更新，则插入
@@ -106,26 +87,8 @@ func (c *PGCache) Del(ctx context.Context, keys ...string) error {
 	}
 
 	return db.WithContext(ctx).
-		Where("\"key\" IN ?", keys).
+		Where("\"key\" IN ?", keys).Unscoped().
 		Delete(&sysTool.CacheModel{}).Error
-}
-
-// GetObject 获取并反序列化对象
-func (c *PGCache) GetObject(ctx context.Context, key string, dest interface{}) error {
-	data, err := c.Get(ctx, key)
-	if err != nil {
-		return err
-	}
-	return json.Unmarshal([]byte(data), dest)
-}
-
-// SetObject 序列化并设置对象
-func (c *PGCache) SetObject(ctx context.Context, key string, value interface{}, expiration time.Duration) error {
-	data, err := json.Marshal(value)
-	if err != nil {
-		return err
-	}
-	return c.Set(ctx, key, string(data), expiration)
 }
 
 // CleanupExpired 清理过期缓存（可由定时任务调用）

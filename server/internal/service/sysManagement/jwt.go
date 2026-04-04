@@ -84,6 +84,7 @@ func (jwtService *JwtService) AddToken(username string, token string, expiration
 	global.TD27_LOG.Debug("添加token",
 		zap.String("username", username),
 		zap.String("tokenKey", tokenKey),
+		zap.Duration("expiration", expiration),
 		zap.Bool("multiLogin", jwtService.isMultiLogin()),
 		zap.Int("limit", jwtService.getMultiLoginLimit()))
 
@@ -107,7 +108,7 @@ func (jwtService *JwtService) AddToken(username string, token string, expiration
 				// 删除最旧的token
 				tokensToRemove := len(userTokens) - limit + 1
 				for i := 0; i < tokensToRemove && i < len(userTokens); i++ {
-					if err := jwtService.cache.Del(ctx, userTokens[i].Key); err != nil {
+					if err = jwtService.cache.Del(ctx, userTokens[i].Key); err != nil {
 						global.TD27_LOG.Warn("删除旧token失败",
 							zap.String("key", userTokens[i].Key),
 							zap.Error(err))
@@ -306,17 +307,6 @@ func (jwtService *JwtService) GetCachedUser(userID uint) (*sysManagement.UserMod
 		return nil, err
 	}
 	return &user, nil
-}
-
-// CacheUser 缓存用户信息
-func (jwtService *JwtService) CacheUser(user *sysManagement.UserModel) error {
-	ctx := context.Background()
-	key := fmt.Sprintf("%s%d", UserCachePrefix, user.ID)
-	data, err := json.Marshal(user)
-	if err != nil {
-		return err
-	}
-	return jwtService.cache.Set(ctx, key, string(data), UserCacheDuration)
 }
 
 // DeleteUserCache 删除用户缓存

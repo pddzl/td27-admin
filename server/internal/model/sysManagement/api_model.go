@@ -4,12 +4,16 @@ import (
 	"server/internal/model/common"
 )
 
+// ApiModel API表（独立领域表）
 type ApiModel struct {
 	common.Td27Model
-	Path        string `json:"path" gorm:"not null;comment:api路径" binding:"required"`             // API 路径
-	Description string `json:"description" gorm:"not null;comment:api中文描述" binding:"required"`    // API 中文描述
-	ApiGroup    string `json:"apiGroup" gorm:"not null;comment:api组" binding:"required"`          // API 组
-	Method      string `json:"method" gorm:"not null;default:POST;comment:方法" binding:"required"` // 方法:创建POST(默认)|查看GET|更新PUT|删除DELETE
+	ApiName  string `json:"apiName" gorm:"size:100;not null;comment:API名称"`
+	Path     string `json:"path" gorm:"size:200;not null;comment:API路径"`
+	Method   string `json:"method" gorm:"size:10;not null;comment:HTTP方法"`
+	ApiGroup string `json:"apiGroup" gorm:"size:50;comment:API分组"`
+	Status   bool   `json:"status" gorm:"default:true;comment:状态"`
+	// 关联的权限ID
+	PermissionID uint `json:"permissionId" gorm:"index;comment:关联权限ID"`
 }
 
 func (ApiModel) TableName() string {

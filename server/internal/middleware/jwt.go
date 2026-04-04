@@ -2,17 +2,13 @@ package middleware
 
 import (
 	"errors"
-	"fmt"
 	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
-	"go.uber.org/zap"
-
 	"server/internal/global"
 	"server/internal/model/common"
-	modelSysManagement "server/internal/model/sysManagement"
 	pkgJwt "server/internal/pkg/jwt"
 	"server/internal/service/sysManagement"
 )
@@ -56,40 +52,13 @@ func JWTAuth() gin.HandlerFunc {
 			return
 		}
 
-		// 从缓存获取用户信息，避免每次请求都查询数据库
-		userModel, err := jwtService.GetCachedUser(claims.ID)
-		fmt.Println("userModel", userModel)
-		if err != nil {
-			// 缓存未命中，从数据库查询
-			userModel = &modelSysManagement.UserModel{}
-			err = global.TD27_DB.Where("id = ?", claims.ID).First(userModel).Error
-			if err != nil {
-				common.FailWithMessage("用户不存在", c)
-				c.Abort()
-				global.TD27_LOG.Error("用户不存在")
-				return
-			}
-			// 缓存用户信息
-			if cacheErr := jwtService.CacheUser(userModel); cacheErr != nil {
-				global.TD27_LOG.Error("缓存用户信息失败", zap.Error(cacheErr))
-			}
-		}
-
-		// 已登录用户是否禁用
-		if !userModel.Active {
-			common.FailWithMessage("用户被禁用", c)
-			c.Abort()
-			global.TD27_LOG.Error("用户被禁用")
-			return
-		}
-
 		if claims.ExpiresAt.Unix()-time.Now().Unix() < claims.BufferTime {
 			claims.ExpiresAt = jwt.NewNumericDate(time.Now().Add(time.Duration(global.TD27_CONFIG.JWT.ExpiresTime) * time.Second))
 			newToken, _ := j.CreateTokenByOldToken(token, *claims)
 			newClaims, _ := j.ParseToken(newToken)
 			c.Header("new-token", newToken)
 			c.Header("new-expires-at", strconv.FormatInt(newClaims.ExpiresAt.Unix(), 10))
-			
+
 			// 更新缓存：删除旧token，存储新token
 			jwtService.RemoveToken(claims.Username, token)
 			jwtService.AddToken(claims.Username, newToken, time.Duration(global.TD27_CONFIG.JWT.ExpiresTime)*time.Second)
