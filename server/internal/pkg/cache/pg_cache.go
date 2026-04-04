@@ -49,7 +49,7 @@ func (c *PGCache) Get(ctx context.Context, key string) (string, error) {
 }
 
 // Set 设置缓存值
-func (c *PGCache) Set(ctx context.Context, key string, value string, expiration time.Duration) error {
+func (c *PGCache) Set(ctx context.Context, username string, key string, value string, expiration time.Duration) error {
 	db := c.getDB()
 	if db == nil {
 		return fmt.Errorf("database not initialized")
@@ -60,16 +60,16 @@ func (c *PGCache) Set(ctx context.Context, key string, value string, expiration 
 	// 先尝试更新
 	result := db.WithContext(ctx).Exec(`
 		UPDATE sys_tool_cache 
-		SET "value" = ?, expires_at = ?, updated_at = ?
+		SET "username" = ?, "value" = ?, expires_at = ?, updated_at = ?
 		WHERE "key" = ? and "deleted_at" = null
-	`, value, expiresAt, time.Now(), key)
+	`, username, value, expiresAt, time.Now(), key)
 
 	// 如果没有记录被更新，则插入
 	if result.RowsAffected == 0 {
 		return db.WithContext(ctx).Exec(`
-			INSERT INTO sys_tool_cache ("key", "value", expires_at, created_at, updated_at)
-			VALUES (?, ?, ?, ?, ?)
-		`, key, value, expiresAt, time.Now(), time.Now()).Error
+			INSERT INTO sys_tool_cache ("username", "key", "value", expires_at, created_at, updated_at)
+			VALUES (?, ?, ?, ?, ?, ?)
+		`, username, key, value, expiresAt, time.Now(), time.Now()).Error
 	}
 
 	return result.Error

@@ -34,13 +34,13 @@ func NewPermissionCache() *PermissionCache {
 }
 
 // CacheUserPermissions 缓存用户权限
-func (pc *PermissionCache) CacheUserPermissions(userID uint, permissions []string) error {
+func (pc *PermissionCache) CacheUserPermissions(userID uint, username string, permissions []string) error {
 	key := fmt.Sprintf("%s%d", UserPermissionCachePrefix, userID)
 	data, err := json.Marshal(permissions)
 	if err != nil {
 		return err
 	}
-	return pc.cache.Set(context.Background(), key, string(data), PermissionCacheDuration)
+	return pc.cache.Set(context.Background(), key, username, string(data), PermissionCacheDuration)
 }
 
 // GetUserPermissions 获取缓存的用户权限
@@ -50,7 +50,7 @@ func (pc *PermissionCache) GetUserPermissions(userID uint) ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	
+
 	var permissions []string
 	if err := json.Unmarshal([]byte(data), &permissions); err != nil {
 		return nil, err
@@ -65,13 +65,13 @@ func (pc *PermissionCache) ClearUserPermissions(userID uint) error {
 }
 
 // CacheRolePermissions 缓存角色权限
-func (pc *PermissionCache) CacheRolePermissions(roleID uint, permissions []string) error {
+func (pc *PermissionCache) CacheRolePermissions(roleID uint, username string, permissions []string) error {
 	key := fmt.Sprintf("%s%d", RolePermissionCachePrefix, roleID)
 	data, err := json.Marshal(permissions)
 	if err != nil {
 		return err
 	}
-	return pc.cache.Set(context.Background(), key, string(data), PermissionCacheDuration)
+	return pc.cache.Set(context.Background(), key, username, string(data), PermissionCacheDuration)
 }
 
 // GetRolePermissions 获取缓存的角色权限
@@ -81,7 +81,7 @@ func (pc *PermissionCache) GetRolePermissions(roleID uint) ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	
+
 	var permissions []string
 	if err := json.Unmarshal([]byte(data), &permissions); err != nil {
 		return nil, err
@@ -104,16 +104,16 @@ func (pc *PermissionCache) ClearAllPermissions() error {
 
 // PermissionCheckResult 权限检查结果
 type PermissionCheckResult struct {
-	Allowed   bool   `json:"allowed"`
-	CacheHit  bool   `json:"cacheHit"`
-	Reason    string `json:"reason,omitempty"`
+	Allowed  bool   `json:"allowed"`
+	CacheHit bool   `json:"cacheHit"`
+	Reason   string `json:"reason,omitempty"`
 }
 
 // CheckPermissionWithCache 带缓存的权限检查
 func (pc *PermissionCache) CheckPermissionWithCache(userID uint, resource string, action string) *PermissionCheckResult {
 	// 构建权限标识
 	permKey := fmt.Sprintf("%s:%s", resource, action)
-	
+
 	// 尝试从缓存获取
 	cachedPerms, err := pc.GetUserPermissions(userID)
 	if err == nil {
@@ -132,7 +132,7 @@ func (pc *PermissionCache) CheckPermissionWithCache(userID uint, resource string
 			Reason:   "permission not found in cache",
 		}
 	}
-	
+
 	// 缓存未命中，返回nil让调用方查询数据库
 	return &PermissionCheckResult{
 		Allowed:  false,

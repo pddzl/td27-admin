@@ -126,7 +126,7 @@ func (jwtService *JwtService) AddToken(username string, token string, expiration
 	}
 
 	// 存储token，设置过期时间
-	err := jwtService.cache.Set(ctx, tokenKey, token, expiration)
+	err := jwtService.cache.Set(ctx, username, tokenKey, token, expiration)
 	if err != nil {
 		global.TD27_LOG.Error("存储token失败",
 			zap.String("username", username),
@@ -315,8 +315,6 @@ func (jwtService *JwtService) DeleteUserCache(userID uint) error {
 	key := fmt.Sprintf("%s%d", UserCachePrefix, userID)
 	return jwtService.cache.Del(ctx, key)
 }
-
-// --- 以下方法为兼容旧代码保留 ---
 
 // GetRedisJWT 获取jwt（已废弃，使用 ValidateToken 替代）
 func (jwtService *JwtService) GetRedisJWT(username string) (string, error) {
