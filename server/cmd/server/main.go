@@ -26,12 +26,12 @@ func main() {
 	db, _ := global.TD27_DB.DB()
 	defer db.Close()
 
+	// Auto migrate tables AFTER DB is initialized
+	initialize.RegisterTables(global.TD27_DB)
+
 	// Initialize Cron AFTER DB ready
 	global.TD27_CRON = initialize.InitCron()
 	initialize.CheckCron()
-
-	// Auto migrate tables AFTER DB is initialized
-	initialize.RegisterTables(global.TD27_DB)
 
 	// Build router
 	router := initialize.Routers()

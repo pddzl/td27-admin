@@ -1,5 +1,4 @@
--- PostgreSQL init script for TD27 Admin with unified RBAC permission model
--- All permissions (menu, api, button, data) are stored in sys_management_permission
+-- PostgreSQL init script for TD27 Admin with separate domain tables + unified permission identity
 
 -- Enable UUID extension
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
@@ -9,6 +8,8 @@ DROP TABLE IF EXISTS casbin_rule CASCADE;
 DROP TABLE IF EXISTS sys_management_role_permissions CASCADE;
 DROP TABLE IF EXISTS sys_management_user_roles CASCADE;
 DROP TABLE IF EXISTS sys_management_permission CASCADE;
+DROP TABLE IF EXISTS sys_management_api CASCADE;
+DROP TABLE IF EXISTS sys_management_menu CASCADE;
 DROP TABLE IF EXISTS sys_management_user CASCADE;
 DROP TABLE IF EXISTS sys_management_role CASCADE;
 DROP TABLE IF EXISTS sys_management_dept CASCADE;
@@ -33,7 +34,7 @@ CREATE TABLE casbin_rule (
 );
 
 -- ----------------------------
--- Table structure for sys_management_dept (for data permission)
+-- Table structure for sys_management_dept
 -- ----------------------------
 CREATE TABLE sys_management_dept (
     id BIGSERIAL PRIMARY KEY,
@@ -50,8 +51,50 @@ CREATE INDEX idx_sys_management_dept_path ON sys_management_dept(path);
 CREATE INDEX idx_sys_management_dept_deleted_at ON sys_management_dept(deleted_at);
 
 -- ----------------------------
--- Table structure for sys_management_permission (unified permission model)
--- Stores: menu, api, button, data permissions
+-- Table structure for sys_management_menu (domain table)
+-- ----------------------------
+CREATE TABLE sys_management_menu (
+    id BIGSERIAL PRIMARY KEY,
+    created_at TIMESTAMP DEFAULT NULL,
+    updated_at TIMESTAMP DEFAULT NULL,
+    deleted_at TIMESTAMP DEFAULT NULL,
+    menu_name VARCHAR(100) NOT NULL,
+    icon VARCHAR(100) DEFAULT NULL,
+    path VARCHAR(200) NOT NULL,
+    component VARCHAR(200) DEFAULT NULL,
+    redirect VARCHAR(200) DEFAULT NULL,
+    parent_id BIGINT DEFAULT 0,
+    sort BIGINT DEFAULT 0,
+    hidden BOOLEAN DEFAULT FALSE,
+    keep_alive BOOLEAN DEFAULT FALSE,
+    status BOOLEAN DEFAULT TRUE,
+    permission_id BIGINT DEFAULT NULL
+);
+CREATE INDEX idx_sys_management_menu_parent_id ON sys_management_menu(parent_id);
+CREATE INDEX idx_sys_management_menu_status ON sys_management_menu(status);
+CREATE INDEX idx_sys_management_menu_deleted_at ON sys_management_menu(deleted_at);
+
+-- ----------------------------
+-- Table structure for sys_management_api (domain table)
+-- ----------------------------
+CREATE TABLE sys_management_api (
+    id BIGSERIAL PRIMARY KEY,
+    created_at TIMESTAMP DEFAULT NULL,
+    updated_at TIMESTAMP DEFAULT NULL,
+    deleted_at TIMESTAMP DEFAULT NULL,
+    api_name VARCHAR(100) NOT NULL,
+    path VARCHAR(200) NOT NULL,
+    method VARCHAR(10) NOT NULL,
+    api_group VARCHAR(50) DEFAULT NULL,
+    status BOOLEAN DEFAULT TRUE,
+    permission_id BIGINT DEFAULT NULL
+);
+CREATE INDEX idx_sys_management_api_group ON sys_management_api(api_group);
+CREATE INDEX idx_sys_management_api_status ON sys_management_api(status);
+CREATE INDEX idx_sys_management_api_deleted_at ON sys_management_api(deleted_at);
+
+-- ----------------------------
+-- Table structure for sys_management_permission (unified identity)
 -- ----------------------------
 CREATE TABLE sys_management_permission (
     id BIGSERIAL PRIMARY KEY,
@@ -61,20 +104,12 @@ CREATE TABLE sys_management_permission (
     name VARCHAR(100) NOT NULL,
     type VARCHAR(20) NOT NULL, -- menu|api|button|data
     resource VARCHAR(200) NOT NULL, -- path for api, route for menu
-    action VARCHAR(20) DEFAULT 'view', -- view|create|update|delete|all
-    parent_id BIGINT DEFAULT NULL,
-    sort BIGINT DEFAULT 0,
-    status BOOLEAN DEFAULT TRUE,
-    icon VARCHAR(100) DEFAULT NULL, -- for menu
-    component VARCHAR(200) DEFAULT NULL, -- for menu
-    redirect VARCHAR(200) DEFAULT NULL, -- for menu
-    hidden BOOLEAN DEFAULT FALSE, -- for menu
-    keep_alive BOOLEAN DEFAULT FALSE, -- for menu
-    api_group VARCHAR(50) DEFAULT NULL, -- for api
-    method VARCHAR(10) DEFAULT 'GET' -- for api
+    action VARCHAR(20) DEFAULT 'all', -- all|view|create|update|delete
+    domain_id BIGINT NOT NULL, -- reference to menu.id or api.id
+    status BOOLEAN DEFAULT TRUE
 );
 CREATE INDEX idx_sys_management_permission_type ON sys_management_permission(type);
-CREATE INDEX idx_sys_management_permission_parent_id ON sys_management_permission(parent_id);
+CREATE INDEX idx_sys_management_permission_domain_id ON sys_management_permission(domain_id);
 CREATE INDEX idx_sys_management_permission_resource ON sys_management_permission(resource);
 
 -- ----------------------------
@@ -92,7 +127,7 @@ CREATE TABLE sys_management_role (
 CREATE INDEX idx_sys_management_role_parent_id ON sys_management_role(parent_id);
 
 -- ----------------------------
--- Table structure for sys_management_role_permissions (unified)
+-- Table structure for sys_management_role_permissions
 -- ----------------------------
 CREATE TABLE sys_management_role_permissions (
     role_id BIGINT NOT NULL,
@@ -120,7 +155,7 @@ CREATE TABLE sys_management_user (
 CREATE INDEX idx_sys_management_user_deleted_at ON sys_management_user(deleted_at);
 
 -- ----------------------------
--- Table structure for sys_management_user_roles (multi-role support)
+-- Table structure for sys_management_user_roles
 -- ----------------------------
 CREATE TABLE sys_management_user_roles (
     user_id BIGINT NOT NULL,
@@ -150,7 +185,7 @@ CREATE TABLE sys_monitor_operation_log (
 CREATE INDEX idx_sys_monitor_operation_log_deleted_at ON sys_monitor_operation_log(deleted_at);
 
 -- ----------------------------
--- Table structure for sys_tool_cache (Redis replacement)
+-- Table structure for sys_tool_cache
 -- ----------------------------
 CREATE TABLE sys_tool_cache (
     id BIGSERIAL PRIMARY KEY,
@@ -212,93 +247,155 @@ INSERT INTO sys_management_role (id, role_name, parent_id) VALUES
 INSERT INTO sys_management_user (id, username, password, phone, email, active, dept_id) VALUES
 (1, 'admin', 'e10adc3949ba59abbe56e057f20f883e', '', '', TRUE, 1);
 
--- User-Role association (admin has root role)
+-- User-Role association
 INSERT INTO sys_management_user_roles (user_id, role_id) VALUES
 (1, 1);
 
 -- ============================
--- Legacy Menu Data (for backward compatibility)
+-- Menu Data
 -- ============================
+INSERT INTO sys_management_menu (id, menu_name, icon, path, component, redirect, parent_id, sort, hidden, keep_alive, status) VALUES
+(1, '系统管理', 'lock', '/sysManagement', 'Layout', '/sysManagement/user', 0, 1, FALSE, FALSE, TRUE),
+(2, '用户管理', NULL, '/sysManagement/user', 'sysManagement/user/index.vue', NULL, 1, 1, FALSE, FALSE, TRUE),
+(3, '角色管理', NULL, '/sysManagement/role', 'sysManagement/role/index.vue', NULL, 1, 2, FALSE, FALSE, TRUE),
+(4, '菜单管理', NULL, '/sysManagement/menu', 'sysManagement/menu/index.vue', NULL, 1, 3, FALSE, FALSE, TRUE),
+(5, '接口管理', NULL, '/sysManagement/api', 'sysManagement/api/index.vue', NULL, 1, 4, FALSE, FALSE, TRUE),
+(6, '字典管理', NULL, '/sysManagement/dict', 'sysManagement/dict/index.vue', NULL, 1, 5, FALSE, FALSE, TRUE),
+(7, '部门管理', NULL, '/sysManagement/dept', 'sysManagement/dept/index.vue', NULL, 1, 6, FALSE, FALSE, TRUE),
+(20, '系统工具', 'config', '/systool', 'Layout', '/systool/cron', 0, 4, FALSE, FALSE, TRUE),
+(21, '定时任务', NULL, '/systool/cron', 'sysTool/cron/index.vue', NULL, 20, 1, FALSE, FALSE, TRUE),
+(22, '文件管理', NULL, '/systool/file', 'sysTool/file/index.vue', NULL, 20, 2, FALSE, FALSE, TRUE),
+(40, '系统监控', 'monitor', '/sysMonitor', 'Layout', '/sysMonitor/operationLog', 0, 5, FALSE, FALSE, TRUE),
+(41, '操作日志', NULL, '/sysMonitor/operationLog', 'sysMonitor/operationLog/index.vue', NULL, 40, 1, FALSE, FALSE, TRUE),
+(100, '多级菜单', 'menu', '/cenu', 'Layout', '/cenu/cenu1', 0, 2, FALSE, FALSE, TRUE),
+(101, 'cenu1', NULL, '/cenu/cenu1', 'cenu/cenu1/index.vue', '/cenu/cenu1/cenu1-1', 100, 1, FALSE, FALSE, TRUE),
+(102, 'cenu1-1', NULL, '/cenu/cenu1/cenu1-1', 'cenu/cenu1/cenu1-1/index.vue', NULL, 101, 1, FALSE, FALSE, TRUE),
+(103, 'cenu2', NULL, '/cenu/cenu2', 'cenu/cenu2/index.vue', NULL, 100, 2, FALSE, FALSE, TRUE);
 
 -- ============================
--- Unified Permission Data
+-- API Data
 -- ============================
+INSERT INTO sys_management_api (id, api_name, path, method, api_group, status) VALUES
+(200, '获取验证码', '/captcha', 'POST', 'base', TRUE),
+(201, '登录', '/login', 'POST', 'base', TRUE),
+(202, '登出', '/logout', 'POST', 'base', TRUE),
+(203, '获取用户信息', '/user/getUserInfo', 'GET', 'user', TRUE),
+(204, '获取所有用户', '/user/list', 'POST', 'user', TRUE),
+(205, '删除用户', '/user/delete', 'POST', 'user', TRUE),
+(206, '添加用户', '/user/create', 'POST', 'user', TRUE),
+(207, '编辑用户', '/user/update', 'POST', 'user', TRUE),
+(208, '修改用户密码', '/user/modifyPasswd', 'POST', 'user', TRUE),
+(209, '切换用户状态', '/user/switchActive', 'POST', 'user', TRUE),
+(210, '获取所有角色', '/role/list', 'POST', 'role', TRUE),
+(211, '添加角色', '/role/create', 'POST', 'role', TRUE),
+(212, '删除角色', '/role/delete', 'POST', 'role', TRUE),
+(213, '编辑角色', '/role/update', 'POST', 'role', TRUE),
+(214, '编辑角色菜单', '/role/updateRoleMenu', 'POST', 'role', TRUE),
+(215, '获取所有菜单', '/menu/list', 'GET', 'menu', TRUE),
+(216, '添加菜单', '/menu/create', 'POST', 'menu', TRUE),
+(217, '编辑菜单', '/menu/update', 'POST', 'menu', TRUE),
+(218, '删除菜单', '/menu/delete', 'POST', 'menu', TRUE),
+(219, '获取菜单树', '/menu/getElTreeMenus', 'POST', 'menu', TRUE),
+(220, '获取所有API', '/api/list', 'POST', 'api', TRUE),
+(221, '添加API', '/api/create', 'POST', 'api', TRUE),
+(222, '编辑API', '/api/update', 'POST', 'api', TRUE),
+(223, '删除API', '/api/delete', 'POST', 'api', TRUE),
+(224, '获取字典列表', '/dict/list', 'POST', 'dict', TRUE),
+(225, '添加字典', '/dict/create', 'POST', 'dict', TRUE),
+(226, '编辑字典', '/dict/update', 'POST', 'dict', TRUE),
+(227, '删除字典', '/dict/delete', 'POST', 'dict', TRUE),
+(228, '获取字典详情', '/dictDetail/list', 'POST', 'dictDetail', TRUE),
+(229, '添加字典详情', '/dictDetail/create', 'POST', 'dictDetail', TRUE),
+(230, '编辑字典详情', '/dictDetail/update', 'POST', 'dictDetail', TRUE),
+(231, '删除字典详情', '/dictDetail/delete', 'POST', 'dictDetail', TRUE),
+(232, '获取文件列表', '/file/list', 'POST', 'file', TRUE),
+(233, '上传文件', '/file/upload', 'POST', 'file', TRUE),
+(234, '下载文件', '/file/download', 'GET', 'file', TRUE),
+(235, '删除文件', '/file/delete', 'GET', 'file', TRUE),
+(236, '获取定时任务', '/cron/list', 'POST', 'cron', TRUE),
+(237, '添加定时任务', '/cron/create', 'POST', 'cron', TRUE),
+(238, '编辑定时任务', '/cron/update', 'POST', 'cron', TRUE),
+(239, '删除定时任务', '/cron/delete', 'POST', 'cron', TRUE),
+(240, '获取操作日志', '/opl/list', 'POST', 'opl', TRUE),
+(241, '删除操作日志', '/opl/delete', 'POST', 'opl', TRUE);
 
--- Menu Permissions (type='menu')
-INSERT INTO sys_management_permission (id, name, type, resource, action, parent_id, sort, status, icon, component, redirect, hidden, keep_alive) VALUES
-(1, '系统管理', 'menu', '/sysManagement', 'view', 0, 1, TRUE, 'lock', 'Layout', '/sysManagement/user', FALSE, FALSE),
-(2, '用户管理', 'menu', '/sysManagement/user', 'view', 1, 1, TRUE, NULL, 'sysManagement/user/index.vue', NULL, FALSE, FALSE),
-(3, '角色管理', 'menu', '/sysManagement/role', 'view', 1, 2, TRUE, NULL, 'sysManagement/role/index.vue', NULL, FALSE, FALSE),
-(4, '菜单管理', 'menu', '/sysManagement/menu', 'view', 1, 3, TRUE, NULL, 'sysManagement/menu/index.vue', NULL, FALSE, FALSE),
-(5, '接口管理', 'menu', '/sysManagement/api', 'view', 1, 4, TRUE, NULL, 'sysManagement/api/index.vue', NULL, FALSE, FALSE),
-(6, '字典管理', 'menu', '/sysManagement/dict', 'view', 1, 5, TRUE, NULL, 'sysManagement/dict/index.vue', NULL, FALSE, FALSE),
-(7, '部门管理', 'menu', '/sysManagement/dept', 'view', 1, 6, TRUE, NULL, 'sysManagement/dept/index.vue', NULL, FALSE, FALSE),
-(20, '系统工具', 'menu', '/systool', 'view', 0, 4, TRUE, 'config', 'Layout', '/systool/cron', FALSE, FALSE),
-(21, '定时任务', 'menu', '/systool/cron', 'view', 20, 1, TRUE, NULL, 'sysTool/cron/index.vue', NULL, FALSE, FALSE),
-(22, '文件管理', 'menu', '/systool/file', 'view', 20, 2, TRUE, NULL, 'sysTool/file/index.vue', NULL, FALSE, FALSE),
-(40, '系统监控', 'menu', '/sysMonitor', 'view', 0, 5, TRUE, 'monitor', 'Layout', '/sysMonitor/operationLog', FALSE, FALSE),
-(41, '操作日志', 'menu', '/sysMonitor/operationLog', 'view', 40, 1, TRUE, NULL, 'sysMonitor/operationLog/index.vue', NULL, FALSE, FALSE),
-(100, '多级菜单', 'menu', '/cenu', 'view', 0, 2, TRUE, 'menu', 'Layout', '/cenu/cenu1', FALSE, FALSE),
-(101, 'cenu1', 'menu', '/cenu/cenu1', 'view', 100, 1, TRUE, NULL, 'cenu/cenu1/index.vue', '/cenu/cenu1/cenu1-1', FALSE, FALSE),
-(102, 'cenu1-1', 'menu', '/cenu/cenu1/cenu1-1', 'view', 101, 1, TRUE, NULL, 'cenu/cenu1/cenu1-1/index.vue', NULL, FALSE, FALSE),
-(103, 'cenu2', 'menu', '/cenu/cenu2', 'view', 100, 2, TRUE, NULL, 'cenu/cenu2/index.vue', NULL, FALSE, FALSE);
+-- ============================
+-- Permission Identity (links domain tables)
+-- ============================
+-- Menu permissions
+INSERT INTO sys_management_permission (id, name, type, resource, action, domain_id, status) VALUES
+(1, '系统管理', 'menu', '/sysManagement', 'view', 1, TRUE),
+(2, '用户管理', 'menu', '/sysManagement/user', 'view', 2, TRUE),
+(3, '角色管理', 'menu', '/sysManagement/role', 'view', 3, TRUE),
+(4, '菜单管理', 'menu', '/sysManagement/menu', 'view', 4, TRUE),
+(5, '接口管理', 'menu', '/sysManagement/api', 'view', 5, TRUE),
+(6, '字典管理', 'menu', '/sysManagement/dict', 'view', 6, TRUE),
+(7, '部门管理', 'menu', '/sysManagement/dept', 'view', 7, TRUE),
+(20, '系统工具', 'menu', '/systool', 'view', 20, TRUE),
+(21, '定时任务', 'menu', '/systool/cron', 'view', 21, TRUE),
+(22, '文件管理', 'menu', '/systool/file', 'view', 22, TRUE),
+(40, '系统监控', 'menu', '/sysMonitor', 'view', 40, TRUE),
+(41, '操作日志', 'menu', '/sysMonitor/operationLog', 'view', 41, TRUE),
+(100, '多级菜单', 'menu', '/cenu', 'view', 100, TRUE),
+(101, 'cenu1', 'menu', '/cenu/cenu1', 'view', 101, TRUE),
+(102, 'cenu1-1', 'menu', '/cenu/cenu1/cenu1-1', 'view', 102, TRUE),
+(103, 'cenu2', 'menu', '/cenu/cenu2', 'view', 103, TRUE);
 
--- API Permissions (type='api')
-INSERT INTO sys_management_permission (id, name, type, resource, action, parent_id, sort, status, api_group, method) VALUES
-(200, '获取验证码', 'api', '/captcha', 'all', 0, 1, TRUE, 'base', 'POST'),
-(201, '登录', 'api', '/login', 'all', 0, 2, TRUE, 'base', 'POST'),
-(202, '登出', 'api', '/logout', 'all', 0, 3, TRUE, 'base', 'POST'),
-(203, '获取用户信息', 'api', '/user/getUserInfo', 'view', 0, 4, TRUE, 'user', 'GET'),
-(204, '获取所有用户', 'api', '/user/list', 'view', 0, 5, TRUE, 'user', 'POST'),
-(205, '删除用户', 'api', '/user/delete', 'delete', 0, 6, TRUE, 'user', 'POST'),
-(206, '添加用户', 'api', '/user/create', 'create', 0, 7, TRUE, 'user', 'POST'),
-(207, '编辑用户', 'api', '/user/update', 'update', 0, 8, TRUE, 'user', 'POST'),
-(208, '修改用户密码', 'api', '/user/modifyPasswd', 'update', 0, 9, TRUE, 'user', 'POST'),
-(209, '切换用户状态', 'api', '/user/switchActive', 'update', 0, 10, TRUE, 'user', 'POST'),
-(210, '获取所有角色', 'api', '/role/list', 'view', 0, 11, TRUE, 'role', 'POST'),
-(211, '添加角色', 'api', '/role/create', 'create', 0, 12, TRUE, 'role', 'POST'),
-(212, '删除角色', 'api', '/role/delete', 'delete', 0, 13, TRUE, 'role', 'POST'),
-(213, '编辑角色', 'api', '/role/update', 'update', 0, 14, TRUE, 'role', 'POST'),
-(214, '编辑角色菜单', 'api', '/role/updateRoleMenu', 'update', 0, 15, TRUE, 'role', 'POST'),
-(215, '获取所有菜单', 'api', '/menu/list', 'view', 0, 16, TRUE, 'menu', 'GET'),
-(216, '添加菜单', 'api', '/menu/create', 'create', 0, 17, TRUE, 'menu', 'POST'),
-(217, '编辑菜单', 'api', '/menu/update', 'update', 0, 18, TRUE, 'menu', 'POST'),
-(218, '删除菜单', 'api', '/menu/delete', 'delete', 0, 19, TRUE, 'menu', 'POST'),
-(219, '获取菜单树', 'api', '/menu/getElTreeMenus', 'view', 0, 20, TRUE, 'menu', 'POST'),
-(220, '获取所有API', 'api', '/api/list', 'view', 0, 21, TRUE, 'api', 'POST'),
-(221, '添加API', 'api', '/api/create', 'create', 0, 22, TRUE, 'api', 'POST'),
-(222, '编辑API', 'api', '/api/update', 'update', 0, 23, TRUE, 'api', 'POST'),
-(223, '删除API', 'api', '/api/delete', 'delete', 0, 24, TRUE, 'api', 'POST'),
-(224, '获取字典列表', 'api', '/dict/list', 'view', 0, 25, TRUE, 'dict', 'POST'),
-(225, '添加字典', 'api', '/dict/create', 'create', 0, 26, TRUE, 'dict', 'POST'),
-(226, '编辑字典', 'api', '/dict/update', 'update', 0, 27, TRUE, 'dict', 'POST'),
-(227, '删除字典', 'api', '/dict/delete', 'delete', 0, 28, TRUE, 'dict', 'POST'),
-(228, '获取字典详情', 'api', '/dictDetail/list', 'view', 0, 29, TRUE, 'dictDetail', 'POST'),
-(229, '添加字典详情', 'api', '/dictDetail/create', 'create', 0, 30, TRUE, 'dictDetail', 'POST'),
-(230, '编辑字典详情', 'api', '/dictDetail/update', 'update', 0, 31, TRUE, 'dictDetail', 'POST'),
-(231, '删除字典详情', 'api', '/dictDetail/delete', 'delete', 0, 32, TRUE, 'dictDetail', 'POST'),
-(232, '获取文件列表', 'api', '/file/list', 'view', 0, 33, TRUE, 'file', 'POST'),
-(233, '上传文件', 'api', '/file/upload', 'create', 0, 34, TRUE, 'file', 'POST'),
-(234, '下载文件', 'api', '/file/download', 'view', 0, 35, TRUE, 'file', 'GET'),
-(235, '删除文件', 'api', '/file/delete', 'delete', 0, 36, TRUE, 'file', 'GET'),
-(236, '获取定时任务', 'api', '/cron/list', 'view', 0, 37, TRUE, 'cron', 'POST'),
-(237, '添加定时任务', 'api', '/cron/create', 'create', 0, 38, TRUE, 'cron', 'POST'),
-(238, '编辑定时任务', 'api', '/cron/update', 'update', 0, 39, TRUE, 'cron', 'POST'),
-(239, '删除定时任务', 'api', '/cron/delete', 'delete', 0, 40, TRUE, 'cron', 'POST'),
-(240, '获取操作日志', 'api', '/opl/list', 'view', 0, 41, TRUE, 'opl', 'POST'),
-(241, '删除操作日志', 'api', '/opl/delete', 'delete', 0, 42, TRUE, 'opl', 'POST');
+-- API permissions
+INSERT INTO sys_management_permission (id, name, type, resource, action, domain_id, status) VALUES
+(200, '获取验证码', 'api', '/captcha', 'all', 200, TRUE),
+(201, '登录', 'api', '/login', 'all', 201, TRUE),
+(202, '登出', 'api', '/logout', 'all', 202, TRUE),
+(203, '获取用户信息', 'api', '/user/getUserInfo', 'view', 203, TRUE),
+(204, '获取所有用户', 'api', '/user/list', 'view', 204, TRUE),
+(205, '删除用户', 'api', '/user/delete', 'delete', 205, TRUE),
+(206, '添加用户', 'api', '/user/create', 'create', 206, TRUE),
+(207, '编辑用户', 'api', '/user/update', 'update', 207, TRUE),
+(208, '修改用户密码', 'api', '/user/modifyPasswd', 'update', 208, TRUE),
+(209, '切换用户状态', 'api', '/user/switchActive', 'update', 209, TRUE),
+(210, '获取所有角色', 'api', '/role/list', 'view', 210, TRUE),
+(211, '添加角色', 'api', '/role/create', 'create', 211, TRUE),
+(212, '删除角色', 'api', '/role/delete', 'delete', 212, TRUE),
+(213, '编辑角色', 'api', '/role/update', 'update', 213, TRUE),
+(214, '编辑角色菜单', 'api', '/role/updateRoleMenu', 'update', 214, TRUE),
+(215, '获取所有菜单', 'api', '/menu/list', 'view', 215, TRUE),
+(216, '添加菜单', 'api', '/menu/create', 'create', 216, TRUE),
+(217, '编辑菜单', 'api', '/menu/update', 'update', 217, TRUE),
+(218, '删除菜单', 'api', '/menu/delete', 'delete', 218, TRUE),
+(219, '获取菜单树', 'api', '/menu/getElTreeMenus', 'view', 219, TRUE),
+(220, '获取所有API', 'api', '/api/list', 'view', 220, TRUE),
+(221, '添加API', 'api', '/api/create', 'create', 221, TRUE),
+(222, '编辑API', 'api', '/api/update', 'update', 222, TRUE),
+(223, '删除API', 'api', '/api/delete', 'delete', 223, TRUE),
+(224, '获取字典列表', 'api', '/dict/list', 'view', 224, TRUE),
+(225, '添加字典', 'api', '/dict/create', 'create', 225, TRUE),
+(226, '编辑字典', 'api', '/dict/update', 'update', 226, TRUE),
+(227, '删除字典', 'api', '/dict/delete', 'delete', 227, TRUE),
+(228, '获取字典详情', 'api', '/dictDetail/list', 'view', 228, TRUE),
+(229, '添加字典详情', 'api', '/dictDetail/create', 'create', 229, TRUE),
+(230, '编辑字典详情', 'api', '/dictDetail/update', 'update', 230, TRUE),
+(231, '删除字典详情', 'api', '/dictDetail/delete', 'delete', 231, TRUE),
+(232, '获取文件列表', 'api', '/file/list', 'view', 232, TRUE),
+(233, '上传文件', 'api', '/file/upload', 'create', 233, TRUE),
+(234, '下载文件', 'api', '/file/download', 'view', 234, TRUE),
+(235, '删除文件', 'api', '/file/delete', 'delete', 235, TRUE),
+(236, '获取定时任务', 'api', '/cron/list', 'view', 236, TRUE),
+(237, '添加定时任务', 'api', '/cron/create', 'create', 237, TRUE),
+(238, '编辑定时任务', 'api', '/cron/update', 'update', 238, TRUE),
+(239, '删除定时任务', 'api', '/cron/delete', 'delete', 239, TRUE),
+(240, '获取操作日志', 'api', '/opl/list', 'view', 240, TRUE),
+(241, '删除操作日志', 'api', '/opl/delete', 'delete', 241, TRUE);
 
--- Data Permissions (type='data') - for data scope control
-INSERT INTO sys_management_permission (id, name, type, resource, action, parent_id, sort, status) VALUES
-(300, '用户数据权限', 'data', 'sys_management_user', 'all', 0, 1, TRUE),
-(301, '角色数据权限', 'data', 'sys_management_role', 'all', 0, 2, TRUE),
-(302, '部门数据权限', 'data', 'sys_management_dept', 'all', 0, 3, TRUE);
+-- Update menu.permission_id references
+UPDATE sys_management_menu SET permission_id = id;
+-- Update api.permission_id references
+UPDATE sys_management_api SET permission_id = id;
 
 -- Assign all permissions to root role
 INSERT INTO sys_management_role_permissions (role_id, permission_id, data_scope)
 SELECT 1, id, 'all' FROM sys_management_permission;
 
--- Casbin rules (for backward compatibility - root role has all API permissions)
+-- Casbin rules for backward compatibility
 INSERT INTO casbin_rule (ptype, v0, v1, v2) VALUES
 ('p', '1', '/captcha', 'POST'),
 ('p', '1', '/login', 'POST'),

@@ -24,11 +24,11 @@ func NewApiApi() *ApiApi {
 // @Security  ApiKeyAuth
 // @accept    application/json
 // @Produce   application/json
-// @Param     data  body      modelSysManagement.PermissionModel true "请求参数"
-// @Success   200   {object}  common.Response{data=modelSysManagement.PermissionModel,msg=string}
+// @Param     data  body      modelSysManagement.CreateApiReq true "请求参数"
+// @Success   200   {object}  common.Response{data=modelSysManagement.ApiModel,msg=string}
 // @Router    /api/create [post]
 func (a *ApiApi) Create(c *gin.Context) {
-	var req modelSysManagement.PermissionModel
+	var req modelSysManagement.CreateApiReq
 	if err := c.ShouldBindJSON(&req); err != nil {
 		common.FailReq(err.Error(), c)
 		return
@@ -49,7 +49,7 @@ func (a *ApiApi) Create(c *gin.Context) {
 // @accept    application/json
 // @Produce   application/json
 // @Param     data  body      modelSysManagement.ListApiReq true  "请求参数"
-// @Success   200   {object}  common.Response{data=common.Page{list=[]modelSysManagement.PermissionModel},msg=string}
+// @Success   200   {object}  common.Response{data=common.Page{list=[]modelSysManagement.ApiModel},msg=string}
 // @Router    /api/list [post]
 func (a *ApiApi) List(c *gin.Context) {
 	var req modelSysManagement.ListApiReq
@@ -125,11 +125,11 @@ func (a *ApiApi) DeleteByIds(c *gin.Context) {
 // @Security  ApiKeyAuth
 // @accept    application/json
 // @Produce   application/json
-// @Param     data  body      modelSysManagement.PermissionModel true "请求参数"
+// @Param     data  body      modelSysManagement.UpdateApiReq true "请求参数"
 // @Success   200   {object}  common.Response{msg=string}
 // @Router    /api/update [post]
 func (a *ApiApi) Update(c *gin.Context) {
-	var req modelSysManagement.PermissionModel
+	var req modelSysManagement.UpdateApiReq
 	if err := c.ShouldBindJSON(&req); err != nil {
 		common.FailReq(err.Error(), c)
 		return
@@ -150,7 +150,7 @@ func (a *ApiApi) Update(c *gin.Context) {
 // @accept    application/json
 // @Produce   application/json
 // @Param     data  body      common.CId true "请求参数"
-// @Success   200   {object}  common.Response{data=modelSysManagement.ApiTreeResp{list=[]modelSysManagement.PermissionTree,checkedKey=[]string,checkedIds=[]uint},msg=string}
+// @Success   200   {object}  common.Response{data=modelSysManagement.ApiTreeResp{list=[]modelSysManagement.ApiTreeNode,checkedKey=[]string,checkedIds=[]uint},msg=string}
 // @Router    /api/getElTree [post]
 func (a *ApiApi) GetElTree(c *gin.Context) {
 	var req common.CId

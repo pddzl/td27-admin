@@ -21,7 +21,7 @@ func NewMenuService() *MenuService {
 	}
 }
 
-func (s *MenuService) List(userId uint) ([]*sysManagement.MenuModel, error) {
+func (s *MenuService) List(userId uint) ([]sysManagement.MenuData, error) {
 	// Get user with roles preloaded
 	user, err := s.userRepository.FindOneWithRoles(s.ctx, userId)
 	if err != nil {
@@ -31,18 +31,20 @@ func (s *MenuService) List(userId uint) ([]*sysManagement.MenuModel, error) {
 	// Get all role IDs from the user
 	roleIDs := user.GetAllRoleIDs()
 	if len(roleIDs) == 0 {
-		return []*sysManagement.MenuModel{}, nil
+		return []sysManagement.MenuData{}, nil
 	}
 
 	// Get menus from all roles (union of permissions)
-	list, err := s.menuRepository.ListByRoleIDs(s.ctx, roleIDs)
+	items, err := s.menuRepository.ListByRoleIDs(s.ctx, roleIDs)
 	if err != nil {
 		return nil, err
 	}
-	return list, nil
+
+	// Convert to frontend format
+	return sysManagement.ConvertToMenuDataList(items), nil
 }
 
-func (s *MenuService) Create(req *sysManagement.Menu) error {
+func (s *MenuService) Create(req *sysManagement.Menu) (*sysManagement.MenuModel, error) {
 	return s.menuRepository.Create(s.ctx, req)
 }
 
@@ -55,11 +57,11 @@ func (s *MenuService) Delete(id uint) error {
 }
 
 // GetElTreeMenus 获取所有menu
-func (s *MenuService) GetElTreeMenus(roleId uint) ([]*sysManagement.MenuModel, []uint, error) {
-	menus, i, err := s.menuRepository.GetElTreeMenus(s.ctx, roleId)
+func (s *MenuService) GetElTreeMenus(roleId uint) ([]*sysManagement.MenuItem, []uint, error) {
+	menus, checkedIds, err := s.menuRepository.GetElTreeMenus(s.ctx, roleId)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	return menus, i, err
+	return menus, checkedIds, err
 }

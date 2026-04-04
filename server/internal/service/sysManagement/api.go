@@ -22,8 +22,7 @@ func NewApiService() *ApiService {
 	}
 }
 
-func (s *ApiService) Create(req *sysManagement.PermissionModel) (*sysManagement.PermissionModel, error) {
-	req.Type = "api"
+func (s *ApiService) Create(req *sysManagement.CreateApiReq) (*sysManagement.ApiModel, error) {
 	instance, err := s.repository.Create(s.ctx, req)
 	if err != nil {
 		return nil, err
@@ -32,7 +31,7 @@ func (s *ApiService) Create(req *sysManagement.PermissionModel) (*sysManagement.
 	return instance, err
 }
 
-func (s *ApiService) List(req *sysManagement.ListApiReq) ([]*sysManagement.PermissionModel, int64, error) {
+func (s *ApiService) List(req *sysManagement.ListApiReq) ([]*sysManagement.ApiModel, int64, error) {
 	list, count, err := s.repository.List(s.ctx, req)
 	if err != nil {
 		return nil, 0, err
@@ -42,7 +41,7 @@ func (s *ApiService) List(req *sysManagement.ListApiReq) ([]*sysManagement.Permi
 
 // GetElTree 获取所有api tree
 // element-plus el-tree的数据格式
-func (s *ApiService) GetElTree(roleId uint) ([]*sysManagement.PermissionTree, []string, []uint, error) {
+func (s *ApiService) GetElTree(roleId uint) ([]*sysManagement.ApiTreeNode, []string, []uint, error) {
 	list, err := s.repository.GetElTree(s.ctx)
 	if err != nil {
 		return nil, nil, nil, err
@@ -58,7 +57,7 @@ func (s *ApiService) GetElTree(roleId uint) ([]*sysManagement.PermissionTree, []
 		global.TD27_LOG.Error("获取角色API权限失败", zap.Error(err))
 	} else {
 		for _, perm := range permissions {
-			checkedKey = append(checkedKey, fmt.Sprintf("%s,%s", perm.Resource, perm.Method))
+			checkedKey = append(checkedKey, fmt.Sprintf("%s,%s", perm.Resource, perm.Action))
 			checkedIds = append(checkedIds, perm.ID)
 		}
 	}
@@ -86,7 +85,7 @@ func (s *ApiService) Delete(id uint) error {
 	}()
 
 	global.TD27_LOG.Info("删除API", 
-		zap.String("path", api.Resource), 
+		zap.String("path", api.Path), 
 		zap.String("method", api.Method))
 
 	return nil
@@ -108,8 +107,7 @@ func (s *ApiService) DeleteByIds(ids []uint) error {
 	return nil
 }
 
-func (s *ApiService) Update(req *sysManagement.PermissionModel) error {
-	req.Type = "api"
+func (s *ApiService) Update(req *sysManagement.UpdateApiReq) error {
 	_, err := s.repository.Update(s.ctx, req)
 	if err != nil {
 		return err

@@ -23,13 +23,14 @@ func NewMenuApi() *MenuApi {
 // @Summary   获取用户菜单
 // @Security  ApiKeyAuth
 // @Produce   application/json
-// @Success   200   {object}  common.Response{data=[]modelSysManagement.MenuModel,msg=string}
-// @Router    /menu/list [post]
+// @Success   200   {object}  common.Response{data=[]modelSysManagement.MenuData,msg=string}
+// @Router    /menu/list [get]
 func (a *MenuApi) List(c *gin.Context) {
 	userInfo, err := GetUserInfo(c)
 	if err != nil {
 		common.FailWithMessage("获取失败", c)
 		global.TD27_LOG.Error("获取失败!", zap.Error(err))
+		return
 	}
 
 	list, err := a.menuService.List(userInfo.ID)
@@ -57,7 +58,7 @@ func (a *MenuApi) Create(c *gin.Context) {
 		return
 	}
 
-	if err := a.menuService.Create(&req); err != nil {
+	if _, err := a.menuService.Create(&req); err != nil {
 		common.FailWithMessage(err.Error(), c)
 	} else {
 		common.OkWithMessage("添加成功", c)
