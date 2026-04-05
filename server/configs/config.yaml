@@ -4,7 +4,7 @@ jwt:
   expires-time: 86400
   buffer-time: 43200
   issuer: pddzl
-  multi-login: false       # 是否允许多设备同时登录：true-允许，false-只允许单设备
+  multi-login: true       # 是否允许多设备同时登录：true-允许，false-只允许单设备
   multi-login-limit: 5    # 多设备登录数量限制：0-无限制，>0-限制数量
 
 # casbin RBAC configuration

@@ -59,14 +59,14 @@ type MenuItem struct {
 
 // MenuData 前端菜单数据格式
 type MenuData struct {
-	ID        uint      `json:"id"`
-	Pid       uint      `json:"pid"`
-	Name      string    `json:"name"`      // 路由名称
-	Path      string    `json:"path"`      // 路由路径
-	Redirect  string    `json:"redirect"`  // 重定向
-	Component string    `json:"component"` // 组件路径
-	Sort      uint      `json:"sort"`      // 排序
-	Meta      MenuMeta  `json:"meta"`      // 元信息
+	ID        uint       `json:"id"`
+	Pid       uint       `json:"pid"`
+	Name      string     `json:"name"`      // 路由名称
+	Path      string     `json:"path"`      // 路由路径
+	Redirect  string     `json:"redirect"`  // 重定向
+	Component string     `json:"component"` // 组件路径
+	Sort      uint       `json:"sort"`      // 排序
+	Meta      MenuMeta   `json:"meta"`      // 元信息
 	Children  []MenuData `json:"children,omitempty"`
 }
 
@@ -245,7 +245,6 @@ func (e *menuEntity) Create(ctx context.Context, req *Menu) (*MenuModel, error) 
 		Sort:      req.Sort,
 		Hidden:    req.Meta.Hidden,
 		KeepAlive: req.Meta.KeepAlive,
-		Status:    true,
 	}
 
 	if err := e.conn.WithContext(ctx).Create(menu).Error; err != nil {

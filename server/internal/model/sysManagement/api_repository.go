@@ -36,12 +36,12 @@ type UpdateApiReq struct {
 
 // ApiTreeNode API树节点
 type ApiTreeNode struct {
-	ID        uint          `json:"id"`
-	ApiName   string        `json:"apiName"`
-	Path      string        `json:"path"`
-	Method    string        `json:"method"`
-	ApiGroup  string        `json:"apiGroup"`
-	Children  []*ApiTreeNode `json:"children,omitempty"`
+	ID       uint           `json:"id"`
+	ApiName  string         `json:"apiName"`
+	Path     string         `json:"path"`
+	Method   string         `json:"method"`
+	ApiGroup string         `json:"apiGroup"`
+	Children []*ApiTreeNode `json:"children,omitempty"`
 }
 
 // ApiTreeResp API树响应
@@ -115,7 +115,6 @@ func (e *apiEntity) Create(ctx context.Context, req *CreateApiReq) (*ApiModel, e
 		Path:     req.Path,
 		Method:   req.Method,
 		ApiGroup: req.ApiGroup,
-		Status:   true,
 	}
 
 	if err := e.conn.WithContext(ctx).Create(api).Error; err != nil {

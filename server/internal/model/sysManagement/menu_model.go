@@ -16,7 +16,6 @@ type MenuModel struct {
 	Sort      uint   `json:"sort" gorm:"default:0;comment:排序"`
 	Hidden    bool   `json:"hidden" gorm:"default:false;comment:是否隐藏"`
 	KeepAlive bool   `json:"keepAlive" gorm:"default:false;comment:缓存"`
-	Status    bool   `json:"status" gorm:"default:true;comment:状态"`
 	// 关联的权限ID
 	PermissionID uint `json:"permissionId" gorm:"index;comment:关联权限ID"`
 }

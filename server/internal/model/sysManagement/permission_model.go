@@ -21,7 +21,6 @@ type PermissionModel struct {
 	Action   string `json:"action" gorm:"size:20;default:'all';comment:操作:all|view|create|update|delete"`
 	// 关联的领域表ID
 	DomainID uint `json:"domainId" gorm:"index;comment:关联领域表ID(menu/api/button)"`
-	Status   bool `json:"status" gorm:"default:true;comment:状态"`
 }
 
 func (PermissionModel) TableName() string {
