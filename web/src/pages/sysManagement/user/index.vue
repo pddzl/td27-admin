@@ -1,10 +1,12 @@
 <script lang="ts" setup>
 import type { FormInstance, FormRules } from "element-plus"
-import type { userDataModel, RoleInfo } from "@/api/sysManagement/user"
+import type { Dept } from "@/api/sysManagement/dept"
+import type { RoleInfo, userDataModel } from "@/api/sysManagement/user"
 import { usePagination } from "@@/composables/usePagination_n"
 import { useValidateEmail, useValidatePhone } from "@@/utils/useValidate"
 import { reactive, ref } from "vue"
-import { roleListApi, roleTreeApi } from "@/api/sysManagement/role"
+import { getElTreeDeptsApi } from "@/api/sysManagement/dept"
+import { roleListApi } from "@/api/sysManagement/role"
 import {
   modifyPasswdApi,
   switchActiveApi,
@@ -13,7 +15,6 @@ import {
   userListApi,
   userUpdateApi
 } from "@/api/sysManagement/user"
-import { getElTreeDeptsApi, type Dept } from "@/api/sysManagement/dept"
 
 defineOptions({
   name: "User"
@@ -139,7 +140,7 @@ const formData = reactive({
   phone: "",
   email: "",
   active: false,
-  roleIds: [] as number[],  // 多角色
+  roleIds: [] as number[], // 多角色
   deptId: undefined as number | undefined
 })
 const formRules: FormRules = reactive({
@@ -211,7 +212,7 @@ function deleteUserAction(row: userDataModel) {
   })
     .then(() => {
       const index = tableData.value.indexOf(row)
-      userDeleteApi({ id: row.id }).then((res) => {
+      userDeleteApi({ username: row.username }).then((res) => {
         if (res.code === 0) {
           ElMessage({ type: "success", message: res.msg })
           tableData.value.splice(index, 1)
@@ -274,8 +275,8 @@ function editDialog(row: userDataModel) {
 }
 
 // 切换用户状态
-function switchAction(id: number, active: boolean) {
-  switchActiveApi({ id, active })
+function switchAction(username: string, active: boolean) {
+  switchActiveApi({ username, active })
     .then((res) => {
       if (res.code === 0) {
         if (active) {
@@ -286,12 +287,6 @@ function switchAction(id: number, active: boolean) {
       }
     })
     .catch(() => {})
-}
-
-// 格式化角色显示
-function formatRoles(roles: RoleInfo[]) {
-  if (!roles || roles.length === 0) return "-"
-  return roles.map(r => r.roleName).join(", ")
 }
 </script>
 
@@ -337,7 +332,7 @@ function formatRoles(roles: RoleInfo[]) {
                 :inactive-value="false"
                 active-text="启用"
                 inactive-text="禁用"
-                @change="switchAction(scope.row.id, scope.row.active)"
+                @change="switchAction(scope.row.username, scope.row.active)"
                 :disabled="scope.row.username === 'admin'"
               />
             </template>

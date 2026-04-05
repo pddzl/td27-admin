@@ -84,17 +84,17 @@ func (a *UserApi) List(c *gin.Context) {
 // @Security  ApiKeyAuth
 // @accept    application/json
 // @Produce   application/json
-// @Param     data  body      common.CId true "请求参数"
+// @Param     data  body      modelSysManagement.DeleteUserReq true "请求参数"
 // @Success   200   {object}  common.Response{msg=string}
 // @Router    /user/delete [post]
 func (a *UserApi) Delete(c *gin.Context) {
-	var cId common.CId
-	if err := c.ShouldBindJSON(&cId); err != nil {
+	var req modelSysManagement.DeleteUserReq
+	if err := c.ShouldBindJSON(&req); err != nil {
 		common.FailReq(err.Error(), c)
 		return
 	}
 
-	if err := a.userService.Delete(cId.ID); err != nil {
+	if err := a.userService.Delete(req.Username); err != nil {
 		common.FailWithMessage(err.Error(), c)
 		global.TD27_LOG.Error("删除失败", zap.Error(err))
 	} else {

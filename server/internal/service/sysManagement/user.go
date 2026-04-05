@@ -49,13 +49,13 @@ func (s *UserService) List(req *common.PageInfo, currentUserID uint) ([]*sysMana
 	return list, count, nil
 }
 
-func (s *UserService) Delete(id uint) error {
+func (s *UserService) Delete(username string) error {
 	// 删除用户前清除缓存
 	jwtService := NewJwtService()
-	if err := jwtService.DeleteUserCache(id); err != nil {
+	if err := jwtService.DeleteUserCache(s.ctx, username); err != nil {
 		// 缓存删除失败不影响主流程
 	}
-	return s.userRepository.Delete(s.ctx, id)
+	return s.userRepository.Delete(s.ctx, username)
 }
 
 func (s *UserService) Create(req *sysManagement.AddUserReq) error {
@@ -91,7 +91,7 @@ func (s *UserService) Update(req *sysManagement.UpdateUserReq) (*sysManagement.U
 
 	// 更新用户后清除缓存，下次请求会重新加载
 	jwtService := NewJwtService()
-	if cacheErr := jwtService.DeleteUserCache(req.ID); cacheErr != nil {
+	if cacheErr := jwtService.DeleteUserCache(s.ctx, req.Username); cacheErr != nil {
 		// 缓存删除失败不影响主流程
 	}
 
@@ -113,8 +113,8 @@ func (s *UserService) ModifyPasswd(req *sysManagement.ModifyPasswdReq) error {
 		return err
 	}
 	// 修改密码后清除缓存，强制重新登录
-	jwtService := NewJwtService()
-	jwtService.DeleteUserCache(req.ID)
+	//jwtService := NewJwtService()
+	//jwtService.DeleteUserCache(s.ctx, req.ID)
 	return nil
 }
 
@@ -122,7 +122,7 @@ func (s *UserService) ModifyPasswd(req *sysManagement.ModifyPasswdReq) error {
 func (s *UserService) SwitchActive(req *sysManagement.SwitchActiveReq) error {
 	// 切换状态前清除缓存
 	jwtService := NewJwtService()
-	if err := jwtService.DeleteUserCache(req.ID); err != nil {
+	if err := jwtService.DeleteUserCache(s.ctx, req.Username); err != nil {
 		// 缓存删除失败不影响主流程
 	}
 	return s.userRepository.SwitchActive(s.ctx, req)

@@ -91,6 +91,17 @@ func (c *PGCache) Del(ctx context.Context, keys ...string) error {
 		Delete(&sysTool.CacheModel{}).Error
 }
 
+func (c *PGCache) DelByUsername(ctx context.Context, username string) error {
+	db := c.getDB()
+	if db == nil {
+		return fmt.Errorf("database not initialized")
+	}
+
+	return db.WithContext(ctx).
+		Where("username = ?", username).Unscoped().
+		Delete(&sysTool.CacheModel{}).Error
+}
+
 // CleanupExpired 清理过期缓存（可由定时任务调用）
 func (c *PGCache) CleanupExpired(ctx context.Context) error {
 	db := c.getDB()

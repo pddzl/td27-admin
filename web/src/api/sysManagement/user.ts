@@ -11,8 +11,8 @@ interface userData {
   phone: string
   email: string
   active: boolean
-  roleIds: number[]  // 多角色支持
-  deptId?: number    // 部门ID（用于数据权限）
+  roleIds: number[] // 多角色支持
+  deptId?: number // 部门ID（用于数据权限）
 }
 
 export interface userDataModel extends Td27Model {
@@ -21,11 +21,11 @@ export interface userDataModel extends Td27Model {
   email: string
   active: boolean
   deptId?: number
-  deptName?: string  // 部门名称
+  deptName?: string // 部门名称
   // 多角色支持
   roles: RoleInfo[]
-  roleName: string  // 主角色名称（兼容旧版）
-  roleId: number    // 主角色ID（兼容旧版）
+  roleName: string // 主角色名称（兼容旧版）
+  roleId: number // 主角色ID（兼容旧版）
 }
 
 // 数据结构 - List
@@ -49,7 +49,7 @@ export function userListApi(data: PageInfo) {
 }
 
 // 删除用户
-export function userDeleteApi(data: CId) {
+export function userDeleteApi(data: { username: string }) {
   return request<ApiResponseData<null>>({
     url: "/user/delete",
     method: "post",
@@ -90,7 +90,7 @@ export function modifyPasswdApi(data: reqModifyPass & CId) {
 }
 
 // 切换用户状态
-export function switchActiveApi(data: { active: boolean } & CId) {
+export function switchActiveApi(data: { active: boolean, username: string }) {
   return request<ApiResponseData<null>>({
     url: "/user/switchActive",
     method: "post",

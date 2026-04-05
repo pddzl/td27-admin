@@ -7,7 +7,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"sort"
-	"strings"
 	"time"
 
 	"go.uber.org/zap"
@@ -259,7 +258,7 @@ func (jwtService *JwtService) RemoveAllTokens(username string) error {
 	}
 
 	// 删除所有token
-	if err := jwtService.cache.Del(ctx, keys...); err != nil {
+	if err = jwtService.cache.Del(ctx, keys...); err != nil {
 		return fmt.Errorf("删除用户token失败: %w", err)
 	}
 
@@ -310,48 +309,6 @@ func (jwtService *JwtService) GetCachedUser(userID uint) (*sysManagement.UserMod
 }
 
 // DeleteUserCache 删除用户缓存
-func (jwtService *JwtService) DeleteUserCache(userID uint) error {
-	ctx := context.Background()
-	key := fmt.Sprintf("%s%d", UserCachePrefix, userID)
-	return jwtService.cache.Del(ctx, key)
-}
-
-// GetRedisJWT 获取jwt（已废弃，使用 ValidateToken 替代）
-func (jwtService *JwtService) GetRedisJWT(username string) (string, error) {
-	if jwtService.isMultiLogin() {
-		return "", fmt.Errorf("multi-login mode: use ValidateToken instead")
-	}
-	ctx := context.Background()
-	tokenKey := jwtService.generateTokenKey(username, "")
-	return jwtService.cache.Get(ctx, tokenKey)
-}
-
-// SetRedisJWT 设置jwt（已废弃，使用 AddToken 替代）
-func (jwtService *JwtService) SetRedisJWT(username string, jwt string) error {
-	return jwtService.AddToken(username, jwt, time.Duration(global.TD27_CONFIG.JWT.ExpiresTime)*time.Second)
-}
-
-// DeleteJWT 删除 JWT 缓存（用于登出，已废弃，使用 RemoveToken 替代）
-func (jwtService *JwtService) DeleteJWT(username string) error {
-	// 兼容旧代码：单设备模式下删除token
-	if !jwtService.isMultiLogin() {
-		ctx := context.Background()
-		tokenKey := jwtService.generateTokenKey(username, "")
-		return jwtService.cache.Del(ctx, tokenKey)
-	}
-	return nil
-}
-
-// IsTokenValid 检查token是否有效（兼容旧代码）
-func (jwtService *JwtService) IsTokenValid(username string, token string) bool {
-	return jwtService.ValidateToken(username, token)
-}
-
-// extractTokenID 从token key中提取tokenID
-func extractTokenID(key string) string {
-	parts := strings.Split(key, ":")
-	if len(parts) >= 3 {
-		return parts[len(parts)-1]
-	}
-	return ""
+func (jwtService *JwtService) DeleteUserCache(ctx context.Context, username string) error {
+	return jwtService.cache.DelByUsername(ctx, username)
 }

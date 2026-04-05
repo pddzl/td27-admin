@@ -16,7 +16,7 @@ type UserRepository interface {
 	FindOne(context.Context, *FindOneUserReq) (*UserModel, error)
 	FindOneWithRoles(context.Context, uint) (*UserModel, error)
 	List(context.Context, *common.PageInfo, *DataPermission) ([]*UserResp, int64, error)
-	Delete(context.Context, uint) error
+	Delete(context.Context, string) error
 	Create(context.Context, *AddUserReq) (*UserModel, error)
 	Update(context.Context, *UpdateUserReq) (*UserModel, error)
 	GetUserInfo(context.Context, uint) (userResults *UserResp, err error)
@@ -179,11 +179,11 @@ func (e *userEntity) List(ctx context.Context, pageInfo *common.PageInfo, dataPe
 	return users, total, nil
 }
 
-func (e *userEntity) Delete(ctx context.Context, id uint) (err error) {
-	result := e.conn.WithContext(ctx).Where("id = ?", id).Unscoped().Delete(&UserModel{})
+func (e *userEntity) Delete(ctx context.Context, username string) (err error) {
+	result := e.conn.WithContext(ctx).Where("username = ?", username).Unscoped().Delete(&UserModel{})
 
 	if err = result.Error; err != nil {
-		return fmt.Errorf("delete user failed, id=%d: %w", id, err)
+		return fmt.Errorf("delete user failed, username=%s: %w", username, err)
 	}
 
 	if result.RowsAffected == 0 {
@@ -291,7 +291,7 @@ func (e *userEntity) ModifyPasswd(ctx context.Context, req *ModifyPasswdReq) (er
 
 	// Verify old password
 	var user UserModel
-	if err := db.Where("id = ? AND password = ?", req.ID, pkg.MD5V([]byte(req.OldPassword))).First(&user).Error; err != nil {
+	if err = db.Where("id = ? AND password = ?", req.ID, pkg.MD5V([]byte(req.OldPassword))).First(&user).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return errors.New("旧密码错误")
 		}
@@ -308,10 +308,10 @@ func (e *userEntity) ModifyPasswd(ctx context.Context, req *ModifyPasswdReq) (er
 
 // SwitchActive 切换启用状态
 func (e *userEntity) SwitchActive(ctx context.Context, req *SwitchActiveReq) (err error) {
-	tx := e.conn.WithContext(ctx).Model(&UserModel{}).Where("id = ?", req.ID).Update("active", req.Active)
+	tx := e.conn.WithContext(ctx).Model(&UserModel{}).Where("username = ?", req.Username).Update("active", req.Active)
 
 	if err = tx.Error; err != nil {
-		return fmt.Errorf("switch user active failed (id=%d): %w", req.ID, err)
+		return fmt.Errorf("switch user active failed (username=%s): %w", req.Username, err)
 	}
 
 	if tx.RowsAffected == 0 {

@@ -7,13 +7,13 @@ import (
 )
 
 type AddUserReq struct {
-	Username string   `json:"username" binding:"required"`     // 用户名
-	Password string   `json:"password" binding:"required"`     // 密码
-	Phone    string   `json:"phone" binding:"omitempty,phone"` // 手机号
-	Email    string   `json:"email" binding:"omitempty,email"` // 邮箱
-	Active   bool     `json:"active"`                          // 是否活跃
-	RoleIDs  []uint   `json:"roleIds" binding:"required"`      // 角色 IDs（多角色）
-	DeptID   uint     `json:"deptId"`                          // 部门ID
+	Username string `json:"username" binding:"required"`     // 用户名
+	Password string `json:"password" binding:"required"`     // 密码
+	Phone    string `json:"phone" binding:"omitempty,phone"` // 手机号
+	Email    string `json:"email" binding:"omitempty,email"` // 邮箱
+	Active   bool   `json:"active"`                          // 是否活跃
+	RoleIDs  []uint `json:"roleIds" binding:"required"`      // 角色 IDs（多角色）
+	DeptID   uint   `json:"deptId"`                          // 部门ID
 }
 
 // PhoneValidation 自定义手机号码校验函数
@@ -28,13 +28,17 @@ type FindOneUserReq struct {
 }
 
 type UpdateUserReq struct {
-	ID       uint     `json:"id" binding:"required"`           // 用户 ID
-	Username string   `json:"username" binding:"required"`     // 用户名
-	Phone    string   `json:"phone" binding:"omitempty,phone"` // 手机号
-	Email    string   `json:"email" binding:"omitempty,email"` // 邮箱
-	Active   bool     `json:"active"`                          // 是否活跃
-	RoleIDs  []uint   `json:"roleIds" binding:"required"`      // 角色 IDs（多角色）
-	DeptID   uint     `json:"deptId"`                          // 部门ID
+	ID       uint   `json:"id" binding:"required"`           // 用户 ID
+	Username string `json:"username" binding:"required"`     // 用户名
+	Phone    string `json:"phone" binding:"omitempty,phone"` // 手机号
+	Email    string `json:"email" binding:"omitempty,email"` // 邮箱
+	Active   bool   `json:"active"`                          // 是否活跃
+	RoleIDs  []uint `json:"roleIds" binding:"required"`      // 角色 IDs（多角色）
+	DeptID   uint   `json:"deptId"`                          // 部门ID
+}
+
+type DeleteUserReq struct {
+	Username string `json:"username" binding:"required"`
 }
 
 type ModifyPasswdReq struct {
@@ -44,8 +48,8 @@ type ModifyPasswdReq struct {
 }
 
 type SwitchActiveReq struct {
-	ID     uint `json:"id" binding:"required"` // 用户 ID
-	Active bool `json:"active"`                // 是否启用
+	Username string `json:"string" binding:"required"` // 用户 ID
+	Active   bool   `json:"active"`                    // 是否启用
 }
 
 type UserResp struct {
