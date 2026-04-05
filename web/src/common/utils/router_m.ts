@@ -24,11 +24,18 @@ export function dynamicImport(component: string) {
 export function formatRouter(menuList: MenuData[], formatMenu: RouteRecordRaw[]) {
   for (const menu of menuList) {
     const fMenu: RouteRecordRaw = {
-      name: menu.name,
+      name: menu.menu_name,
       path: menu.path,
       redirect: menu.redirect,
       component: dynamicImport(menu.component),
-      meta: menu.meta,
+      meta: {
+        svgIcon: menu.icon,
+        affix: menu.affix,
+        alwaysShow: menu.alwaysShow,
+        hidden: menu.hidden,
+        keepAlive: menu.keepAlive,
+        title: menu.title
+      },
       children: []
     }
     formatMenu.push(fMenu)

@@ -23,7 +23,7 @@ func NewMenuApi() *MenuApi {
 // @Summary   获取用户菜单
 // @Security  ApiKeyAuth
 // @Produce   application/json
-// @Success   200   {object}  common.Response{data=[]modelSysManagement.MenuData,msg=string}
+// @Success   200   {object}  common.Response{data=[]modelSysManagement.MenuResp,msg=string}
 // @Router    /menu/list [get]
 func (a *MenuApi) List(c *gin.Context) {
 	userInfo, err := GetUserInfo(c)
@@ -33,7 +33,7 @@ func (a *MenuApi) List(c *gin.Context) {
 		return
 	}
 
-	list, err := a.menuService.List(userInfo.ID)
+	list, err := a.menuService.List(userInfo)
 	if err != nil {
 		common.FailWithMessage(err.Error(), c)
 		global.TD27_LOG.Error("获取失败!", zap.Error(err))
@@ -120,7 +120,7 @@ func (a *MenuApi) Delete(c *gin.Context) {
 // @accept    application/json
 // @Produce   application/json
 // @Param     data  body      common.CId true "请求参数"
-// @Success   200   {object}  common.Response{data=modelSysManagement.MenuResp{list=[]modelSysManagement.MenuModel,menuIds=[]uint},msg=string}
+// @Success   200   {object}  common.Response{data=modelSysManagement.MenuElTreeResp{list=[]modelSysManagement.MenuResp,menuIds=[]uint},msg=string}
 // @Router    /menu/getElTreeMenus [post]
 func (a *MenuApi) GetElTreeMenus(c *gin.Context) {
 	var cId common.CId
@@ -133,7 +133,7 @@ func (a *MenuApi) GetElTreeMenus(c *gin.Context) {
 		common.FailWithMessage(err.Error(), c)
 		global.TD27_LOG.Error("获取失败!", zap.Error(err))
 	} else {
-		common.OkWithDetailed(modelSysManagement.MenuResp{
+		common.OkWithDetailed(modelSysManagement.MenuElTreeResp{
 			List:    list,
 			MenuIds: ids,
 		}, "获取成功", c)

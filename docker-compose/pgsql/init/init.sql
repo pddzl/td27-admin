@@ -254,23 +254,23 @@ INSERT INTO sys_management_user_roles (user_id, role_id) VALUES
 -- ============================
 -- Menu Data
 -- ============================
-INSERT INTO sys_management_menu (id, menu_name, icon, path, component, redirect, parent_id, sort, hidden, keep_alive, status) VALUES
-(1, '系统管理', 'lock', '/sysManagement', 'Layout', '/sysManagement/user', 0, 1, FALSE, FALSE, TRUE),
-(2, '用户管理', NULL, '/sysManagement/user', 'sysManagement/user/index.vue', NULL, 1, 1, FALSE, FALSE, TRUE),
-(3, '角色管理', NULL, '/sysManagement/role', 'sysManagement/role/index.vue', NULL, 1, 2, FALSE, FALSE, TRUE),
-(4, '菜单管理', NULL, '/sysManagement/menu', 'sysManagement/menu/index.vue', NULL, 1, 3, FALSE, FALSE, TRUE),
-(5, '接口管理', NULL, '/sysManagement/api', 'sysManagement/api/index.vue', NULL, 1, 4, FALSE, FALSE, TRUE),
-(6, '字典管理', NULL, '/sysManagement/dict', 'sysManagement/dict/index.vue', NULL, 1, 5, FALSE, FALSE, TRUE),
-(7, '部门管理', NULL, '/sysManagement/dept', 'sysManagement/dept/index.vue', NULL, 1, 6, FALSE, FALSE, TRUE),
-(20, '系统工具', 'config', '/systool', 'Layout', '/systool/cron', 0, 4, FALSE, FALSE, TRUE),
-(21, '定时任务', NULL, '/systool/cron', 'sysTool/cron/index.vue', NULL, 20, 1, FALSE, FALSE, TRUE),
-(22, '文件管理', NULL, '/systool/file', 'sysTool/file/index.vue', NULL, 20, 2, FALSE, FALSE, TRUE),
-(40, '系统监控', 'monitor', '/sysMonitor', 'Layout', '/sysMonitor/operationLog', 0, 5, FALSE, FALSE, TRUE),
-(41, '操作日志', NULL, '/sysMonitor/operationLog', 'sysMonitor/operationLog/index.vue', NULL, 40, 1, FALSE, FALSE, TRUE),
-(100, '多级菜单', 'menu', '/cenu', 'Layout', '/cenu/cenu1', 0, 2, FALSE, FALSE, TRUE),
-(101, 'cenu1', NULL, '/cenu/cenu1', 'cenu/cenu1/index.vue', '/cenu/cenu1/cenu1-1', 100, 1, FALSE, FALSE, TRUE),
-(102, 'cenu1-1', NULL, '/cenu/cenu1/cenu1-1', 'cenu/cenu1/cenu1-1/index.vue', NULL, 101, 1, FALSE, FALSE, TRUE),
-(103, 'cenu2', NULL, '/cenu/cenu2', 'cenu/cenu2/index.vue', NULL, 100, 2, FALSE, FALSE, TRUE);
+INSERT INTO sys_management_menu (id, menu_name, icon, path, component, redirect, parent_id, sort, hidden, keep_alive, status, title) VALUES
+(1, '系统管理', 'lock', '/sysManagement', 'Layout', '/sysManagement/user', 0, 1, FALSE, FALSE, TRUE, '系统管理'),
+(2, '用户管理', NULL, '/sysManagement/user', 'sysManagement/user/index.vue', NULL, 1, 1, FALSE, FALSE, TRUE, '用户管理'),
+(3, '角色管理', NULL, '/sysManagement/role', 'sysManagement/role/index.vue', NULL, 1, 2, FALSE, FALSE, TRUE, '角色管理'),
+(4, '菜单管理', NULL, '/sysManagement/menu', 'sysManagement/menu/index.vue', NULL, 1, 3, FALSE, FALSE, TRUE, '菜单管理'),
+(5, '接口管理', NULL, '/sysManagement/api', 'sysManagement/api/index.vue', NULL, 1, 4, FALSE, FALSE, TRUE, '接口管理'),
+(6, '字典管理', NULL, '/sysManagement/dict', 'sysManagement/dict/index.vue', NULL, 1, 5, FALSE, FALSE, TRUE, '字典管理'),
+(7, '部门管理', NULL, '/sysManagement/dept', 'sysManagement/dept/index.vue', NULL, 1, 6, FALSE, FALSE, TRUE, '部门管理'),
+(20, '系统工具', 'config', '/systool', 'Layout', '/systool/cron', 0, 4, FALSE, FALSE, TRUE, '系统工具'),
+(21, '定时任务', NULL, '/systool/cron', 'sysTool/cron/index.vue', NULL, 20, 1, FALSE, FALSE, TRUE, '定时任务'),
+(22, '文件管理', NULL, '/systool/file', 'sysTool/file/index.vue', NULL, 20, 2, FALSE, FALSE, TRUE, '文件管理'),
+(40, '系统监控', 'monitor', '/sysMonitor', 'Layout', '/sysMonitor/operationLog', 0, 5, FALSE, FALSE, TRUE, '系统监控'),
+(41, '操作日志', NULL, '/sysMonitor/operationLog', 'sysMonitor/operationLog/index.vue', NULL, 40, 1, FALSE, FALSE, TRUE, '操作日志'),
+(100, '多级菜单', 'menu', '/cenu', 'Layout', '/cenu/cenu1', 0, 2, FALSE, FALSE, TRUE, '多级菜单'),
+(101, 'cenu1', NULL, '/cenu/cenu1', 'cenu/cenu1/index.vue', '/cenu/cenu1/cenu1-1', 100, 1, FALSE, FALSE, TRUE, 'cenu1'),
+(102, 'cenu1-1', NULL, '/cenu/cenu1/cenu1-1', 'cenu/cenu1/cenu1-1/index.vue', NULL, 101, 1, FALSE, FALSE, TRUE, 'cenu1-1'),
+(103, 'cenu2', NULL, '/cenu/cenu2', 'cenu/cenu2/index.vue', NULL, 100, 2, FALSE, FALSE, TRUE, 'cenu2');
 
 -- ============================
 -- API Data

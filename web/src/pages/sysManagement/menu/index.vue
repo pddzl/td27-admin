@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import type { CascaderOption, FormInstance, FormRules } from "element-plus"
+import type { IconName } from "./icon.vue"
 import type { MenuDataModel } from "@/api/sysManagement/menu"
 import WarningBar from "@@/components/WarningBar/warningBar.vue"
 import { reactive, ref } from "vue"
@@ -38,14 +39,14 @@ function setOptions() {
   setMenuOptions(tableData.value, menuOption)
 }
 
-function setMenuOptions(menuData: any, optionsData: CascaderOption[]) {
+function setMenuOptions(menuData: MenuDataModel[], optionsData: CascaderOption[]) {
   for (const item of menuData) {
-    if (item.name === "ErrorPage") {
+    if (item.menu_name === "ErrorPage") {
       continue
     }
     if (item.children && item.children.length) {
       const option = {
-        label: item.meta.title,
+        label: item.title,
         value: item.id,
         children: []
       }
@@ -53,7 +54,7 @@ function setMenuOptions(menuData: any, optionsData: CascaderOption[]) {
       optionsData.push(option)
     } else {
       const option = {
-        label: item.meta.title,
+        label: item.title,
         value: item.id
       }
       optionsData.push(option)
@@ -65,22 +66,22 @@ enum operationKind {
   Add = "Add",
   Edit = "Edit"
 }
-let oKind: operationKind
+const oKind = ref<operationKind>()
 
 function addMenuDialog() {
   dialogTitle.value = "新增菜单"
-  oKind = operationKind.Add
+  oKind.value = operationKind.Add
   dialogVisible.value = true
 }
 
 let activeRowId: number
 function editMenuDialog(row: MenuDataModel) {
   dialogTitle.value = "编辑菜单"
-  oKind = operationKind.Edit
+  oKind.value = operationKind.Edit
   activeRowId = row.id
-  formData.pid = row.pid
-  if (row.name) {
-    formData.name = row.name
+  formData.parentId = row.parentId
+  if (row.menu_name) {
+    formData.menu_name = row.menu_name
   }
   formData.path = row.path
   formData.sort = row.sort
@@ -90,16 +91,16 @@ function editMenuDialog(row: MenuDataModel) {
   if (row.redirect) {
     formData.redirect = row.redirect
   }
-  if (row.meta?.title) {
-    formData.meta.title = row.meta?.title
+  if (row.title) {
+    formData.title = row.title
   }
-  if (row.meta?.svgIcon) {
-    formData.meta.icon = row.meta?.svgIcon
+  if (row.icon) {
+    formData.icon = row.icon
   }
-  formData.meta.hidden = !!row.meta?.hidden
-  formData.meta.affix = Boolean(row.meta?.affix)
-  formData.meta.keepAlive = Boolean(row.meta?.keepAlive)
-  formData.meta.alwaysShow = Boolean(row.meta?.alwaysShow)
+  formData.hidden = !!row.hidden
+  formData.affix = Boolean(row.affix)
+  formData.keepAlive = Boolean(row.keepAlive)
+  formData.alwaysShow = Boolean(row.alwaysShow)
   dialogVisible.value = true
 }
 
@@ -117,30 +118,31 @@ function deleteMenuAction(row: MenuDataModel) {
         }
       })
     })
-    .catch(() => {})
+    .catch(() => { })
 }
 
 // 表单
 const formRef = ref<FormInstance>()
 
 const formRules: FormRules = reactive({
-  pid: [{ required: true, trigger: "blur", message: "请选择父节点" }],
+  parentId: [{ required: true, trigger: "blur", message: "请选择父节点" }],
   path: [{ required: true, trigger: "blur", message: "请填写路由路径" }],
   component: [{ required: true, trigger: "blur", message: "请填写前端组件路径" }]
 })
 
 function initForm() {
-  formData.pid = 0
-  formData.name = ""
+  formData.menu_name = ""
   formData.path = ""
   formData.component = ""
   formData.redirect = ""
-  formData.meta.title = ""
-  formData.meta.icon = ""
-  formData.meta.hidden = false
-  formData.meta.affix = false
-  formData.meta.keepAlive = false
-  formData.meta.alwaysShow = false
+  formData.parentId = 0
+  formData.sort = 0
+  formData.title = ""
+  formData.icon = ""
+  formData.hidden = false
+  formData.affix = false
+  formData.keepAlive = false
+  formData.alwaysShow = true
 }
 
 function closeDialog() {
@@ -153,21 +155,32 @@ function handleClose(done: () => void) {
   done()
 }
 
-const formData = reactive({
-  name: "",
+const formData = reactive<{
+  menu_name: string
+  path: string
+  component: string
+  redirect: string
+  parentId: number
+  sort: number
+  title: string
+  icon: IconName | ""
+  hidden: boolean
+  affix: boolean
+  keepAlive: boolean
+  alwaysShow: boolean
+}>({
+  menu_name: "",
   path: "",
   component: "",
   redirect: "",
-  pid: 0,
+  parentId: 0,
   sort: 0,
-  meta: {
-    title: "",
-    icon: "",
-    hidden: false,
-    affix: false,
-    keepAlive: false,
-    alwaysShow: true
-  }
+  title: "",
+  icon: "",
+  hidden: false,
+  affix: false,
+  keepAlive: false,
+  alwaysShow: true
 })
 
 function operateAction(formEl: FormInstance | undefined) {
@@ -175,27 +188,25 @@ function operateAction(formEl: FormInstance | undefined) {
   formEl.validate(async (valid) => {
     if (valid) {
       const tempMenu = {
-        pid: formData.pid,
-        name: formData.name,
+        parentId: formData.parentId,
+        menu_name: formData.menu_name,
         path: formData.path,
         component: formData.component,
         sort: formData.sort,
-        redirect: formData.redirect || undefined,
-        meta: {
-          title: formData.meta.title,
-          icon: formData.meta.icon || undefined,
-          hidden: formData.meta.hidden || undefined,
-          affix: formData.meta.affix || undefined,
-          keepAlive: formData.meta.keepAlive || undefined,
-          alwaysShow: formData.meta.alwaysShow || undefined
-        }
+        redirect: formData.redirect,
+        title: formData.title,
+        icon: formData.icon,
+        hidden: formData.hidden,
+        affix: formData.affix,
+        keepAlive: formData.keepAlive,
+        alwaysShow: formData.alwaysShow
       }
-      if (oKind === "Add") {
+      if (oKind.value === "Add") {
         const res = await menuCreateApi(tempMenu)
         if (res.code === 0) {
           ElMessage({ type: "success", message: res.msg })
         }
-      } else if (oKind === "Edit") {
+      } else if (oKind.value === "Edit") {
         const res = await menuUpdateApi({ id: activeRowId, ...tempMenu })
         if (res.code === 0) {
           ElMessage({ type: "success", message: res.msg })
@@ -227,19 +238,19 @@ function operateAction(formEl: FormInstance | undefined) {
       <div class="table-wrapper">
         <el-table :data="tableData" row-key="id">
           <el-table-column prop="id" label="ID" />
-          <el-table-column prop="pid" label="父节点" />
-          <el-table-column prop="meta.title" label="展示名称">
+          <el-table-column prop="parentId" label="父节点" />
+          <el-table-column prop="title" label="展示名称">
             <template #default="scope">
-              <el-tag :effect="scope.row.pid === 0 ? 'light' : 'plain'">
-                {{ scope.row.meta.title }}
+              <el-tag :effect="scope.row.parentId === 0 ? 'light' : 'plain'">
+                {{ scope.row.title }}
               </el-tag>
             </template>
           </el-table-column>
           <el-table-column prop="name" label="路由名称" />
           <el-table-column prop="path" label="路由路径" />
-          <el-table-column prop="meta.hidden" label="是否隐藏">
+          <el-table-column prop="hidden" label="是否隐藏">
             <template #default="scope">
-              <el-tag v-if="!scope.row.meta.hidden" type="success" effect="plain">
+              <el-tag v-if="!scope.row.hidden" type="success" effect="plain">
                 显示
               </el-tag>
               <el-tag v-else type="warning" effect="plain">
@@ -263,33 +274,22 @@ function operateAction(formEl: FormInstance | undefined) {
       </div>
     </el-card>
     <el-dialog
-      v-model="dialogVisible"
-      :title="dialogTitle"
-      :before-close="handleClose"
-      :close-on-click-modal="false"
+      v-model="dialogVisible" :title="dialogTitle" :before-close="handleClose" :close-on-click-modal="false"
       :draggable="true"
     >
       <WarningBar title="新增菜单，需要在角色管理内配置权限才可使用" />
       <el-form
-        ref="formRef"
-        :model="formData"
-        :rules="formRules"
-        :inline="true"
-        label-position="top"
+        ref="formRef" :model="formData" :rules="formRules" :inline="true" label-position="top"
         label-width="85px"
       >
-        <el-form-item label="父节点" prop="pid" style="width: 30%">
+        <el-form-item label="父节点" prop="parentId" style="width: 30%">
           <el-cascader
-            v-model="formData.pid"
-            style="width: 100%"
-            :options="menuOption"
-            :props="{ checkStrictly: true, emitPath: false }"
-            clearable
-            filterable
+            v-model="formData.parentId" style="width: 100%" :options="menuOption"
+            :props="{ checkStrictly: true, emitPath: false }" clearable filterable
           />
         </el-form-item>
         <el-form-item label="路由名称" prop="name" style="width: 30%">
-          <el-input v-model="formData.name" />
+          <el-input v-model="formData.menu_name" />
         </el-form-item>
         <el-form-item label="路由路径" prop="path" style="width: 30%">
           <el-input v-model="formData.path" />
@@ -301,34 +301,34 @@ function operateAction(formEl: FormInstance | undefined) {
           <el-input v-model="formData.redirect" />
         </el-form-item>
         <el-form-item label="展示名称" prop="meta.title" style="width: 30%">
-          <el-input v-model="formData.meta.title" />
+          <el-input v-model="formData.title" />
         </el-form-item>
         <el-form-item label="排序" prop="sort" style="width: 30%">
           <el-input-number v-model="formData.sort" :min="1" />
         </el-form-item>
-        <el-form-item label="隐藏" prop="meta.hidden" style="width: 30%">
-          <el-select v-model="formData.meta.hidden">
+        <el-form-item label="隐藏" prop="hidden" style="width: 30%">
+          <el-select v-model="formData.hidden">
             <el-option :value="false" label="否" />
             <el-option :value="true" label="是" />
           </el-select>
         </el-form-item>
-        <el-form-item label="图标" prop="meta.icon" style="width: 30%">
-          <icon :meta="formData.meta" style="width: 100%" />
+        <el-form-item label="图标" prop="icon" style="width: 30%">
+          <icon v-model="formData.icon" style="width: 100%" />
         </el-form-item>
-        <el-form-item label="固定" prop="meta.affix" style="width: 30%">
-          <el-select v-model="formData.meta.affix">
+        <el-form-item label="固定" prop="affix" style="width: 30%">
+          <el-select v-model="formData.affix">
             <el-option :value="false" label="否" />
             <el-option :value="true" label="是" />
           </el-select>
         </el-form-item>
-        <el-form-item label="一直显示根路由" prop="meta.alwaysShow" style="width: 30%">
-          <el-select v-model="formData.meta.alwaysShow">
+        <el-form-item label="一直显示根路由" prop="alwaysShow" style="width: 30%">
+          <el-select v-model="formData.alwaysShow">
             <el-option :value="false" label="否" />
             <el-option :value="true" label="是" />
           </el-select>
         </el-form-item>
-        <el-form-item label="KeepAlive" prop="meta.keepAlive" style="width: 30%">
-          <el-select v-model="formData.meta.keepAlive">
+        <el-form-item label="KeepAlive" prop="keepAlive" style="width: 30%">
+          <el-select v-model="formData.keepAlive">
             <el-option :value="false" label="否" />
             <el-option :value="true" label="是" />
           </el-select>

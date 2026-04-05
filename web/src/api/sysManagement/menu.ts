@@ -1,26 +1,23 @@
-import type * as ElementPlusIconsVue from "@element-plus/icons-vue"
+// import type * as ElementPlusIconsVue from "@element-plus/icons-vue"
 import type { SvgName } from "~virtual/svg-component"
 import { request } from "@/http/axios_n"
 
-type ElementPlusIconsName = keyof typeof ElementPlusIconsVue
+// type ElementPlusIconsName = keyof typeof ElementPlusIconsVue
 
 export interface MenuData {
-  pid: number
-  name: string
+  menu_name: string
+  icon?: SvgName | ""
   path: string
-  redirect?: string
   component: string
+  redirect: string
+  parentId: number
   sort: number
-  meta: {
-    hidden?: boolean
-    title?: string
-    elIcon?: ElementPlusIconsName
-    svgIcon?: SvgName
-    affix?: boolean
-    keepAlive?: boolean
-    alwaysShow?: boolean
-  }
-  children?: MenuData[]
+  hidden: boolean
+  keepAlive: boolean
+  title: string
+  affix: boolean
+  alwaysShow: boolean
+  children?: MenuDataModel[]
 }
 
 export interface MenuDataModel extends MenuData, Td27Model {}

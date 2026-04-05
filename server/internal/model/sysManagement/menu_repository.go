@@ -9,25 +9,20 @@ import (
 	"gorm.io/gorm"
 )
 
-// Menu 菜单请求结构
+// Menu 菜单请求结构（前端传入）
 type Menu struct {
-	Pid       uint   `json:"pid"`                          // 默认0 根目录
-	Name      string `json:"name"`                         // 名称
-	Path      string `json:"path" binding:"required"`      // 路径
-	Redirect  string `json:"redirect"`                     // 重定向
-	Component string `json:"component" binding:"required"` // 前端组件
-	Sort      uint   `json:"sort" binding:"required"`      // 排序
-	Meta      Meta   `json:"meta"`
-}
-
-// Meta 菜单元信息
-type Meta struct {
-	Hidden     bool   `json:"hidden"`     // 隐藏菜单
-	Title      string `json:"title"`      // 菜单名
-	Icon       string `json:"icon"`       // element 图标
-	Affix      bool   `json:"affix"`      // 组件固定
-	KeepAlive  bool   `json:"keepAlive"`  // 组件缓存
-	AlwaysShow bool   `json:"alwaysShow"` // 是否一直显示根路由
+	ParentId   uint   `json:"parentId"`                     // 默认0 根目录
+	MenuName   string `json:"menu_name"`                    // 名称（路由名）
+	Path       string `json:"path" binding:"required"`      // 路径
+	Redirect   string `json:"redirect"`                     // 重定向
+	Component  string `json:"component" binding:"required"` // 前端组件
+	Sort       uint   `json:"sort" binding:"required"`      // 排序
+	Hidden     bool   `json:"hidden"`                       // 隐藏菜单
+	Title      string `json:"title"`                        // 菜单名
+	Icon       string `json:"icon"`                         // 图标
+	Affix      bool   `json:"affix"`                        // 固定
+	KeepAlive  bool   `json:"keepAlive"`                    // 缓存
+	AlwaysShow bool   `json:"alwaysShow"`                   // 一直显示根路由
 }
 
 // UpdateMenuReq 更新菜单请求
@@ -36,97 +31,37 @@ type UpdateMenuReq struct {
 	Menu
 }
 
-// MenuResp 菜单响应
+// MenuResp 菜单响应（扁平化结构，直接返回给前端）
 type MenuResp struct {
-	List    interface{} `json:"list"`
-	MenuIds []uint      `json:"menuIds"`
+	ID         uint       `json:"id"`
+	MenuName   string     `json:"menu_name"`
+	Icon       string     `json:"icon"`
+	Path       string     `json:"path"`
+	Component  string     `json:"component"`
+	Redirect   string     `json:"redirect"`
+	ParentID   uint       `json:"parentId"`
+	Sort       uint       `json:"sort"`
+	Hidden     bool       `json:"hidden"`
+	KeepAlive  bool       `json:"keepAlive"`
+	Affix      bool       `json:"affix,omitempty"`
+	AlwaysShow bool       `json:"alwaysShow,omitempty"`
+	Title      string     `json:"title,omitempty"`
+	Children   []MenuResp `json:"children,omitempty"`
 }
 
-// MenuItem 菜单项（用于树形结构）
-type MenuItem struct {
-	ID        uint       `json:"id"`
-	MenuName  string     `json:"menuName"`
-	Icon      string     `json:"icon"`
-	Path      string     `json:"path"`
-	Component string     `json:"component"`
-	Redirect  string     `json:"redirect"`
-	Pid       uint       `json:"pid"`
-	Sort      uint       `json:"sort"`
-	Hidden    bool       `json:"hidden"`
-	KeepAlive bool       `json:"keepAlive"`
-	Children  []MenuItem `json:"children,omitempty"`
-}
-
-// MenuData 前端菜单数据格式
-type MenuData struct {
-	ID        uint       `json:"id"`
-	Pid       uint       `json:"pid"`
-	Name      string     `json:"name"`      // 路由名称
-	Path      string     `json:"path"`      // 路由路径
-	Redirect  string     `json:"redirect"`  // 重定向
-	Component string     `json:"component"` // 组件路径
-	Sort      uint       `json:"sort"`      // 排序
-	Meta      MenuMeta   `json:"meta"`      // 元信息
-	Children  []MenuData `json:"children,omitempty"`
-}
-
-// MenuMeta 菜单元信息
-type MenuMeta struct {
-	Hidden     bool   `json:"hidden,omitempty"`
-	Title      string `json:"title,omitempty"`
-	SvgIcon    string `json:"svgIcon,omitempty"`
-	ElIcon     string `json:"elIcon,omitempty"`
-	Affix      bool   `json:"affix,omitempty"`
-	KeepAlive  bool   `json:"keepAlive,omitempty"`
-	AlwaysShow bool   `json:"alwaysShow,omitempty"`
-}
-
-// toMenuData converts MenuItem to frontend MenuData format
-func toMenuData(item *MenuItem) *MenuData {
-	return &MenuData{
-		ID:        item.ID,
-		Pid:       item.Pid,
-		Name:      item.MenuName,
-		Path:      item.Path,
-		Redirect:  item.Redirect,
-		Component: item.Component,
-		Sort:      item.Sort,
-		Meta: MenuMeta{
-			Hidden:    item.Hidden,
-			Title:     item.MenuName,
-			SvgIcon:   item.Icon,
-			KeepAlive: item.KeepAlive,
-		},
-	}
-}
-
-// ConvertToMenuDataList converts MenuItem tree to MenuData tree
-func ConvertToMenuDataList(items []*MenuItem) []MenuData {
-	var result []MenuData
-	for _, item := range items {
-		if item == nil {
-			continue
-		}
-		menuData := *toMenuData(item)
-		if len(item.Children) > 0 {
-			children := make([]*MenuItem, len(item.Children))
-			for i := range item.Children {
-				children[i] = &item.Children[i]
-			}
-			menuData.Children = ConvertToMenuDataList(children)
-		}
-		result = append(result, menuData)
-	}
-	return result
+// MenuElTreeResp el-tree菜单响应
+type MenuElTreeResp struct {
+	List    []MenuResp `json:"list"`
+	MenuIds []uint     `json:"menuIds"`
 }
 
 type MenuRepository interface {
-	List(ctx context.Context, roleId uint) ([]*MenuItem, error)
-	ListByRoleIDs(ctx context.Context, roleIDs []uint) ([]*MenuItem, error)
+	List(ctx context.Context, roleId uint) ([]MenuResp, error)
+	ListByRoleIDs(ctx context.Context, roleIDs []uint) ([]MenuResp, error)
 	Create(ctx context.Context, req *Menu) (*MenuModel, error)
 	Delete(ctx context.Context, id uint) error
 	Update(ctx context.Context, req *UpdateMenuReq) error
-	GetElTreeMenus(ctx context.Context, roleId uint) ([]*MenuItem, []uint, error)
+	GetElTreeMenus(ctx context.Context, roleId uint) ([]MenuResp, []uint, error)
 	FindByIds(ctx context.Context, ids []uint) ([]*MenuModel, error)
 	GetAll(ctx context.Context) ([]*MenuModel, error)
 }
@@ -139,52 +74,65 @@ func NewMenuEntity(conn *gorm.DB) MenuRepository {
 	return &menuEntity{conn: conn}
 }
 
-// toMenuItem converts MenuModel to MenuItem
-func toMenuItem(m *MenuModel) *MenuItem {
-	return &MenuItem{
-		ID:        m.ID,
-		MenuName:  m.MenuName,
-		Icon:      m.Icon,
-		Path:      m.Path,
-		Component: m.Component,
-		Redirect:  m.Redirect,
-		Pid:       m.ParentID,
-		Sort:      m.Sort,
-		Hidden:    m.Hidden,
-		KeepAlive: m.KeepAlive,
+// toMenuResp converts MenuModel to MenuResp
+func toMenuResp(m *MenuModel) MenuResp {
+	return MenuResp{
+		ID:         m.ID,
+		MenuName:   m.MenuName,
+		Icon:       m.Icon,
+		Path:       m.Path,
+		Component:  m.Component,
+		Redirect:   m.Redirect,
+		ParentID:   m.ParentID,
+		Sort:       m.Sort,
+		Hidden:     m.Hidden,
+		KeepAlive:  m.KeepAlive,
+		Affix:      m.Affix,
+		AlwaysShow: m.AlwaysShow,
+		Title:      m.Title,
 	}
 }
 
 // buildMenuTree 构建菜单树
-func buildMenuTree(menus []*MenuItem) []*MenuItem {
+func buildMenuTree(menus []MenuResp) []MenuResp {
 	if len(menus) == 0 {
-		return []*MenuItem{}
+		return []MenuResp{}
 	}
 
-	menuMap := make(map[uint]*MenuItem, len(menus))
-	for _, menu := range menus {
-		menuMap[menu.ID] = menu
+	// Use map to store menus by ID
+	menuMap := make(map[uint]*MenuResp, len(menus))
+	for i := range menus {
+		menuCopy := menus[i] // create a copy
+		menuMap[menus[i].ID] = &menuCopy
 	}
 
-	var rootMenus []*MenuItem
-	for _, menu := range menus {
-		if menu.Pid == 0 {
+	// Build tree structure
+	var rootMenus []*MenuResp
+	for _, menu := range menuMap {
+		if menu.ParentID == 0 {
 			rootMenus = append(rootMenus, menu)
 		} else {
-			if parent, ok := menuMap[menu.Pid]; ok {
+			if parent, ok := menuMap[menu.ParentID]; ok {
 				parent.Children = append(parent.Children, *menu)
 			}
 		}
 	}
 
+	// Sort root menus
 	sort.Slice(rootMenus, func(i, j int) bool {
 		return rootMenus[i].Sort < rootMenus[j].Sort
 	})
 
-	return rootMenus
+	// Convert back to value slice
+	result := make([]MenuResp, len(rootMenus))
+	for i, rm := range rootMenus {
+		result[i] = *rm
+	}
+
+	return result
 }
 
-func (e *menuEntity) List(ctx context.Context, roleId uint) ([]*MenuItem, error) {
+func (e *menuEntity) List(ctx context.Context, roleId uint) ([]MenuResp, error) {
 	// Query menus through role_permissions -> permissions -> menus
 	var menus []*MenuModel
 	err := e.conn.WithContext(ctx).
@@ -199,17 +147,17 @@ func (e *menuEntity) List(ctx context.Context, roleId uint) ([]*MenuItem, error)
 		return nil, fmt.Errorf("list menus by role err: %w", err)
 	}
 
-	var menuItems []*MenuItem
+	var menuResps []MenuResp
 	for _, m := range menus {
-		menuItems = append(menuItems, toMenuItem(m))
+		menuResps = append(menuResps, toMenuResp(m))
 	}
 
-	return buildMenuTree(menuItems), nil
+	return buildMenuTree(menuResps), nil
 }
 
-func (e *menuEntity) ListByRoleIDs(ctx context.Context, roleIDs []uint) ([]*MenuItem, error) {
+func (e *menuEntity) ListByRoleIDs(ctx context.Context, roleIDs []uint) ([]MenuResp, error) {
 	if len(roleIDs) == 0 {
-		return []*MenuItem{}, nil
+		return []MenuResp{}, nil
 	}
 
 	var menus []*MenuModel
@@ -218,7 +166,6 @@ func (e *menuEntity) ListByRoleIDs(ctx context.Context, roleIDs []uint) ([]*Menu
 		Joins("JOIN sys_management_permission p ON p.domain_id = sys_management_menu.id AND p.type = 'menu'").
 		Joins("JOIN sys_management_role_permissions rp ON rp.permission_id = p.id").
 		Where("rp.role_id IN ?", roleIDs).
-		Where("sys_management_menu.status = ?", true).
 		Group("sys_management_menu.id").
 		Find(&menus).Error
 
@@ -226,25 +173,28 @@ func (e *menuEntity) ListByRoleIDs(ctx context.Context, roleIDs []uint) ([]*Menu
 		return nil, fmt.Errorf("list menus by role ids err: %w", err)
 	}
 
-	var menuItems []*MenuItem
+	var menuResps []MenuResp
 	for _, m := range menus {
-		menuItems = append(menuItems, toMenuItem(m))
+		menuResps = append(menuResps, toMenuResp(m))
 	}
 
-	return buildMenuTree(menuItems), nil
+	return buildMenuTree(menuResps), nil
 }
 
 func (e *menuEntity) Create(ctx context.Context, req *Menu) (*MenuModel, error) {
 	menu := &MenuModel{
-		MenuName:  req.Meta.Title,
-		Icon:      req.Meta.Icon,
-		Path:      req.Path,
-		Component: req.Component,
-		Redirect:  req.Redirect,
-		ParentID:  req.Pid,
-		Sort:      req.Sort,
-		Hidden:    req.Meta.Hidden,
-		KeepAlive: req.Meta.KeepAlive,
+		MenuName:   req.Title,
+		Icon:       req.Icon,
+		Path:       req.Path,
+		Component:  req.Component,
+		Redirect:   req.Redirect,
+		ParentID:   req.ParentId,
+		Sort:       req.Sort,
+		Hidden:     req.Hidden,
+		KeepAlive:  req.KeepAlive,
+		Affix:      req.Affix,
+		AlwaysShow: req.AlwaysShow,
+		Title:      req.Title,
 	}
 
 	if err := e.conn.WithContext(ctx).Create(menu).Error; err != nil {
@@ -256,15 +206,18 @@ func (e *menuEntity) Create(ctx context.Context, req *Menu) (*MenuModel, error) 
 
 func (e *menuEntity) Update(ctx context.Context, req *UpdateMenuReq) error {
 	updates := map[string]interface{}{
-		"menu_name":  req.Meta.Title,
-		"icon":       req.Meta.Icon,
-		"path":       req.Path,
-		"component":  req.Component,
-		"redirect":   req.Redirect,
-		"parent_id":  req.Pid,
-		"sort":       req.Sort,
-		"hidden":     req.Meta.Hidden,
-		"keep_alive": req.Meta.KeepAlive,
+		"menu_name":   req.Title,
+		"icon":        req.Icon,
+		"path":        req.Path,
+		"component":   req.Component,
+		"redirect":    req.Redirect,
+		"parent_id":   req.ParentId,
+		"sort":        req.Sort,
+		"hidden":      req.Hidden,
+		"keep_alive":  req.KeepAlive,
+		"affix":       req.Affix,
+		"always_show": req.AlwaysShow,
+		"title":       req.Title,
 	}
 
 	result := e.conn.WithContext(ctx).
@@ -299,7 +252,7 @@ func (e *menuEntity) Delete(ctx context.Context, id uint) error {
 	return nil
 }
 
-func (e *menuEntity) GetElTreeMenus(ctx context.Context, roleId uint) ([]*MenuItem, []uint, error) {
+func (e *menuEntity) GetElTreeMenus(ctx context.Context, roleId uint) ([]MenuResp, []uint, error) {
 	db := e.conn.WithContext(ctx)
 
 	var allMenus []*MenuModel
@@ -307,12 +260,12 @@ func (e *menuEntity) GetElTreeMenus(ctx context.Context, roleId uint) ([]*MenuIt
 		return nil, nil, fmt.Errorf("query menus failed: %w", err)
 	}
 
-	var menuItems []*MenuItem
+	var menuResps []MenuResp
 	for _, m := range allMenus {
-		menuItems = append(menuItems, toMenuItem(m))
+		menuResps = append(menuResps, toMenuResp(m))
 	}
 
-	rootMenus := buildMenuTree(menuItems)
+	rootMenus := buildMenuTree(menuResps)
 
 	// Query role-permission relations
 	var relations []RolePermission
@@ -330,14 +283,14 @@ func (e *menuEntity) GetElTreeMenus(ctx context.Context, roleId uint) ([]*MenuIt
 	}
 
 	checkedIDs := make([]uint, 0)
-	for _, m := range menuItems {
+	for _, m := range menuResps {
 		if _, ok := permSet[m.ID]; !ok {
 			continue
 		}
 
 		isParent := false
-		for _, c := range menuItems {
-			if c.Pid == m.ID {
+		for _, c := range menuResps {
+			if c.ParentID == m.ID {
 				if _, ok := permSet[c.ID]; ok {
 					isParent = true
 					break

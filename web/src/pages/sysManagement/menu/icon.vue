@@ -1,78 +1,116 @@
 <script lang="ts" setup>
-import { reactive, ref } from "vue"
+import { computed } from "vue"
 
-const props = defineProps({
-  meta: {
-    default() {
-      return {}
-    },
-    type: Object
-  }
+/**
+ * 1. Strongly typed icon names (must match your SvgIcon declaration)
+ */
+export type IconName = "link"
+  | "menu"
+  | "access"
+  | "bug"
+  | "config"
+  | "dashboard"
+  | "file"
+  | "fullscreen-exit"
+  | "fullscreen"
+  | "keyboard-down"
+  | "keyboard-enter"
+  | "keyboard-esc"
+  | "keyboard-up"
+  | "load"
+  | "lock"
+  | "monitor"
+  | "network"
+  | "plus"
+  | "radar"
+  | "search"
+  | "setting"
+
+/**
+ * 2. Props (v-model standard)
+ */
+const props = defineProps<{
+  modelValue: IconName | "" // allow empty for clearable
+}>()
+
+/**
+ * 3. Emits
+ */
+const emit = defineEmits<{
+  (e: "update:modelValue", val: IconName | ""): void
+}>()
+
+/**
+ * 4. Icon options (strictly typed)
+ */
+const options: IconName[] = [
+  "dashboard",
+  "setting",
+  "lock",
+  "menu",
+  "bug",
+  "network",
+  "plus",
+  "load",
+  "config",
+  "link",
+  "access",
+  "file",
+  "monitor"
+]
+
+/**
+ * 5. v-model bridge
+ */
+const iconValue = computed<IconName | "">({
+  get: () => props.modelValue,
+  set: val => emit("update:modelValue", val)
 })
 
-const options = reactive([
-  { key: "dashboard", label: "dashboard" },
-  { key: "setting", label: "setting" },
-  { key: "lock", label: "lock" },
-  { key: "menu", label: "menu" },
-  { key: "bug", label: "bug" },
-  { key: "network", label: "network" },
-  { key: "plus", label: "plus" },
-  { key: "load", label: "load" },
-  { key: "config", label: "config" },
-  { key: "link", label: "link" },
-  { key: "access", label: "access" },
-  { key: "file", label: "file" },
-  { key: "monitor", label: "monitor" }
-])
-
-const metaData = ref(props.meta)
-
-function getValidIconName(label: string) {
-  const validNames = ["search", "link", "load", "access", "bug", "config", "dashboard", "file", "fullscreen-exit", "fullscreen", "keyboard-down", "keyboard-enter", "keyboard-esc", "keyboard-up", "lock", "menu", "monitor", "network", "plus", "radar", "setting"]
-  return validNames.includes(label) ? label : "setting" // fallback
-}
-
-// function iconForOption(option: typeof options[0]) {
-//   return computed(() => getValidIconName(option.label))
-// }
-
-function iconForOption(option: typeof options[0]) {
-  return computed(() => getValidIconName(option.label) as "search" | "link" | "load" | "access" | "bug" | "config" | "dashboard" | "file" | "fullscreen-exit" | "fullscreen" | "keyboard-down" | "keyboard-enter" | "keyboard-esc" | "keyboard-up" | "lock" | "menu" | "monitor" | "network" | "plus" | "radar" | "setting")
+/**
+ * 6. Safe icon fallback
+ */
+function getValidIconName(name: string): IconName {
+  return options.includes(name as IconName)
+    ? (name as IconName)
+    : "setting"
 }
 </script>
 
 <template>
-  <div>
-    <el-select
-      v-model="metaData.icon"
-      class="td27-select"
-      style="width: 100%"
-      clearable
-      filterable
-      placeholder="请选择"
-    >
-      <template #prefix>
-        <SvgIcon :name="metaData.icon" class="td27-icon" />
-      </template>
+  <el-select
+    v-model="iconValue"
+    clearable
+    filterable
+    placeholder="请选择图标"
+    style="width: 100%"
+  >
+    <!-- 当前选中图标 -->
+    <template #prefix>
+      <SvgIcon
+        v-if="iconValue"
+        :name="getValidIconName(iconValue)"
+        class="td27-icon"
+      />
+    </template>
 
-      <el-option
-        v-for="item in options"
-        :key="item.key"
-        class="select__option_item"
-        :label="item.key"
-        :value="item.key"
-      >
-        <span class="td27-icon" style="padding: 3px 0 0">
-          <SvgIcon :name="iconForOption(item).value" />
-        </span>
-        <span>{{ item.key }}</span>
-      </el-option>
-    </el-select>
-  </div>
+    <!-- 下拉选项 -->
+    <el-option
+      v-for="item in options"
+      :key="item"
+      :label="item"
+      :value="item"
+      class="select__option_item"
+    >
+      <span class="td27-icon">
+        <SvgIcon :name="item" />
+      </span>
+      <span>{{ item }}</span>
+    </el-option>
+  </el-select>
 </template>
 
-<style>
+<style scoped>
 .td27-icon {
   color: rgb(132, 146, 166);
   font-size: 14px;
@@ -82,6 +120,5 @@ function iconForOption(option: typeof options[0]) {
 .select__option_item {
   display: flex;
   align-items: center;
-  justify-content: flex-start;
 }
 </style>

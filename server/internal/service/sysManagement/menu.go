@@ -4,51 +4,36 @@ import (
 	"context"
 
 	"server/internal/global"
-	"server/internal/model/sysManagement"
+	modelSysManagement "server/internal/model/sysManagement"
 )
 
 type MenuService struct {
-	menuRepository sysManagement.MenuRepository
-	userRepository sysManagement.UserRepository
+	menuRepository modelSysManagement.MenuRepository
+	userRepository modelSysManagement.UserRepository
 	ctx            context.Context
 }
 
 func NewMenuService() *MenuService {
 	return &MenuService{
-		menuRepository: sysManagement.NewMenuEntity(global.TD27_DB),
-		userRepository: sysManagement.NewUserEntity(global.TD27_DB),
+		menuRepository: modelSysManagement.NewMenuEntity(global.TD27_DB),
+		userRepository: modelSysManagement.NewUserEntity(global.TD27_DB),
 		ctx:            context.Background(),
 	}
 }
 
-func (s *MenuService) List(userId uint) ([]sysManagement.MenuData, error) {
-	// Get user with roles preloaded
-	user, err := s.userRepository.FindOneWithRoles(s.ctx, userId)
-	if err != nil {
-		return nil, err
-	}
-
+func (s *MenuService) List(customClaims *modelSysManagement.CustomClaims) ([]modelSysManagement.MenuResp, error) {
 	// Get all role IDs from the user
-	roleIDs := user.GetAllRoleIDs()
-	if len(roleIDs) == 0 {
-		return []sysManagement.MenuData{}, nil
-	}
+	roleIDs := customClaims.GetAllRoleIDs()
 
 	// Get menus from all roles (union of permissions)
-	items, err := s.menuRepository.ListByRoleIDs(s.ctx, roleIDs)
-	if err != nil {
-		return nil, err
-	}
-
-	// Convert to frontend format
-	return sysManagement.ConvertToMenuDataList(items), nil
+	return s.menuRepository.ListByRoleIDs(s.ctx, roleIDs)
 }
 
-func (s *MenuService) Create(req *sysManagement.Menu) (*sysManagement.MenuModel, error) {
+func (s *MenuService) Create(req *modelSysManagement.Menu) (*modelSysManagement.MenuModel, error) {
 	return s.menuRepository.Create(s.ctx, req)
 }
 
-func (s *MenuService) Update(req *sysManagement.UpdateMenuReq) error {
+func (s *MenuService) Update(req *modelSysManagement.UpdateMenuReq) error {
 	return s.menuRepository.Update(s.ctx, req)
 }
 
@@ -57,11 +42,6 @@ func (s *MenuService) Delete(id uint) error {
 }
 
 // GetElTreeMenus 获取所有menu
-func (s *MenuService) GetElTreeMenus(roleId uint) ([]*sysManagement.MenuItem, []uint, error) {
-	menus, checkedIds, err := s.menuRepository.GetElTreeMenus(s.ctx, roleId)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	return menus, checkedIds, err
+func (s *MenuService) GetElTreeMenus(roleId uint) ([]modelSysManagement.MenuResp, []uint, error) {
+	return s.menuRepository.GetElTreeMenus(s.ctx, roleId)
 }
