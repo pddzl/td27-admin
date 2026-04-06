@@ -34,15 +34,15 @@ const menuDefaultProps = {
 const menuIds = ref<number[]>([])
 // const menuIds = [2, 3, 4, 7, 8]
 const menuTreeData = ref<MenuData[]>([])
-function getTreeData() {
-  getElTreeMenusApi()
+function getTreeData(id: number) {
+  getElTreeMenusApi({ id })
     .then((res) => {
       menuTreeData.value = res.data.list
       menuIds.value = res.data.menuIds
     })
     .catch(() => {})
 }
-getTreeData()
+getTreeData(props.id)
 
 function UpdateHandle() {
   updateRolePermissionApi({

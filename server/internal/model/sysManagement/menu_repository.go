@@ -14,7 +14,7 @@ type MenuRepository interface {
 	Create(ctx context.Context, req *Menu) (*MenuModel, error)
 	Delete(ctx context.Context, id uint) error
 	Update(ctx context.Context, req *UpdateMenuReq) error
-	GetElTreeMenus(ctx context.Context, roleIds []uint) ([]MenuResp, []uint, error)
+	GetElTreeMenus(ctx context.Context, id uint) ([]MenuResp, []uint, error)
 	FindByIds(ctx context.Context, ids []uint) ([]*MenuModel, error)
 	GetAll(ctx context.Context) ([]*MenuModel, error)
 }
@@ -184,7 +184,7 @@ func (e *menuEntity) Delete(ctx context.Context, id uint) error {
 	return nil
 }
 
-func (e *menuEntity) GetElTreeMenus(ctx context.Context, roleIds []uint) ([]MenuResp, []uint, error) {
+func (e *menuEntity) GetElTreeMenus(ctx context.Context, id uint) ([]MenuResp, []uint, error) {
 	db := e.conn.WithContext(ctx)
 
 	var allMenus []*MenuModel
@@ -204,7 +204,7 @@ func (e *menuEntity) GetElTreeMenus(ctx context.Context, roleIds []uint) ([]Menu
 	if err := db.
 		Model(&RolePermissionModel{}).
 		Select("permission_id").
-		Where("role_id IN ?", roleIds).
+		Where("role_id = ?", id).
 		Scan(&relations).Error; err != nil {
 		return nil, nil, fmt.Errorf("query role menus failed: %w", err)
 	}

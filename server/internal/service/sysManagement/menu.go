@@ -42,6 +42,6 @@ func (s *MenuService) Delete(id uint) error {
 }
 
 // GetElTreeMenus 获取所有menu
-func (s *MenuService) GetElTreeMenus(req *modelSysManagement.CustomClaims) ([]modelSysManagement.MenuResp, []uint, error) {
-	return s.menuRepository.GetElTreeMenus(s.ctx, req.GetAllRoleIDs())
+func (s *MenuService) GetElTreeMenus(id uint) ([]modelSysManagement.MenuResp, []uint, error) {
+	return s.menuRepository.GetElTreeMenus(s.ctx, id)
 }
