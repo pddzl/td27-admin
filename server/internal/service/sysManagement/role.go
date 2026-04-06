@@ -20,7 +20,7 @@ type RoleService struct {
 
 func NewRoleService() *RoleService {
 	return &RoleService{
-		roleRepository: sysManagement.NewRoleEntity(global.TD27_DB),
+		roleRepository: sysManagement.NewRoleRepo(global.TD27_DB),
 		userRepository: sysManagement.NewUserEntity(global.TD27_DB),
 		ctx:            context.Background(),
 	}
@@ -70,13 +70,13 @@ func (s *RoleService) Delete(id uint) error {
 	}
 
 	// 删除角色的所有权限关联（通过统一权限表）
-	if err := s.roleRepository.DeleteRoleMenu(s.ctx, id); err != nil {
+	if err = s.roleRepository.DeleteRoleMenu(s.ctx, id); err != nil {
 		global.TD27_LOG.Warn("删除role权限关联失败", zap.Error(err))
 	}
 
 	// 重新加载Casbin策略
 	go func() {
-		if err := casbinService.ReloadPolicy(); err != nil {
+		if err = casbinService.ReloadPolicy(); err != nil {
 			global.TD27_LOG.Error("重新加载Casbin策略失败", zap.Error(err))
 		}
 	}()
@@ -89,22 +89,5 @@ func (s *RoleService) Update(req *sysManagement.UpdateRoleReq) error {
 	if err != nil {
 		return err
 	}
-	return nil
-}
-
-// UpdateRoleMenu 编辑用户menu
-func (s *RoleService) UpdateRoleMenu(roleId uint, menuIds []uint) error {
-	// check role existence
-	_, err := s.roleRepository.FindOne(s.ctx, roleId)
-	if err != nil {
-		return err
-	}
-
-	// update sys_management_role_permissions (menu permissions)
-	err = s.roleRepository.UpdateRoleMenu(s.ctx, roleId, menuIds)
-	if err != nil {
-		return err
-	}
-
 	return nil
 }

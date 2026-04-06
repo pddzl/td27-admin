@@ -3,7 +3,7 @@ import type { ElTree as ELTree1 } from "element-plus"
 import type { MenuData } from "@/api/sysManagement/menu"
 import { ref, watch } from "vue"
 import { getElTreeMenusApi } from "@/api/sysManagement/menu"
-import { updateRoleMenuApi } from "@/api/sysManagement/role"
+import { updateRolePermissionApi } from "@/api/sysManagement/role_permission"
 
 const props = defineProps({
   id: {
@@ -44,10 +44,11 @@ function getTreeData() {
 }
 getTreeData()
 
-function editRoleMenu() {
-  updateRoleMenuApi({
-    roleId: props.id,
-    menuIds: [...(treeRef.value?.getCheckedKeys() as number[]), ...(treeRef.value?.getHalfCheckedKeys() as number[])]
+function UpdateHandle() {
+  updateRolePermissionApi({
+    role_id: props.id,
+    permission_ids: [...(treeRef.value?.getCheckedKeys() as number[]), ...(treeRef.value?.getHalfCheckedKeys() as number[])],
+    domain: "menu"
   })
     .then((res) => {
       if (res.code === 0) {
@@ -62,7 +63,7 @@ function editRoleMenu() {
   <div>
     <div class="clearfix">
       <el-input v-model="filterText" class="fitler" placeholder="筛选" />
-      <el-button type="primary" class="button" @click="editRoleMenu">
+      <el-button type="primary" class="button" @click="UpdateHandle">
         更新
       </el-button>
     </div>

@@ -5,20 +5,22 @@ import (
 )
 
 // PermissionType 权限类型
+type PermissionType string
+
 const (
-	PermissionTypeMenu   = "menu"   // 菜单权限
-	PermissionTypeAPI    = "api"    // API权限
-	PermissionTypeButton = "button" // 按钮权限
-	PermissionTypeData   = "data"   // 数据权限
+	PermissionTypeMenu   PermissionType = "menu"
+	PermissionTypeAPI    PermissionType = "api"
+	PermissionTypeButton PermissionType = "button"
+	PermissionTypeData   PermissionType = "data"
 )
 
 // PermissionModel 统一权限身份表（仅用于RBAC授权）
 type PermissionModel struct {
 	common.Td27Model
-	Name     string `json:"name" gorm:"size:100;not null;comment:权限名称"`
-	Type     string `json:"type" gorm:"size:20;not null;comment:权限类型:menu|api|button|data"`
-	Resource string `json:"resource" gorm:"size:200;not null;comment:资源标识，如:/api/user或menu:users"`
-	Action   string `json:"action" gorm:"size:20;default:'all';comment:操作:all|view|create|update|delete"`
+	Name     string         `json:"name" gorm:"size:100;not null;comment:权限名称"`
+	Domain   PermissionType `gorm:"type:varchar(20);not null;check:domain IN ('menu','api','button','data')"`
+	Resource string         `json:"resource" gorm:"size:200;not null;comment:资源标识，如:/api/user或menu:users"`
+	Action   string         `json:"action" gorm:"size:20;default:'all';comment:操作:all|view|create|update|delete"`
 	// 关联的领域表ID
 	DomainID uint `json:"domainId" gorm:"index;comment:关联领域表ID(menu/api/button)"`
 }

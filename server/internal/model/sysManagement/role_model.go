@@ -11,7 +11,6 @@ type RoleModel struct {
 	ParentID *uint        `json:"parentId" gorm:"index;comment:父角色ID"` // 父角色ID，支持层级
 	Parent   *RoleModel   `json:"parent,omitempty" gorm:"foreignKey:ParentID"`
 	Children []*RoleModel `json:"children,omitempty" gorm:"foreignKey:ParentID"`
-	// 权限通过 sys_management_role_permissions 关联
 	// 权限缓存，避免频繁查询
 	PermissionHash string `json:"-" gorm:"comment:权限哈希，用于缓存失效判断"`
 }

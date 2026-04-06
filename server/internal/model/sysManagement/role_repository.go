@@ -15,19 +15,18 @@ type RoleRepository interface {
 	Create(ctx context.Context, req *RoleModel) (*RoleModel, error)
 	Delete(ctx context.Context, id uint) error
 	Update(ctx context.Context, req *UpdateRoleReq) error
-	UpdateRoleMenu(ctx context.Context, roleId uint, menuIds []uint) error
 	DeleteRoleMenu(ctx context.Context, roleId uint) error
 }
 
-type roleEntity struct {
+type roleRepo struct {
 	conn *gorm.DB
 }
 
-func NewRoleEntity(conn *gorm.DB) RoleRepository {
-	return &roleEntity{conn: conn}
+func NewRoleRepo(conn *gorm.DB) RoleRepository {
+	return &roleRepo{conn: conn}
 }
 
-func (e *roleEntity) FindOne(ctx context.Context, id uint) (*RoleModel, error) {
+func (e *roleRepo) FindOne(ctx context.Context, id uint) (*RoleModel, error) {
 	var roleModel RoleModel
 	result := e.conn.WithContext(ctx).Find(&roleModel, "id=?", id)
 	if result.Error != nil {
@@ -39,7 +38,7 @@ func (e *roleEntity) FindOne(ctx context.Context, id uint) (*RoleModel, error) {
 	return &roleModel, nil
 }
 
-func (e *roleEntity) List(ctx context.Context, req *common.PageInfo) ([]RoleModel, int64, error) {
+func (e *roleRepo) List(ctx context.Context, req *common.PageInfo) ([]RoleModel, int64, error) {
 	req.Normalize()
 
 	var roles []RoleModel
@@ -63,13 +62,13 @@ func (e *roleEntity) List(ctx context.Context, req *common.PageInfo) ([]RoleMode
 	return roles, total, nil
 }
 
-func (e *roleEntity) Create(ctx context.Context, req *RoleModel) (*RoleModel, error) {
+func (e *roleRepo) Create(ctx context.Context, req *RoleModel) (*RoleModel, error) {
 	err := e.conn.WithContext(ctx).Create(req).Error
 
 	return req, err
 }
 
-func (e *roleEntity) Delete(ctx context.Context, id uint) error {
+func (e *roleRepo) Delete(ctx context.Context, id uint) error {
 	tx := e.conn.WithContext(ctx)
 
 	result := tx.Unscoped().Delete(&RoleModel{}, id)
@@ -85,7 +84,7 @@ func (e *roleEntity) Delete(ctx context.Context, id uint) error {
 	return nil
 }
 
-func (e *roleEntity) Update(ctx context.Context, req *UpdateRoleReq) error {
+func (e *roleRepo) Update(ctx context.Context, req *UpdateRoleReq) error {
 	result := e.conn.WithContext(ctx).
 		Model(&RoleModel{}).
 		Where("id = ?", req.ID).
@@ -102,8 +101,8 @@ func (e *roleEntity) Update(ctx context.Context, req *UpdateRoleReq) error {
 	return nil
 }
 
-// UpdateRoleMenu 编辑角色的菜单权限（使用统一权限表）
-func (e *roleEntity) UpdateRoleMenu(ctx context.Context, roleId uint, menuIds []uint) error {
+// UpdateRolePermissionReq 编辑角色权限（使用统一权限表）
+func (e *roleRepo) UpdateRolePermission(ctx context.Context, roleId uint, menuIds []uint) error {
 	// First, delete existing menu permissions for this role
 	//if err := e.DeleteRoleMenu(ctx, roleId); err != nil {
 	//	return err
@@ -137,7 +136,7 @@ func (e *roleEntity) UpdateRoleMenu(ctx context.Context, roleId uint, menuIds []
 	return nil
 }
 
-func (e *roleEntity) DeleteRoleMenu(ctx context.Context, roleId uint) error {
+func (e *roleRepo) DeleteRoleMenu(ctx context.Context, roleId uint) error {
 	// Delete from role_permissions where permission is of type 'menu'
 	return e.conn.WithContext(ctx).
 		Exec(`

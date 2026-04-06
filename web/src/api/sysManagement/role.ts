@@ -2,7 +2,7 @@ import { request } from "@/http/axios_n"
 
 export interface roleData {
   roleName: string
-  parentId?: number  // 父角色ID（支持角色层级）
+  parentId?: number // 父角色ID（支持角色层级）
 }
 
 export interface roleDataModel extends roleData, Td27Model {

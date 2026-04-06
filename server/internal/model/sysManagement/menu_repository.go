@@ -93,7 +93,7 @@ func (e *menuEntity) List(ctx context.Context, roleIDs []uint) ([]MenuResp, erro
 	}
 
 	var menus []*MenuModel
-	err := e.conn.WithContext(ctx).Debug().
+	err := e.conn.WithContext(ctx).
 		Model(&MenuModel{}).
 		Joins("JOIN sys_management_permission p ON p.domain_id = sys_management_menu.id AND p.type = 'menu'").
 		Joins("JOIN sys_management_role_permissions rp ON rp.permission_id = p.id").

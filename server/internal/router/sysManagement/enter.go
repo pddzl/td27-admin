@@ -7,6 +7,7 @@ type RouterGroup struct {
 	*CasbinRouter
 	*UserRouter
 	*RoleRouter
+	*RolePermissionRouter
 	*MenuRouter
 	*ApiRouter
 	*DictRouter
@@ -16,15 +17,16 @@ type RouterGroup struct {
 
 func NewRouterGroup() *RouterGroup {
 	return &RouterGroup{
-		LogRegRouter:     NewLogRegRouter(),
-		CasbinRouter:     NewCasbinRouter(),
-		UserRouter:       NewUserRouter(),
-		RoleRouter:       NewRoleRouter(),
-		MenuRouter:       NewMenuRouter(),
-		ApiRouter:        NewApiRouter(),
-		DictRouter:       NewDictRouter(),
-		DictDetailRouter: NewDictDetailRouter(),
-		DeptRouter:       NewDeptRouter(),
+		LogRegRouter:         NewLogRegRouter(),
+		CasbinRouter:         NewCasbinRouter(),
+		UserRouter:           NewUserRouter(),
+		RoleRouter:           NewRoleRouter(),
+		RolePermissionRouter: NewRolePermissionRouter(),
+		MenuRouter:           NewMenuRouter(),
+		ApiRouter:            NewApiRouter(),
+		DictRouter:           NewDictRouter(),
+		DictDetailRouter:     NewDictDetailRouter(),
+		DeptRouter:           NewDeptRouter(),
 	}
 }
 
@@ -36,6 +38,7 @@ func (r *RouterGroup) InitPrivate(group *gin.RouterGroup) {
 	r.InitCasbinRouter(group)
 	r.InitUserRouter(group)
 	r.InitRoleRouter(group)
+	r.InitRolePermissionRouter(group)
 	r.InitMenuRouter(group)
 	r.InitApiRouter(group)
 	r.InitDictRouter(group)

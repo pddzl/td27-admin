@@ -38,7 +38,7 @@ func (e *fileEntity) Upload(ctx context.Context, file *multipart.FileHeader) (*F
 
 	// Prepare model
 	uploadModel := &FileModel{
-		Mime: file.Header.Get("Content-Type"),
+		Mime: file.Header.Get("Content-Domain"),
 	}
 
 	// Parse filename

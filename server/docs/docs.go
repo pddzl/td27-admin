@@ -1642,7 +1642,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "UpdateRoleMenu"
+                    "UpdateRolePermission"
                 ],
                 "summary": "编辑用户菜单",
                 "parameters": [

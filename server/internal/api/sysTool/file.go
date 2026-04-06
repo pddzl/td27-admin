@@ -40,7 +40,7 @@ func (a *FileApi) Upload(c *gin.Context) {
 	}
 
 	// 只允许上传 csv文件
-	if file.Header.Get("Content-Type") != "text/csv" {
+	if file.Header.Get("Content-Domain") != "text/csv" {
 		common.FailWithStatusMessage(400, "只允许上传 csv文件", c)
 		return
 	}
@@ -103,7 +103,7 @@ func (a *FileApi) Download(c *gin.Context) {
 		return
 	}
 
-	c.Header("Content-Type", "application/octet-stream")
+	c.Header("Content-Domain", "application/octet-stream")
 	c.Header("Content-Disposition", "attachment; filename="+fileName)
 	c.Header("Content-Transfer-Encoding", "binary")
 	c.File(path)
