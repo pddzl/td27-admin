@@ -3,13 +3,12 @@ import type { FormInstance, FormRules } from "element-plus"
 import type { roleDataModel } from "@/api/sysManagement/role"
 import { usePagination } from "@@/composables/usePagination_n"
 import { reactive, ref } from "vue"
-import { 
-  roleCreateApi, 
-  roleDeleteApi, 
-  roleListApi, 
-  roleTreeApi,
+import {
+  roleCreateApi,
+  roleDeleteApi,
+  roleListApi,
   roleUpdateApi,
-  setRoleInheritanceApi 
+  setRoleInheritanceApi
 } from "@/api/sysManagement/role"
 import Apis from "./components/apis.vue"
 import Menus from "./components/menus.vue"
@@ -60,7 +59,7 @@ const formRef = ref<FormInstance>()
 const formData = reactive({
   id: 0,
   roleName: "",
-  parentId: undefined as number | undefined  // 父角色ID
+  parentId: undefined as number | undefined // 父角色ID
 })
 const formRules: FormRules = reactive({
   roleName: [{ required: true, trigger: "blur", message: "请填写角色名称" }]
@@ -93,19 +92,19 @@ function operateAction(formEl: FormInstance | undefined) {
   formEl.validate(async (valid) => {
     if (valid) {
       if (kind.value === "Add") {
-        const res = await roleCreateApi({ 
+        const res = await roleCreateApi({
           roleName: formData.roleName,
-          parentId: formData.parentId 
+          parentId: formData.parentId
         })
         if (res.code === 0) {
           ElMessage({ type: "success", message: res.msg })
           tableData.value.push(res.data)
         }
       } else if (kind.value === "Edit") {
-        const res = await roleUpdateApi({ 
-          id: activeRow.id, 
+        const res = await roleUpdateApi({
+          id: activeRow.id,
           roleName: formData.roleName,
-          parentId: formData.parentId 
+          parentId: formData.parentId
         })
         if (res.code === 0) {
           ElMessage({ type: "success", message: res.msg })
@@ -261,14 +260,16 @@ function getParentName(parentId?: number) {
         </el-form-item>
         <el-form-item label="父角色">
           <el-select v-model="formData.parentId" clearable placeholder="请选择父角色（可选）" style="width: 100%">
-            <el-option 
-              v-for="role in tableData.filter(r => r.id !== formData.id)" 
-              :key="role.id" 
-              :label="role.roleName" 
-              :value="role.id" 
+            <el-option
+              v-for="role in tableData.filter(r => r.id !== formData.id)"
+              :key="role.id"
+              :label="role.roleName"
+              :value="role.id"
             />
           </el-select>
-          <div class="el-form-item__tip">继承父角色的所有权限</div>
+          <div class="el-form-item__tip">
+            继承父角色的所有权限
+          </div>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -296,19 +297,23 @@ function getParentName(parentId?: number) {
       <el-form label-width="100px">
         <el-form-item label="父角色">
           <el-select v-model="inheritForm.parentRoleId" clearable placeholder="请选择父角色" style="width: 100%">
-            <el-option 
-              v-for="role in tableData.filter(r => r.id !== inheritForm.childRoleId)" 
-              :key="role.id" 
-              :label="role.roleName" 
-              :value="role.id" 
+            <el-option
+              v-for="role in tableData.filter(r => r.id !== inheritForm.childRoleId)"
+              :key="role.id"
+              :label="role.roleName"
+              :value="role.id"
             />
           </el-select>
         </el-form-item>
       </el-form>
       <template #footer>
         <div class="dialog-footer">
-          <el-button @click="inheritDialogVisible = false">取消</el-button>
-          <el-button type="primary" @click="saveInheritance">确认</el-button>
+          <el-button @click="inheritDialogVisible = false">
+            取消
+          </el-button>
+          <el-button type="primary" @click="saveInheritance">
+            确认
+          </el-button>
         </div>
       </template>
     </el-dialog>

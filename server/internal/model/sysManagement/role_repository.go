@@ -105,9 +105,9 @@ func (e *roleEntity) Update(ctx context.Context, req *UpdateRoleReq) error {
 // UpdateRoleMenu 编辑角色的菜单权限（使用统一权限表）
 func (e *roleEntity) UpdateRoleMenu(ctx context.Context, roleId uint, menuIds []uint) error {
 	// First, delete existing menu permissions for this role
-	if err := e.DeleteRoleMenu(ctx, roleId); err != nil {
-		return err
-	}
+	//if err := e.DeleteRoleMenu(ctx, roleId); err != nil {
+	//	return err
+	//}
 
 	// If no menu IDs, just return
 	if len(menuIds) == 0 {
@@ -124,7 +124,7 @@ func (e *roleEntity) UpdateRoleMenu(ctx context.Context, roleId uint, menuIds []
 
 	// Create role-permission associations
 	for _, perm := range permissions {
-		rp := RolePermission{
+		rp := RolePermissionModel{
 			RoleID:       roleId,
 			PermissionID: perm.ID,
 			DataScope:    "all", // default data scope for menus

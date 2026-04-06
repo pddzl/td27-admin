@@ -12,7 +12,7 @@ type ApiModel struct {
 	Method   string `json:"method" gorm:"size:10;not null;comment:HTTP方法"`
 	ApiGroup string `json:"apiGroup" gorm:"size:50;comment:API分组"`
 	// 关联的权限ID
-	PermissionID uint `json:"permissionId" gorm:"index;comment:关联权限ID"`
+	//PermissionID uint `json:"permissionId" gorm:"index;comment:关联权限ID"`
 }
 
 func (ApiModel) TableName() string {

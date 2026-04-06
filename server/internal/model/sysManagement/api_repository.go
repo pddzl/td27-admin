@@ -191,7 +191,7 @@ func (e *apiEntity) FindByIds(ctx context.Context, ids []uint) ([]*ApiModel, err
 
 func (e *apiEntity) GetElTree(ctx context.Context) ([]*ApiTreeNode, error) {
 	var apis []*ApiModel
-	if err := e.conn.WithContext(ctx).Where("status = ?", true).Find(&apis).Error; err != nil {
+	if err := e.conn.WithContext(ctx).Find(&apis).Error; err != nil {
 		return nil, fmt.Errorf("get all apis failed: %w", err)
 	}
 
@@ -225,7 +225,6 @@ func (e *apiEntity) GetAllGroups(ctx context.Context) ([]string, error) {
 	var groups []string
 	err := e.conn.WithContext(ctx).
 		Model(&ApiModel{}).
-		Where("status = ?", true).
 		Distinct("api_group").
 		Pluck("api_group", &groups).Error
 	if err != nil {

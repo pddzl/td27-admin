@@ -98,7 +98,7 @@ func RegisterTables(db *gorm.DB) {
 			sysManagement.ApiModel{},
 			// 统一权限模型
 			sysManagement.PermissionModel{},
-			sysManagement.RolePermission{},
+			sysManagement.RolePermissionModel{},
 			// 部门（用于数据权限）
 			sysManagement.DeptModel{},
 			// 监控

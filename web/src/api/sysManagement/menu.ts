@@ -59,10 +59,9 @@ interface allMenus {
   menuIds: number[]
 }
 
-export function getElTreeMenusApi(data: CId) {
+export function getElTreeMenusApi() {
   return request<ApiResponseData<allMenus>>({
     url: "/menu/getElTreeMenus",
-    method: "post",
-    data
+    method: "get"
   })
 }

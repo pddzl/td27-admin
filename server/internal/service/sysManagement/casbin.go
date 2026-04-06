@@ -46,7 +46,7 @@ func getCasbinModel() (model.Model, error) {
 	[matchers]
 	m = r.sub == p.sub && keyMatch2(r.obj, p.obj) && (r.act == p.act || p.act == '*')
 	`
-	
+
 	// 如果启用角色继承，使用更复杂的匹配器
 	if global.TD27_CONFIG.Casbin.EnableRoleHierarchy {
 		text = `
@@ -67,7 +67,7 @@ func getCasbinModel() (model.Model, error) {
 		m = g(r.sub, p.sub) && keyMatch2(r.obj, p.obj) && (r.act == p.act || p.act == '*')
 		`
 	}
-	
+
 	return model.NewModelFromString(text)
 }
 
@@ -75,30 +75,30 @@ func (cs *CasbinService) Casbin() *casbin.SyncedCachedEnforcer {
 	once.Do(func() {
 		// 使用基于统一权限表的适配器
 		adapter := casbinpkg.NewPermissionAdapter(global.TD27_DB)
-		
+
 		m, err := getCasbinModel()
 		if err != nil {
 			zap.L().Error("字符串加载模型失败!", zap.Error(err))
 			return
 		}
-		
+
 		syncedCachedEnforcer, _ = casbin.NewSyncedCachedEnforcer(m, adapter)
-		
+
 		// 配置缓存TTL
 		cacheTTL := global.TD27_CONFIG.Casbin.CacheTTL
 		if cacheTTL <= 0 {
 			cacheTTL = 3600 // 默认1小时
 		}
 		syncedCachedEnforcer.SetExpireTime(time.Duration(cacheTTL) * time.Second)
-		
+
 		// 启用自动加载策略
 		if global.TD27_CONFIG.Casbin.AutoLoadInterval > 0 {
 			syncedCachedEnforcer.StartAutoLoadPolicy(time.Duration(global.TD27_CONFIG.Casbin.AutoLoadInterval) * time.Second)
 		}
-		
+
 		_ = syncedCachedEnforcer.LoadPolicy()
-		
-		global.TD27_LOG.Info("Casbin enforcer initialized with unified permission table", 
+
+		global.TD27_LOG.Info("Casbin enforcer initialized with unified permission table",
 			zap.Bool("roleHierarchy", global.TD27_CONFIG.Casbin.EnableRoleHierarchy),
 			zap.Int("cacheTTL", cacheTTL))
 	})
@@ -108,7 +108,7 @@ func (cs *CasbinService) Casbin() *casbin.SyncedCachedEnforcer {
 // Enforce 执行权限检查（支持多角色）
 func (cs *CasbinService) Enforce(roleIDs []uint, path string, method string) (bool, error) {
 	e := cs.Casbin()
-	
+
 	// 尝试所有角色，只要有一个通过就允许
 	for _, roleID := range roleIDs {
 		sub := strconv.Itoa(int(roleID))
@@ -120,7 +120,7 @@ func (cs *CasbinService) Enforce(roleIDs []uint, path string, method string) (bo
 			return true, nil
 		}
 	}
-	
+
 	return false, nil
 }
 
@@ -134,10 +134,10 @@ func (cs *CasbinService) AddRoleInheritance(childRoleID, parentRoleID uint) erro
 	if !global.TD27_CONFIG.Casbin.EnableRoleHierarchy {
 		return errors.New("role hierarchy is disabled")
 	}
-	
+
 	child := strconv.Itoa(int(childRoleID))
 	parent := strconv.Itoa(int(parentRoleID))
-	
+
 	e := cs.Casbin()
 	_, err := e.AddGroupingPolicy(child, parent)
 	return err
@@ -147,7 +147,7 @@ func (cs *CasbinService) AddRoleInheritance(childRoleID, parentRoleID uint) erro
 func (cs *CasbinService) RemoveRoleInheritance(childRoleID, parentRoleID uint) error {
 	child := strconv.Itoa(int(childRoleID))
 	parent := strconv.Itoa(int(parentRoleID))
-	
+
 	e := cs.Casbin()
 	_, err := e.RemoveGroupingPolicy(child, parent)
 	return err
@@ -163,10 +163,10 @@ func (cs *CasbinService) GetInheritedRoles(roleID uint) ([]string, error) {
 // UpdateRoleAPIPermissions 更新角色的API权限（通过统一权限表）
 func (cs *CasbinService) UpdateRoleAPIPermissions(roleID uint, apiPermissionIDs []uint) error {
 	db := global.TD27_DB
-	
+
 	// 开始事务
 	tx := db.Begin()
-	
+
 	// 1. 删除该角色现有的API权限
 	if err := tx.Exec(`
 		DELETE FROM sys_management_role_permissions 
@@ -177,10 +177,10 @@ func (cs *CasbinService) UpdateRoleAPIPermissions(roleID uint, apiPermissionIDs 
 		tx.Rollback()
 		return fmt.Errorf("clear existing API permissions failed: %w", err)
 	}
-	
+
 	// 2. 添加新的API权限关联
 	for _, permID := range apiPermissionIDs {
-		rp := sysManagement.RolePermission{
+		rp := sysManagement.RolePermissionModel{
 			RoleID:       roleID,
 			PermissionID: permID,
 			DataScope:    "all",
@@ -190,36 +190,36 @@ func (cs *CasbinService) UpdateRoleAPIPermissions(roleID uint, apiPermissionIDs 
 			return fmt.Errorf("add API permission failed: %w", err)
 		}
 	}
-	
+
 	// 3. 提交事务
 	if err := tx.Commit().Error; err != nil {
 		return fmt.Errorf("commit transaction failed: %w", err)
 	}
-	
+
 	// 4. 重新加载Casbin策略
 	go func() {
 		if err := cs.ReloadPolicy(); err != nil {
 			global.TD27_LOG.Error("重新加载Casbin策略失败", zap.Error(err))
 		}
 	}()
-	
+
 	return nil
 }
 
 // GetRoleAPIPermissions 获取角色的API权限
 func (cs *CasbinService) GetRoleAPIPermissions(roleID uint) ([]sysManagement.PermissionModel, error) {
 	var permissions []sysManagement.PermissionModel
-	
+
 	err := global.TD27_DB.Raw(`
 		SELECT p.*
 		FROM sys_management_permission p
 		JOIN sys_management_role_permissions rp ON p.id = rp.permission_id
 		WHERE rp.role_id = ? AND p.type = 'api'
 	`, roleID).Scan(&permissions).Error
-	
+
 	if err != nil {
 		return nil, fmt.Errorf("get role API permissions failed: %w", err)
 	}
-	
+
 	return permissions, nil
 }

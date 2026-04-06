@@ -17,7 +17,7 @@ const treeRef = ref<InstanceType<typeof ELTree1>>()
 
 function filterNode(value: string, data: any) {
   if (!value) return true
-  return data.meta.title.includes(value)
+  return data.title.includes(value)
 }
 
 watch(filterText, (val) => {
@@ -27,22 +27,22 @@ watch(filterText, (val) => {
 const menuDefaultProps = {
   children: "children",
   label(data: any) {
-    return data.meta.title
+    return data.title
   }
 }
 
 const menuIds = ref<number[]>([])
 // const menuIds = [2, 3, 4, 7, 8]
 const menuTreeData = ref<MenuData[]>([])
-function getTreeData(id: number) {
-  getElTreeMenusApi({ id })
+function getTreeData() {
+  getElTreeMenusApi()
     .then((res) => {
       menuTreeData.value = res.data.list
       menuIds.value = res.data.menuIds
     })
     .catch(() => {})
 }
-getTreeData(props.id)
+getTreeData()
 
 function editRoleMenu() {
   updateRoleMenuApi({

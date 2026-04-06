@@ -12,8 +12,6 @@ import (
 	"server/internal/model/sysManagement"
 )
 
-
-
 // DataPermissionService 数据权限服务
 type DataPermissionService struct {
 	db    *gorm.DB
@@ -72,7 +70,7 @@ func (s *DataPermissionService) GetUserDataPermission(ctx context.Context, userI
 
 	// 获取用户部门ID
 	var user sysManagement.UserModel
-	if err := s.db.WithContext(ctx).First(&user, userID).Error; err != nil {
+	if err = s.db.WithContext(ctx).First(&user, userID).Error; err != nil {
 		return nil, fmt.Errorf("get user dept failed: %w", err)
 	}
 

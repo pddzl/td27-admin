@@ -26,7 +26,7 @@ func (s *MenuService) List(customClaims *modelSysManagement.CustomClaims) ([]mod
 	roleIDs := customClaims.GetAllRoleIDs()
 
 	// Get menus from all roles (union of permissions)
-	return s.menuRepository.ListByRoleIDs(s.ctx, roleIDs)
+	return s.menuRepository.List(s.ctx, roleIDs)
 }
 
 func (s *MenuService) Create(req *modelSysManagement.Menu) (*modelSysManagement.MenuModel, error) {
@@ -42,6 +42,6 @@ func (s *MenuService) Delete(id uint) error {
 }
 
 // GetElTreeMenus 获取所有menu
-func (s *MenuService) GetElTreeMenus(roleId uint) ([]modelSysManagement.MenuResp, []uint, error) {
-	return s.menuRepository.GetElTreeMenus(s.ctx, roleId)
+func (s *MenuService) GetElTreeMenus(req *modelSysManagement.CustomClaims) ([]modelSysManagement.MenuResp, []uint, error) {
+	return s.menuRepository.GetElTreeMenus(s.ctx, req.GetAllRoleIDs())
 }
