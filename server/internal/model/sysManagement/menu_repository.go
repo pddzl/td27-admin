@@ -87,18 +87,23 @@ func buildMenuTree(menus []MenuResp) []MenuResp {
 }
 
 func (e *menuEntity) List(ctx context.Context, roleIDs []uint) ([]MenuResp, error) {
-	// Query menus through role_permissions -> permissions -> menus
 	if len(roleIDs) == 0 {
 		return []MenuResp{}, nil
 	}
 
 	var menus []*MenuModel
-	err := e.conn.WithContext(ctx).
-		Model(&MenuModel{}).
-		Joins("JOIN sys_management_permission p ON p.domain_id = sys_management_menu.id AND p.type = 'menu'").
+
+	subQuery := e.conn.
+		Table("sys_management_permission p").
+		Select("1").
 		Joins("JOIN sys_management_role_permissions rp ON rp.permission_id = p.id").
-		Where("rp.role_id IN ?", roleIDs).
-		Group("sys_management_menu.id").
+		Where("p.domain_id = sys_management_menu.id").
+		Where("p.type = ?", "menu").
+		Where("rp.role_id IN ?", roleIDs)
+
+	err := e.conn.WithContext(ctx).Debug().
+		Model(&MenuModel{}).
+		Where("EXISTS (?)", subQuery).
 		Find(&menus).Error
 
 	if err != nil {
