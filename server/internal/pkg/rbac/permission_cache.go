@@ -52,7 +52,7 @@ func (pc *PermissionCache) GetUserPermissions(userID uint) ([]string, error) {
 	}
 
 	var permissions []string
-	if err := json.Unmarshal([]byte(data), &permissions); err != nil {
+	if err = json.Unmarshal([]byte(data), &permissions); err != nil {
 		return nil, err
 	}
 	return permissions, nil
