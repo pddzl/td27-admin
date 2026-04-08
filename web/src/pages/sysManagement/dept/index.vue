@@ -1,18 +1,13 @@
 <script setup lang="ts">
 import type { FormInstance, FormRules, TableInstance } from "element-plus"
 import type { CreateDeptReq, Dept, UpdateDeptReq } from "@/api/sysManagement/dept"
-import { Check, Delete, Edit, Expand, Plus, Refresh, Search } from "@element-plus/icons-vue"
-import { ElMessage, ElMessageBox } from "element-plus"
 import { onMounted, reactive, ref } from "vue"
 import {
   createDeptApi,
-
   deleteDeptApi,
-
   deptListApi,
   getElTreeDeptsApi,
   updateDeptApi
-
 } from "@/api/sysManagement/dept"
 
 // Search form
@@ -60,7 +55,7 @@ async function getDeptList() {
       deptName: searchForm.deptName,
       status: searchForm.status
     })
-    if (res.code === 200) {
+    if (res.code === 0) {
       deptTree.value = res.data
       allDepts.value = flattenTree(res.data)
     }
@@ -155,17 +150,19 @@ function handleDelete(row: Dept) {
     confirmButtonText: "确定",
     cancelButtonText: "取消",
     type: "warning"
-  }).then(async () => {
-    try {
-      const res = await deleteDeptApi({ id: row.id! })
-      if (res.code === 200) {
-        ElMessage.success("删除成功")
-        getDeptList()
-      }
-    } catch (error) {
-      console.error(error)
-    }
   })
+    .then(async () => {
+      try {
+        const res = await deleteDeptApi({ id: row.id! })
+        if (res.code === 0) {
+          ElMessage.success("删除成功")
+          getDeptList()
+        }
+      } catch (error) {
+        console.error(error)
+      }
+    })
+    .catch(() => {})
 }
 
 // Submit form
@@ -196,39 +193,6 @@ async function handleSubmit() {
   })
 }
 
-// Save sort
-async function handleSaveSort() {
-  // Collect all sort changes
-  const updates: { id: number, sort: number }[] = []
-  const collectSort = (nodes: Dept[]) => {
-    nodes.forEach((node) => {
-      updates.push({ id: node.id!, sort: node.sort })
-      if (node.children) {
-        collectSort(node.children)
-      }
-    })
-  }
-  collectSort(deptTree.value)
-
-  // Batch update sort
-  try {
-    // Note: You may need to add a batch update API
-    for (const item of updates) {
-      await updateDeptApi({
-        id: item.id,
-        deptName: allDepts.value.find(d => d.id === item.id)?.deptName || "",
-        parentId: allDepts.value.find(d => d.id === item.id)?.parentId || 0,
-        sort: item.sort,
-        status: allDepts.value.find(d => d.id === item.id)?.status || true
-      })
-    }
-    ElMessage.success("排序保存成功")
-    getDeptList()
-  } catch (error) {
-    console.error(error)
-  }
-}
-
 // Reset form
 function resetForm() {
   if (formRef.value) {
@@ -242,12 +206,6 @@ function resetForm() {
   })
 }
 
-// Format date
-function formatDate(date: string | undefined) {
-  if (!date) return "-"
-  return new Date(date).toLocaleString()
-}
-
 onMounted(() => {
   getDeptList()
 })
@@ -256,8 +214,8 @@ onMounted(() => {
 <template>
   <div class="app-container">
     <!-- Search Form -->
-    <el-card shadow="never" class="search-card">
-      <el-form :model="searchForm" inline>
+    <el-card v-loading="loading" shadow="never" class="search-wrapper">
+      <el-form :model="searchForm" :inline="true">
         <el-form-item label="部门名称">
           <el-input v-model="searchForm.deptName" placeholder="请输入部门名称" clearable />
         </el-form-item>
@@ -268,106 +226,89 @@ onMounted(() => {
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" :icon="Search" @click="handleSearch">
+          <el-button type="primary" icon="Search" @click="handleSearch">
             搜索
           </el-button>
-          <el-button :icon="Refresh" @click="handleReset">
+          <el-button icon="Refresh" @click="handleReset">
             重置
           </el-button>
         </el-form-item>
       </el-form>
     </el-card>
 
-    <!-- Toolbar -->
-    <el-card shadow="never" class="toolbar-card">
-      <div class="toolbar-left">
-        <el-button type="primary" :icon="Plus" @click="handleCreate">
-          新增
-        </el-button>
-        <el-button type="warning" :icon="Check" @click="handleSaveSort">
-          保存排序
-        </el-button>
-        <el-button :icon="Expand" @click="handleExpandAll">
-          展开/折叠
-        </el-button>
-      </div>
-    </el-card>
-
     <!-- Table -->
-    <el-card shadow="never" class="table-card">
-      <el-table
-        ref="tableRef"
-        v-loading="loading"
-        :data="deptTree"
-        row-key="id"
-        :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
-        border
-        :default-expand-all="isExpandAll"
-        highlight-current-row
-      >
-        <el-table-column prop="deptName" label="部门名称" min-width="250" show-overflow-tooltip>
-          <template #default="{ row }">
-            <span class="dept-name">{{ row.deptName }}</span>
-          </template>
-        </el-table-column>
+    <el-card v-loading="loading" shadow="never">
+      <div class="toolbar-wrapper">
+        <div>
+          <el-button type="primary" icon="Plus" @click="handleCreate">
+            新增
+          </el-button>
+          <el-button icon="Expand" @click="handleExpandAll">
+            展开/折叠
+          </el-button>
+        </div>
+        <div>
+          <el-tooltip content="刷新" effect="light">
+            <el-button type="primary" icon="RefreshRight" circle plain />
+          </el-tooltip>
+        </div>
+      </div>
+      <div class="table-wrapper">
+        <el-table
+          ref="tableRef"
+          v-loading="loading"
+          :data="deptTree"
+          row-key="id"
+          :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
+          border
+          :default-expand-all="isExpandAll"
+          highlight-current-row
+        >
+          <el-table-column prop="deptName" label="部门名称" show-overflow-tooltip>
+            <template #default="{ row }">
+              <span class="dept-name">{{ row.deptName }}</span>
+            </template>
+          </el-table-column>
 
-        <el-table-column prop="sort" label="排序" width="120" align="center">
-          <template #default="{ row }">
-            <el-input-number
-              v-model="row.sort"
-              :min="0"
-              :max="999"
-              controls-position="right"
-              style="width: 90px"
-              size="small"
-            />
-          </template>
-        </el-table-column>
+          <el-table-column prop="status" label="状态" align="center">
+            <template #default="{ row }">
+              <el-tag :type="row.status ? 'success' : 'danger'">
+                {{ row.status ? '正常' : '禁用' }}
+              </el-tag>
+            </template>
+          </el-table-column>
 
-        <el-table-column prop="status" label="状态" width="100" align="center">
-          <template #default="{ row }">
-            <el-tag :type="row.status ? 'success' : 'danger'">
-              {{ row.status ? '正常' : '禁用' }}
-            </el-tag>
-          </template>
-        </el-table-column>
-
-        <el-table-column prop="createdAt" label="创建时间" width="180" align="center">
-          <template #default="{ row }">
-            {{ formatDate(row.createdAt) }}
-          </template>
-        </el-table-column>
-
-        <el-table-column label="操作" width="280" align="center" fixed="right">
-          <template #default="{ row }">
-            <el-button type="primary" link :icon="Edit" @click="handleUpdate(row)">
-              修改
-            </el-button>
-            <el-button type="primary" link :icon="Plus" @click="handleAddChild(row)">
-              新增
-            </el-button>
-            <el-button
-              v-if="!row.children || row.children.length === 0"
-              type="danger"
-              link
-              :icon="Delete"
-              @click="handleDelete(row)"
-            >
-              删除
-            </el-button>
-          </template>
-        </el-table-column>
-      </el-table>
+          <el-table-column label="操作" align="center" fixed="right">
+            <template #default="{ row }">
+              <el-button type="primary" link icon="Edit" @click="handleUpdate(row)">
+                修改
+              </el-button>
+              <el-button type="primary" link icon="Plus" @click="handleAddChild(row)">
+                新增
+              </el-button>
+              <el-button
+                v-if="!row.children || row.children.length === 0"
+                type="danger"
+                link
+                icon="Delete"
+                @click="handleDelete(row)"
+              >
+                删除
+              </el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
     </el-card>
 
     <!-- Dialog -->
     <el-dialog
       v-model="dialogVisible"
       :title="dialogTitle"
-      width="500px"
+      width="30%"
       @closed="resetForm"
     >
-      <el-form ref="formRef" :model="formData" :rules="formRules" label-width="100px">
+      <el-form ref="formRef" :model="formData" :rules="formRules" label-width="80px">
         <el-form-item label="上级部门">
           <el-tree-select
             v-model="formData.parentId"
@@ -410,34 +351,10 @@ onMounted(() => {
 </template>
 
 <style lang="scss" scoped>
-.app-container {
-  padding: 20px;
-}
-
-.search-card {
-  margin-bottom: 15px;
-}
-
-.toolbar-card {
-  margin-bottom: 15px;
-
-  .toolbar-left {
-    display: flex;
-    gap: 10px;
-  }
-}
-
-.table-card {
-  .dept-name {
-    font-weight: 500;
-  }
-}
-
-:deep(.el-table__row) {
-  .el-input-number {
-    .el-input__inner {
-      text-align: center;
-    }
+.search-wrapper {
+  margin-bottom: 5px;
+  :deep(.el-card__body) {
+    padding-bottom: 2px;
   }
 }
 </style>
