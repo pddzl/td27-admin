@@ -7,14 +7,12 @@ import (
 	apiSysManagement "server/internal/api/sysManagement"
 	"server/internal/global"
 	"server/internal/model/common"
-	"server/internal/pkg/rbac"
 	serviceSysManagement "server/internal/service/sysManagement"
 )
 
 var (
 	casbinService         = serviceSysManagement.NewCasbinService()
 	dataPermissionService = serviceSysManagement.NewDataPermissionService()
-	permCache             = rbac.NewPermissionCache()
 )
 
 // CasbinHandler 拦截器（支持多角色和权限缓存）
