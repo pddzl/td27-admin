@@ -2,12 +2,19 @@ package sysManagement
 
 import "server/internal/model/common"
 
+//id | parent | path | level
+//--------------------------------
+//1  | 0      | "0"       | 1
+//2  | 1      | "0/1"     | 2
+//3  | 2      | "0/1/2"   | 3
+
 // DeptModel 部门模型（用于数据权限）
 type DeptModel struct {
 	common.Td27Model
 	DeptName string `json:"deptName" gorm:"unique;size:100;not null;comment:部门名称"`
 	ParentID uint   `json:"parentId" gorm:"index;comment:父部门ID"`
-	Path     string `json:"path" gorm:"size:500;index;comment:部门路径(物化路径),如:/1/2/3/"`
+	Path     string `json:"path" gorm:"size:500;index;comment:部门路径(materialized path),如:/1/2/3/"`
+	level    uint   `NOT NULL             depth level`
 	Sort     uint   `json:"sort" gorm:"default:0"`
 	Status   bool   `json:"status" gorm:"default:true"`
 }
