@@ -7,23 +7,25 @@ import (
 	"go.uber.org/zap"
 
 	"server/internal/global"
-	"server/internal/model/sysManagement"
+	modelSysManagement "server/internal/model/sysManagement"
 )
 
 type ApiService struct {
-	repository sysManagement.APIRepository
-	ctx        context.Context
+	apiRepo        modelSysManagement.APIRepository
+	permissionRepo modelSysManagement.PermissionRepository
+	ctx            context.Context
 }
 
 func NewApiService() *ApiService {
 	return &ApiService{
-		repository: sysManagement.NewApiEntity(global.TD27_DB),
-		ctx:        context.Background(),
+		apiRepo:        modelSysManagement.NewApiRepo(global.TD27_DB),
+		permissionRepo: modelSysManagement.NewPermissionRepo(global.TD27_DB),
+		ctx:            context.Background(),
 	}
 }
 
-func (s *ApiService) Create(req *sysManagement.CreateApiReq) (*sysManagement.ApiModel, error) {
-	instance, err := s.repository.Create(s.ctx, req)
+func (s *ApiService) Create(req *modelSysManagement.CreateApiReq) (*modelSysManagement.ApiModel, error) {
+	instance, err := s.apiRepo.Create(s.ctx, req)
 	if err != nil {
 		return nil, err
 	}
@@ -31,18 +33,18 @@ func (s *ApiService) Create(req *sysManagement.CreateApiReq) (*sysManagement.Api
 	return instance, err
 }
 
-func (s *ApiService) List(req *sysManagement.ListApiReq) ([]*sysManagement.ApiModel, int64, error) {
-	list, count, err := s.repository.List(s.ctx, req)
+func (s *ApiService) List(req *modelSysManagement.ListApiReq) ([]*modelSysManagement.ApiModel, int64, error) {
+	list, count, err := s.apiRepo.List(s.ctx, req)
 	if err != nil {
 		return nil, 0, err
 	}
 	return list, count, err
 }
 
-// GetElTree 获取所有api tree
+// ElTree 获取所有api tree
 // element-plus el-tree的数据格式
-func (s *ApiService) GetElTree(roleId uint) ([]*sysManagement.ApiTreeNode, []string, []uint, error) {
-	list, err := s.repository.GetElTree(s.ctx)
+func (s *ApiService) ElTree(roleId uint) ([]*modelSysManagement.ApiTreeNode, []string, []uint, error) {
+	list, err := s.apiRepo.ElTree(s.ctx)
 	if err != nil {
 		return nil, nil, nil, err
 	}
@@ -52,7 +54,8 @@ func (s *ApiService) GetElTree(roleId uint) ([]*sysManagement.ApiTreeNode, []str
 	checkedIds := make([]uint, 0)
 
 	// 从统一权限表获取角色的API权限
-	permissions, err := casbinService.GetRoleAPIPermissions(roleId)
+	//permissions, err := casbinService.GetRoleAPIPermissions(roleId)
+	permissions, err := s.permissionRepo.List(s.ctx, roleId, modelSysManagement.PermissionDomainAPI)
 	if err != nil {
 		global.TD27_LOG.Error("获取角色API权限失败", zap.Error(err))
 	} else {
@@ -67,12 +70,12 @@ func (s *ApiService) GetElTree(roleId uint) ([]*sysManagement.ApiTreeNode, []str
 
 func (s *ApiService) Delete(id uint) error {
 	// 先获取API信息用于日志
-	api, err := s.repository.FindOne(s.ctx, id)
+	api, err := s.apiRepo.FindOne(s.ctx, id)
 	if err != nil {
 		return err
 	}
 
-	err = s.repository.Delete(s.ctx, id)
+	err = s.apiRepo.Delete(s.ctx, id)
 	if err != nil {
 		return err
 	}
@@ -92,7 +95,7 @@ func (s *ApiService) Delete(id uint) error {
 }
 
 func (s *ApiService) DeleteByIds(ids []uint) error {
-	err := s.repository.DeleteByIds(s.ctx, ids)
+	err := s.apiRepo.DeleteByIds(s.ctx, ids)
 	if err != nil {
 		return err
 	}
@@ -107,8 +110,8 @@ func (s *ApiService) DeleteByIds(ids []uint) error {
 	return nil
 }
 
-func (s *ApiService) Update(req *sysManagement.UpdateApiReq) error {
-	_, err := s.repository.Update(s.ctx, req)
+func (s *ApiService) Update(req *modelSysManagement.UpdateApiReq) error {
+	_, err := s.apiRepo.Update(s.ctx, req)
 	if err != nil {
 		return err
 	}

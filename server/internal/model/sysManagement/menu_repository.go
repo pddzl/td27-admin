@@ -98,7 +98,7 @@ func (e *menuEntity) List(ctx context.Context, roleIDs []uint) ([]MenuResp, erro
 		Select("1").
 		Joins("JOIN sys_management_role_permissions rp ON rp.permission_id = p.id").
 		Where("p.domain_id = sys_management_menu.id").
-		Where("p.type = ?", "menu").
+		Where("p.domain = ?", "menu").
 		Where("rp.role_id IN ?", roleIDs)
 
 	err := e.conn.WithContext(ctx).Debug().

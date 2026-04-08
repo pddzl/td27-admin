@@ -182,7 +182,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "GetElTree"
+                    "ElTree"
                 ],
                 "summary": "格式化列出所有api",
                 "parameters": [

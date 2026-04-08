@@ -32,7 +32,7 @@ func (a *PermissionAdapter) LoadPolicy(mod model.Model) error {
 		SELECT rp.role_id, p.resource, p.method
 		FROM sys_management_role_permissions rp
 		JOIN sys_management_permission p ON rp.permission_id = p.id
-		WHERE p.type = 'api'
+		WHERE p.domain = 'api'
 	`).Scan(&results).Error
 
 	if err != nil {

@@ -14,7 +14,7 @@ type DeptModel struct {
 	DeptName string `json:"deptName" gorm:"unique;size:100;not null;comment:部门名称"`
 	ParentID uint   `json:"parentId" gorm:"index;comment:父部门ID"`
 	Path     string `json:"path" gorm:"size:500;index;comment:部门路径(materialized path),如:/1/2/3/"`
-	level    uint   `NOT NULL             depth level`
+	Level    uint   `json:"level" gorm:"NOT NULL;comment:depth level"`
 	Sort     uint   `json:"sort" gorm:"default:0"`
 	Status   bool   `json:"status" gorm:"default:true"`
 }

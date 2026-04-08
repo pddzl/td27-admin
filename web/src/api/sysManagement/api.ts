@@ -31,8 +31,8 @@ export function apiListApi(data: reqApis) {
 }
 
 interface ApiChild {
-  id: number           // 权限ID
-  key: string          // path,method 组合
+  id: number // 权限ID
+  key: string // path,method 组合
   apiGroup: string
   path: string
   method: string
@@ -46,14 +46,14 @@ export interface ApiTreeData {
 
 interface ApiTreeAll {
   list: ApiTreeData[]
-  checkedKey: string[]     // 选中的 key 列表 (path,method)
-  checkedIds: number[]     // 选中的权限ID列表
+  checkedKey: string[] // 选中的 key 列表 (path,method)
+  checkedIds: number[] // 选中的权限ID列表
 }
 
 // 获取所有api 不分页
 export function apiGetElTreeApi(data: CId) {
   return request<ApiResponseData<ApiTreeAll>>({
-    url: "/api/getElTree",
+    url: "/api/elTree",
     method: "post",
     data
   })

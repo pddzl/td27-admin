@@ -205,21 +205,3 @@ func (cs *CasbinService) UpdateRoleAPIPermissions(roleID uint, apiPermissionIDs 
 
 	return nil
 }
-
-// GetRoleAPIPermissions 获取角色的API权限
-func (cs *CasbinService) GetRoleAPIPermissions(roleID uint) ([]sysManagement.PermissionModel, error) {
-	var permissions []sysManagement.PermissionModel
-
-	err := global.TD27_DB.Raw(`
-		SELECT p.*
-		FROM sys_management_permission p
-		JOIN sys_management_role_permissions rp ON p.id = rp.permission_id
-		WHERE rp.role_id = ? AND p.type = 'api'
-	`, roleID).Scan(&permissions).Error
-
-	if err != nil {
-		return nil, fmt.Errorf("get role API permissions failed: %w", err)
-	}
-
-	return permissions, nil
-}

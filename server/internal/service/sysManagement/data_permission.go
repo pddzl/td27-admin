@@ -51,7 +51,7 @@ func (s *DataPermissionService) GetUserDataPermission(ctx context.Context, userI
 		FROM sys_management_role_permissions rp
 		JOIN sys_management_user_roles ur ON rp.role_id = ur.role_id
 		JOIN sys_management_permission p ON rp.permission_id = p.id
-		WHERE ur.user_id = ? AND p.resource = ? AND p.type = 'data'
+		WHERE ur.user_id = ? AND p.resource = ? AND p.domain = 'data'
 	`, userID, resource).Scan(&results).Error
 
 	if err != nil {

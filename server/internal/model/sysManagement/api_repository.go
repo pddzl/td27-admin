@@ -8,49 +8,6 @@ import (
 	"gorm.io/gorm"
 )
 
-// ListApiReq API列表请求
-type ListApiReq struct {
-	Page     int    `json:"page" form:"page"`
-	PageSize int    `json:"pageSize" form:"pageSize"`
-	Path     string `json:"path" form:"path"`
-	Method   string `json:"method" form:"method"`
-	ApiGroup string `json:"apiGroup" form:"apiGroup"`
-}
-
-// CreateApiReq 创建API请求
-type CreateApiReq struct {
-	ApiName  string `json:"apiName" binding:"required"`
-	Path     string `json:"path" binding:"required"`
-	Method   string `json:"method" binding:"required"`
-	ApiGroup string `json:"apiGroup"`
-}
-
-// UpdateApiReq 更新API请求
-type UpdateApiReq struct {
-	ID       uint   `json:"id" binding:"required"`
-	ApiName  string `json:"apiName" binding:"required"`
-	Path     string `json:"path" binding:"required"`
-	Method   string `json:"method" binding:"required"`
-	ApiGroup string `json:"apiGroup"`
-}
-
-// ApiTreeNode API树节点
-type ApiTreeNode struct {
-	ID       uint           `json:"id"`
-	ApiName  string         `json:"apiName"`
-	Path     string         `json:"path"`
-	Method   string         `json:"method"`
-	ApiGroup string         `json:"apiGroup"`
-	Children []*ApiTreeNode `json:"children,omitempty"`
-}
-
-// ApiTreeResp API树响应
-type ApiTreeResp struct {
-	List       []*ApiTreeNode `json:"list"`
-	CheckedKey []string       `json:"checkedKey"`
-	CheckedIds []uint         `json:"checkedIds"`
-}
-
 // APIRepository API仓库接口
 type APIRepository interface {
 	List(ctx context.Context, req *ListApiReq) ([]*ApiModel, int64, error)
@@ -60,19 +17,19 @@ type APIRepository interface {
 	DeleteByIds(ctx context.Context, ids []uint) error
 	FindOne(ctx context.Context, id uint) (*ApiModel, error)
 	FindByIds(ctx context.Context, ids []uint) ([]*ApiModel, error)
-	GetElTree(ctx context.Context) ([]*ApiTreeNode, error)
+	ElTree(ctx context.Context) ([]*ApiTreeNode, error)
 	GetAllGroups(ctx context.Context) ([]string, error)
 }
 
-type apiEntity struct {
+type apiRepo struct {
 	conn *gorm.DB
 }
 
-func NewApiEntity(conn *gorm.DB) APIRepository {
-	return &apiEntity{conn: conn}
+func NewApiRepo(conn *gorm.DB) APIRepository {
+	return &apiRepo{conn: conn}
 }
 
-func (e *apiEntity) List(ctx context.Context, req *ListApiReq) ([]*ApiModel, int64, error) {
+func (e *apiRepo) List(ctx context.Context, req *ListApiReq) ([]*ApiModel, int64, error) {
 	var list []*ApiModel
 	var total int64
 
@@ -109,7 +66,7 @@ func (e *apiEntity) List(ctx context.Context, req *ListApiReq) ([]*ApiModel, int
 	return list, total, nil
 }
 
-func (e *apiEntity) Create(ctx context.Context, req *CreateApiReq) (*ApiModel, error) {
+func (e *apiRepo) Create(ctx context.Context, req *CreateApiReq) (*ApiModel, error) {
 	api := &ApiModel{
 		ApiName:  req.ApiName,
 		Path:     req.Path,
@@ -124,7 +81,7 @@ func (e *apiEntity) Create(ctx context.Context, req *CreateApiReq) (*ApiModel, e
 	return api, nil
 }
 
-func (e *apiEntity) Update(ctx context.Context, req *UpdateApiReq) (*ApiModel, error) {
+func (e *apiRepo) Update(ctx context.Context, req *UpdateApiReq) (*ApiModel, error) {
 	updates := map[string]interface{}{
 		"api_name":  req.ApiName,
 		"path":      req.Path,
@@ -149,7 +106,7 @@ func (e *apiEntity) Update(ctx context.Context, req *UpdateApiReq) (*ApiModel, e
 	return &api, nil
 }
 
-func (e *apiEntity) Delete(ctx context.Context, id uint) error {
+func (e *apiRepo) Delete(ctx context.Context, id uint) error {
 	result := e.conn.WithContext(ctx).Where("id = ?", id).Delete(&ApiModel{})
 	if err := result.Error; err != nil {
 		return fmt.Errorf("delete api failed: %w", err)
@@ -160,14 +117,14 @@ func (e *apiEntity) Delete(ctx context.Context, id uint) error {
 	return nil
 }
 
-func (e *apiEntity) DeleteByIds(ctx context.Context, ids []uint) error {
+func (e *apiRepo) DeleteByIds(ctx context.Context, ids []uint) error {
 	if len(ids) == 0 {
 		return nil
 	}
 	return e.conn.WithContext(ctx).Where("id IN ?", ids).Delete(&ApiModel{}).Error
 }
 
-func (e *apiEntity) FindOne(ctx context.Context, id uint) (*ApiModel, error) {
+func (e *apiRepo) FindOne(ctx context.Context, id uint) (*ApiModel, error) {
 	var api ApiModel
 	if err := e.conn.WithContext(ctx).First(&api, id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -178,7 +135,7 @@ func (e *apiEntity) FindOne(ctx context.Context, id uint) (*ApiModel, error) {
 	return &api, nil
 }
 
-func (e *apiEntity) FindByIds(ctx context.Context, ids []uint) ([]*ApiModel, error) {
+func (e *apiRepo) FindByIds(ctx context.Context, ids []uint) ([]*ApiModel, error) {
 	if len(ids) == 0 {
 		return []*ApiModel{}, nil
 	}
@@ -189,7 +146,7 @@ func (e *apiEntity) FindByIds(ctx context.Context, ids []uint) ([]*ApiModel, err
 	return apis, nil
 }
 
-func (e *apiEntity) GetElTree(ctx context.Context) ([]*ApiTreeNode, error) {
+func (e *apiRepo) ElTree(ctx context.Context) ([]*ApiTreeNode, error) {
 	var apis []*ApiModel
 	if err := e.conn.WithContext(ctx).Find(&apis).Error; err != nil {
 		return nil, fmt.Errorf("get all apis failed: %w", err)
@@ -221,7 +178,7 @@ func (e *apiEntity) GetElTree(ctx context.Context) ([]*ApiTreeNode, error) {
 	return tree, nil
 }
 
-func (e *apiEntity) GetAllGroups(ctx context.Context) ([]string, error) {
+func (e *apiRepo) GetAllGroups(ctx context.Context) ([]string, error) {
 	var groups []string
 	err := e.conn.WithContext(ctx).
 		Model(&ApiModel{}).

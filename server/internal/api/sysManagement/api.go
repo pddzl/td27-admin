@@ -143,23 +143,23 @@ func (a *ApiApi) Update(c *gin.Context) {
 	}
 }
 
-// GetElTree
-// @Tags      GetElTree
+// ElTree
+// @Tags      ElTree
 // @Summary   格式化列出所有api
 // @Security  ApiKeyAuth
 // @accept    application/json
 // @Produce   application/json
 // @Param     data  body      common.CId true "请求参数"
 // @Success   200   {object}  common.Response{data=modelSysManagement.ApiTreeResp{list=[]modelSysManagement.ApiTreeNode,checkedKey=[]string,checkedIds=[]uint},msg=string}
-// @Router    /api/getElTree [post]
-func (a *ApiApi) GetElTree(c *gin.Context) {
+// @Router    /api/elTree [post]
+func (a *ApiApi) ElTree(c *gin.Context) {
 	var req common.CId
 	if err := c.ShouldBindJSON(&req); err != nil {
 		common.FailReq(err.Error(), c)
 		return
 	}
 
-	list, checkedKey, checkedIds, err := a.apiService.GetElTree(req.ID)
+	list, checkedKey, checkedIds, err := a.apiService.ElTree(req.ID)
 	if err != nil {
 		common.FailWithMessage("获取失败", c)
 	} else {
