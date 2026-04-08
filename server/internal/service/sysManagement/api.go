@@ -50,7 +50,7 @@ func (s *ApiService) GetElTree(roleId uint) ([]*sysManagement.ApiTreeNode, []str
 	// 前端 el-tree default-checked-keys
 	checkedKey := make([]string, 0)
 	checkedIds := make([]uint, 0)
-	
+
 	// 从统一权限表获取角色的API权限
 	permissions, err := casbinService.GetRoleAPIPermissions(roleId)
 	if err != nil {
@@ -79,13 +79,13 @@ func (s *ApiService) Delete(id uint) error {
 
 	// 重新加载Casbin策略
 	go func() {
-		if err := casbinService.ReloadPolicy(); err != nil {
+		if err = casbinService.ReloadPolicy(); err != nil {
 			global.TD27_LOG.Error("重新加载Casbin策略失败", zap.Error(err))
 		}
 	}()
 
-	global.TD27_LOG.Info("删除API", 
-		zap.String("path", api.Path), 
+	global.TD27_LOG.Info("删除API",
+		zap.String("path", api.Path),
 		zap.String("method", api.Method))
 
 	return nil
@@ -99,7 +99,7 @@ func (s *ApiService) DeleteByIds(ids []uint) error {
 
 	// 重新加载Casbin策略
 	go func() {
-		if err := casbinService.ReloadPolicy(); err != nil {
+		if err = casbinService.ReloadPolicy(); err != nil {
 			global.TD27_LOG.Error("重新加载Casbin策略失败", zap.Error(err))
 		}
 	}()
@@ -115,7 +115,7 @@ func (s *ApiService) Update(req *sysManagement.UpdateApiReq) error {
 
 	// 重新加载Casbin策略
 	go func() {
-		if err := casbinService.ReloadPolicy(); err != nil {
+		if err = casbinService.ReloadPolicy(); err != nil {
 			global.TD27_LOG.Error("重新加载Casbin策略失败", zap.Error(err))
 		}
 	}()

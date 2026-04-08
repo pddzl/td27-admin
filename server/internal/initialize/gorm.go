@@ -94,7 +94,7 @@ func RegisterTables(db *gorm.DB) {
 			sysManagement.UserRole{},
 			// 菜单模型（数据来自 permission 表 type='menu'）
 			sysManagement.MenuModel{},
-			// API权限（逐步迁移到统一权限模型）
+			// API权限
 			sysManagement.ApiModel{},
 			// 统一权限模型
 			sysManagement.PermissionModel{},
@@ -103,13 +103,13 @@ func RegisterTables(db *gorm.DB) {
 			sysManagement.DeptModel{},
 			// 监控
 			modelMonitor.OperationLogModel{},
-			// fileM
+			// file
 			modelSysTool.FileModel{},
-			// 系统工具
+			// crontab
 			modelSysTool.CronModel{},
-			// 缓存表（替代 Redis）
+			// 缓存表
 			modelSysTool.CacheModel{},
-			// system settings
+			// 字典
 			sysManagement.DictModel{},
 			sysManagement.DictDetailModel{},
 		)
