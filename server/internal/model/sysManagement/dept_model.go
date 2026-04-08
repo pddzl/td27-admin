@@ -5,7 +5,7 @@ import "server/internal/model/common"
 // DeptModel 部门模型（用于数据权限）
 type DeptModel struct {
 	common.Td27Model
-	DeptName string `json:"deptName" gorm:"size:100;not null;comment:部门名称"`
+	DeptName string `json:"deptName" gorm:"unique;size:100;not null;comment:部门名称"`
 	ParentID uint   `json:"parentId" gorm:"index;comment:父部门ID"`
 	Path     string `json:"path" gorm:"size:500;index;comment:部门路径(物化路径),如:/1/2/3/"`
 	Sort     uint   `json:"sort" gorm:"default:0"`
