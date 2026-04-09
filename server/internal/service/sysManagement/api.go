@@ -54,7 +54,6 @@ func (s *ApiService) ElTree(roleId uint) ([]*modelSysManagement.ApiTreeNode, []s
 	checkedIds := make([]uint, 0)
 
 	// 从统一权限表获取角色的API权限
-	//permissions, err := casbinService.GetRoleAPIPermissions(roleId)
 	permissions, err := s.permissionRepo.List(s.ctx, roleId, modelSysManagement.PermissionDomainAPI)
 	if err != nil {
 		global.TD27_LOG.Error("获取角色API权限失败", zap.Error(err))

@@ -113,7 +113,7 @@ func (a *MenuApi) Delete(c *gin.Context) {
 	}
 }
 
-// GetElTreeMenus
+// ElTree
 // @Tags      MenuApi
 // @Summary   获取菜单树
 // @Security  ApiKeyAuth
@@ -121,15 +121,15 @@ func (a *MenuApi) Delete(c *gin.Context) {
 // @Produce   application/json
 // @Param     data  body      common.CId true "请求参数"
 // @Success   200   {object}  common.Response{data=modelSysManagement.MenuElTreeResp{list=[]modelSysManagement.MenuResp,menuIds=[]uint},msg=string}
-// @Router    /menu/getElTreeMenus [post]
-func (a *MenuApi) GetElTreeMenus(c *gin.Context) {
+// @Router    /menu/elTree [post]
+func (a *MenuApi) ElTree(c *gin.Context) {
 	var cId common.CId
 	if err := c.ShouldBindJSON(&cId); err != nil {
 		common.FailReq(err.Error(), c)
 		return
 	}
 
-	if list, ids, err := a.menuService.GetElTreeMenus(cId.ID); err != nil {
+	if list, ids, err := a.menuService.ElTree(cId.ID); err != nil {
 		common.FailWithMessage(err.Error(), c)
 		global.TD27_LOG.Error("获取失败!", zap.Error(err))
 	} else {

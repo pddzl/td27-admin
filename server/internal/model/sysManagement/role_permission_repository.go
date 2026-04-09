@@ -21,12 +21,12 @@ func NewRolePermissionRepository(conn *gorm.DB) RolePermissionRepository {
 
 // Update 编辑角色权限（使用统一权限表）
 func (r *rolePermissionRepo) Update(ctx context.Context, roleId uint, permissionIds []uint, domain string) error {
-	// If no menu IDs, just return
+	// If no permissionIds, just return
 	if len(permissionIds) == 0 {
 		return nil
 	}
 
-	// delete existing menu permissions for this role
+	// delete existing permissions for this role
 	if err := r.Delete(ctx, roleId); err != nil {
 		return err
 	}

@@ -22,7 +22,7 @@ func (r *MenuRouter) InitMenuRouter(rg *gin.RouterGroup) {
 	record.POST("create", r.menuApi.Create)
 	record.POST("update", r.menuApi.Update)
 	record.POST("delete", r.menuApi.Delete)
-	record.POST("getElTreeMenus", r.menuApi.GetElTreeMenus)
+	record.POST("elTree", r.menuApi.ElTree)
 	// without record
 	base.GET("list", r.menuApi.List)
 }

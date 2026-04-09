@@ -61,7 +61,7 @@ interface allMenus {
 
 export function getElTreeMenusApi(data: CId) {
   return request<ApiResponseData<allMenus>>({
-    url: "/menu/getElTreeMenus",
+    url: "/menu/elTree",
     method: "post",
     data
   })

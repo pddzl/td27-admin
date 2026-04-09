@@ -171,7 +171,7 @@ func (cs *CasbinService) UpdateRoleAPIPermissions(roleID uint, apiPermissionIDs 
 	if err := tx.Exec(`
 		DELETE FROM sys_management_role_permissions 
 		WHERE role_id = ? AND permission_id IN (
-			SELECT id FROM sys_management_permission WHERE type = 'api'
+			SELECT id FROM sys_management_permission WHERE domain = 'api'
 		)
 	`, roleID).Error; err != nil {
 		tx.Rollback()

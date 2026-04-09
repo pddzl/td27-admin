@@ -15,7 +15,7 @@ type MenuService struct {
 
 func NewMenuService() *MenuService {
 	return &MenuService{
-		menuRepository: modelSysManagement.NewMenuEntity(global.TD27_DB),
+		menuRepository: modelSysManagement.NewMenuRepo(global.TD27_DB),
 		userRepository: modelSysManagement.NewUserEntity(global.TD27_DB),
 		ctx:            context.Background(),
 	}
@@ -41,7 +41,7 @@ func (s *MenuService) Delete(id uint) error {
 	return s.menuRepository.Delete(s.ctx, id)
 }
 
-// GetElTreeMenus 获取所有menu
-func (s *MenuService) GetElTreeMenus(id uint) ([]modelSysManagement.MenuResp, []uint, error) {
-	return s.menuRepository.GetElTreeMenus(s.ctx, id)
+// ElTree 获取所有menu
+func (s *MenuService) ElTree(roleId uint) ([]modelSysManagement.MenuResp, []uint, error) {
+	return s.menuRepository.ElTree(s.ctx, roleId)
 }

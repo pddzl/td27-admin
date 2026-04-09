@@ -14,17 +14,17 @@ type MenuRepository interface {
 	Create(ctx context.Context, req *Menu) (*MenuModel, error)
 	Delete(ctx context.Context, id uint) error
 	Update(ctx context.Context, req *UpdateMenuReq) error
-	GetElTreeMenus(ctx context.Context, id uint) ([]MenuResp, []uint, error)
+	ElTree(ctx context.Context, roleId uint) ([]MenuResp, []uint, error)
 	FindByIds(ctx context.Context, ids []uint) ([]*MenuModel, error)
 	GetAll(ctx context.Context) ([]*MenuModel, error)
 }
 
-type menuEntity struct {
+type menuRepo struct {
 	conn *gorm.DB
 }
 
-func NewMenuEntity(conn *gorm.DB) MenuRepository {
-	return &menuEntity{conn: conn}
+func NewMenuRepo(conn *gorm.DB) MenuRepository {
+	return &menuRepo{conn: conn}
 }
 
 // toMenuResp converts MenuModel to MenuResp
@@ -86,7 +86,7 @@ func buildMenuTree(menus []MenuResp) []MenuResp {
 	return result
 }
 
-func (e *menuEntity) List(ctx context.Context, roleIDs []uint) ([]MenuResp, error) {
+func (e *menuRepo) List(ctx context.Context, roleIDs []uint) ([]MenuResp, error) {
 	if len(roleIDs) == 0 {
 		return []MenuResp{}, nil
 	}
@@ -118,7 +118,7 @@ func (e *menuEntity) List(ctx context.Context, roleIDs []uint) ([]MenuResp, erro
 	return buildMenuTree(menuResps), nil
 }
 
-func (e *menuEntity) Create(ctx context.Context, req *Menu) (*MenuModel, error) {
+func (e *menuRepo) Create(ctx context.Context, req *Menu) (*MenuModel, error) {
 	menu := &MenuModel{
 		MenuName:   req.MenuName,
 		Icon:       req.Icon,
@@ -141,7 +141,7 @@ func (e *menuEntity) Create(ctx context.Context, req *Menu) (*MenuModel, error) 
 	return menu, nil
 }
 
-func (e *menuEntity) Update(ctx context.Context, req *UpdateMenuReq) error {
+func (e *menuRepo) Update(ctx context.Context, req *UpdateMenuReq) error {
 	updates := map[string]interface{}{
 		"menu_name":   req.Title,
 		"icon":        req.Icon,
@@ -173,7 +173,7 @@ func (e *menuEntity) Update(ctx context.Context, req *UpdateMenuReq) error {
 	return nil
 }
 
-func (e *menuEntity) Delete(ctx context.Context, id uint) error {
+func (e *menuRepo) Delete(ctx context.Context, id uint) error {
 	result := e.conn.WithContext(ctx).
 		Where("id = ?", id).
 		Delete(&MenuModel{})
@@ -189,7 +189,7 @@ func (e *menuEntity) Delete(ctx context.Context, id uint) error {
 	return nil
 }
 
-func (e *menuEntity) GetElTreeMenus(ctx context.Context, id uint) ([]MenuResp, []uint, error) {
+func (e *menuRepo) ElTree(ctx context.Context, roleId uint) ([]MenuResp, []uint, error) {
 	db := e.conn.WithContext(ctx)
 
 	var allMenus []*MenuModel
@@ -209,7 +209,7 @@ func (e *menuEntity) GetElTreeMenus(ctx context.Context, id uint) ([]MenuResp, [
 	if err := db.
 		Model(&RolePermissionModel{}).
 		Select("permission_id").
-		Where("role_id = ?", id).
+		Where("role_id = ?", roleId).
 		Scan(&relations).Error; err != nil {
 		return nil, nil, fmt.Errorf("query role menus failed: %w", err)
 	}
@@ -248,7 +248,7 @@ func (e *menuEntity) GetElTreeMenus(ctx context.Context, id uint) ([]MenuResp, [
 	return rootMenus, checkedIDs, nil
 }
 
-func (e *menuEntity) FindByIds(ctx context.Context, ids []uint) ([]*MenuModel, error) {
+func (e *menuRepo) FindByIds(ctx context.Context, ids []uint) ([]*MenuModel, error) {
 	if len(ids) == 0 {
 		return []*MenuModel{}, nil
 	}
@@ -264,7 +264,7 @@ func (e *menuEntity) FindByIds(ctx context.Context, ids []uint) ([]*MenuModel, e
 	return menus, nil
 }
 
-func (e *menuEntity) GetAll(ctx context.Context) ([]*MenuModel, error) {
+func (e *menuRepo) GetAll(ctx context.Context) ([]*MenuModel, error) {
 	var menus []*MenuModel
 	err := e.conn.WithContext(ctx).
 		Find(&menus).Error
