@@ -21,7 +21,8 @@ const { paginationData, changeCurrentPage, changePageSize } = usePagination()
 const loading = ref(false)
 const searchFormData = reactive({
   path: "",
-  apiGroup: "",
+  group_en: "",
+  // group_cn: "",
   method: "",
   description: "",
   orderKey: "",
@@ -44,7 +45,7 @@ function handleSearch() {
 
 function resetSearch() {
   searchFormData.path = ""
-  searchFormData.apiGroup = ""
+  searchFormData.group_en = ""
   searchFormData.method = ""
   searchFormData.description = ""
   searchFormData.orderKey = ""
@@ -58,7 +59,7 @@ async function getTableData() {
   try {
     const res = await apiListApi({
       path: searchFormData.path || undefined,
-      apiGroup: searchFormData.apiGroup || undefined,
+      group_en: searchFormData.group_en || undefined,
       method: searchFormData.method || undefined,
       description: searchFormData.description || undefined,
       orderKey: searchFormData.orderKey || undefined,
@@ -242,8 +243,8 @@ async function onDelete() {
         <el-form-item prop="path" label="路径">
           <el-input v-model="searchFormData.path" placeholder="路径" />
         </el-form-item>
-        <el-form-item prop="group" label="API组">
-          <el-input v-model="searchFormData.apiGroup" placeholder="API组" />
+        <el-form-item prop="group" label="API组(英文)">
+          <el-input v-model="searchFormData.group_en" placeholder="API分组" />
         </el-form-item>
         <el-form-item prop="method" label="方法">
           <el-select v-model="searchFormData.method" placeholder="方法" clearable style="width: 100px">
@@ -304,7 +305,8 @@ async function onDelete() {
           <el-table-column type="selection" width="60" />
           <el-table-column prop="id" label="ID" width="80" />
           <el-table-column prop="path" label="路径" sortable="custom" />
-          <el-table-column prop="apiGroup" label="分组" sortable="custom" />
+          <el-table-column prop="group_en" label="分组(英文)" sortable="custom" />
+          <el-table-column prop="group_cn" label="分组(中文)" sortable="custom" />
           <el-table-column prop="method" label="请求方法" sortable="custom" />
           <el-table-column prop="description" label="描述" />
           <el-table-column label="操作">

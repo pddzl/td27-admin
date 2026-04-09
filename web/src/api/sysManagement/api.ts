@@ -14,7 +14,7 @@ export type ApiListData = ListData<ApiDataModel[]>
 
 interface reqApis extends PageInfo {
   path?: string
-  apiGroup?: string
+  group_en?: string
   method?: string
   description?: string
   orderKey?: string
@@ -31,16 +31,17 @@ export function apiListApi(data: reqApis) {
 }
 
 interface ApiChild {
-  id: number // 权限ID
-  key: string // path,method 组合
-  apiGroup: string
+  label: string
+  key: string
+  group_en: string
+  group_cn: string
   path: string
   method: string
   description: string
 }
 
 export interface ApiTreeData {
-  apiGroup: string
+  key: string
   children: ApiChild[]
 }
 

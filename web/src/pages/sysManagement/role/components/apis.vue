@@ -17,7 +17,7 @@ const treeRef = ref<InstanceType<typeof ElTree1>>()
 
 function filterNode(value: string, data: any) {
   if (!value) return true
-  return data.apiGroup?.includes(value) || data.path?.includes(value)
+  return data.group_cn?.includes(value) || data.group_en?.includes(value) || data.description?.includes(value)
 }
 
 watch(filterText, (val) => {
@@ -27,32 +27,21 @@ watch(filterText, (val) => {
 const apiDefaultProps = {
   children: "children",
   label(data: any) {
-    if (data.path && data.method) {
-      return `${data.path} [${data.method}]`
+    if (data.description) {
+      return data.description
     }
-    return data.apiGroup
+    return data.key
   }
 }
 
-const apiIds = ref<number[]>([])  // 使用权限ID而不是key
+const apiIds = ref<number[]>([]) // 使用权限ID而不是key
 const apisTreeData = ref<ApiTreeData[]>([])
-const apiKeyToId = ref<Map<string, number>>(new Map())  // key -> id 映射
 
 function getTreeData() {
   apiGetElTreeApi({ id: props.id })
     .then((res) => {
       apisTreeData.value = res.data.list
-      apiIds.value = res.data.checkedIds || []  // 使用checkedIds
-      
-      // 构建 key -> id 映射
-      apiKeyToId.value.clear()
-      res.data.list.forEach((group: ApiTreeData) => {
-        group.children?.forEach((api: any) => {
-          if (api.id && api.key) {
-            apiKeyToId.value.set(api.key, api.id)
-          }
-        })
-      })
+      apiIds.value = res.data.checkedIds || [] // 使用checkedIds
     })
     .catch(() => {})
 }
@@ -62,14 +51,14 @@ function editAuthority() {
   // 获取选中的节点
   const checkedNodes = treeRef.value?.getCheckedNodes(false, true) as any[]
   const apiPermissionIds: number[] = []
-  
+
   for (const item of checkedNodes) {
     // 只添加API节点（有id的节点），不添加分组节点
     if (item.id && item.path && item.method) {
       apiPermissionIds.push(item.id)
     }
   }
-  
+
   updateRoleAPIPermissionsApi({ roleId: props.id, apiPermissionIds })
     .then((res) => {
       if (res.code === 0 || res.code === 200) {
@@ -93,7 +82,7 @@ function editAuthority() {
         ref="treeRef"
         :data="apisTreeData"
         :default-checked-keys="apiIds"
-        node-key="id"
+        node-key="key"
         default-expand-all
         highlight-current
         :props="apiDefaultProps"

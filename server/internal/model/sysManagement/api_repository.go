@@ -4,8 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
-
 	"gorm.io/gorm"
+	"strconv"
 )
 
 // APIRepository API仓库接口
@@ -42,24 +42,16 @@ func (e *apiRepo) List(ctx context.Context, req *ListApiReq) ([]*ApiModel, int64
 		db = db.Where("method = ?", req.Method)
 	}
 	if req.ApiGroup != "" {
-		db = db.Where("api_group = ?", req.ApiGroup)
+		db = db.Where("group_en = ?", req.ApiGroup)
 	}
 
 	if err := db.Count(&total).Error; err != nil {
 		return nil, 0, fmt.Errorf("count api failed: %w", err)
 	}
 
-	page := req.Page
-	pageSize := req.PageSize
-	if page <= 0 {
-		page = 1
-	}
-	if pageSize <= 0 {
-		pageSize = 10
-	}
-	offset := (page - 1) * pageSize
+	req.Normalize()
 
-	if err := db.Order("api_group, id").Limit(pageSize).Offset(offset).Find(&list).Error; err != nil {
+	if err := db.Order("group_en, id").Limit(req.PageSize).Offset(req.Offset()).Find(&list).Error; err != nil {
 		return nil, 0, fmt.Errorf("list api failed: %w", err)
 	}
 
@@ -68,10 +60,11 @@ func (e *apiRepo) List(ctx context.Context, req *ListApiReq) ([]*ApiModel, int64
 
 func (e *apiRepo) Create(ctx context.Context, req *CreateApiReq) (*ApiModel, error) {
 	api := &ApiModel{
-		ApiName:  req.ApiName,
-		Path:     req.Path,
-		Method:   req.Method,
-		ApiGroup: req.ApiGroup,
+		Path:        req.Path,
+		Method:      req.Method,
+		GroupEN:     req.GroupEN,
+		GroupCN:     req.GroupCN,
+		Description: req.Description,
 	}
 
 	if err := e.conn.WithContext(ctx).Create(api).Error; err != nil {
@@ -83,10 +76,11 @@ func (e *apiRepo) Create(ctx context.Context, req *CreateApiReq) (*ApiModel, err
 
 func (e *apiRepo) Update(ctx context.Context, req *UpdateApiReq) (*ApiModel, error) {
 	updates := map[string]interface{}{
-		"api_name":  req.ApiName,
-		"path":      req.Path,
-		"method":    req.Method,
-		"api_group": req.ApiGroup,
+		"path":        req.Path,
+		"method":      req.Method,
+		"group_en":    req.GroupEN,
+		"group_cn":    req.GroupCN,
+		"description": req.Description,
 	}
 
 	result := e.conn.WithContext(ctx).Model(&ApiModel{}).Where("id = ?", req.ID).Updates(updates)
@@ -108,12 +102,15 @@ func (e *apiRepo) Update(ctx context.Context, req *UpdateApiReq) (*ApiModel, err
 
 func (e *apiRepo) Delete(ctx context.Context, id uint) error {
 	result := e.conn.WithContext(ctx).Where("id = ?", id).Delete(&ApiModel{})
+
 	if err := result.Error; err != nil {
 		return fmt.Errorf("delete api failed: %w", err)
 	}
+
 	if result.RowsAffected == 0 {
 		return errors.New("API不存在")
 	}
+
 	return nil
 }
 
@@ -121,17 +118,22 @@ func (e *apiRepo) DeleteByIds(ctx context.Context, ids []uint) error {
 	if len(ids) == 0 {
 		return nil
 	}
+
 	return e.conn.WithContext(ctx).Where("id IN ?", ids).Delete(&ApiModel{}).Error
 }
 
 func (e *apiRepo) FindOne(ctx context.Context, id uint) (*ApiModel, error) {
 	var api ApiModel
+
 	if err := e.conn.WithContext(ctx).First(&api, id).Error; err != nil {
+
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errors.New("API不存在")
 		}
+
 		return nil, fmt.Errorf("find api failed: %w", err)
 	}
+
 	return &api, nil
 }
 
@@ -139,10 +141,12 @@ func (e *apiRepo) FindByIds(ctx context.Context, ids []uint) ([]*ApiModel, error
 	if len(ids) == 0 {
 		return []*ApiModel{}, nil
 	}
+
 	var apis []*ApiModel
 	if err := e.conn.WithContext(ctx).Where("id IN ?", ids).Find(&apis).Error; err != nil {
 		return nil, fmt.Errorf("find apis by ids failed: %w", err)
 	}
+
 	return apis, nil
 }
 
@@ -152,25 +156,25 @@ func (e *apiRepo) ElTree(ctx context.Context) ([]*ApiTreeNode, error) {
 		return nil, fmt.Errorf("get all apis failed: %w", err)
 	}
 
-	// Group by api_group
+	// Group by group_cn
 	groupMap := make(map[string][]*ApiTreeNode)
 	for _, api := range apis {
 		node := &ApiTreeNode{
-			ID:       api.ID,
-			ApiName:  api.ApiName,
-			Path:     api.Path,
-			Method:   api.Method,
-			ApiGroup: api.ApiGroup,
+			Key:         strconv.Itoa(int(api.ID)),
+			Path:        api.Path,
+			Method:      api.Method,
+			GroupEN:     api.GroupEN,
+			GroupCN:     api.GroupCN,
+			Description: api.Description,
 		}
-		groupMap[api.ApiGroup] = append(groupMap[api.ApiGroup], node)
+		groupMap[api.GroupCN] = append(groupMap[api.GroupCN], node)
 	}
 
 	// Build tree with groups as parent nodes
 	var tree []*ApiTreeNode
 	for group, children := range groupMap {
 		tree = append(tree, &ApiTreeNode{
-			ApiName:  group,
-			ApiGroup: group,
+			Key:      group,
 			Children: children,
 		})
 	}
@@ -182,8 +186,8 @@ func (e *apiRepo) GetAllGroups(ctx context.Context) ([]string, error) {
 	var groups []string
 	err := e.conn.WithContext(ctx).
 		Model(&ApiModel{}).
-		Distinct("api_group").
-		Pluck("api_group", &groups).Error
+		Distinct("group_en").
+		Pluck("group_en", &groups).Error
 	if err != nil {
 		return nil, fmt.Errorf("get api groups failed: %w", err)
 	}
