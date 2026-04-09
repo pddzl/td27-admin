@@ -34,5 +34,8 @@ func (s *RolePermissionService) Update(req *modelSysManagement.UpdateRolePermiss
 		return err
 	}
 
+	// todo
+	// if domain equals to API, refresh casbin
+
 	return nil
 }
