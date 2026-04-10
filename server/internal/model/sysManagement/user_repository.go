@@ -234,7 +234,7 @@ func (e *userEntity) Update(ctx context.Context, req *UpdateUserReq) (*UserModel
 	// 开始事务
 	tx := db.Begin()
 
-	// Update user
+	// Rebuild user
 	updates := map[string]interface{}{
 		"username":   req.Username,
 		"phone":      req.Phone,
@@ -298,7 +298,7 @@ func (e *userEntity) ModifyPasswd(ctx context.Context, req *ModifyPasswdReq) (er
 		return err
 	}
 
-	// Update password
+	// Rebuild password
 	if err = db.Model(&UserModel{}).Where("id = ?", req.ID).Update("password", pkg.MD5V([]byte(req.NewPassword))).Error; err != nil {
 		return fmt.Errorf("update password failed: %w", err)
 	}

@@ -101,7 +101,7 @@ func (e *roleRepo) Update(ctx context.Context, req *UpdateRoleReq) error {
 	return nil
 }
 
-// UpdateRolePermissionReq 编辑角色权限（使用统一权限表）
+// RebuildRolePermissionReq 编辑角色权限（使用统一权限表）
 func (e *roleRepo) UpdateRolePermission(ctx context.Context, roleId uint, menuIds []uint) error {
 	// First, delete existing menu permissions for this role
 	//if err := e.DeleteRoleMenu(ctx, roleId); err != nil {

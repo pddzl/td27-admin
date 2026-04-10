@@ -19,5 +19,5 @@ func (r *RolePermissionRouter) InitRolePermissionRouter(rg *gin.RouterGroup) {
 	base := rg.Group("role_permission")
 	record := base.Use(middleware.OperationRecord())
 	// record
-	record.POST("update", r.rolePermissionApi.Update)
+	record.POST("rebuild", r.rolePermissionApi.Rebuild)
 }

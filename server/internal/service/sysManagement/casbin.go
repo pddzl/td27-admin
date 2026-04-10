@@ -2,6 +2,7 @@ package sysManagement
 
 import (
 	"errors"
+	"fmt"
 	"strconv"
 	"sync"
 	"time"
@@ -11,6 +12,7 @@ import (
 	"go.uber.org/zap"
 
 	"server/internal/global"
+	modelSysManagement "server/internal/model/sysManagement"
 	casbinpkg "server/internal/pkg/casbin"
 )
 
@@ -125,6 +127,41 @@ func (cs *CasbinService) Enforce(roleIDs []uint, path string, method string) (bo
 // ReloadPolicy 重新加载策略
 func (cs *CasbinService) ReloadPolicy() error {
 	return cs.Casbin().LoadPolicy()
+}
+
+// RebuildRolePolicies 更新角色的API权限策略（先删除旧策略，再添加新策略）
+func (cs *CasbinService) RebuildRolePolicies(roleID uint, permissions []modelSysManagement.PermissionModel) error {
+	e := cs.Casbin()
+	roleIDStr := strconv.Itoa(int(roleID))
+
+	// 删除该角色的所有策略（fieldIndex 0 = sub/subject/roleID）
+	_, err := e.RemoveFilteredPolicy(0, roleIDStr)
+	if err != nil {
+		return fmt.Errorf("remove old policies failed: %w", err)
+	}
+
+	// 如果没有新权限，直接返回
+	if len(permissions) == 0 {
+		return nil
+	}
+
+	// 构建新策略列表
+	newPolicies := make([][]string, 0, len(permissions))
+	for _, perm := range permissions {
+		newPolicies = append(newPolicies, []string{
+			roleIDStr,
+			perm.Resource,
+			string(perm.Action),
+		})
+	}
+
+	// 批量添加新策略
+	_, err = e.AddPolicies(newPolicies)
+	if err != nil {
+		return fmt.Errorf("add new policies failed: %w", err)
+	}
+
+	return nil
 }
 
 // AddRoleInheritance 添加角色继承关系

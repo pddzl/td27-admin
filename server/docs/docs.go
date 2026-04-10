@@ -324,7 +324,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Update"
+                    "Rebuild"
                 ],
                 "summary": "编辑api",
                 "parameters": [
