@@ -2,7 +2,6 @@ package sysManagement
 
 import (
 	"errors"
-	"fmt"
 	"strconv"
 	"sync"
 	"time"
@@ -12,7 +11,6 @@ import (
 	"go.uber.org/zap"
 
 	"server/internal/global"
-	"server/internal/model/sysManagement"
 	casbinpkg "server/internal/pkg/casbin"
 )
 
@@ -158,50 +156,4 @@ func (cs *CasbinService) GetInheritedRoles(roleID uint) ([]string, error) {
 	sub := strconv.Itoa(int(roleID))
 	e := cs.Casbin()
 	return e.GetRolesForUser(sub)
-}
-
-// UpdateRoleAPIPermissions 更新角色的API权限（通过统一权限表）
-func (cs *CasbinService) UpdateRoleAPIPermissions(roleID uint, apiPermissionIDs []uint) error {
-	db := global.TD27_DB
-
-	// 开始事务
-	tx := db.Begin()
-
-	// 1. 删除该角色现有的API权限
-	if err := tx.Exec(`
-		DELETE FROM sys_management_role_permissions 
-		WHERE role_id = ? AND permission_id IN (
-			SELECT id FROM sys_management_permission WHERE domain = 'api'
-		)
-	`, roleID).Error; err != nil {
-		tx.Rollback()
-		return fmt.Errorf("clear existing API permissions failed: %w", err)
-	}
-
-	// 2. 添加新的API权限关联
-	for _, permID := range apiPermissionIDs {
-		rp := sysManagement.RolePermissionModel{
-			RoleID:       roleID,
-			PermissionID: permID,
-			DataScope:    "all",
-		}
-		if err := tx.Create(&rp).Error; err != nil {
-			tx.Rollback()
-			return fmt.Errorf("add API permission failed: %w", err)
-		}
-	}
-
-	// 3. 提交事务
-	if err := tx.Commit().Error; err != nil {
-		return fmt.Errorf("commit transaction failed: %w", err)
-	}
-
-	// 4. 重新加载Casbin策略
-	go func() {
-		if err := cs.ReloadPolicy(); err != nil {
-			global.TD27_LOG.Error("重新加载Casbin策略失败", zap.Error(err))
-		}
-	}()
-
-	return nil
 }

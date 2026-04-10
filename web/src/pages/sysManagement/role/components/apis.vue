@@ -3,7 +3,8 @@ import type { ElTree as ElTree1 } from "element-plus"
 import type { ApiTreeData } from "@/api/sysManagement/api"
 import { ref, watch } from "vue"
 import { apiGetElTreeApi } from "@/api/sysManagement/api"
-import { updateRoleAPIPermissionsApi } from "@/api/sysManagement/casbin"
+// import { updateRolePermissionApi } from "@/api/sysManagement/casbin"
+import { updateRolePermissionApi } from "@/api/sysManagement/role_permission"
 
 const props = defineProps({
   id: {
@@ -59,7 +60,7 @@ function editAuthority() {
     }
   }
 
-  updateRoleAPIPermissionsApi({ roleId: props.id, apiPermissionIds })
+  updateRolePermissionApi({ role_id: props.id, permission_ids: apiPermissionIds, domain: "api" })
     .then((res) => {
       if (res.code === 0 || res.code === 200) {
         ElMessage({ type: "success", message: "更新成功" })

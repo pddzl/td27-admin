@@ -127,5 +127,5 @@ func (s *ApiService) Update(req *modelSysManagement.UpdateApiReq) error {
 
 // UpdateRoleAPIPermissions 更新角色的API权限
 func (s *ApiService) UpdateRoleAPIPermissions(roleId uint, apiIds []uint) error {
-	return casbinService.UpdateRoleAPIPermissions(roleId, apiIds)
+	return nil
 }
