@@ -19,8 +19,6 @@ type MenuModel struct {
 	Affix      bool   `json:"affix" gorm:"default:false;comment:是否固定"`
 	AlwaysShow bool   `json:"alwaysShow" gorm:"default:false;comment:一直显示根路由"`
 	Title      string `json:"title" gorm:"comment:菜单名"`
-	// 关联的权限ID
-	//PermissionID uint `json:"permissionId" gorm:"index;comment:关联权限ID"`
 }
 
 func (MenuModel) TableName() string {

@@ -12,6 +12,8 @@ import (
 // PermissionRepository Permission仓库接口
 type PermissionRepository interface {
 	List(ctx context.Context, roleId uint, pd PermissionDomain) ([]PermissionModel, error)
+	Create(ctx context.Context, permission *PermissionModel) error
+	DeleteByDomainID(ctx context.Context, domainID uint, domain PermissionDomain) error
 }
 
 type permissionRepo struct {
@@ -37,4 +39,24 @@ func (i *permissionRepo) List(ctx context.Context, roleId uint, pd PermissionDom
 	}
 
 	return permissions, nil
+}
+
+// Create 创建权限
+func (i *permissionRepo) Create(ctx context.Context, permission *PermissionModel) error {
+	if err := i.conn.WithContext(ctx).Create(permission).Error; err != nil {
+		return fmt.Errorf("create permission failed: %w", err)
+	}
+	return nil
+}
+
+// DeleteByDomainID 根据domain_id和domain删除权限
+func (i *permissionRepo) DeleteByDomainID(ctx context.Context, domainID uint, domain PermissionDomain) error {
+	result := i.conn.WithContext(ctx).
+		Where("domain_id = ? AND domain = ?", domainID, domain).
+		Delete(&PermissionModel{})
+	
+	if result.Error != nil {
+		return fmt.Errorf("delete permission failed: %w", result.Error)
+	}
+	return nil
 }

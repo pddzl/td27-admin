@@ -26,7 +26,7 @@ type ListApiReq struct {
 // CreateApiReq 创建API请求
 type CreateApiReq struct {
 	Path        string `json:"path" binding:"required"`
-	Method      string `json:"method" binding:"required"`
+	Method      string `json:"method" binding:"required,oneof=GET POST PUT PATCH DELETE"`
 	GroupEN     string `json:"group_en" binding:"required"`
 	GroupCN     string `json:"group_cn" binding:"required"`
 	Description string `json:"description" binding:"required"`

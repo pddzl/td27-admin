@@ -174,6 +174,7 @@ function operateAction(formEl: FormInstance | undefined) {
           ElMessage({ type: "success", message: res.msg })
           // 修改对应数据
           const index = tableData.value.indexOf(activeRow)
+          tableData.value[index].group_cn = opFormData.group_cn
           tableData.value[index].group_en = opFormData.group_en
           tableData.value[index].path = opFormData.path
           tableData.value[index].description = opFormData.description

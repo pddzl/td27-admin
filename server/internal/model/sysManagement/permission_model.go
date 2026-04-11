@@ -20,12 +20,27 @@ const (
 	ActionAll     Action = "all"
 	ActionView    Action = "view"    // menu
 	ActionRead    Action = "read"    // api
-	ActionWrite   Action = "write"   // api
 	ActionCreate  Action = "create"  // api
 	ActionUpdate  Action = "update"  // api
 	ActionDelete  Action = "delete"  // api
 	ActionExecute Action = "execute" // button
 )
+
+// HTTPMethodToAction maps HTTP methods to CRUD actions
+func HTTPMethodToAction(method string) Action {
+	switch method {
+	case "GET":
+		return ActionRead
+	case "POST":
+		return ActionCreate
+	case "PUT", "PATCH":
+		return ActionUpdate
+	case "DELETE":
+		return ActionDelete
+	default:
+		return ActionAll
+	}
+}
 
 // PermissionModel 统一权限身份表（仅用于RBAC授权）
 type PermissionModel struct {

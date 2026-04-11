@@ -135,7 +135,8 @@ func (a *ApiApi) Update(c *gin.Context) {
 		return
 	}
 
-	if err := a.apiService.Update(&req); err != nil {
+	_, err := a.apiService.Update(&req)
+	if err != nil {
 		common.FailWithMessage(err.Error(), c)
 		global.TD27_LOG.Error("更新失败", zap.Error(err))
 	} else {

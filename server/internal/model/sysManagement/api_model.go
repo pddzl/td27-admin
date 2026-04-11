@@ -12,8 +12,6 @@ type ApiModel struct {
 	GroupEN     string `json:"group_en" gorm:"size:50;not null;comment:API分组(英文)"`
 	GroupCN     string `json:"group_cn" gorm:"size:50;not null;comment:API分组(中文)"`
 	Description string `json:"description" gorm:"size:100;not null;comment:API描述"`
-	// 关联的权限ID
-	//PermissionID uint `json:"permissionId" gorm:"index;comment:关联权限ID"`
 }
 
 func (ApiModel) TableName() string {

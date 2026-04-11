@@ -175,6 +175,24 @@ func (cs *CasbinService) RebuildRolePolicies(roleID uint, permissions []modelSys
 	return nil
 }
 
+// RemoveResourcePolicy 移除指定资源的所有策略（用于删除API时清理Casbin）
+// fieldIndex: 1 = obj/resource, 2 = act/action
+func (cs *CasbinService) RemoveResourcePolicy(resource, action string) error {
+	e := cs.Casbin()
+	if e == nil {
+		return errors.New("casbin enforcer not initialized")
+	}
+
+	// 移除所有涉及该resource和action的策略（不管roleID是什么）
+	// fieldIndex 1 = resource, fieldIndex 2 = action
+	_, err := e.RemoveFilteredPolicy(1, resource, action)
+	if err != nil {
+		return fmt.Errorf("remove resource policy failed: %w", err)
+	}
+
+	return nil
+}
+
 // AddRoleInheritance 添加角色继承关系
 func (cs *CasbinService) AddRoleInheritance(childRoleID, parentRoleID uint) error {
 	if !global.TD27_CONFIG.Casbin.EnableRoleHierarchy {

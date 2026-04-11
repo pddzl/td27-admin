@@ -2,6 +2,9 @@ package sysManagement
 
 import (
 	"context"
+	"fmt"
+
+	"go.uber.org/zap"
 
 	"server/internal/global"
 	modelSysManagement "server/internal/model/sysManagement"
@@ -10,6 +13,7 @@ import (
 type MenuService struct {
 	menuRepository modelSysManagement.MenuRepository
 	userRepository modelSysManagement.UserRepository
+	permissionRepo modelSysManagement.PermissionRepository
 	ctx            context.Context
 }
 
@@ -17,20 +21,39 @@ func NewMenuService() *MenuService {
 	return &MenuService{
 		menuRepository: modelSysManagement.NewMenuRepo(global.TD27_DB),
 		userRepository: modelSysManagement.NewUserEntity(global.TD27_DB),
+		permissionRepo: modelSysManagement.NewPermissionRepo(global.TD27_DB),
 		ctx:            context.Background(),
 	}
 }
 
 func (s *MenuService) List(customClaims *modelSysManagement.CustomClaims) ([]modelSysManagement.MenuResp, error) {
-	// Get all role IDs from the user
 	roleIDs := customClaims.GetAllRoleIDs()
-
-	// Get menus from all roles (union of permissions)
 	return s.menuRepository.List(s.ctx, roleIDs)
 }
 
 func (s *MenuService) Create(req *modelSysManagement.Menu) (*modelSysManagement.MenuModel, error) {
-	return s.menuRepository.Create(s.ctx, req)
+	// 1. 创建菜单
+	menu, err := s.menuRepository.Create(s.ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
+	// 2. 创建对应的权限 (domain_id = menu.id)
+	permission := &modelSysManagement.PermissionModel{
+		Name:     req.Title,
+		Domain:   modelSysManagement.PermissionDomainMenu,
+		Resource: req.Path,
+		Action:   modelSysManagement.ActionView,
+		DomainID: menu.ID,
+	}
+
+	if err = s.permissionRepo.Create(s.ctx, permission); err != nil {
+		// 权限创建失败，删除已创建的菜单
+		s.menuRepository.Delete(s.ctx, menu.ID)
+		return nil, fmt.Errorf("create permission failed: %w", err)
+	}
+
+	return menu, nil
 }
 
 func (s *MenuService) Update(req *modelSysManagement.UpdateMenuReq) error {
@@ -38,6 +61,11 @@ func (s *MenuService) Update(req *modelSysManagement.UpdateMenuReq) error {
 }
 
 func (s *MenuService) Delete(id uint) error {
+	// 删除对应的权限 (通过domain_id关联)
+	if err := s.permissionRepo.DeleteByDomainID(s.ctx, id, modelSysManagement.PermissionDomainMenu); err != nil {
+		global.TD27_LOG.Error("删除菜单权限失败", zap.Error(err))
+	}
+
 	return s.menuRepository.Delete(s.ctx, id)
 }
 
