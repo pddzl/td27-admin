@@ -2,7 +2,8 @@ import { request } from "@/http/axios_n"
 
 interface ApiData {
   path: string
-  apiGroup: string
+  group_cn: string
+  group_en: string
   method: string
   description: string
 }

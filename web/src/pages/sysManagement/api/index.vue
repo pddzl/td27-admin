@@ -111,7 +111,8 @@ function handleSortChange(column: any) {
 const formRef = ref<FormInstance>()
 const opFormData = reactive({
   path: "",
-  apiGroup: "",
+  group_en: "",
+  group_cn: "",
   method: "",
   description: ""
 })
@@ -124,7 +125,8 @@ enum operationKind {
 let oKind: operationKind
 const addFormRules: FormRules = reactive({
   path: [{ required: true, trigger: "blur", message: "路径不能为空" }],
-  apiGroup: [{ required: true, trigger: "blur", message: "分组不能为空" }],
+  group_en: [{ required: true, trigger: "blur", message: "分组(英文)不能为空" }],
+  group_cn: [{ required: true, trigger: "blur", message: "分组(中文)不能为空" }],
   method: [{ required: true, trigger: "change", message: "方法不能为空" }],
   description: [{ required: true, trigger: "blur", message: "描述不能为空" }]
 })
@@ -132,7 +134,8 @@ const addFormRules: FormRules = reactive({
 function initForm() {
   formRef.value?.resetFields()
   opFormData.path = ""
-  opFormData.apiGroup = ""
+  opFormData.group_en = ""
+  opFormData.group_cn = ""
   opFormData.method = ""
   opFormData.description = ""
 }
@@ -171,7 +174,7 @@ function operateAction(formEl: FormInstance | undefined) {
           ElMessage({ type: "success", message: res.msg })
           // 修改对应数据
           const index = tableData.value.indexOf(activeRow)
-          tableData.value[index].apiGroup = opFormData.apiGroup
+          tableData.value[index].group_en = opFormData.group_en
           tableData.value[index].path = opFormData.path
           tableData.value[index].description = opFormData.description
           tableData.value[index].method = opFormData.method
@@ -206,7 +209,8 @@ let activeRow: ApiDataModel
 function editDialog(row: ApiDataModel) {
   dialogTitle.value = "编辑接口"
   oKind = operationKind.Edit
-  opFormData.apiGroup = row.apiGroup
+  opFormData.group_en = row.group_en
+  opFormData.group_cn = row.group_cn
   opFormData.description = row.description
   opFormData.method = row.method
   opFormData.path = row.path
@@ -335,8 +339,7 @@ async function onDelete() {
       </div>
     </el-card>
     <el-dialog v-model="dialogVisible" :title="dialogTitle" :before-close="handleClose" width="38%">
-      <WarningBar title="新增接口，需要在角色管理内配置权限才可使用" />
-      <el-form ref="formRef" :model="opFormData" :rules="addFormRules" label-width="80px">
+      <el-form ref="formRef" :model="opFormData" :rules="addFormRules" label-width="120px">
         <el-form-item label="API路径" prop="path">
           <el-input v-model="opFormData.path" />
         </el-form-item>
@@ -345,8 +348,11 @@ async function onDelete() {
             <el-option v-for="item in methodOptions" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
-        <el-form-item label="API分组" prop="apiGroup">
-          <el-input v-model="opFormData.apiGroup" />
+        <el-form-item label="API分组(中文)" prop="group_cn">
+          <el-input v-model="opFormData.group_cn" />
+        </el-form-item>
+        <el-form-item label="API分组(英文)" prop="group_en">
+          <el-input v-model="opFormData.group_en" />
         </el-form-item>
         <el-form-item label="API描述" prop="description">
           <el-input v-model="opFormData.description" />
