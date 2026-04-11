@@ -79,13 +79,6 @@ func (s *ApiService) Delete(id uint) error {
 		return err
 	}
 
-	// 重新加载Casbin策略
-	go func() {
-		if err = casbinService.ReloadPolicy(); err != nil {
-			global.TD27_LOG.Error("重新加载Casbin策略失败", zap.Error(err))
-		}
-	}()
-
 	global.TD27_LOG.Info("删除API",
 		zap.String("path", api.Path),
 		zap.String("method", api.Method))
@@ -98,13 +91,6 @@ func (s *ApiService) DeleteByIds(ids []uint) error {
 	if err != nil {
 		return err
 	}
-
-	// 重新加载Casbin策略
-	go func() {
-		if err = casbinService.ReloadPolicy(); err != nil {
-			global.TD27_LOG.Error("重新加载Casbin策略失败", zap.Error(err))
-		}
-	}()
 
 	return nil
 }
@@ -122,10 +108,5 @@ func (s *ApiService) Update(req *modelSysManagement.UpdateApiReq) error {
 		}
 	}()
 
-	return nil
-}
-
-// UpdateRoleAPIPermissions 更新角色的API权限
-func (s *ApiService) UpdateRoleAPIPermissions(roleId uint, apiIds []uint) error {
 	return nil
 }

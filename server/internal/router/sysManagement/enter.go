@@ -4,7 +4,6 @@ import "github.com/gin-gonic/gin"
 
 type RouterGroup struct {
 	*LogRegRouter
-	*CasbinRouter
 	*UserRouter
 	*RoleRouter
 	*RolePermissionRouter
@@ -18,7 +17,6 @@ type RouterGroup struct {
 func NewRouterGroup() *RouterGroup {
 	return &RouterGroup{
 		LogRegRouter:         NewLogRegRouter(),
-		CasbinRouter:         NewCasbinRouter(),
 		UserRouter:           NewUserRouter(),
 		RoleRouter:           NewRoleRouter(),
 		RolePermissionRouter: NewRolePermissionRouter(),
@@ -35,7 +33,6 @@ func (r *RouterGroup) InitPublic(group *gin.RouterGroup) {
 }
 
 func (r *RouterGroup) InitPrivate(group *gin.RouterGroup) {
-	r.InitCasbinRouter(group)
 	r.InitUserRouter(group)
 	r.InitRoleRouter(group)
 	r.InitRolePermissionRouter(group)
