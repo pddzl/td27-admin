@@ -6,6 +6,7 @@ import (
 
 	"github.com/casbin/casbin/v2/model"
 	"github.com/casbin/casbin/v2/persist"
+	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
 
@@ -25,11 +26,11 @@ func (a *PermissionAdapter) LoadPolicy(mod model.Model) error {
 	var results []struct {
 		RoleID   uint   `gorm:"column:role_id"`
 		Resource string `gorm:"column:resource"`
-		Method   string `gorm:"column:method"`
+		Action   string `gorm:"column:action"`
 	}
 
 	err := a.db.Raw(`
-		SELECT rp.role_id, p.resource, p.method
+		SELECT rp.role_id, p.resource, p.action
 		FROM sys_management_role_permissions rp
 		JOIN sys_management_permission p ON rp.permission_id = p.id
 		WHERE p.domain = 'api'
@@ -42,9 +43,13 @@ func (a *PermissionAdapter) LoadPolicy(mod model.Model) error {
 	// 加载到Casbin模型
 	for _, r := range results {
 		roleID := strconv.Itoa(int(r.RoleID))
-		line := fmt.Sprintf("p, %s, %s, %s", roleID, r.Resource, r.Method)
+		line := fmt.Sprintf("p, %s, %s, %s", roleID, r.Resource, r.Action)
 		persist.LoadPolicyLine(line, mod)
 	}
+
+	// 添加日志确认加载成功
+	zap.L().Info("Casbin策略加载完成", 
+		zap.Int("policyCount", len(results)))
 
 	return nil
 }

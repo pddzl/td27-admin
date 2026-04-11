@@ -160,6 +160,7 @@ func (e *apiRepo) ElTree(ctx context.Context) ([]*ApiTreeNode, error) {
 	groupMap := make(map[string][]*ApiTreeNode)
 	for _, api := range apis {
 		node := &ApiTreeNode{
+			Id:          api.ID,
 			Key:         strconv.Itoa(int(api.ID)),
 			Path:        api.Path,
 			Method:      api.Method,

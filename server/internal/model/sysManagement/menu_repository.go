@@ -101,7 +101,7 @@ func (e *menuRepo) List(ctx context.Context, roleIDs []uint) ([]MenuResp, error)
 		Where("p.domain = ?", "menu").
 		Where("rp.role_id IN ?", roleIDs)
 
-	err := e.conn.WithContext(ctx).Debug().
+	err := e.conn.WithContext(ctx).
 		Model(&MenuModel{}).
 		Where("EXISTS (?)", subQuery).
 		Find(&menus).Error

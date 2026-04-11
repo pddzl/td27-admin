@@ -8,7 +8,7 @@ import (
 )
 
 type RolePermissionRepository interface {
-	Rebuild(ctx context.Context, roleId uint, permissionIds []uint, domain string) ([]PermissionModel, error)
+	Rebuild(ctx context.Context, roleId uint, domainIds []uint, domain string) ([]PermissionModel, error)
 }
 
 type rolePermissionRepo struct {
@@ -21,7 +21,7 @@ func NewRolePermissionRepository(conn *gorm.DB) RolePermissionRepository {
 
 // Rebuild 编辑角色权限（使用统一权限表）
 // 返回实际插入的权限列表，用于更新 Casbin 策略
-func (r *rolePermissionRepo) Rebuild(ctx context.Context, roleId uint, permissionIds []uint, domain string) ([]PermissionModel, error) {
+func (r *rolePermissionRepo) Rebuild(ctx context.Context, roleId uint, domainIds []uint, domain string) ([]PermissionModel, error) {
 	var insertedPermissions []PermissionModel
 
 	err := r.conn.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
@@ -39,7 +39,7 @@ func (r *rolePermissionRepo) Rebuild(ctx context.Context, roleId uint, permissio
 		// query permissions
 		var permissions []PermissionModel
 		if err := tx.
-			Where("id IN ? AND domain = ?", permissionIds, domain).
+			Where("id IN ? AND domain = ?", domainIds, domain).
 			Find(&permissions).Error; err != nil {
 			return fmt.Errorf("find permissions failed: %w", err)
 		}

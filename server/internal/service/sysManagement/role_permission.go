@@ -32,7 +32,7 @@ func (s *RolePermissionService) Rebuild(req *modelSysManagement.RebuildRolePermi
 
 	// update sys_management_role_permissions
 	// returns the actual permissions that were inserted
-	permissions, err := s.rolePermissionRepository.Rebuild(s.ctx, req.RoleId, req.PermissionIds, req.Domain)
+	permissions, err := s.rolePermissionRepository.Rebuild(s.ctx, req.RoleId, req.DomainIds, req.Domain)
 	if err != nil {
 		return err
 	}

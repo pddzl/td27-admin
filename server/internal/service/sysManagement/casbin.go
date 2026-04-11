@@ -82,7 +82,12 @@ func (cs *CasbinService) Casbin() *casbin.SyncedCachedEnforcer {
 			return
 		}
 
-		syncedCachedEnforcer, _ = casbin.NewSyncedCachedEnforcer(m, adapter)
+		var initErr error
+		syncedCachedEnforcer, initErr = casbin.NewSyncedCachedEnforcer(m, adapter)
+		if initErr != nil {
+			zap.L().Error("Casbin enforcer初始化失败!", zap.Error(initErr))
+			return
+		}
 
 		// 配置缓存TTL
 		cacheTTL := global.TD27_CONFIG.Casbin.CacheTTL
@@ -96,9 +101,12 @@ func (cs *CasbinService) Casbin() *casbin.SyncedCachedEnforcer {
 			syncedCachedEnforcer.StartAutoLoadPolicy(time.Duration(global.TD27_CONFIG.Casbin.AutoLoadInterval) * time.Second)
 		}
 
-		_ = syncedCachedEnforcer.LoadPolicy()
+		if err = syncedCachedEnforcer.LoadPolicy(); err != nil {
+			zap.L().Error("Casbin策略加载失败!", zap.Error(err))
+			return
+		}
 
-		global.TD27_LOG.Info("Casbin enforcer initialized with unified permission table",
+		global.TD27_LOG.Info("Casbin enforcer初始化完成，策略已加载",
 			zap.Bool("roleHierarchy", global.TD27_CONFIG.Casbin.EnableRoleHierarchy),
 			zap.Int("cacheTTL", cacheTTL))
 	})
@@ -132,6 +140,9 @@ func (cs *CasbinService) ReloadPolicy() error {
 // RebuildRolePolicies 更新角色的API权限策略（先删除旧策略，再添加新策略）
 func (cs *CasbinService) RebuildRolePolicies(roleID uint, permissions []modelSysManagement.PermissionModel) error {
 	e := cs.Casbin()
+	if e == nil {
+		return errors.New("casbin enforcer not initialized")
+	}
 	roleIDStr := strconv.Itoa(int(roleID))
 
 	// 删除该角色的所有策略（fieldIndex 0 = sub/subject/roleID）

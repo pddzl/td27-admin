@@ -1,10 +1,9 @@
 <script lang="ts" setup>
 import type { ElTree as ElTree1 } from "element-plus"
-import type { ApiTreeData } from "@/api/sysManagement/api"
+import type { ApiChild, ApiTreeData } from "@/api/sysManagement/api"
 import { ref, watch } from "vue"
 import { apiGetElTreeApi } from "@/api/sysManagement/api"
-// import { updateRolePermissionApi } from "@/api/sysManagement/casbin"
-import { updateRolePermissionApi } from "@/api/sysManagement/role_permission"
+import { rebuildRolePermissionApi } from "@/api/sysManagement/role_permission"
 
 const props = defineProps({
   id: {
@@ -48,19 +47,19 @@ function getTreeData() {
 }
 getTreeData()
 
-function editAuthority() {
+function rebuildHandle() {
   // 获取选中的节点
-  const checkedNodes = treeRef.value?.getCheckedNodes(false, true) as any[]
-  const apiPermissionIds: number[] = []
+  const checkedNodes = treeRef.value?.getCheckedNodes(false, true) as ApiChild[]
+  const domainIds: number[] = []
 
   for (const item of checkedNodes) {
     // 只添加API节点（有id的节点），不添加分组节点
-    if (item.id && item.path && item.method) {
-      apiPermissionIds.push(item.id)
+    if (item.key && item.path && item.method) {
+      domainIds.push(item.id)
     }
   }
 
-  updateRolePermissionApi({ role_id: props.id, permission_ids: apiPermissionIds, domain: "api" })
+  rebuildRolePermissionApi({ role_id: props.id, domain_ids: domainIds, domain: "api" })
     .then((res) => {
       if (res.code === 0 || res.code === 200) {
         ElMessage({ type: "success", message: "更新成功" })
@@ -74,7 +73,7 @@ function editAuthority() {
   <div>
     <div class="clearfix">
       <el-input v-model="filterText" class="fitler" placeholder="筛选API" />
-      <el-button type="primary" class="button" @click="editAuthority">
+      <el-button type="primary" class="button" @click="rebuildHandle">
         更新
       </el-button>
     </div>

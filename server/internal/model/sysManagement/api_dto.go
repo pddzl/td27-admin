@@ -34,6 +34,7 @@ type CreateApiReq struct {
 
 // ApiTreeNode API树节点
 type ApiTreeNode struct {
+	Id          uint           `json:"id" binding:"required"`
 	Key         string         `json:"key"`
 	Path        string         `json:"path,omitempty"`
 	Method      string         `json:"method,omitempty" `

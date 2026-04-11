@@ -30,8 +30,8 @@ export function apiListApi(data: reqApis) {
   })
 }
 
-interface ApiChild {
-  label: string
+export interface ApiChild {
+  id: number
   key: string
   group_en: string
   group_cn: string

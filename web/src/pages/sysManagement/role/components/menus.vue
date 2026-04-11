@@ -3,7 +3,7 @@ import type { ElTree as ELTree1 } from "element-plus"
 import type { MenuData } from "@/api/sysManagement/menu"
 import { ref, watch } from "vue"
 import { getElTreeMenusApi } from "@/api/sysManagement/menu"
-import { updateRolePermissionApi } from "@/api/sysManagement/role_permission"
+import { rebuildRolePermissionApi } from "@/api/sysManagement/role_permission"
 
 const props = defineProps({
   id: {
@@ -45,9 +45,9 @@ function getTreeData(id: number) {
 getTreeData(props.id)
 
 function UpdateHandle() {
-  updateRolePermissionApi({
+  rebuildRolePermissionApi({
     role_id: props.id,
-    permission_ids: [...(treeRef.value?.getCheckedKeys() as number[]), ...(treeRef.value?.getHalfCheckedKeys() as number[])],
+    domain_ids: [...(treeRef.value?.getCheckedKeys() as number[]), ...(treeRef.value?.getHalfCheckedKeys() as number[])],
     domain: "menu"
   })
     .then((res) => {
