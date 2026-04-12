@@ -214,9 +214,24 @@ func (e *menuRepo) ElTree(ctx context.Context, roleId uint) ([]MenuResp, []uint,
 		return nil, nil, fmt.Errorf("query role menus failed: %w", err)
 	}
 
-	permSet := make(map[uint]struct{}, len(relations))
-	for _, r := range relations {
-		permSet[r.PermissionID] = struct{}{}
+	var permissionIds []uint
+
+	for _, m := range relations {
+		permissionIds = append(permissionIds, m.PermissionID)
+	}
+
+	var permissions []PermissionModel
+	if err := db.
+		Model(&PermissionModel{}).
+		Select("domain_id").
+		Where("id IN ?", permissionIds).
+		Scan(&permissions).Error; err != nil {
+		return nil, nil, fmt.Errorf("query permission menus failed: %w", err)
+	}
+
+	permSet := make(map[uint]struct{}, len(permissions))
+	for _, r := range permissions {
+		permSet[r.DomainID] = struct{}{}
 	}
 
 	// element-plus el-tree default-checked-keys
@@ -231,10 +246,6 @@ func (e *menuRepo) ElTree(ctx context.Context, roleId uint) ([]MenuResp, []uint,
 		isParent := false
 		for _, c := range menuResps {
 			if c.ParentID == m.ID {
-				//if _, ok := permSet[c.ID]; ok {
-				//	isParent = true
-				//	break
-				//}
 				isParent = true
 				break
 			}
