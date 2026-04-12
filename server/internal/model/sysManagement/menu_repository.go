@@ -175,7 +175,7 @@ func (e *menuRepo) Update(ctx context.Context, req *UpdateMenuReq) error {
 
 func (e *menuRepo) Delete(ctx context.Context, id uint) error {
 	result := e.conn.WithContext(ctx).
-		Where("id = ?", id).
+		Where("id = ?", id).Unscoped().
 		Delete(&MenuModel{})
 
 	if err := result.Error; err != nil {

@@ -24,7 +24,7 @@ func NewPermissionRepo(conn *gorm.DB) PermissionRepository {
 	return &permissionRepo{conn: conn}
 }
 
-func (i *permissionRepo) List(ctx context.Context, roleId uint, pd PermissionDomain) ([]PermissionModel, error) {
+func (r *permissionRepo) List(ctx context.Context, roleId uint, pd PermissionDomain) ([]PermissionModel, error) {
 	var permissions []PermissionModel
 
 	err := global.TD27_DB.Raw(`
@@ -42,19 +42,19 @@ func (i *permissionRepo) List(ctx context.Context, roleId uint, pd PermissionDom
 }
 
 // Create 创建权限
-func (i *permissionRepo) Create(ctx context.Context, permission *PermissionModel) error {
-	if err := i.conn.WithContext(ctx).Create(permission).Error; err != nil {
+func (r *permissionRepo) Create(ctx context.Context, permission *PermissionModel) error {
+	if err := r.conn.WithContext(ctx).Create(permission).Error; err != nil {
 		return fmt.Errorf("create permission failed: %w", err)
 	}
 	return nil
 }
 
 // DeleteByDomainID 根据domain_id和domain删除权限
-func (i *permissionRepo) DeleteByDomainID(ctx context.Context, domainID uint, domain PermissionDomain) error {
-	result := i.conn.WithContext(ctx).
+func (r *permissionRepo) DeleteByDomainID(ctx context.Context, domainID uint, domain PermissionDomain) error {
+	result := r.conn.WithContext(ctx).
 		Where("domain_id = ? AND domain = ?", domainID, domain).
 		Delete(&PermissionModel{})
-	
+
 	if result.Error != nil {
 		return fmt.Errorf("delete permission failed: %w", result.Error)
 	}

@@ -48,8 +48,11 @@ func (s *MenuService) Create(req *modelSysManagement.Menu) (*modelSysManagement.
 	}
 
 	if err = s.permissionRepo.Create(s.ctx, permission); err != nil {
-		// 权限创建失败，删除已创建的菜单
-		s.menuRepository.Delete(s.ctx, menu.ID)
+		global.TD27_LOG.Info(fmt.Sprintf("权限创建失败，删除已创建的菜单"))
+		errDel := s.menuRepository.Delete(s.ctx, menu.ID)
+		if errDel != nil {
+			global.TD27_LOG.Error(fmt.Sprintf("删除菜单失败 menu_id %d, error: %v", menu.ID, errDel))
+		}
 		return nil, fmt.Errorf("create permission failed: %w", err)
 	}
 

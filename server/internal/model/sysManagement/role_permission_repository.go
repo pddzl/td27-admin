@@ -39,7 +39,7 @@ func (r *rolePermissionRepo) Rebuild(ctx context.Context, roleId uint, domainIds
 		// query permissions
 		var permissions []PermissionModel
 		if err := tx.
-			Where("id IN ? AND domain = ?", domainIds, domain).
+			Where("domain_id IN ? AND domain = ?", domainIds, domain).
 			Find(&permissions).Error; err != nil {
 			return fmt.Errorf("find permissions failed: %w", err)
 		}
