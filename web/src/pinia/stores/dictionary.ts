@@ -1,6 +1,6 @@
 import type { DictModel } from "@/api/sysManagement/dict"
 import type { dictDetailDataModel } from "@/api/sysManagement/dictDetail"
-import { DictListApi } from "@/api/sysManagement/dict"
+import { dictListApi } from "@/api/sysManagement/dict"
 import { dictDetailFlatApi } from "@/api/sysManagement/dictDetail"
 
 export const useDictionaryStore = defineStore("dictionary", () => {
@@ -11,9 +11,9 @@ export const useDictionaryStore = defineStore("dictionary", () => {
   const fetchDictionaries = async () => {
     if (dictionaries.value.length > 0) return
     try {
-      const res = await DictListApi()
+      const res = await dictListApi({})
       if (res.code === 0) {
-        dictionaries.value = res.data
+        dictionaries.value = res.data.list
       }
     } finally {
       //
@@ -25,7 +25,7 @@ export const useDictionaryStore = defineStore("dictionary", () => {
     try {
       const res = await dictDetailFlatApi({ dictId })
       if (res.code === 0) {
-        detailsMap.value[dictId] = res.data.list
+        detailsMap.value[dictId] = res.data
       }
     } finally {
       //
@@ -38,6 +38,7 @@ export const useDictionaryStore = defineStore("dictionary", () => {
     if (dictionaries.value.length === 0) {
       await fetchDictionaries()
     }
+
     const dict = dictionaries.value.find(d => d.en_name === en_name)
     if (!dict) return []
 

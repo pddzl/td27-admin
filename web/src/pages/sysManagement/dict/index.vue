@@ -5,7 +5,7 @@ import { reactive, ref } from "vue";
 import {
   dictCreateApi,
   dictDeleteApi,
-  DictListApi,
+  dictListApi,
   dictUpdateApi,
 } from "@/api/sysManagement/dict";
 import { usePagination } from "@/common/composables/usePagination_n";
@@ -59,7 +59,7 @@ const tableData = ref<ListData<DictModel[]>>({
 async function getTableData() {
   loading.value = true;
   try {
-    const res = await DictListApi({
+    const res = await dictListApi({
       page: paginationData.currentPage,
       pageSize: paginationData.pageSize,
     });

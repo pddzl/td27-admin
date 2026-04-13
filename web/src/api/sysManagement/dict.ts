@@ -7,12 +7,12 @@ interface dictData {
 
 export interface DictModel extends dictData, Td27Model {}
 
-interface listReq extends PageInfo {
+interface listReq extends Partial<PageInfo> {
   cn_name?: string
   en_name?: string
 }
 
-export function DictListApi(data: listReq) {
+export function dictListApi(data: listReq) {
   return request<ApiResponseData<ListData<DictModel[]>>>({
     url: "/dict/list",
     method: "post",

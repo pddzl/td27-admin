@@ -14,6 +14,7 @@ export interface dictDetailDataModel extends dictDetailData, Td27Model {}
 
 // List
 export type dictDetailListData = ListData<dictDetailDataModel[]>
+export type dictDetailFlatData = dictDetailDataModel[]
 
 interface reqDictDetail extends PageInfo {
   dictId: number
@@ -28,7 +29,7 @@ export function dictDetailListApi(data: reqDictDetail) {
 }
 
 export function dictDetailFlatApi(data: { dictId: number }) {
-  return request<ApiResponseData<dictDetailListData>>({
+  return request<ApiResponseData<dictDetailFlatData>>({
     url: "/dictDetail/flat",
     method: "post",
     data
