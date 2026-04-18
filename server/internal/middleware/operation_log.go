@@ -3,6 +3,7 @@ package middleware
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"net/url"
@@ -65,16 +66,24 @@ func OperationRecord() gin.HandlerFunc {
 		}
 
 		// 解析token
-		claims, _ := sysManagement.GetClaims(c)
-
+		claims, err := sysManagement.GetClaims(c)
+		
 		record := modelSysMonitor.OperationLogModel{
 			Ip:        c.ClientIP(),
 			Method:    c.Request.Method,
 			Path:      c.Request.URL.Path,
 			UserAgent: c.Request.UserAgent(),
 			ReqParam:  string(reqParam),
-			UserID:    claims.ID,
-			UserName:  claims.Username,
+		}
+		
+		if err == nil && claims != nil {
+			record.UserID = claims.ID
+			record.UserName = claims.Username
+		} else if isServiceToken := c.GetBool("isServiceToken"); isServiceToken {
+			record.UserName = "service_token"
+			if prefix, exists := c.Get("serviceTokenPrefix"); exists {
+				record.UserName = fmt.Sprintf("service_token(%s)", prefix)
+			}
 		}
 
 		writer := responseProxyWriter{

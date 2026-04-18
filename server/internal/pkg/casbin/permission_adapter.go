@@ -2,12 +2,11 @@ package casbin
 
 import (
 	"fmt"
-	"strconv"
-
 	"github.com/casbin/casbin/v2/model"
 	"github.com/casbin/casbin/v2/persist"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
+	"server/internal/global"
 )
 
 // PermissionAdapter 基于统一权限表的Casbin适配器
@@ -22,34 +21,51 @@ func NewPermissionAdapter(db *gorm.DB) *PermissionAdapter {
 
 // LoadPolicy 从统一权限表加载策略
 func (a *PermissionAdapter) LoadPolicy(mod model.Model) error {
-	// 查询所有API权限和角色关联
-	var results []struct {
-		RoleID   uint   `gorm:"column:role_id"`
+	type policyRow struct {
+		Sub      string `gorm:"column:sub"`
 		Resource string `gorm:"column:resource"`
 		Action   string `gorm:"column:action"`
 	}
 
+	var rows []policyRow
+
+	// Merge role + token into ONE query
 	err := a.db.Raw(`
-		SELECT rp.role_id, p.resource, p.action
+		SELECT 
+			CAST(rp.role_id AS TEXT) AS sub,
+			p.resource,
+			p.action
 		FROM sys_management_role_permissions rp
-		JOIN sys_management_permission p ON rp.permission_id = p.id
+		JOIN sys_management_permission p 
+			ON rp.permission_id = p.id
 		WHERE p.domain = 'api'
-	`).Scan(&results).Error
+
+		UNION ALL
+
+		SELECT 
+			CONCAT('token:', tp.token_id) AS sub,
+			p.resource,
+			p.action
+		FROM sys_tool_token_permission tp
+		JOIN sys_management_permission p 
+			ON tp.permission_id = p.id
+		WHERE p.domain = 'api'
+	`).Scan(&rows).Error
 
 	if err != nil {
-		return fmt.Errorf("load policy from permission table failed: %w", err)
+		return fmt.Errorf("load policy failed: %w", err)
 	}
 
-	// 加载到Casbin模型
-	for _, r := range results {
-		roleID := strconv.Itoa(int(r.RoleID))
-		line := fmt.Sprintf("p, %s, %s, %s", roleID, r.Resource, r.Action)
+	// Single loop
+	for _, r := range rows {
+		line := fmt.Sprintf("p, %s, %s, %s", r.Sub, r.Resource, r.Action)
 		persist.LoadPolicyLine(line, mod)
 	}
 
-	// 添加日志确认加载成功
-	zap.L().Info("Casbin策略加载完成", 
-		zap.Int("policyCount", len(results)))
+	// Accurate logging
+	global.TD27_LOG.Info("Casbin策略加载完成",
+		zap.Int("policyCount", len(rows)),
+	)
 
 	return nil
 }

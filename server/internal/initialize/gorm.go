@@ -107,11 +107,16 @@ func RegisterTables(db *gorm.DB) {
 			modelSysTool.FileModel{},
 			// crontab
 			modelSysTool.CronModel{},
+			// 服务令牌
+			modelSysTool.ServiceToken{},
+			modelSysTool.TokenPermission{},
 			// 缓存表
 			modelSysTool.CacheModel{},
 			// 字典
 			sysManagement.DictModel{},
 			sysManagement.DictDetailModel{},
+			// 按钮权限
+			sysManagement.ButtonModel{},
 		)
 
 		if err != nil {

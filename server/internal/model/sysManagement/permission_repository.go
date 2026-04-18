@@ -13,7 +13,9 @@ import (
 type PermissionRepository interface {
 	List(ctx context.Context, roleId uint, pd PermissionDomain) ([]PermissionModel, error)
 	Create(ctx context.Context, permission *PermissionModel) error
+	FindByDomainID(ctx context.Context, domainID uint, domain PermissionDomain) (*PermissionModel, error)
 	DeleteByDomainID(ctx context.Context, domainID uint, domain PermissionDomain) error
+	Update(ctx context.Context, permissionModel *PermissionModel) error
 }
 
 type permissionRepo struct {
@@ -49,14 +51,30 @@ func (r *permissionRepo) Create(ctx context.Context, permission *PermissionModel
 	return nil
 }
 
+// FindByDomainID 根据domain_id和domain查找权限
+func (r *permissionRepo) FindByDomainID(ctx context.Context, domainID uint, domain PermissionDomain) (*PermissionModel, error) {
+	var perm PermissionModel
+	if err := r.conn.WithContext(ctx).Where("domain_id = ? AND domain = ?", domainID, domain).First(&perm).Error; err != nil {
+		return nil, fmt.Errorf("find permission failed: %w", err)
+	}
+	return &perm, nil
+}
+
 // DeleteByDomainID 根据domain_id和domain删除权限
 func (r *permissionRepo) DeleteByDomainID(ctx context.Context, domainID uint, domain PermissionDomain) error {
-	result := r.conn.WithContext(ctx).
+	result := r.conn.WithContext(ctx).Unscoped().
 		Where("domain_id = ? AND domain = ?", domainID, domain).
 		Delete(&PermissionModel{})
 
 	if result.Error != nil {
 		return fmt.Errorf("delete permission failed: %w", result.Error)
+	}
+	return nil
+}
+
+func (r *permissionRepo) Update(ctx context.Context, permissionModel *PermissionModel) error {
+	if err := r.conn.WithContext(ctx).Save(permissionModel).Error; err != nil {
+		return fmt.Errorf("update permission failed: %w", err)
 	}
 	return nil
 }

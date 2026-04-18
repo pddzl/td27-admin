@@ -8,6 +8,7 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    ElAlert: typeof import('element-plus/es')['ElAlert']
     ElAside: typeof import('element-plus/es')['ElAside']
     ElAvatar: typeof import('element-plus/es')['ElAvatar']
     ElBacktop: typeof import('element-plus/es')['ElBacktop']
@@ -20,6 +21,7 @@ declare module 'vue' {
     ElCol: typeof import('element-plus/es')['ElCol']
     ElConfigProvider: typeof import('element-plus/es')['ElConfigProvider']
     ElContainer: typeof import('element-plus/es')['ElContainer']
+    ElDatePicker: typeof import('element-plus/es')['ElDatePicker']
     ElDialog: typeof import('element-plus/es')['ElDialog']
     ElDivider: typeof import('element-plus/es')['ElDivider']
     ElDrawer: typeof import('element-plus/es')['ElDrawer']
@@ -48,6 +50,7 @@ declare module 'vue' {
     ElScrollbar: typeof import('element-plus/es')['ElScrollbar']
     ElSelect: typeof import('element-plus/es')['ElSelect']
     ElSelectV2: typeof import('element-plus/es')['ElSelectV2']
+    ElSkeleton: typeof import('element-plus/es')['ElSkeleton']
     ElSpace: typeof import('element-plus/es')['ElSpace']
     ElSubMenu: typeof import('element-plus/es')['ElSubMenu']
     ElSwitch: typeof import('element-plus/es')['ElSwitch']

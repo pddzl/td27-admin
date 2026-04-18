@@ -14,6 +14,7 @@ type MenuService struct {
 	menuRepository modelSysManagement.MenuRepository
 	userRepository modelSysManagement.UserRepository
 	permissionRepo modelSysManagement.PermissionRepository
+	casbinService  *CasbinService
 	ctx            context.Context
 }
 
@@ -22,6 +23,7 @@ func NewMenuService() *MenuService {
 		menuRepository: modelSysManagement.NewMenuRepo(global.TD27_DB),
 		userRepository: modelSysManagement.NewUserEntity(global.TD27_DB),
 		permissionRepo: modelSysManagement.NewPermissionRepo(global.TD27_DB),
+		casbinService:  NewCasbinService(),
 		ctx:            context.Background(),
 	}
 }
@@ -60,7 +62,35 @@ func (s *MenuService) Create(req *modelSysManagement.Menu) (*modelSysManagement.
 }
 
 func (s *MenuService) Update(req *modelSysManagement.UpdateMenuReq) error {
-	return s.menuRepository.Update(s.ctx, req)
+	// 更新菜单
+	if err := s.menuRepository.Update(s.ctx, req); err != nil {
+		return err
+	}
+
+	// 查找并更新对应权限
+	perm, err := s.permissionRepo.FindByDomainID(s.ctx, req.ID, modelSysManagement.PermissionDomainMenu)
+	if err != nil {
+		// 权限不存在则创建
+		perm = &modelSysManagement.PermissionModel{
+			Name:     req.Title,
+			Domain:   modelSysManagement.PermissionDomainMenu,
+			Resource: req.Path,
+			Action:   modelSysManagement.ActionView,
+			DomainID: req.ID,
+		}
+		if createErr := s.permissionRepo.Create(s.ctx, perm); createErr != nil {
+			global.TD27_LOG.Error("创建菜单权限失败", zap.Error(createErr))
+		}
+	} else {
+		// 更新现有权限
+		perm.Name = req.Title
+		perm.Resource = req.Path
+		if updateErr := s.permissionRepo.Update(s.ctx, perm); updateErr != nil {
+			global.TD27_LOG.Error("更新菜单权限失败", zap.Error(updateErr))
+		}
+	}
+
+	return nil
 }
 
 func (s *MenuService) Delete(id uint) error {

@@ -160,13 +160,12 @@ func (a *ApiApi) ElTree(c *gin.Context) {
 		return
 	}
 
-	list, checkedKey, checkedIds, err := a.apiService.ElTree(req.ID)
+	list, checkedIds, err := a.apiService.ElTree(req.ID)
 	if err != nil {
 		common.FailWithMessage("获取失败", c)
 	} else {
 		common.OkWithDetailed(modelSysManagement.ApiTreeResp{
 			List:       list,
-			CheckedKey: checkedKey,
 			CheckedIds: checkedIds,
 		}, "获取成功", c)
 	}

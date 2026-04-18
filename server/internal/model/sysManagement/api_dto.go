@@ -5,7 +5,6 @@ import "server/internal/model/common"
 // ApiTreeResp API树响应
 type ApiTreeResp struct {
 	List       []*ApiTreeNode `json:"list"`
-	CheckedKey []string       `json:"checkedKey"`
 	CheckedIds []uint         `json:"checkedIds"`
 }
 
@@ -18,9 +17,9 @@ type UpdateApiReq struct {
 // ListApiReq API列表请求
 type ListApiReq struct {
 	common.PageInfo
-	Path     string `json:"path" form:"path"`
-	Method   string `json:"method" form:"method"`
-	ApiGroup string `json:"apiGroup" form:"apiGroup"`
+	Path    string `json:"path" form:"path"`
+	Method  string `json:"method" form:"method"`
+	GroupEn string `json:"group_en" form:"group_en"`
 }
 
 // CreateApiReq 创建API请求

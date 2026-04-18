@@ -61,10 +61,10 @@ func getCasbinModel() (model.Model, error) {
 		g2 = _, _
 
 		[policy_effect]
-		e = some(where (p.eft == allow))
+			e = some(where (p.eft == allow))
 
 		[matchers]
-		m = g(r.sub, p.sub) && keyMatch2(r.obj, p.obj) && (r.act == p.act || p.act == '*')
+			m = g(r.sub, p.sub) && keyMatch2(r.obj, p.obj) && (r.act == p.act || p.act == '*')
 		`
 	}
 
@@ -120,7 +120,14 @@ func (cs *CasbinService) Enforce(roleIDs []uint, path string, method string) (bo
 	// 尝试所有角色，只要有一个通过就允许
 	for _, roleID := range roleIDs {
 		sub := strconv.Itoa(int(roleID))
-		success, err := e.Enforce(sub, path, method)
+
+		zap.L().Info("Enforce debug",
+			zap.String("sub", sub),
+			zap.String("obj", path),
+			zap.String("act", string(modelSysManagement.HTTPMethodToAction(method))),
+		)
+
+		success, err := e.Enforce(sub, path, modelSysManagement.HTTPMethodToAction(method).String())
 		if err != nil {
 			return false, err
 		}
@@ -175,24 +182,6 @@ func (cs *CasbinService) RebuildRolePolicies(roleID uint, permissions []modelSys
 	return nil
 }
 
-// RemoveResourcePolicy 移除指定资源的所有策略（用于删除API时清理Casbin）
-// fieldIndex: 1 = obj/resource, 2 = act/action
-func (cs *CasbinService) RemoveResourcePolicy(resource, action string) error {
-	e := cs.Casbin()
-	if e == nil {
-		return errors.New("casbin enforcer not initialized")
-	}
-
-	// 移除所有涉及该resource和action的策略（不管roleID是什么）
-	// fieldIndex 1 = resource, fieldIndex 2 = action
-	_, err := e.RemoveFilteredPolicy(1, resource, action)
-	if err != nil {
-		return fmt.Errorf("remove resource policy failed: %w", err)
-	}
-
-	return nil
-}
-
 // AddRoleInheritance 添加角色继承关系
 func (cs *CasbinService) AddRoleInheritance(childRoleID, parentRoleID uint) error {
 	if !global.TD27_CONFIG.Casbin.EnableRoleHierarchy {
@@ -222,4 +211,109 @@ func (cs *CasbinService) GetInheritedRoles(roleID uint) ([]string, error) {
 	sub := strconv.Itoa(int(roleID))
 	e := cs.Casbin()
 	return e.GetRolesForUser(sub)
+}
+
+// EnforceSubject 检查单个subject是否有权限（用于服务令牌）
+func (cs *CasbinService) EnforceSubject(subject, path, method string) (bool, error) {
+	e := cs.Casbin()
+	return e.Enforce(subject, path, modelSysManagement.HTTPMethodToAction(method).String())
+}
+
+// RebuildSubjectPolicies 重建subject的所有策略（用于服务令牌）
+func (cs *CasbinService) RebuildSubjectPolicies(subject string, policies [][]string) error {
+	e := cs.Casbin()
+	if e == nil {
+		return errors.New("casbin enforcer not initialized")
+	}
+
+	global.TD27_LOG.Info("RebuildSubjectPolicies",
+		zap.String("subject", subject),
+		zap.Int("policyCount", len(policies)),
+		zap.Any("policies", policies))
+
+	// 删除该subject的所有现有策略
+	_, err := e.RemoveFilteredPolicy(0, subject)
+	if err != nil {
+		return fmt.Errorf("remove subject policies failed: %w", err)
+	}
+
+	// 添加新策略
+	if len(policies) > 0 {
+		added, err := e.AddPolicies(policies)
+		if err != nil {
+			return fmt.Errorf("add subject policies failed: %w", err)
+		}
+		global.TD27_LOG.Info("AddPolicies result", zap.Bool("added", added))
+
+		// 验证
+		existing, _ := e.GetFilteredPolicy(0, subject)
+		global.TD27_LOG.Info("After add", zap.Int("existingCount", len(existing)))
+	}
+
+	return nil
+}
+
+// RemoveSubjectPolicies 移除subject的所有策略
+func (cs *CasbinService) RemoveSubjectPolicies(subject string) error {
+	e := cs.Casbin()
+	if e == nil {
+		return errors.New("casbin enforcer not initialized")
+	}
+
+	_, err := e.RemoveFilteredPolicy(0, subject)
+	if err != nil {
+		return fmt.Errorf("remove subject policies failed: %w", err)
+	}
+	return nil
+}
+
+// RemoveResourcePolicy 移除指定资源的所有策略
+func (cs *CasbinService) RemoveResourcePolicy(resource, action string) error {
+	e := cs.Casbin()
+	if e == nil {
+		return errors.New("casbin enforcer not initialized")
+	}
+
+	_, err := e.RemoveFilteredPolicy(1, resource, action)
+	if err != nil {
+		return fmt.Errorf("remove resource policy failed: %w", err)
+	}
+	return nil
+}
+
+// UpdateResourcePolicies 批量更新指定资源的策略（用于API路径/方法变更时同步角色和服务令牌策略）
+func (cs *CasbinService) UpdateResourcePolicies(oldResource, oldAction, newResource, newAction string) error {
+	e := cs.Casbin()
+	if e == nil {
+		return errors.New("casbin enforcer not initialized")
+	}
+
+	// 获取所有匹配旧资源+动作的策略
+	oldPolicies, err := e.GetFilteredPolicy(1, oldResource, oldAction)
+	if err != nil {
+		return fmt.Errorf("get old policies failed: %w", err)
+	}
+
+	if len(oldPolicies) == 0 {
+		return nil
+	}
+
+	// 构建新策略列表（只更新obj和act，保留sub）
+	newPolicies := make([][]string, 0, len(oldPolicies))
+	for _, p := range oldPolicies {
+		newPolicies = append(newPolicies, []string{p[0], newResource, newAction})
+	}
+
+	// 删除旧策略并添加新策略
+	_, err = e.RemoveFilteredPolicy(1, oldResource, oldAction)
+	if err != nil {
+		return fmt.Errorf("remove old policies failed: %w", err)
+	}
+
+	_, err = e.AddPolicies(newPolicies)
+	if err != nil {
+		return fmt.Errorf("add new policies failed: %w", err)
+	}
+
+	return nil
 }

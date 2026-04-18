@@ -12,6 +12,7 @@ type RouterGroup struct {
 	*DictRouter
 	*DictDetailRouter
 	*DeptRouter
+	*ButtonRouter
 }
 
 func NewRouterGroup() *RouterGroup {
@@ -25,6 +26,7 @@ func NewRouterGroup() *RouterGroup {
 		DictRouter:           NewDictRouter(),
 		DictDetailRouter:     NewDictDetailRouter(),
 		DeptRouter:           NewDeptRouter(),
+		ButtonRouter:         &ButtonRouter{},
 	}
 }
 
@@ -41,4 +43,5 @@ func (r *RouterGroup) InitPrivate(group *gin.RouterGroup) {
 	r.InitDictRouter(group)
 	r.InitDictDetailRouter(group)
 	r.InitDeptRouter(group)
+	r.InitButtonRouter(group)
 }
