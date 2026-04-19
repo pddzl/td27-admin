@@ -294,6 +294,13 @@ func (cs *CasbinService) UpdateResourcePolicies(oldResource, oldAction, newResou
 		return fmt.Errorf("get old policies failed: %w", err)
 	}
 
+	global.TD27_LOG.Info("UpdateResourcePolicies",
+		zap.String("oldResource", oldResource),
+		zap.String("oldAction", oldAction),
+		zap.String("newResource", newResource),
+		zap.String("newAction", newAction),
+		zap.Int("matchedPolicies", len(oldPolicies)))
+
 	if len(oldPolicies) == 0 {
 		return nil
 	}
