@@ -30,6 +30,8 @@ const dialogTitle = ref("")
 const isEdit = ref(false)
 const saving = ref(false)
 
+const apiIds = ref<number[]>([])
+
 // Form
 const form = ref<{
   id?: number
@@ -84,13 +86,14 @@ async function loadData() {
 }
 
 // Load API tree
-async function loadApiTree() {
+async function loadApiTree(id: number) {
   apiTreeLoading.value = true
   try {
-    const res = await apiGetElTreeApi({ id: 1 })
+    const res = await apiGetElTreeApi({ id, from_source: "token" })
     if (res.code === 0) {
       apiTreeData.value = res.data.list || []
-      console.log("API Tree loaded:", apiTreeData.value)
+      apiIds.value = res.data.checkedIds || []
+      // console.log("API Tree loaded:", apiTreeData.value)
     } else {
       ElMessage.error(res.msg || "加载API列表失败")
     }
@@ -138,7 +141,7 @@ function handleAdd() {
     status: true
   }
   dialogVisible.value = true
-  loadApiTree()
+  // loadApiTree()
 }
 
 // Edit
@@ -146,7 +149,7 @@ async function handleEdit(row: ServiceToken) {
   isEdit.value = true
   dialogTitle.value = "编辑服务令牌"
   dialogVisible.value = true
-  loadApiTree()
+  loadApiTree(row.id)
 
   const res = await getServiceTokenDetailApi({ id: row.id })
   if (res.code === 0) {
@@ -368,7 +371,7 @@ onMounted(() => {
               ref="apiTreeRef"
               :data="apiTreeData"
               node-key="key"
-              :default-checked-keys="form.apiKeys"
+              :default-checked-keys="apiIds"
               default-expand-all
               show-checkbox
               :props="{

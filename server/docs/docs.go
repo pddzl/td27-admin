@@ -256,7 +256,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "List"
+                    "ListByRoleID"
                 ],
                 "summary": "分页获取api",
                 "parameters": [

@@ -38,7 +38,7 @@ const apiIds = ref<number[]>([]) // 使用权限ID而不是key
 const apisTreeData = ref<ApiTreeData[]>([])
 
 function getTreeData() {
-  apiGetElTreeApi({ id: props.id })
+  apiGetElTreeApi({ id: props.id, from_source: "role" })
     .then((res) => {
       apisTreeData.value = res.data.list
       apiIds.value = res.data.checkedIds || [] // 使用checkedIds

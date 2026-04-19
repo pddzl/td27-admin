@@ -5,13 +5,12 @@ import (
 	"fmt"
 
 	"gorm.io/gorm"
-
-	"server/internal/global"
 )
 
 // PermissionRepository Permission仓库接口
 type PermissionRepository interface {
-	List(ctx context.Context, roleId uint, pd PermissionDomain) ([]PermissionModel, error)
+	ListByRoleID(ctx context.Context, roleId uint, pd PermissionDomain) ([]PermissionModel, error)
+	ListByTokenID(ctx context.Context, tokenID uint, pd PermissionDomain) ([]PermissionModel, error)
 	Create(ctx context.Context, permission *PermissionModel) error
 	FindByDomainID(ctx context.Context, domainID uint, domain PermissionDomain) (*PermissionModel, error)
 	DeleteByDomainID(ctx context.Context, domainID uint, domain PermissionDomain) error
@@ -26,10 +25,10 @@ func NewPermissionRepo(conn *gorm.DB) PermissionRepository {
 	return &permissionRepo{conn: conn}
 }
 
-func (r *permissionRepo) List(ctx context.Context, roleId uint, pd PermissionDomain) ([]PermissionModel, error) {
+func (r *permissionRepo) ListByRoleID(ctx context.Context, roleId uint, pd PermissionDomain) ([]PermissionModel, error) {
 	var permissions []PermissionModel
 
-	err := global.TD27_DB.Raw(`
+	err := r.conn.WithContext(ctx).Raw(`
 		SELECT p.*
 		FROM sys_management_permission p
 		JOIN sys_management_role_permissions rp ON p.id = rp.permission_id
@@ -38,6 +37,23 @@ func (r *permissionRepo) List(ctx context.Context, roleId uint, pd PermissionDom
 
 	if err != nil {
 		return nil, fmt.Errorf("get role permissions failed: %w", err)
+	}
+
+	return permissions, nil
+}
+
+func (r *permissionRepo) ListByTokenID(ctx context.Context, tokenID uint, pd PermissionDomain) ([]PermissionModel, error) {
+	var permissions []PermissionModel
+
+	err := r.conn.WithContext(ctx).Raw(`
+		SELECT p.*
+		FROM sys_management_permission p
+		JOIN sys_tool_token_permission tp ON p.id = tp.permission_id
+		WHERE tp.token_id = ? AND p.domain = ?
+	`, tokenID, pd).Scan(&permissions).Error
+
+	if err != nil {
+		return nil, fmt.Errorf("get token permissions failed: %w", err)
 	}
 
 	return permissions, nil

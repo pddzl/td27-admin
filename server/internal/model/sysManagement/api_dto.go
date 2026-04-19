@@ -8,6 +8,11 @@ type ApiTreeResp struct {
 	CheckedIds []uint         `json:"checkedIds"`
 }
 
+type ApiTreeReq struct {
+	ID         uint   `json:"id" binding:"required"`
+	FromSource string `json:"from_source" binding:"required,oneof=role token"`
+}
+
 // UpdateApiReq 更新API请求
 type UpdateApiReq struct {
 	ID uint `json:"id" binding:"required"`

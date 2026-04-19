@@ -148,7 +148,7 @@ func (s *ServiceTokenService) GetByID(id uint) (*modelSysTool.ServiceTokenDetail
 			ApiCount:  len(permissionIDs),
 			CreatedAt: token.CreatedAt.Unix(),
 		},
-		ApiIDs: permissionIDs,
+		//ApiIDs: permissionIDs,
 	}, nil
 }
 

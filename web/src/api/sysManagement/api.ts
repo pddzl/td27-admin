@@ -48,12 +48,11 @@ export interface ApiTreeData {
 
 interface ApiTreeAll {
   list: ApiTreeData[]
-  checkedKey: string[] // 选中的 key 列表 (path,method)
   checkedIds: number[] // 选中的权限ID列表
 }
 
 // 获取所有api 不分页
-export function apiGetElTreeApi(data: CId) {
+export function apiGetElTreeApi(data: { id: number, from_source: string }) {
   return request<ApiResponseData<ApiTreeAll>>({
     url: "/api/elTree",
     method: "post",

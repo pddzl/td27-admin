@@ -150,17 +150,17 @@ func (a *ApiApi) Update(c *gin.Context) {
 // @Security  ApiKeyAuth
 // @accept    application/json
 // @Produce   application/json
-// @Param     data  body      common.CId true "请求参数"
+// @Param     data  body      modelSysManagement.ApiTreeReq true "请求参数"
 // @Success   200   {object}  common.Response{data=modelSysManagement.ApiTreeResp{list=[]modelSysManagement.ApiTreeNode,checkedKey=[]string,checkedIds=[]uint},msg=string}
 // @Router    /api/elTree [post]
 func (a *ApiApi) ElTree(c *gin.Context) {
-	var req common.CId
+	var req modelSysManagement.ApiTreeReq
 	if err := c.ShouldBindJSON(&req); err != nil {
 		common.FailReq(err.Error(), c)
 		return
 	}
 
-	list, checkedIds, err := a.apiService.ElTree(req.ID)
+	list, checkedIds, err := a.apiService.ElTree(&req)
 	if err != nil {
 		common.FailWithMessage("获取失败", c)
 	} else {

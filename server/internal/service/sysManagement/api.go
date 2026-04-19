@@ -53,7 +53,7 @@ func (s *ApiService) List(req *modelSysManagement.ListApiReq) ([]*modelSysManage
 	return s.apiRepo.List(s.ctx, req)
 }
 
-func (s *ApiService) ElTree(roleId uint) ([]*modelSysManagement.ApiTreeNode, []uint, error) {
+func (s *ApiService) ElTree(req *modelSysManagement.ApiTreeReq) ([]*modelSysManagement.ApiTreeNode, []uint, error) {
 	list, domainIds, err := s.apiRepo.ElTree(s.ctx)
 	if err != nil {
 		return nil, nil, err
@@ -61,8 +61,16 @@ func (s *ApiService) ElTree(roleId uint) ([]*modelSysManagement.ApiTreeNode, []u
 
 	//checkedKey := make([]string, 0)
 	checkedIds := make([]uint, 0)
+	permissions := make([]modelSysManagement.PermissionModel, 0)
 
-	permissions, err := s.permissionRepo.List(s.ctx, roleId, modelSysManagement.PermissionDomainAPI)
+	if req.FromSource == "role" {
+		permissions, err = s.permissionRepo.ListByRoleID(s.ctx, req.ID, modelSysManagement.PermissionDomainAPI)
+	} else if req.FromSource == "token" {
+		permissions, err = s.permissionRepo.ListByTokenID(s.ctx, req.ID, modelSysManagement.PermissionDomainAPI)
+	} else {
+		return nil, nil, fmt.Errorf("invalid fromSource")
+	}
+
 	if err != nil {
 		global.TD27_LOG.Error("获取角色API权限失败", zap.Error(err))
 	} else {
