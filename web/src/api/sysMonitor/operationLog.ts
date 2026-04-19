@@ -21,7 +21,6 @@ interface reqOrList extends PageInfo {
   path?: string
   method?: string
   status?: number
-  asc?: boolean
 }
 
 // 分页获取操作记录

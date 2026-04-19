@@ -38,7 +38,7 @@ system:
   host: '0.0.0.0'
   port: 8888
   router-prefix: "" # global router prefix
-  disable-auto-migrate: false # permit auto migrate table
+  disable-auto-migrate: true # permit auto migrate table
   stack: true
 
 file:

@@ -305,15 +305,17 @@ func (cs *CasbinService) UpdateResourcePolicies(oldResource, oldAction, newResou
 	}
 
 	// 删除旧策略并添加新策略
-	_, err = e.RemoveFilteredPolicy(1, oldResource, oldAction)
+	removeBool, err := e.RemoveFilteredPolicy(1, oldResource, oldAction)
 	if err != nil {
 		return fmt.Errorf("remove old policies failed: %w", err)
 	}
+	global.TD27_LOG.Debug("RemovePolicy result", zap.Bool("removed", removeBool))
 
-	_, err = e.AddPolicies(newPolicies)
+	addBool, err := e.AddPolicies(newPolicies)
 	if err != nil {
 		return fmt.Errorf("add new policies failed: %w", err)
 	}
+	global.TD27_LOG.Debug("AddPolicies result", zap.Bool("added", addBool))
 
 	return nil
 }

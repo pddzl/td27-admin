@@ -14,7 +14,7 @@ type OperationLogService struct {
 
 func NewOperationLogService() *OperationLogService {
 	return &OperationLogService{
-		repository: sysMonitor.NewOperationLogEntity(global.TD27_DB),
+		repository: sysMonitor.NewOperationLogRepo(global.TD27_DB),
 		ctx:        context.Background(),
 	}
 }

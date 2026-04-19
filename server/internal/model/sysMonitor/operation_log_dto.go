@@ -13,5 +13,4 @@ type orStruct struct {
 type OrListReq struct {
 	orStruct
 	common.PageInfo
-	Asc bool `json:"asc"` // 排序方式:升序true|降序true(默认)
 }

@@ -15,15 +15,15 @@ type OperationLogRepository interface {
 	DeleteByIds(context.Context, []uint) (int64, error)
 }
 
-type operationLogEntity struct {
+type operationLogRepo struct {
 	conn *gorm.DB
 }
 
-func NewOperationLogEntity(conn *gorm.DB) OperationLogRepository {
-	return &operationLogEntity{conn: conn}
+func NewOperationLogRepo(conn *gorm.DB) OperationLogRepository {
+	return &operationLogRepo{conn: conn}
 }
 
-func (e *operationLogEntity) Create(ctx context.Context, req *OperationLogModel) error {
+func (e *operationLogRepo) Create(ctx context.Context, req *OperationLogModel) error {
 	if req == nil {
 		return errors.New("operation log is nil")
 	}
@@ -44,7 +44,7 @@ func (e *operationLogEntity) Create(ctx context.Context, req *OperationLogModel)
 	return nil
 }
 
-func (e *operationLogEntity) List(ctx context.Context, req *OrListReq) ([]*OperationLogModel, int64, error) {
+func (e *operationLogRepo) List(ctx context.Context, req *OrListReq) ([]*OperationLogModel, int64, error) {
 	req.Normalize()
 
 	var operationLogs []*OperationLogModel
@@ -70,13 +70,6 @@ func (e *operationLogEntity) List(ctx context.Context, req *OrListReq) ([]*Opera
 		return nil, 0, err
 	}
 
-	// Order
-	if req.Asc {
-		db = db.Order("id asc")
-	} else {
-		db = db.Order("id desc")
-	}
-
 	// Pagination
 	if err := db.Limit(req.PageSize).Offset(req.Offset()).Find(&operationLogs).Error; err != nil {
 		return nil, 0, err
@@ -85,17 +78,17 @@ func (e *operationLogEntity) List(ctx context.Context, req *OrListReq) ([]*Opera
 	return operationLogs, total, nil
 }
 
-func (e *operationLogEntity) Delete(ctx context.Context, id uint) error {
+func (e *operationLogRepo) Delete(ctx context.Context, id uint) error {
 	return e.conn.WithContext(ctx).Unscoped().Delete(&OperationLogModel{}, id).Error
 }
 
-func (e *operationLogEntity) DeleteByIds(ctx context.Context, ids []uint) (int64, error) {
+func (e *operationLogRepo) DeleteByIds(ctx context.Context, ids []uint) (int64, error) {
 	// Safety Guard
 	if len(ids) == 0 {
 		return 0, errors.New("ids is empty")
 	}
 
-	result := e.conn.WithContext(ctx).Where("id IN ?", ids).Delete(&OperationLogModel{})
+	result := e.conn.WithContext(ctx).Where("id IN ?", ids).Unscoped().Delete(&OperationLogModel{})
 
 	return result.RowsAffected, result.Error
 }
