@@ -18,7 +18,6 @@ type ServiceTokenRepository interface {
 	FindByID(ctx context.Context, id uint) (*ServiceToken, error)
 	FindByTokenHash(ctx context.Context, tokenHash string) (*ServiceToken, error)
 	List(ctx context.Context, req *ListServiceTokenReq) ([]ServiceToken, int64, error)
-
 	// Permission operations
 	GetTokenPermissions(ctx context.Context, tokenID uint) ([]uint, error)
 	SetTokenPermissions(ctx context.Context, tokenID uint, permissionIDs []uint) error

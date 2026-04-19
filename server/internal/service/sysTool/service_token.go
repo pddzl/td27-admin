@@ -120,6 +120,11 @@ func (s *ServiceTokenService) Delete(id uint) error {
 	if err := s.casbinService.RemoveSubjectPolicies(subject); err != nil {
 		global.TD27_LOG.Error("从Casbin移除令牌策略失败", zap.Error(err))
 	}
+
+	if err := s.repo.DeleteTokenPermissions(s.ctx, id); err != nil {
+		global.TD27_LOG.Error("删除令牌权限关联失败", zap.Error(err))
+	}
+
 	return s.repo.Delete(s.ctx, id)
 }
 
