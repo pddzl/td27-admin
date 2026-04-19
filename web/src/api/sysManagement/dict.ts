@@ -12,7 +12,7 @@ interface listReq extends Partial<PageInfo> {
   en_name?: string
 }
 
-export function dictListApi(data: listReq) {
+export function dictListApi(data: listReq = {}) {
   return request<ApiResponseData<ListData<DictModel[]>>>({
     url: "/dict/list",
     method: "post",

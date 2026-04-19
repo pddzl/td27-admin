@@ -1,21 +1,19 @@
 version: "3"
 services:
-  pgsql:
-    container_name: td27_pgsql
-    image: postgres:14-alpine
-    environment:
-      POSTGRES_USER: root
-      POSTGRES_PASSWORD: td27admin
-      POSTGRES_DB: td27
+  mysql:
+    container_name: td27_mysql
+    image: mysql:8.0.28
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     volumes:
-      - ./pgsql/data:/var/lib/postgresql/data
-      - ./pgsql/init:/docker-entrypoint-initdb.d
-    ports:
-      - "5432:5432"
+      - ./mysql/data/:/var/lib/mysql
+      - ./mysql/init/:/docker-entrypoint-initdb.d
+    environment:
+      MYSQL_ROOT_PASSWORD: td27admin
+      MYSQL_DATABASE: td27
     networks:
       - td27-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U root -d td27"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -29,15 +27,13 @@ services:
       dockerfile: ./Dockerfile
     image: td27_server:2.0
     depends_on:
-      pgsql:
+      mysql:
         condition: service_healthy
     links:
-      - pgsql
+      - mysql
     restart: on-failure
     networks:
       - td27-network
-    environment:
-      - TD27_CONFIG=/app/configs/config.pgsql.yaml
 
   web:
     container_name: td27_web

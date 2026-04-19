@@ -46,7 +46,7 @@ file:
 
 # pgsql configuration
 pgsql:
-  host: 'db-host'
+  host: 'pgsql'
   port: '5432'
   config: 'sslmode=disable TimeZone=Asia/Shanghai'
   db-name: 'td27'
