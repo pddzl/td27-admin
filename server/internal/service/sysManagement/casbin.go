@@ -301,8 +301,13 @@ func (cs *CasbinService) UpdateResourcePolicies(oldResource, oldAction, newResou
 		zap.String("newAction", newAction),
 		zap.Int("matchedPolicies", len(oldPolicies)))
 
-	if len(oldPolicies) == 0 {
-		return nil
+	if len(oldPolicies) > 0 {
+		// 删除旧策略
+		removeBool, err := e.RemoveFilteredPolicy(1, oldResource, oldAction)
+		if err != nil {
+			return fmt.Errorf("remove old policies failed: %w", err)
+		}
+		global.TD27_LOG.Debug("RemovePolicy result", zap.Bool("removed", removeBool))
 	}
 
 	// 构建新策略列表（只更新obj和act，保留sub）
@@ -311,13 +316,7 @@ func (cs *CasbinService) UpdateResourcePolicies(oldResource, oldAction, newResou
 		newPolicies = append(newPolicies, []string{p[0], newResource, newAction})
 	}
 
-	// 删除旧策略并添加新策略
-	removeBool, err := e.RemoveFilteredPolicy(1, oldResource, oldAction)
-	if err != nil {
-		return fmt.Errorf("remove old policies failed: %w", err)
-	}
-	global.TD27_LOG.Debug("RemovePolicy result", zap.Bool("removed", removeBool))
-
+	// 并添加新策略
 	addBool, err := e.AddPolicies(newPolicies)
 	if err != nil {
 		return fmt.Errorf("add new policies failed: %w", err)
