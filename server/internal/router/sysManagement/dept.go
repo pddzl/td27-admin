@@ -17,16 +17,14 @@ func NewDeptRouter() *DeptRouter {
 	}
 }
 
-func (d *DeptRouter) InitDeptRouter(Router *gin.RouterGroup) {
-	deptRouter := Router.Group("dept").
-		Use(middleware.OperationRecord()).
-		Use(middleware.CasbinHandler())
-
-	{
-		deptRouter.POST("list", d.deptApi.List)
-		deptRouter.POST("create", d.deptApi.Create)
-		deptRouter.POST("update", d.deptApi.Update)
-		deptRouter.POST("delete", d.deptApi.Delete)
-		deptRouter.POST("getElTreeDepts", d.deptApi.GetElTreeDepts)
-	}
+func (d *DeptRouter) InitDeptRouter(rg *gin.RouterGroup) {
+	base := rg.Group("dept")
+	record := base.Use(middleware.OperationRecord())
+	// record
+	record.POST("create", d.deptApi.Create)
+	record.POST("delete", d.deptApi.Delete)
+	record.POST("update", d.deptApi.Update)
+	record.POST("getElTreeDepts", d.deptApi.GetElTreeDepts)
+	// not record
+	base.POST("list", d.deptApi.List)
 }
