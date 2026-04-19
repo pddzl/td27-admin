@@ -165,6 +165,11 @@ function handleDelete(row: Dept) {
     .catch(() => {})
 }
 
+function closeDialog() {
+  dialogVisible.value = false
+  resetForm()
+}
+
 // Submit form
 async function handleSubmit() {
   if (!formRef.value) return
@@ -189,6 +194,7 @@ async function handleSubmit() {
       } catch (error) {
         console.error(error)
       }
+      closeDialog()
     }
   })
 }
@@ -216,10 +222,12 @@ onMounted(() => {
     <!-- Search Form -->
     <el-card v-loading="loading" shadow="never" class="search-wrapper">
       <el-form :model="searchForm" :inline="true">
-        <el-form-item label="部门名称">
+        <el-form-item prop="deptName">
+          <template #label>部门名称</template>
           <el-input v-model="searchForm.deptName" placeholder="请输入部门名称" clearable />
         </el-form-item>
-        <el-form-item label="状态">
+        <el-form-item prop="status">
+          <template #label>状态</template>
           <el-select v-model="searchForm.status" placeholder="部门状态" clearable style="width: 120px">
             <el-option label="正常" :value="true" />
             <el-option label="禁用" :value="false" />
@@ -309,7 +317,8 @@ onMounted(() => {
       @closed="resetForm"
     >
       <el-form ref="formRef" :model="formData" :rules="formRules" label-width="80px">
-        <el-form-item label="上级部门">
+        <el-form-item prop="parentId">
+          <template #label>上级部门</template>
           <el-tree-select
             v-model="formData.parentId"
             :data="deptOptions"
@@ -324,15 +333,17 @@ onMounted(() => {
         <el-form-item label="部门名称" prop="deptName">
           <el-input v-model="formData.deptName" placeholder="请输入部门名称" />
         </el-form-item>
-        <el-form-item label="排序">
+        <el-form-item prop="sort">
+          <template #label>排序</template>
           <el-input-number v-model="formData.sort" :min="0" :max="999" style="width: 100%" />
         </el-form-item>
-        <el-form-item label="状态">
+        <el-form-item prop="status">
+          <template #label>状态</template>
           <el-radio-group v-model="formData.status">
-            <el-radio :label="true">
+            <el-radio :value="true">
               正常
             </el-radio>
-            <el-radio :label="false">
+            <el-radio :value="false">
               禁用
             </el-radio>
           </el-radio-group>
