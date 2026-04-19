@@ -2,6 +2,7 @@ package sysMonitor
 
 import (
 	"github.com/gin-gonic/gin"
+	"server/internal/middleware"
 
 	apiMonitor "server/internal/api/sysMonitor"
 )
@@ -16,11 +17,11 @@ func NewDashboardRouter() *DashboardRouter {
 	}
 }
 
-func (r *DashboardRouter) InitDashboardRouter(group *gin.RouterGroup) {
-	dashboardGroup := group.Group("/dashboard")
-	{
-		dashboardGroup.GET("/statistics", r.dashboardApi.GetStatistics)
-		dashboardGroup.GET("/recent-operations", r.dashboardApi.GetRecentOperations)
-		dashboardGroup.GET("/system-info", r.dashboardApi.GetSystemInfo)
-	}
+func (r *DashboardRouter) InitDashboardRouter(rg *gin.RouterGroup) {
+	base := rg.Group("dashboard")
+	record := base.Use(middleware.OperationRecord())
+	// record
+	record.GET("statistics", r.dashboardApi.GetStatistics)
+	record.GET("recent-operations", r.dashboardApi.GetRecentOperations)
+	record.GET("system-info", r.dashboardApi.GetSystemInfo)
 }

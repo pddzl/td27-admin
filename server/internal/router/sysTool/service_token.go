@@ -7,16 +7,18 @@ import (
 	"server/internal/middleware"
 )
 
-type ServiceTokenRouter struct{}
+type ServiceTokenRouter struct {
+	serviceTokenApi *apiSysTool.ServiceTokenApi
+}
 
-func (s *ServiceTokenRouter) InitServiceTokenRouter(Router *gin.RouterGroup) {
-	serviceTokenRouter := Router.Group("serviceToken").Use(middleware.OperationRecord())
-	serviceTokenApi := apiSysTool.NewServiceTokenApi()
-	{
-		serviceTokenRouter.POST("create", serviceTokenApi.Create)
-		serviceTokenRouter.POST("delete", serviceTokenApi.Delete)
-		serviceTokenRouter.POST("update", serviceTokenApi.Update)
-		serviceTokenRouter.POST("detail", serviceTokenApi.GetById)
-		serviceTokenRouter.POST("list", serviceTokenApi.List)
-	}
+func (r *ServiceTokenRouter) InitServiceTokenRouter(rg *gin.RouterGroup) {
+	base := rg.Group("serviceToken")
+	record := base.Use(middleware.OperationRecord())
+	// record
+	record.POST("create", r.serviceTokenApi.Create)
+	record.GET("delete", r.serviceTokenApi.Delete)
+	record.GET("update", r.serviceTokenApi.Update)
+	record.GET("detail", r.serviceTokenApi.GetById)
+	// without record
+	base.POST("list", r.serviceTokenApi.List)
 }
