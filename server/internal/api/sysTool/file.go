@@ -3,6 +3,7 @@ package sysTool
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
@@ -40,7 +41,13 @@ func (a *FileApi) Upload(c *gin.Context) {
 	}
 
 	// 只允许上传 csv文件
-	if file.Header.Get("Content-Domain") != "text/csv" {
+	ext := ""
+	if idx := strings.LastIndex(file.Filename, "."); idx != -1 {
+		ext = strings.ToLower(file.Filename[idx:])
+	}
+	contentType := file.Header.Get("Content-Type")
+	validType := contentType == "text/csv" || contentType == "application/csv" || contentType == "application/vnd.ms-excel"
+	if ext != ".csv" || !validType {
 		common.FailWithStatusMessage(400, "只允许上传 csv文件", c)
 		return
 	}
