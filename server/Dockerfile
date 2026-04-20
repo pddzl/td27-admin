@@ -6,6 +6,9 @@ WORKDIR /server
 # Install git for private modules (if needed) and ca-certificates
 RUN apk add --no-cache git ca-certificates tzdata
 
+# Use China mirror for Go modules (faster in CN)
+ENV GOPROXY=https://goproxy.cn,direct
+
 # Download deps first (better layer caching)
 COPY go.mod go.sum ./
 RUN go mod download
