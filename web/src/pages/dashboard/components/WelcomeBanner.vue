@@ -1,25 +1,5 @@
-<template>
-  <div class="welcome-banner">
-    <div class="welcome-content">
-      <div class="welcome-text">
-        <h1>{{ greeting }}，{{ username }}！</h1>
-        <p>{{ welcomeMessage }}</p>
-      </div>
-      <div class="welcome-time">
-        <div class="time">{{ currentTime }}</div>
-        <div class="date">{{ currentDate }}</div>
-      </div>
-    </div>
-    <div class="welcome-decoration">
-      <div class="decoration-circle circle-1"></div>
-      <div class="decoration-circle circle-2"></div>
-      <div class="decoration-circle circle-3"></div>
-    </div>
-  </div>
-</template>
-
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from "vue"
+import { computed, onMounted, onUnmounted, ref } from "vue"
 
 const props = defineProps<{
   username: string
@@ -79,6 +59,30 @@ onUnmounted(() => {
 })
 </script>
 
+<template>
+  <div class="welcome-banner">
+    <div class="welcome-content">
+      <div class="welcome-text">
+        <h1>{{ greeting }}，{{ props.username }}！</h1>
+        <p>{{ welcomeMessage }}</p>
+      </div>
+      <div class="welcome-time">
+        <div class="time">
+          {{ currentTime }}
+        </div>
+        <div class="date">
+          {{ currentDate }}
+        </div>
+      </div>
+    </div>
+    <div class="welcome-decoration">
+      <div class="decoration-circle circle-1" />
+      <div class="decoration-circle circle-2" />
+      <div class="decoration-circle circle-3" />
+    </div>
+  </div>
+</template>
+
 <style scoped lang="scss">
 .welcome-banner {
   position: relative;
@@ -103,7 +107,7 @@ onUnmounted(() => {
     font-size: 24px;
     font-weight: 600;
   }
-  
+
   p {
     margin: 0;
     font-size: 14px;
@@ -113,14 +117,14 @@ onUnmounted(() => {
 
 .welcome-time {
   text-align: right;
-  
+
   .time {
     font-size: 32px;
     font-weight: 300;
     font-family: "Roboto Mono", monospace;
     letter-spacing: 2px;
   }
-  
+
   .date {
     font-size: 14px;
     opacity: 0.9;
@@ -141,14 +145,14 @@ onUnmounted(() => {
   position: absolute;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.1);
-  
+
   &.circle-1 {
     width: 200px;
     height: 200px;
     top: -60px;
     right: 10%;
   }
-  
+
   &.circle-2 {
     width: 120px;
     height: 120px;
@@ -156,7 +160,7 @@ onUnmounted(() => {
     right: 25%;
     background: rgba(255, 255, 255, 0.05);
   }
-  
+
   &.circle-3 {
     width: 80px;
     height: 80px;
@@ -172,7 +176,7 @@ onUnmounted(() => {
     text-align: center;
     gap: 20px;
   }
-  
+
   .welcome-time {
     text-align: center;
   }

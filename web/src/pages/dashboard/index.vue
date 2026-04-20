@@ -1,71 +1,28 @@
-<template>
-  <div class="dashboard-container">
-    <!-- Welcome Banner -->
-    <WelcomeBanner :username="userStore.userInfo.username || '访客'" />
-    
-    <!-- Stats Cards -->
-    <el-row :gutter="16" class="stats-row">
-      <el-col :xs="24" :sm="12" :md="8" :lg="4" v-for="stat in statsList" :key="stat.key">
-        <StatsCard
-          :icon="stat.icon"
-          :value="stats[stat.key] || 0"
-          :label="stat.label"
-          :icon-color="stat.iconColor"
-          :icon-bg-color="stat.iconBgColor"
-        />
-      </el-col>
-    </el-row>
-    
-    <!-- Quick Actions -->
-    <el-row class="section-row">
-      <el-col :span="24">
-        <QuickActions />
-      </el-col>
-    </el-row>
-    
-    <!-- Main Content -->
-    <el-row :gutter="16" class="main-content">
-      <el-col :xs="24" :lg="16">
-        <RecentActivity 
-          :activities="recentOperations" 
-          @viewAll="handleViewAllOperations"
-        />
-      </el-col>
-      <el-col :xs="24" :lg="8">
-        <SystemStatus :info="systemInfo" />
-      </el-col>
-    </el-row>
-  </div>
-</template>
-
 <script setup lang="ts">
-import { ref, onMounted } from "vue"
-import { useRouter } from "vue-router"
-import { useUserStore } from "@/pinia/stores/user_n"
+import type { DashboardStats, RecentOperation, SystemInfo } from "@/api/sysMonitor/dashboard"
 import {
-  User,
+  Calendar,
+  CircleCheck,
+  DocumentChecked,
   Key,
   OfficeBuilding,
-  DocumentChecked,
-  Calendar,
-  CircleCheck
+  User
 } from "@element-plus/icons-vue"
 import { ElMessage } from "element-plus"
-
-import WelcomeBanner from "./components/WelcomeBanner.vue"
-import StatsCard from "./components/StatsCard.vue"
-import QuickActions from "./components/QuickActions.vue"
-import RecentActivity from "./components/RecentActivity.vue"
-import SystemStatus from "./components/SystemStatus.vue"
-
+import { onMounted, ref } from "vue"
+import { useRouter } from "vue-router"
 import {
   getDashboardStatisticsApi,
   getRecentOperationsApi,
-  getSystemInfoApi,
-  type DashboardStats,
-  type RecentOperation,
-  type SystemInfo
+  getSystemInfoApi
 } from "@/api/sysMonitor/dashboard"
+
+import { useUserStore } from "@/pinia/stores/user_n"
+import QuickActions from "./components/QuickActions.vue"
+import RecentActivity from "./components/RecentActivity.vue"
+import StatsCard from "./components/StatsCard.vue"
+import SystemStatus from "./components/SystemStatus.vue"
+import WelcomeBanner from "./components/WelcomeBanner.vue"
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -141,15 +98,15 @@ async function fetchDashboardData() {
       getRecentOperationsApi(),
       getSystemInfoApi()
     ])
-    
+
     if (statsRes.code === 0) {
       stats.value = statsRes.data
     }
-    
+
     if (operationsRes.code === 0) {
       recentOperations.value = operationsRes.data
     }
-    
+
     if (systemRes.code === 0) {
       systemInfo.value = systemRes.data
     }
@@ -168,6 +125,46 @@ onMounted(() => {
 })
 </script>
 
+<template>
+  <div class="dashboard-container">
+    <!-- Welcome Banner -->
+    <WelcomeBanner :username="userStore.userInfo.username || '访客'" />
+
+    <!-- Stats Cards -->
+    <el-row :gutter="16" class="stats-row">
+      <el-col :xs="24" :sm="12" :md="8" :lg="4" v-for="stat in statsList" :key="stat.key">
+        <StatsCard
+          :icon="stat.icon"
+          :value="stats[stat.key] || 0"
+          :label="stat.label"
+          :icon-color="stat.iconColor"
+          :icon-bg-color="stat.iconBgColor"
+        />
+      </el-col>
+    </el-row>
+
+    <!-- Quick Actions -->
+    <el-row class="section-row">
+      <el-col :span="24">
+        <QuickActions />
+      </el-col>
+    </el-row>
+
+    <!-- Main Content -->
+    <el-row :gutter="16" class="main-content">
+      <el-col :xs="24" :lg="16">
+        <RecentActivity
+          :activities="recentOperations"
+          @view-all="handleViewAllOperations"
+        />
+      </el-col>
+      <el-col :xs="24" :lg="8">
+        <SystemStatus :info="systemInfo" />
+      </el-col>
+    </el-row>
+  </div>
+</template>
+
 <style scoped lang="scss">
 .dashboard-container {
   padding: 16px;
@@ -175,7 +172,7 @@ onMounted(() => {
 
 .stats-row {
   margin-top: 16px;
-  
+
   .el-col {
     margin-bottom: 16px;
   }

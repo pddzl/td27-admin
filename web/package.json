@@ -1,7 +1,7 @@
 {
   "name": "td27-admin",
   "type": "module",
-  "version": "3.0",
+  "version": "4.0.0",
   "description": "An out-of-the-box scaffold developed with Go and Vue.",
   "author": "pddzl <td27fish@163.com> (https://github.com/pddzl)",
   "repository": "https://github.com/pddzl/td27-admin",

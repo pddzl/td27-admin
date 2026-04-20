@@ -1,27 +1,5 @@
-<template>
-  <div class="stats-card" :class="{ 'is-hoverable': hoverable }">
-    <div class="stats-icon" :style="{ backgroundColor: iconBgColor, color: iconColor }">
-      <el-icon :size="28">
-        <component :is="icon" />
-      </el-icon>
-    </div>
-    <div class="stats-content">
-      <div class="stats-value">{{ value }}</div>
-      <div class="stats-label">{{ label }}</div>
-      <div v-if="trend !== undefined" class="stats-trend" :class="trend > 0 ? 'up' : 'down'">
-        <el-icon :size="12">
-          <CaretTop v-if="trend > 0" />
-          <CaretBottom v-else />
-        </el-icon>
-        <span>{{ Math.abs(trend) }}%</span>
-      </div>
-    </div>
-  </div>
-</template>
-
 <script setup lang="ts">
-import { computed } from "vue"
-import { CaretTop, CaretBottom } from "@element-plus/icons-vue"
+import { CaretBottom, CaretTop } from "@element-plus/icons-vue"
 
 interface Props {
   icon: any
@@ -33,12 +11,37 @@ interface Props {
   hoverable?: boolean
 }
 
-const props = withDefaults(defineProps<Props>(), {
+withDefaults(defineProps<Props>(), {
   iconColor: "#409eff",
   iconBgColor: "#ecf5ff",
   hoverable: true
 })
 </script>
+
+<template>
+  <div class="stats-card" :class="{ 'is-hoverable': hoverable }">
+    <div class="stats-icon" :style="{ backgroundColor: iconBgColor, color: iconColor }">
+      <el-icon :size="28">
+        <component :is="icon" />
+      </el-icon>
+    </div>
+    <div class="stats-content">
+      <div class="stats-value">
+        {{ value }}
+      </div>
+      <div class="stats-label">
+        {{ label }}
+      </div>
+      <div v-if="trend !== undefined" class="stats-trend" :class="trend > 0 ? 'up' : 'down'">
+        <el-icon :size="12">
+          <CaretTop v-if="trend > 0" />
+          <CaretBottom v-else />
+        </el-icon>
+        <span>{{ Math.abs(trend) }}%</span>
+      </div>
+    </div>
+  </div>
+</template>
 
 <style scoped lang="scss">
 .stats-card {
@@ -48,7 +51,7 @@ const props = withDefaults(defineProps<Props>(), {
   background: #fff;
   border-radius: 8px;
   transition: all 0.3s;
-  
+
   &.is-hoverable:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -90,12 +93,12 @@ const props = withDefaults(defineProps<Props>(), {
   margin-top: 6px;
   padding: 2px 6px;
   border-radius: 4px;
-  
+
   &.up {
     color: #67c23a;
     background-color: #f0f9eb;
   }
-  
+
   &.down {
     color: #f56c6c;
     background-color: #fef0f0;

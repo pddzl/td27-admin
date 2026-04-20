@@ -1,36 +1,15 @@
-<template>
-  <div class="quick-actions">
-    <h3>快捷操作</h3>
-    <div class="actions-grid">
-      <div 
-        v-for="action in actions" 
-        :key="action.name"
-        class="action-item"
-        @click="handleAction(action)"
-      >
-        <div class="action-icon" :style="{ backgroundColor: action.bgColor, color: action.color }">
-          <el-icon :size="24">
-            <component :is="action.icon" />
-          </el-icon>
-        </div>
-        <span class="action-name">{{ action.name }}</span>
-      </div>
-    </div>
-  </div>
-</template>
-
 <script setup lang="ts">
-import { useRouter } from "vue-router"
 import {
-  User,
-  Key,
-  SetUp,
-  Document,
   Calendar,
+  Document,
   Folder,
+  Key,
   Monitor,
+  SetUp,
+  User,
   Warning
 } from "@element-plus/icons-vue"
+import { useRouter } from "vue-router"
 
 const router = useRouter()
 
@@ -111,12 +90,33 @@ function handleAction(action: Action) {
 }
 </script>
 
+<template>
+  <div class="quick-actions">
+    <h3>快捷操作</h3>
+    <div class="actions-grid">
+      <div
+        v-for="action in actions"
+        :key="action.name"
+        class="action-item"
+        @click="handleAction(action)"
+      >
+        <div class="action-icon" :style="{ backgroundColor: action.bgColor, color: action.color }">
+          <el-icon :size="24">
+            <component :is="action.icon" />
+          </el-icon>
+        </div>
+        <span class="action-name">{{ action.name }}</span>
+      </div>
+    </div>
+  </div>
+</template>
+
 <style scoped lang="scss">
 .quick-actions {
   background: #fff;
   border-radius: 8px;
   padding: 20px;
-  
+
   h3 {
     margin: 0 0 16px 0;
     font-size: 16px;
@@ -140,7 +140,7 @@ function handleAction(action: Action) {
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.3s;
-  
+
   &:hover {
     background-color: #f5f7fa;
     transform: translateY(-2px);

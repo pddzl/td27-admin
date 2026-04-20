@@ -12,7 +12,7 @@ RUN pnpm install --frozen-lockfile
 
 # Copy source and build
 COPY . .
-RUN pnpm build:prod
+RUN pnpm build
 
 FROM nginx:1.27-alpine
 

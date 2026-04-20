@@ -29,7 +29,7 @@ export function formatRouter(menuList: MenuData[], formatMenu: RouteRecordRaw[])
       redirect: menu.redirect,
       component: dynamicImport(menu.component),
       meta: {
-        svgIcon: menu.icon,
+        svgIcon: menu.icon || undefined,
         affix: menu.affix,
         alwaysShow: menu.alwaysShow,
         hidden: menu.hidden,
@@ -41,10 +41,9 @@ export function formatRouter(menuList: MenuData[], formatMenu: RouteRecordRaw[])
     formatMenu.push(fMenu)
     // 递归处理子路由
     if (Array.isArray(menu.children) && menu.children.length > 0) {
-      formatRouter(menu.children, fMenu.children)
+      formatRouter(menu.children, fMenu.children!)
     } else {
-      // @ts-ignore
-      fMenu.children = null
+      delete (fMenu as any).children
     }
   }
 }

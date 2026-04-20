@@ -1,94 +1,94 @@
-<div>
+<div align="center">
   <h1>TD27 Admin</h1>
-  <h4>基于Gin+Vue3前后端分离的Golang快速开发框架</h4>
-  <span><a href="./README.md">English</a> | 中文</span>
+  <h4>A Golang Rapid Development Framework Based on Gin + Vue3</h4>
+  <span>English | <a href="./README.zh-CN.md">中文</a></span>
 </div>
 
-## 平台简介
+## Platform Overview
 
-* 前端技术栈 TypeScript、Vue3、Element-Plus、Vite、Pinia
-* 后端技术栈 Golang、Gin、Gorm、MySQL、Redis、Casbin
+* Frontend tech stack: TypeScript, Vue3, Element-Plus, Vite, Pinia
+* Backend tech stack: Golang, Gin, Gorm, MySQL, Redis, Casbin
 
-## 内置功能
+## Built-in Features
 
-- 用户管理：提供系统账号的完整 CRUD 与生命周期管理，包括角色绑定和状态切换。
+- User Management: Full CRUD and lifecycle management for system accounts, including role binding and status toggling.
 
-- 角色管理：权限实体，用于将角色映射到菜单和 API 接口。
+- Role Management: Permission entities that map roles to menus and API endpoints.
 
-- 菜单管理：基于角色的动态路由与菜单生成。
+- Menu Management: Role-based dynamic routing and menu generation.
 
-- 接口管理：对后端 API 路由进行角色级的访问控制。
+- API Management: Role-level access control for backend API routes.
 
-- 操作日志：记录用户操作与请求链路，便于审计与追踪。
+- Operation Logs: Records user operations and request traces for auditing.
 
-- 定时任务：支持通过 YAML 配置或前端界面进行类 Cron 的任务管理。
+- Scheduled Tasks: Supports cron-like task configuration via both YAML and UI-driven management.
 
-- 文件管理：实现后台文件存储，提供上传、读取与删除接口。
+- File Management: Implements backend file storage with upload, retrieval, and deletion APIs.
 
-- 字典管理：支持嵌套字典定义，用于统一数据映射与前端渲染。
+- Dictionary Management: Nested dictionary definitions for unified data mapping and frontend rendering.
 
-## 运行
+## Run
 
-默认账号密码
+Default account / password:
 
 `admin/123456`
 
-克隆项目
+Clone the project
 `git clone https://github.com/pddzl/td27-admin.git`
 
-### 前端
+### Frontend
 
 ```bash
-# 配置
-1. 一键安装 .vscode 目录中推荐的插件
-2. node 版本 18+
-3. pnpm 版本 8.x
+# Requirements
+1. Install recommended plugins from the .vscode directory
+2. Node version 18+
+3. pnpm version 8.x
 
-# 进入项目目录
+# Enter project directory
 cd web
 
-# 安装依赖
+# Install dependencies
 pnpm i
 
-# 启动服务
+# Start development server
 pnpm dev
 
-# 预览预发布环境
+# Preview staging environment
 pnpm preview:stage
 
-# 预览正式环境
+# Preview production environment
 pnpm preview:prod
 
-# 构建预发布环境
+# Build staging environment
 pnpm build:stage
 
-# 构建正式环境
-pnpm build:prod
+# Build production environment
+pnpm build
 
-# 代码格式化
+# Format code
 pnpm lint
 ```
 
-### 后端
+### Backend
 
 ```bash
-# 配置
+# Requirements
 1. Go >= 1.25
 
-# 进入server文件夹
+# Enter server directory
 cd server
 
-# 使用 go mod 并安装go依赖包
+# Use go mod and install dependencies
 go generate
 
-# 编译 
+# Build
 go build -o server cmd/server/main.go
 
-# 运行二进制
+# Run the binary
 ./server
 ```
 
-#### 目录结构
+#### Directory Structure
 ```shell
 ├── cmd                      # Main application entry points (one folder per binary)
 │   └── server               # Main HTTP server entry (main.go)
@@ -117,7 +117,8 @@ go build -o server cmd/server/main.go
 
 ```
 
-**<u>如果选择手动部署，需要创建数据库 `td27` 并导入初始化数据。sql文件位置：`./docker-compose/mysql/init/init.sql` </u>**
+**<u>If you deploy manually, you must create a database `td27` and import the initialization data.
+SQL file location: `./docker-compose/mysql/init/init.sql` </u>**
 
 ## swagger
 
@@ -126,15 +127,15 @@ cd server
 swag init -g cmd/server/main.go -o docs --parseDependency --parseInternal
 ```
 
-`浏览`
+`Access Swagger UI`
 
 ```bash
 http://localhost:8888/swagger/index.html
 ```
 
-## 一键安装
+## One-Click Installation
 
-Docker Compose 版本需要 V2
+Docker Compose version must be V2
 
 ```bash
 git clone https://github.com/pddzl/td27-admin
@@ -143,9 +144,9 @@ docker-compose -f docker-compose/docker-compose.yml build
 docker-compose -f docker-compose/docker-compose.yml up -d
 ```
 
-浏览器打开 `http://ip:8500`
+Then open in browser: `http://ip:8500`
 
-## 项目预览图
+## Project Preview
 
 <table>
   <tr>
@@ -166,8 +167,8 @@ docker-compose -f docker-compose/docker-compose.yml up -d
   </tr>
 </table>
 
-## 致谢
-+ 项目前端脚手架 [v3-admin-vite](https://github.com/un-pany/v3-admin-vite)
+## Acknowledgements
++ Frontend scaffold based on [v3-admin-vite](https://github.com/un-pany/v3-admin-vite)
 
 ## 📄 License
 

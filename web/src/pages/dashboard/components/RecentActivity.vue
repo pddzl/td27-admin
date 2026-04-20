@@ -1,40 +1,3 @@
-<template>
-  <div class="recent-activity">
-    <div class="activity-header">
-      <h3>最近活动</h3>
-      <el-button link type="primary" @click="$emit('viewAll')">查看全部</el-button>
-    </div>
-    
-    <div class="activity-list">
-      <div v-for="item in activities" :key="item.id" class="activity-item">
-        <div class="activity-avatar">
-          <el-avatar :size="36" :style="{ backgroundColor: getAvatarColor(item.userName) }">
-            {{ getInitials(item.userName) }}
-          </el-avatar>
-        </div>
-        <div class="activity-content">
-          <div class="activity-title">
-            <span class="username">{{ item.userName }}</span>
-            <span class="action">{{ getActionText(item.method) }}</span>
-            <span class="path">{{ item.path }}</span>
-          </div>
-          <div class="activity-meta">
-            <el-tag :type="getStatusType(item.status)" size="small">
-              {{ item.status }}
-            </el-tag>
-            <span class="time">{{ formatTime(item.createdAt) }}</span>
-            <span v-if="item.respTime > 0" class="resp-time" :class="getRespTimeClass(item.respTime)">
-              {{ item.respTime }}ms
-            </span>
-          </div>
-        </div>
-      </div>
-      
-      <el-empty v-if="activities.length === 0" description="暂无活动记录" />
-    </div>
-  </div>
-</template>
-
 <script setup lang="ts">
 import type { RecentOperation } from "@/api/sysMonitor/dashboard"
 
@@ -90,19 +53,58 @@ function formatTime(timeStr: string): string {
   const date = new Date(timeStr)
   const now = new Date()
   const diff = now.getTime() - date.getTime()
-  
+
   const minutes = Math.floor(diff / 60000)
   const hours = Math.floor(diff / 3600000)
   const days = Math.floor(diff / 86400000)
-  
+
   if (minutes < 1) return "刚刚"
   if (minutes < 60) return `${minutes}分钟前`
   if (hours < 24) return `${hours}小时前`
   if (days < 7) return `${days}天前`
-  
+
   return date.toLocaleDateString("zh-CN")
 }
 </script>
+
+<template>
+  <div class="recent-activity">
+    <div class="activity-header">
+      <h3>最近活动</h3>
+      <el-button link type="primary" @click="$emit('viewAll')">
+        查看全部
+      </el-button>
+    </div>
+
+    <div class="activity-list">
+      <div v-for="item in activities" :key="item.id" class="activity-item">
+        <div class="activity-avatar">
+          <el-avatar :size="36" :style="{ backgroundColor: getAvatarColor(item.userName) }">
+            {{ getInitials(item.userName) }}
+          </el-avatar>
+        </div>
+        <div class="activity-content">
+          <div class="activity-title">
+            <span class="username">{{ item.userName }}</span>
+            <span class="action">{{ getActionText(item.method) }}</span>
+            <span class="path">{{ item.path }}</span>
+          </div>
+          <div class="activity-meta">
+            <el-tag :type="getStatusType(item.status)" size="small">
+              {{ item.status }}
+            </el-tag>
+            <span class="time">{{ formatTime(item.createdAt) }}</span>
+            <span v-if="item.respTime > 0" class="resp-time" :class="getRespTimeClass(item.respTime)">
+              {{ item.respTime }}ms
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <el-empty v-if="activities.length === 0" description="暂无活动记录" />
+    </div>
+  </div>
+</template>
 
 <style scoped lang="scss">
 .recent-activity {
@@ -116,7 +118,7 @@ function formatTime(timeStr: string): string {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 16px;
-  
+
   h3 {
     margin: 0;
     font-size: 16px;
@@ -135,11 +137,11 @@ function formatTime(timeStr: string): string {
   align-items: flex-start;
   padding: 12px 0;
   border-bottom: 1px solid #ebeef5;
-  
+
   &:last-child {
     border-bottom: none;
   }
-  
+
   &:hover {
     background-color: #f5f7fa;
     margin: 0 -20px;
@@ -165,16 +167,16 @@ function formatTime(timeStr: string): string {
   gap: 6px;
   font-size: 14px;
   margin-bottom: 6px;
-  
+
   .username {
     font-weight: 600;
     color: #303133;
   }
-  
+
   .action {
     color: #606266;
   }
-  
+
   .path {
     color: #909399;
     font-family: monospace;
@@ -193,24 +195,24 @@ function formatTime(timeStr: string): string {
   display: flex;
   align-items: center;
   gap: 12px;
-  
+
   .time {
     font-size: 12px;
     color: #909399;
   }
-  
+
   .resp-time {
     font-size: 12px;
     font-family: monospace;
-    
+
     &.fast {
       color: #67c23a;
     }
-    
+
     &.normal {
       color: #e6a23c;
     }
-    
+
     &.slow {
       color: #f56c6c;
     }
