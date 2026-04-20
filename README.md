@@ -41,7 +41,7 @@
 ```bash
 # 配置
 1. 一键安装 .vscode 目录中推荐的插件
-2. node 版本 18+
+2. node 版本 22+
 3. pnpm 版本 8.x
 
 # 进入项目目录
@@ -63,7 +63,7 @@ pnpm preview:prod
 pnpm build:stage
 
 # 构建正式环境
-pnpm build:prod
+pnpm build
 
 # 代码格式化
 pnpm lint
@@ -117,7 +117,7 @@ go build -o server cmd/server/main.go
 
 ```
 
-**<u>如果选择手动部署，需要创建数据库 `td27` 并导入初始化数据。sql文件位置：`./docker-compose/mysql/init/init.sql` </u>**
+**<u>如果选择手动部署，需要创建数据库 `td27` 并导入初始化数据。sql文件位置：`./docker-compose/pgsql/init/init.sql` </u>**
 
 ## swagger
 
@@ -139,8 +139,8 @@ Docker Compose 版本需要 V2
 ```bash
 git clone https://github.com/pddzl/td27-admin
 cd td27-admin
-docker-compose -f docker-compose/docker-compose.yml build
-docker-compose -f docker-compose/docker-compose.yml up -d
+docker compose -f docker-compose/compose.yml build
+docker compose -f docker-compose/compose.yml up -d
 ```
 
 浏览器打开 `http://ip:8500`

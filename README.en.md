@@ -41,7 +41,7 @@ Clone the project
 ```bash
 # Requirements
 1. Install recommended plugins from the .vscode directory
-2. Node version 18+
+2. Node version 22+
 3. pnpm version 8.x
 
 # Enter project directory
@@ -140,8 +140,8 @@ Docker Compose version must be V2
 ```bash
 git clone https://github.com/pddzl/td27-admin
 cd td27-admin
-docker-compose -f docker-compose/docker-compose.yml build
-docker-compose -f docker-compose/docker-compose.yml up -d
+docker compose -f docker-compose/compose.yml build
+docker compose -f docker-compose/compose.yml up -d
 ```
 
 Then open in browser: `http://ip:8500`
