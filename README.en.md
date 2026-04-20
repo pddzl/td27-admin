@@ -21,7 +21,7 @@
 
 - Operation Logs: Records user operations and request traces for auditing.
 
-- Scheduled Tasks: Supports cron-like task configuration via both YAML and UI-driven management.
+- Scheduled Tasks: Supports cron-like task configuration via UI-driven management.
 
 - File Management: Implements backend file storage with upload, retrieval, and deletion APIs.
 
@@ -145,6 +145,14 @@ docker compose -f docker-compose/compose.yml up -d
 ```
 
 Then open in browser: `http://ip:8500`
+
+## Version Description
+
+TD27 Admin versioning follows the x.y.z format:
+
++ x indicates major architectural changes
++ y indicates new features
++ z indicates bug fixes
 
 ## Project Preview
 
