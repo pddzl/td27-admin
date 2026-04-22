@@ -26,9 +26,9 @@ COPY --from=builder /web/dist /usr/share/nginx/html/dist
 
 RUN chown -R td27:td27 /usr/share/nginx/html/dist
 
-# Healthcheck for nginx
+# Healthcheck for nginx (busybox wget syntax)
 HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
-  CMD wget --quiet --tries=1 --spider http://localhost/ || exit 1
+  CMD wget -qO- http://localhost/ > /dev/null || exit 1
 
 EXPOSE 80
 
