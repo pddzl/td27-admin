@@ -47,6 +47,7 @@ withDefaults(defineProps<Props>(), {
 .stats-card {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   padding: 20px;
   background: #fff;
   border-radius: 8px;
@@ -65,11 +66,14 @@ withDefaults(defineProps<Props>(), {
   width: 56px;
   height: 56px;
   border-radius: 12px;
-  margin-right: 16px;
 }
 
 .stats-content {
-  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  text-align: right;
 }
 
 .stats-value {

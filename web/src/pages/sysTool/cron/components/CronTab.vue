@@ -1,52 +1,4 @@
-<template>
-  <div class="cron-tab">
-    <el-radio-group v-model="radioValue" @change="onRadioChange">
-      <el-radio label="*">每{{ typeLabel }}</el-radio>
-      <el-radio label="?">不指定</el-radio>
-      <el-radio label="cycle">周期</el-radio>
-      <el-radio label="interval">间隔</el-radio>
-      <el-radio label="specific">指定</el-radio>
-    </el-radio-group>
-
-    <div class="config-panel">
-      <!-- Cycle -->
-      <div v-if="radioValue === 'cycle'" class="config-item">
-        <span>从</span>
-        <el-input-number v-model="cycleStart" :min="min" :max="max" size="small" />
-        <span>到</span>
-        <el-input-number v-model="cycleEnd" :min="min" :max="max" size="small" />
-        <span>{{ typeLabel }}</span>
-      </div>
-
-      <!-- Interval -->
-      <div v-if="radioValue === 'interval'" class="config-item">
-        <span>从</span>
-        <el-input-number v-model="intervalStart" :min="min" :max="max" size="small" />
-        <span>{{ typeLabel }}开始，每</span>
-        <el-input-number v-model="intervalStep" :min="1" :max="max" size="small" />
-        <span>{{ typeLabel }}执行一次</span>
-      </div>
-
-      <!-- Specific -->
-      <div v-if="radioValue === 'specific'" class="config-item">
-        <span>指定{{ typeLabel }}:</span>
-        <el-select-v2
-          v-model="specificValues"
-          :options="options"
-          placeholder="请选择"
-          multiple
-          collapse-tags
-          collapse-tags-tooltip
-          style="width: 300px"
-        />
-      </div>
-    </div>
-  </div>
-</template>
-
 <script setup lang="ts">
-import { ref, computed, watch } from "vue"
-
 const props = defineProps<{
   modelValue: string
   type: "second" | "minute" | "hour" | "day" | "month" | "week" | "year"
@@ -58,7 +10,7 @@ const emit = defineEmits<{
 }>()
 
 // Type config
-const typeConfig: Record<string, { label: string; min: number; max: number }> = {
+const typeConfig: Record<string, { label: string, min: number, max: number }> = {
   second: { label: "秒", min: 0, max: 59 },
   minute: { label: "分钟", min: 0, max: 59 },
   hour: { label: "小时", min: 0, max: 23 },
@@ -101,7 +53,7 @@ const intervalStep = ref(1)
 const specificValues = ref<number[]>([])
 
 // Parse modelValue
-const parseValue = (val: string) => {
+function parseValue(val: string) {
   if (val === "*") {
     radioValue.value = "*"
   } else if (val === "?") {
@@ -125,10 +77,10 @@ const parseValue = (val: string) => {
   }
 }
 
-watch(() => props.modelValue, (val) => parseValue(val), { immediate: true })
+watch(() => props.modelValue, val => parseValue(val), { immediate: true })
 
 // Build value
-const buildValue = () => {
+function buildValue() {
   switch (radioValue.value) {
     case "*":
       return "*"
@@ -152,7 +104,7 @@ watch([radioValue, cycleStart, cycleEnd, intervalStart, intervalStep, specificVa
   emit("change")
 }, { deep: true })
 
-const onRadioChange = () => {
+function onRadioChange() {
   // Reset values when radio changes
   if (radioValue.value === "specific" && specificValues.value.length === 0) {
     specificValues.value = [min.value]
@@ -160,28 +112,84 @@ const onRadioChange = () => {
 }
 </script>
 
+<template>
+  <div class="cron-tab">
+    <el-radio-group v-model="radioValue" @change="onRadioChange">
+      <el-radio :value="'*'">
+        每{{ typeLabel }}
+      </el-radio>
+      <el-radio :value="'?'">
+        不指定
+      </el-radio>
+      <el-radio :value="'cycle'">
+        周期
+      </el-radio>
+      <el-radio :value="'interval'">
+        间隔
+      </el-radio>
+      <el-radio :value="'specific'">
+        指定
+      </el-radio>
+    </el-radio-group>
+
+    <div class="config-panel">
+      <!-- Cycle -->
+      <div v-if="radioValue === 'cycle'" class="config-item">
+        <span>从</span>
+        <el-input-number v-model="cycleStart" :min="min" :max="max" size="small" />
+        <span>到</span>
+        <el-input-number v-model="cycleEnd" :min="min" :max="max" size="small" />
+        <span>{{ typeLabel }}</span>
+      </div>
+
+      <!-- Interval -->
+      <div v-if="radioValue === 'interval'" class="config-item">
+        <span>从</span>
+        <el-input-number v-model="intervalStart" :min="min" :max="max" size="small" />
+        <span>{{ typeLabel }}开始，每</span>
+        <el-input-number v-model="intervalStep" :min="1" :max="max" size="small" />
+        <span>{{ typeLabel }}执行一次</span>
+      </div>
+
+      <!-- Specific -->
+      <div v-if="radioValue === 'specific'" class="config-item">
+        <span>指定{{ typeLabel }}:</span>
+        <el-select-v2
+          v-model="specificValues"
+          :options="options"
+          placeholder="请选择"
+          multiple
+          collapse-tags
+          collapse-tags-tooltip
+          style="width: 300px"
+        />
+      </div>
+    </div>
+  </div>
+</template>
+
 <style lang="scss" scoped>
 .cron-tab {
   padding: 15px;
-  
+
   .el-radio-group {
     display: flex;
     flex-direction: column;
     gap: 15px;
   }
-  
+
   .config-panel {
     margin-top: 20px;
     padding: 15px;
     background: #f5f7fa;
     border-radius: 4px;
-    
+
     .config-item {
       display: flex;
       align-items: center;
       gap: 10px;
       flex-wrap: wrap;
-      
+
       span {
         color: #666;
       }
