@@ -2,10 +2,9 @@
 -- PostgreSQL database dump
 --
 
-\restrict Bt1pxsTocTD9oSvVjEL91VXSb0Fd45FmrhKNDQTckQecRwdLqdOPyttxDs5fePW
 
 -- Dumped from database version 14.22 (Debian 14.22-1.pgdg13+1)
--- Dumped by pg_dump version 14.22 (Debian 14.22-1.pgdg13+1)
+-- Dumped by pg_dump version 14.22 (Homebrew)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -2403,5 +2402,4 @@ CREATE INDEX idx_sys_tool_service_token_deleted_at ON public.sys_tool_service_to
 -- PostgreSQL database dump complete
 --
 
-\unrestrict Bt1pxsTocTD9oSvVjEL91VXSb0Fd45FmrhKNDQTckQecRwdLqdOPyttxDs5fePW
 
