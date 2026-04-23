@@ -115,19 +115,19 @@ function onRadioChange() {
 <template>
   <div class="cron-tab">
     <el-radio-group v-model="radioValue" @change="onRadioChange">
-      <el-radio :value="'*'">
+      <el-radio value="'*'">
         每{{ typeLabel }}
       </el-radio>
-      <el-radio :value="'?'">
+      <el-radio value="'?'">
         不指定
       </el-radio>
-      <el-radio :value="'cycle'">
+      <el-radio value="'cycle'">
         周期
       </el-radio>
-      <el-radio :value="'interval'">
+      <el-radio value="'interval'">
         间隔
       </el-radio>
-      <el-radio :value="'specific'">
+      <el-radio value="'specific'">
         指定
       </el-radio>
     </el-radio-group>

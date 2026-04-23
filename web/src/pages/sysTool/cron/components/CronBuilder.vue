@@ -94,6 +94,7 @@ const nextTimes = computed(() => {
     }
   } catch (e) {
     // Invalid cron
+    console.log(e)
   }
   return times
 })
