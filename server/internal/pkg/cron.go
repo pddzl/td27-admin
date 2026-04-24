@@ -3,10 +3,9 @@ package pkg
 import (
 	"errors"
 	"fmt"
-	"gorm.io/gorm"
 	"time"
 
-	"server/internal/global"
+	"gorm.io/gorm"
 )
 
 func ClearTable(db *gorm.DB, tableName string, compareField string, interval string) error {
@@ -21,12 +20,4 @@ func ClearTable(db *gorm.DB, tableName string, compareField string, interval str
 		return errors.New("parse duration < 0")
 	}
 	return db.Exec(fmt.Sprintf("DELETE FROM %s WHERE %s < ?", tableName, compareField), time.Now().Add(-duration)).Error
-}
-
-func GetEntries() (entrySlice []int) {
-	for _, v := range global.TD27_CRON.Entries() {
-		entrySlice = append(entrySlice, int(v.ID))
-	}
-
-	return
 }

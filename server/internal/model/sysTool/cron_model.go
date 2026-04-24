@@ -3,13 +3,7 @@ package sysTool
 import (
 	"database/sql/driver"
 	"encoding/json"
-	"fmt"
-	"time"
 
-	"github.com/robfig/cron/v3"
-	"go.uber.org/zap"
-
-	"server/internal/global"
 	"server/internal/model/common"
 )
 
@@ -59,39 +53,4 @@ type ClearTable struct {
 
 func (cm *CronModel) TableName() string {
 	return "sys_tool_cron"
-}
-
-func (cm *CronModel) Run() {
-	global.TD27_LOG.Info("[CRON]", zap.String("START", cm.Method))
-	switch cm.Method {
-	case "clearTable":
-		for _, v := range cm.ExtraParams.TableInfo {
-			duration, err := time.ParseDuration(v.Interval)
-			if err != nil {
-				global.TD27_LOG.Error(fmt.Sprintf("parse duration err: %v", err))
-			}
-			if duration < 0 {
-				global.TD27_LOG.Error("parse duration < 0")
-			}
-			err = global.TD27_DB.Debug().Exec(fmt.Sprintf("DELETE FROM %s WHERE %s < ?", v.TableName, v.CompareField), time.Now().Add(-duration)).Error
-			if err != nil {
-				global.TD27_LOG.Error(fmt.Sprintf("delete err: %v", err))
-			}
-		}
-	case "clearCache":
-		// 清理过期缓存
-		result := global.TD27_DB.Where("expires_at <= ?", time.Now()).Delete(&CacheModel{})
-		if result.Error != nil {
-			global.TD27_LOG.Error("[CRON] clear cache error", zap.Error(result.Error))
-		} else if result.RowsAffected > 0 {
-			global.TD27_LOG.Info("[CRON] clear cache success", zap.Int64("rows", result.RowsAffected))
-		}
-	default:
-		global.TD27_LOG.Error("unsupport method")
-	}
-	if cm.Strategy == "once" {
-		global.TD27_LOG.Info("[CRON]", zap.String(cm.Name, "stop"))
-		global.TD27_CRON.Remove(cron.EntryID(cm.EntryId))
-		global.TD27_DB.Model(cm).Updates(map[string]interface{}{"open": false, "entryId": 0})
-	}
 }

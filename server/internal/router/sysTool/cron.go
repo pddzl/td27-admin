@@ -26,6 +26,7 @@ func (cr *CronRouter) InitCronRouter(rg *gin.RouterGroup) {
 	record.POST("deleteByIds", cr.cronApi.DeleteByIds)
 	record.POST("update", cr.cronApi.Update)
 	record.POST("switchOpen", cr.cronApi.SwitchOpen)
+	record.POST("runOnce", cr.cronApi.RunOnce)
 	// not record
 	base.POST("list", cr.cronApi.List)
 }

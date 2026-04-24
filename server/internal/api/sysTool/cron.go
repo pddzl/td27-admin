@@ -29,14 +29,14 @@ func NewCronApi() *CronApi {
 // @Param     data  body      common.PageInfo true  "page（可选）, pageSize（可选）"
 // @Success   200   {object}  common.Response{data=common.Page{list=[]modelSysTool.CronModel},msg=string}
 // @Router    /cron/list [post]
-func (ca *CronApi) List(c *gin.Context) {
+func (a *CronApi) List(c *gin.Context) {
 	var req common.PageInfo
 	if err := c.ShouldBindJSON(&req); err != nil {
 		common.FailReq(err.Error(), c)
 		return
 	}
 
-	if list, total, err := ca.cronService.List(&req); err != nil {
+	if list, total, err := a.cronService.List(&req); err != nil {
 		common.FailWithMessage("获取失败", c)
 		global.TD27_LOG.Error("获取失败", zap.Error(err))
 	} else {
@@ -58,14 +58,14 @@ func (ca *CronApi) List(c *gin.Context) {
 // @Param     data  body      modelSysTool.CronModel true  "名称，方法，cron表达式，策略，开关，额外参数，备注（可选）"
 // @Success   200   {object}  common.Response{msg=string,data=modelSysTool.CronModel}
 // @Router    /cron/create [post]
-func (ca *CronApi) Create(c *gin.Context) {
+func (a *CronApi) Create(c *gin.Context) {
 	var req modelSysTool.CronModel
 	if err := c.ShouldBindJSON(&req); err != nil {
 		common.FailReq(err.Error(), c)
 		return
 	}
 
-	if cron, err := ca.cronService.Create(&req); err != nil {
+	if cron, err := a.cronService.Create(&req); err != nil {
 		common.FailWithMessage("创建失败", c)
 		global.TD27_LOG.Error("创建失败", zap.Error(err))
 	} else {
@@ -82,14 +82,14 @@ func (ca *CronApi) Create(c *gin.Context) {
 // @Param     data  body      common.CId true  "id"
 // @Success   200   {object}  common.Response{msg=string}
 // @Router    /cron/delete [post]
-func (ca *CronApi) Delete(c *gin.Context) {
+func (a *CronApi) Delete(c *gin.Context) {
 	var req common.CId
 	if err := c.ShouldBindJSON(&req); err != nil {
 		common.FailReq(err.Error(), c)
 		return
 	}
 
-	if err := ca.cronService.Delete(req.ID); err != nil {
+	if err := a.cronService.Delete(req.ID); err != nil {
 		common.FailWithMessage("删除失败", c)
 		global.TD27_LOG.Error("删除失败", zap.Error(err))
 	} else {
@@ -97,14 +97,14 @@ func (ca *CronApi) Delete(c *gin.Context) {
 	}
 }
 
-func (ca *CronApi) DeleteByIds(c *gin.Context) {
+func (a *CronApi) DeleteByIds(c *gin.Context) {
 	var req common.CIds
 	if err := c.ShouldBindJSON(&req); err != nil {
 		common.FailReq(err.Error(), c)
 		return
 	}
 
-	if err := ca.cronService.DeleteByIds(req.IDs); err != nil {
+	if err := a.cronService.DeleteByIds(req.IDs); err != nil {
 		common.FailWithMessage("批量删除失败", c)
 		global.TD27_LOG.Error("批量删除失败", zap.Error(err))
 	} else {
@@ -121,14 +121,14 @@ func (ca *CronApi) DeleteByIds(c *gin.Context) {
 // @Param     data  body      modelSysTool.CronModel true  "id（必须），名称，方法，cron表达式，策略，开关，额外参数，备注"
 // @Success   200   {object}  common.Response{msg=string,data=modelSysTool.CronModel}
 // @Router    /cron/update [post]
-func (ca *CronApi) Update(c *gin.Context) {
+func (a *CronApi) Update(c *gin.Context) {
 	var req modelSysTool.CronModel
 	if err := c.ShouldBindJSON(&req); err != nil {
 		common.FailReq(err.Error(), c)
 		return
 	}
 
-	if instance, err := ca.cronService.Update(&req); err != nil {
+	if instance, err := a.cronService.Update(&req); err != nil {
 		common.FailWithMessage(err.Error(), c)
 		global.TD27_LOG.Error("编辑失败", zap.Error(err))
 	} else {
@@ -145,17 +145,41 @@ func (ca *CronApi) Update(c *gin.Context) {
 // @Param     data  body      modelSysTool.SwitchReq true  "id, open"
 // @Success   200   {object}  common.Response{data=map[string]int, msg=string}
 // @Router    /cron/switchOpen [post]
-func (ca *CronApi) SwitchOpen(c *gin.Context) {
+func (a *CronApi) SwitchOpen(c *gin.Context) {
 	var req modelSysTool.SwitchReq
 	if err := c.ShouldBindJSON(&req); err != nil {
 		common.FailReq(err.Error(), c)
 		return
 	}
 
-	if entryId, err := ca.cronService.SwitchOpen(req.ID, req.Open); err != nil {
+	if entryId, err := a.cronService.SwitchOpen(req.ID, req.Open); err != nil {
 		common.FailWithMessage("切换失败", c)
 		global.TD27_LOG.Error("切换失败", zap.Error(err))
 	} else {
 		common.OkWithDetailed(gin.H{"entryId": entryId}, "切换成功", c)
+	}
+}
+
+// RunOnce 立即执行一次
+// @Tags      CronApi
+// @Summary   立即执行定时任务
+// @Security  ApiKeyAuth
+// @accept    application/json
+// @Produce   application/json
+// @Param     data  body      common.CId true  "id"
+// @Success   200   {object}  common.Response{msg=string}
+// @Router    /cron/runOnce [post]
+func (a *CronApi) RunOnce(c *gin.Context) {
+	var req common.CId
+	if err := c.ShouldBindJSON(&req); err != nil {
+		common.FailReq(err.Error(), c)
+		return
+	}
+
+	if err := a.cronService.RunOnce(req.ID); err != nil {
+		common.FailWithMessage("执行失败", c)
+		global.TD27_LOG.Error("执行失败", zap.Error(err))
+	} else {
+		common.OkWithMessage("任务已触发", c)
 	}
 }

@@ -30,8 +30,7 @@ func main() {
 	initialize.RegisterTables(global.TD27_DB)
 
 	// Initialize Cron AFTER DB ready
-	global.TD27_CRON = initialize.InitCron()
-	initialize.CheckCron()
+	initialize.InitCron()
 
 	// Build router
 	router := initialize.Routers()

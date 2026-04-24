@@ -1,29 +1,20 @@
 package initialize
 
 import (
-	"github.com/robfig/cron/v3"
 	"go.uber.org/zap"
 
 	"server/internal/global"
-	modelSysTool "server/internal/model/sysTool"
+	cronService "server/internal/service/sysTool/cron"
 )
 
-// InitCron 初始化Cron
-func InitCron() *cron.Cron {
-	instance := cron.New(cron.WithSeconds()) // 支持秒
-	instance.Start()                         // 启动cron
-	return instance
-}
+// InitCron 初始化定时任务调度器
+func InitCron() {
+	scheduler := cronService.NewScheduler()
+	scheduler.Start()
+	global.TD27_CRON = scheduler
 
-func CheckCron() {
-	var cronModelList []modelSysTool.CronModel
-	global.TD27_DB.Where("open = ?", true).Find(&cronModelList)
-	for _, cronModel := range cronModelList {
-		entryId, err := global.TD27_CRON.AddJob(cronModel.Expression, &cronModel)
-		if err != nil {
-			global.TD27_LOG.Error("CRON", zap.Error(err))
-		} else {
-			global.TD27_DB.Model(cronModel).Update("entryId", entryId)
-		}
+	// 从数据库加载已启用的任务
+	if err := scheduler.LoadFromDB(); err != nil {
+		global.TD27_LOG.Error("[CRON] load from db failed", zap.Error(err))
 	}
 }
