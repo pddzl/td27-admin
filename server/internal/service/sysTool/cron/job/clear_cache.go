@@ -4,11 +4,11 @@ import (
 	"context"
 	"time"
 
-	"go.uber.org/zap"
 
 	"server/internal/global"
 	modelSysTool "server/internal/model/sysTool"
 	pkgCron "server/internal/pkg/cron"
+	"log/slog"
 )
 
 func init() {
@@ -29,7 +29,7 @@ func (j *ClearCacheJob) Run(ctx context.Context) error {
 		return result.Error
 	}
 	if result.RowsAffected > 0 {
-		zap.L().Info("[CRON] clearCache done", zap.Int64("rows", result.RowsAffected))
+		slog.Info("[CRON] clearCache done", "rows", result.RowsAffected)
 	}
 	return nil
 }

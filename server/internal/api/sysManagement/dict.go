@@ -2,12 +2,11 @@ package sysManagement
 
 import (
 	"github.com/gin-gonic/gin"
-	"go.uber.org/zap"
 
-	"server/internal/global"
 	"server/internal/model/common"
 	modelSysManagement "server/internal/model/sysManagement"
 	serviceSysManagement "server/internal/service/sysManagement"
+	"log/slog"
 )
 
 type DictApi struct {
@@ -29,7 +28,7 @@ func (a *DictApi) List(c *gin.Context) {
 
 	if list, count, err := a.dictService.List(&req); err != nil {
 		common.FailWithMessage(err.Error(), c)
-		global.TD27_LOG.Error("list error", zap.Error(err))
+		slog.Error("list error", "error", err)
 	} else {
 		common.OkWithDetailed(common.Page{
 			List:     list,
@@ -49,7 +48,7 @@ func (a *DictApi) Create(c *gin.Context) {
 
 	if instance, err := a.dictService.Create(&req); err != nil {
 		common.FailWithMessage(err.Error(), c)
-		global.TD27_LOG.Error("Create error", zap.Error(err))
+		slog.Error("Create error", "error", err)
 	} else {
 		common.OkWithDetailed(instance, "success", c)
 	}
@@ -64,7 +63,7 @@ func (a *DictApi) Delete(c *gin.Context) {
 
 	if err := a.dictService.Delete(cId.ID); err != nil {
 		common.FailWithMessage(err.Error(), c)
-		global.TD27_LOG.Error("Delete error", zap.Error(err))
+		slog.Error("Delete error", "error", err)
 	} else {
 		common.Ok(c)
 	}
@@ -79,7 +78,7 @@ func (a *DictApi) Update(c *gin.Context) {
 
 	if err := a.dictService.Update(&req); err != nil {
 		common.FailWithMessage(err.Error(), c)
-		global.TD27_LOG.Error("update failed", zap.Error(err))
+		slog.Error("update failed", "error", err)
 	} else {
 		common.OkWithMessage("update success", c)
 	}

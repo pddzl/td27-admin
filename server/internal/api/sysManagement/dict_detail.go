@@ -2,12 +2,11 @@ package sysManagement
 
 import (
 	"github.com/gin-gonic/gin"
-	"go.uber.org/zap"
 
-	"server/internal/global"
 	"server/internal/model/common"
 	modelSysManagement "server/internal/model/sysManagement"
 	serviceSysManagement "server/internal/service/sysManagement"
+	"log/slog"
 )
 
 type DictDetailApi struct {
@@ -29,7 +28,7 @@ func (a *DictDetailApi) List(c *gin.Context) {
 
 	if list, total, err := a.dictDetailService.List(&req); err != nil {
 		common.FailWithMessage(err.Error(), c)
-		global.TD27_LOG.Error("get failed", zap.Error(err))
+		slog.Error("get failed", "error", err)
 	} else {
 		common.OkWithDetailed(common.Page{
 			List:     list,
@@ -49,7 +48,7 @@ func (a *DictDetailApi) Flat(c *gin.Context) {
 
 	if list, err := a.dictDetailService.Flat(req.DictID); err != nil {
 		common.FailWithMessage(err.Error(), c)
-		global.TD27_LOG.Error("flat failed", zap.Error(err))
+		slog.Error("flat failed", "error", err)
 	} else {
 		common.OkWithDetailed(list, "success", c)
 	}
@@ -64,7 +63,7 @@ func (a *DictDetailApi) Create(c *gin.Context) {
 
 	if instance, err := a.dictDetailService.Create(&req); err != nil {
 		common.FailWithMessage(err.Error(), c)
-		global.TD27_LOG.Error("create failed", zap.Error(err))
+		slog.Error("create failed", "error", err)
 	} else {
 		common.OkWithDetailed(instance, "success", c)
 	}
@@ -79,7 +78,7 @@ func (a *DictDetailApi) Delete(c *gin.Context) {
 
 	if err := a.dictDetailService.Delete(cId.ID); err != nil {
 		common.FailWithMessage(err.Error(), c)
-		global.TD27_LOG.Error("delete failed", zap.Error(err))
+		slog.Error("delete failed", "error", err)
 	} else {
 		common.Ok(c)
 	}
@@ -94,7 +93,7 @@ func (a *DictDetailApi) Update(c *gin.Context) {
 
 	if instance, err := a.dictDetailService.Update(&req); err != nil {
 		common.FailWithMessage(err.Error(), c)
-		global.TD27_LOG.Error("update failed", zap.Error(err))
+		slog.Error("update failed", "error", err)
 	} else {
 		common.OkWithDetailed(instance, "success", c)
 	}

@@ -2,11 +2,11 @@ package casbin
 
 import (
 	"fmt"
+	"log/slog"
+
 	"github.com/casbin/casbin/v2/model"
 	"github.com/casbin/casbin/v2/persist"
-	"go.uber.org/zap"
 	"gorm.io/gorm"
-	"server/internal/global"
 )
 
 // PermissionAdapter 基于统一权限表的Casbin适配器
@@ -63,8 +63,8 @@ func (a *PermissionAdapter) LoadPolicy(mod model.Model) error {
 	}
 
 	// Accurate logging
-	global.TD27_LOG.Info("Casbin策略加载完成",
-		zap.Int("policyCount", len(rows)),
+	slog.Info("Casbin策略加载完成",
+		"policyCount", len(rows),
 	)
 
 	return nil

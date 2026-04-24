@@ -2,12 +2,11 @@ package sysManagement
 
 import (
 	"github.com/gin-gonic/gin"
-	"go.uber.org/zap"
 
-	"server/internal/global"
 	"server/internal/model/common"
 	modelSysManagement "server/internal/model/sysManagement"
 	serviceSysManagement "server/internal/service/sysManagement"
+	"log/slog"
 )
 
 type ApiApi struct {
@@ -36,7 +35,7 @@ func (a *ApiApi) Create(c *gin.Context) {
 
 	if instance, err := a.apiService.Create(&req); err != nil {
 		common.FailWithMessage(err.Error(), c)
-		global.TD27_LOG.Error("添加失败", zap.Error(err))
+		slog.Error("添加失败", "error", err)
 	} else {
 		common.OkWithDetailed(instance, "添加成功", c)
 	}
@@ -60,7 +59,7 @@ func (a *ApiApi) List(c *gin.Context) {
 
 	if list, total, err := a.apiService.List(&req); err != nil {
 		common.FailWithMessage("获取失败", c)
-		global.TD27_LOG.Error("获取失败", zap.Error(err))
+		slog.Error("获取失败", "error", err)
 	} else {
 		common.OkWithDetailed(common.Page{
 			List:     list,
@@ -89,7 +88,7 @@ func (a *ApiApi) Delete(c *gin.Context) {
 
 	if err := a.apiService.Delete(req.ID); err != nil {
 		common.FailWithMessage(err.Error(), c)
-		global.TD27_LOG.Error("删除失败", zap.Error(err))
+		slog.Error("删除失败", "error", err)
 	} else {
 		common.Ok(c)
 	}
@@ -113,7 +112,7 @@ func (a *ApiApi) DeleteByIds(c *gin.Context) {
 
 	if err := a.apiService.DeleteByIds(req.IDs); err != nil {
 		common.FailWithMessage(err.Error(), c)
-		global.TD27_LOG.Error("批量删除失败", zap.Error(err))
+		slog.Error("批量删除失败", "error", err)
 	} else {
 		common.Ok(c)
 	}
@@ -138,7 +137,7 @@ func (a *ApiApi) Update(c *gin.Context) {
 	_, err := a.apiService.Update(&req)
 	if err != nil {
 		common.FailWithMessage(err.Error(), c)
-		global.TD27_LOG.Error("更新失败", zap.Error(err))
+		slog.Error("更新失败", "error", err)
 	} else {
 		common.Ok(c)
 	}

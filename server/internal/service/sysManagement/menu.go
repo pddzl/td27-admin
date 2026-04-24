@@ -4,10 +4,10 @@ import (
 	"context"
 	"fmt"
 
-	"go.uber.org/zap"
 
 	"server/internal/global"
 	modelSysManagement "server/internal/model/sysManagement"
+	"log/slog"
 )
 
 type MenuService struct {
@@ -50,10 +50,10 @@ func (s *MenuService) Create(req *modelSysManagement.Menu) (*modelSysManagement.
 	}
 
 	if err = s.permissionRepo.Create(s.ctx, permission); err != nil {
-		global.TD27_LOG.Info(fmt.Sprintf("权限创建失败，删除已创建的菜单"))
+		slog.Info(fmt.Sprintf("权限创建失败，删除已创建的菜单"))
 		errDel := s.menuRepository.Delete(s.ctx, menu.ID)
 		if errDel != nil {
-			global.TD27_LOG.Error(fmt.Sprintf("删除菜单失败 menu_id %d, error: %v", menu.ID, errDel))
+			slog.Error(fmt.Sprintf("删除菜单失败 menu_id %d, error: %v", menu.ID, errDel))
 		}
 		return nil, fmt.Errorf("create permission failed: %w", err)
 	}
@@ -79,14 +79,14 @@ func (s *MenuService) Update(req *modelSysManagement.UpdateMenuReq) error {
 			DomainID: req.ID,
 		}
 		if createErr := s.permissionRepo.Create(s.ctx, perm); createErr != nil {
-			global.TD27_LOG.Error("创建菜单权限失败", zap.Error(createErr))
+			slog.Error("创建菜单权限失败", "error", createErr)
 		}
 	} else {
 		// 更新现有权限
 		perm.Name = req.Title
 		perm.Resource = req.Path
 		if updateErr := s.permissionRepo.Update(s.ctx, perm); updateErr != nil {
-			global.TD27_LOG.Error("更新菜单权限失败", zap.Error(updateErr))
+			slog.Error("更新菜单权限失败", "error", updateErr)
 		}
 	}
 
@@ -96,7 +96,7 @@ func (s *MenuService) Update(req *modelSysManagement.UpdateMenuReq) error {
 func (s *MenuService) Delete(id uint) error {
 	// 删除对应的权限 (通过domain_id关联)
 	if err := s.permissionRepo.DeleteByDomainID(s.ctx, id, modelSysManagement.PermissionDomainMenu); err != nil {
-		global.TD27_LOG.Error("删除菜单权限失败", zap.Error(err))
+		slog.Error("删除菜单权限失败", "error", err)
 	}
 
 	return s.menuRepository.Delete(s.ctx, id)

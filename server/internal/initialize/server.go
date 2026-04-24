@@ -3,15 +3,13 @@ package initialize
 import (
 	"context"
 	"errors"
+	"log/slog"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
-	"go.uber.org/zap"
-
-	"server/internal/global"
 	"server/internal/pkg/async"
 )
 
@@ -27,9 +25,9 @@ func RunServer(addr string, handler http.Handler) {
 
 	// Start server in a goroutine
 	go func() {
-		//global.TD27_LOG.Info("server listening", zap.String("addr", addr))
+		//slog.Info("server listening", "addr", addr)
 		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			global.TD27_LOG.Error("http server failed ", zap.Any("err", err))
+			slog.Error("http server failed ", "err", err)
 		}
 	}()
 
@@ -37,7 +35,7 @@ func RunServer(addr string, handler http.Handler) {
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
-	global.TD27_LOG.Info("shutting down server...")
+	slog.Info("shutting down server...")
 
 	// 优雅关闭异步日志处理器
 	async.GetAsyncLogger().Stop()
@@ -46,8 +44,8 @@ func RunServer(addr string, handler http.Handler) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	if err := srv.Shutdown(ctx); err != nil {
-		global.TD27_LOG.Error("server forced to shutdown", zap.Any("err", err))
+		slog.Error("server forced to shutdown", "err", err)
 	}
 
-	global.TD27_LOG.Info("server exiting")
+	slog.Info("server exiting")
 }

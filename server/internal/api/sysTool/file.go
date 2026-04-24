@@ -6,12 +6,12 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"go.uber.org/zap"
 
 	"server/internal/global"
 	"server/internal/model/common"
 	modelSysTool "server/internal/model/sysTool"
 	serviceSysTool "server/internal/service/sysTool"
+	"log/slog"
 )
 
 type FileApi struct {
@@ -54,7 +54,7 @@ func (a *FileApi) Upload(c *gin.Context) {
 
 	if fullInfo, err := a.fileService.Upload(file); err != nil {
 		common.FailWithStatusMessage(400, "上传失败", c)
-		global.TD27_LOG.Error("上传失败", zap.Error(err))
+		slog.Error("上传失败", "error", err)
 	} else {
 		common.OkWithDetailed(fullInfo, "上传成功", c)
 	}
@@ -78,7 +78,7 @@ func (a *FileApi) List(c *gin.Context) {
 
 	if list, total, err := a.fileService.List(req); err != nil {
 		common.FailWithMessage("获取失败", c)
-		global.TD27_LOG.Error("获取失败", zap.Error(err))
+		slog.Error("获取失败", "error", err)
 	} else {
 		common.OkWithDetailed(common.Page{
 			List:     list,
@@ -130,7 +130,7 @@ func (a *FileApi) Delete(c *gin.Context) {
 
 	if err := a.fileService.Delete(fileName); err != nil {
 		common.FailWithMessage("删除文件失败", c)
-		global.TD27_LOG.Error("删除文件失败", zap.Error(err))
+		slog.Error("删除文件失败", "error", err)
 	} else {
 		common.OkWithMessage("删除文件成功", c)
 	}

@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"time"
 
-	"go.uber.org/zap"
 
 	"server/internal/global"
 	pkgCron "server/internal/pkg/cron"
+	"log/slog"
 )
 
 func init() {
@@ -57,7 +57,7 @@ func (j *ClearTableJob) Run(ctx context.Context) error {
 		if result.Error != nil {
 			return fmt.Errorf("delete from %s: %w", cfg.TableName, result.Error)
 		}
-		zap.L().Info("[CRON] clearTable", zap.String("table", cfg.TableName), zap.Int64("rows", result.RowsAffected))
+		slog.Info("[CRON] clearTable", "table", cfg.TableName, "rows", result.RowsAffected)
 	}
 	return nil
 }

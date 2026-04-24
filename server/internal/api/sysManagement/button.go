@@ -2,12 +2,11 @@ package sysManagement
 
 import (
 	"github.com/gin-gonic/gin"
-	"go.uber.org/zap"
 
-	"server/internal/global"
 	"server/internal/model/common"
 	modelSysManagement "server/internal/model/sysManagement"
 	"server/internal/service/sysManagement"
+	"log/slog"
 )
 
 type ButtonApi struct {
@@ -27,7 +26,7 @@ func (a *ButtonApi) Create(c *gin.Context) {
 	button, err := a.service.Create(&req)
 	if err != nil {
 		common.FailWithMessage(err.Error(), c)
-		global.TD27_LOG.Error("创建按钮失败", zap.Error(err))
+		slog.Error("创建按钮失败", "error", err)
 		return
 	}
 	common.OkWithData(button, c)
@@ -41,7 +40,7 @@ func (a *ButtonApi) Update(c *gin.Context) {
 	}
 	if err := a.service.Update(&req); err != nil {
 		common.FailWithMessage(err.Error(), c)
-		global.TD27_LOG.Error("更新按钮失败", zap.Error(err))
+		slog.Error("更新按钮失败", "error", err)
 		return
 	}
 	common.Ok(c)

@@ -2,12 +2,10 @@ package async
 
 import (
 	"context"
+	"log/slog"
 	"sync"
 	"time"
 
-	"go.uber.org/zap"
-
-	"server/internal/global"
 	modelSysMonitor "server/internal/model/sysMonitor"
 	"server/internal/service/sysMonitor"
 )
@@ -111,7 +109,7 @@ func (a *AsyncOperationLogger) saveBatch(logs []*modelSysMonitor.OperationLogMod
 	// 逐个保存（如果 repository 支持批量插入，可以优化）
 	for _, log := range logs {
 		if err := a.service.Create(log); err != nil {
-			global.TD27_LOG.Error("async save operation log failed", zap.Error(err))
+			slog.Error("async save operation log failed", "error", err)
 		}
 	}
 }
@@ -123,9 +121,9 @@ func (a *AsyncOperationLogger) Log(log *modelSysMonitor.OperationLogModel) {
 		// 成功放入队列
 	default:
 		// 队列已满，丢弃日志并记录警告
-		global.TD27_LOG.Warn("async operation log buffer is full, dropping log",
-			zap.String("path", log.Path),
-			zap.String("method", log.Method))
+		slog.Warn("async operation log buffer is full, dropping log",
+			"path", log.Path,
+			"method", log.Method)
 	}
 }
 

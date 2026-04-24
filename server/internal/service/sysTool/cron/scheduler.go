@@ -5,11 +5,11 @@ import (
 	"sync"
 
 	"github.com/robfig/cron/v3"
-	"go.uber.org/zap"
 
 	"server/internal/global"
 	pkgCron "server/internal/pkg/cron"
 	modelSysTool "server/internal/model/sysTool"
+	"log/slog"
 )
 
 // Scheduler 定时任务调度器
@@ -43,7 +43,7 @@ func (s *Scheduler) LoadFromDB() error {
 	}
 	for _, m := range list {
 		if err := s.Schedule(m); err != nil {
-			zap.L().Error("[CRON] load failed", zap.String("name", m.Name), zap.Error(err))
+			slog.Error("[CRON] load failed", "name", m.Name, "error", err)
 		}
 	}
 	return nil
@@ -73,9 +73,9 @@ func (s *Scheduler) Schedule(m modelSysTool.CronModel) error {
 	s.mu.Unlock()
 
 	// 回写 entryId
-	global.TD27_DB.Model(&m).Update("entry_id", entryID)
+	global.TD27_DB.Model(&m).Update("entryId", entryID)
 
-	zap.L().Info("[CRON] scheduled", zap.String("name", m.Name), zap.String("expr", m.Expression))
+	slog.Info("[CRON] scheduled", "name", m.Name, "expr", m.Expression)
 	return nil
 }
 
@@ -97,7 +97,7 @@ func (s *Scheduler) StopJob(id uint) error {
 	_ = s.Remove(id)
 	return global.TD27_DB.Model(&modelSysTool.CronModel{}).
 		Where("id = ?", id).
-		Updates(map[string]interface{}{"open": false, "entry_id": 0}).Error
+		Updates(map[string]interface{}{"open": false, "entryId": 0}).Error
 }
 
 // Trigger 立即触发一次任务（不修改调度）

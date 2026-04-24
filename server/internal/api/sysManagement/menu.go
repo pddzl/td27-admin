@@ -2,12 +2,11 @@ package sysManagement
 
 import (
 	"github.com/gin-gonic/gin"
-	"go.uber.org/zap"
 
-	"server/internal/global"
 	"server/internal/model/common"
 	modelSysManagement "server/internal/model/sysManagement"
 	serviceSysManagement "server/internal/service/sysManagement"
+	"log/slog"
 )
 
 type MenuApi struct {
@@ -29,14 +28,14 @@ func (a *MenuApi) List(c *gin.Context) {
 	userInfo, err := GetUserInfo(c)
 	if err != nil {
 		common.FailWithMessage("获取失败", c)
-		global.TD27_LOG.Error("获取失败!", zap.Error(err))
+		slog.Error("获取失败!", "error", err)
 		return
 	}
 
 	list, err := a.menuService.List(userInfo)
 	if err != nil {
 		common.FailWithMessage(err.Error(), c)
-		global.TD27_LOG.Error("获取失败!", zap.Error(err))
+		slog.Error("获取失败!", "error", err)
 	} else {
 		common.OkWithDetailed(list, "获取成功", c)
 	}
@@ -83,7 +82,7 @@ func (a *MenuApi) Update(c *gin.Context) {
 
 	if err := a.menuService.Update(&req); err != nil {
 		common.FailWithMessage(err.Error(), c)
-		global.TD27_LOG.Error("编辑失败", zap.Error(err))
+		slog.Error("编辑失败", "error", err)
 	} else {
 		common.OkWithMessage("编辑成功", c)
 	}
@@ -107,7 +106,7 @@ func (a *MenuApi) Delete(c *gin.Context) {
 
 	if err := a.menuService.Delete(cId.ID); err != nil {
 		common.FailWithMessage(err.Error(), c)
-		global.TD27_LOG.Error("删除失败", zap.Error(err))
+		slog.Error("删除失败", "error", err)
 	} else {
 		common.OkWithMessage("删除成功", c)
 	}
@@ -131,7 +130,7 @@ func (a *MenuApi) ElTree(c *gin.Context) {
 
 	if list, ids, err := a.menuService.ElTree(cId.ID); err != nil {
 		common.FailWithMessage(err.Error(), c)
-		global.TD27_LOG.Error("获取失败!", zap.Error(err))
+		slog.Error("获取失败!", "error", err)
 	} else {
 		common.OkWithDetailed(modelSysManagement.MenuElTreeResp{
 			List:    list,

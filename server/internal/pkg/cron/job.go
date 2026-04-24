@@ -2,8 +2,7 @@ package cron
 
 import (
 	"context"
-
-	"go.uber.org/zap"
+	"log/slog"
 )
 
 // Job 定时任务接口
@@ -28,10 +27,10 @@ func NewRunner(j Job) *Runner {
 }
 
 func (r *Runner) Run() {
-	logger := zap.L().With(zap.String("cron", r.Job.Name()))
+	logger := slog.With("cron", r.Job.Name())
 	logger.Info("[CRON] job start")
 	if err := r.Job.Run(context.Background()); err != nil {
-		logger.Error("[CRON] job failed", zap.Error(err))
+		logger.Error("[CRON] job failed", "error", err)
 	} else {
 		logger.Info("[CRON] job done")
 	}

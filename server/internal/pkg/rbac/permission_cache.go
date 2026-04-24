@@ -8,6 +8,7 @@ import (
 
 	"server/internal/global"
 	"server/internal/pkg/cache"
+	"log/slog"
 )
 
 const (
@@ -98,7 +99,7 @@ func (pc *PermissionCache) ClearRolePermissions(roleID uint) error {
 // ClearAllPermissions 清除所有权限缓存
 func (pc *PermissionCache) ClearAllPermissions() error {
 	// 由于PostgreSQL缓存没有通配符删除，这里记录日志
-	global.TD27_LOG.Info("Clear all permission cache - manual cleanup may be required")
+	slog.Info("Clear all permission cache - manual cleanup may be required")
 	return nil
 }
 

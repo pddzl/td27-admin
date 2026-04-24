@@ -6,11 +6,11 @@ import (
 	"fmt"
 	"time"
 
-	"go.uber.org/zap"
 	"gorm.io/gorm"
 
 	"server/internal/global"
 	"server/internal/model/sysTool"
+	"log/slog"
 )
 
 // PGCache PostgreSQL 缓存实现
@@ -118,7 +118,7 @@ func (c *PGCache) CleanupExpired(ctx context.Context) error {
 	}
 
 	if result.RowsAffected > 0 {
-		global.TD27_LOG.Info("清理过期缓存", zap.Int64("count", result.RowsAffected))
+		slog.Info("清理过期缓存", "count", result.RowsAffected)
 	}
 
 	return nil

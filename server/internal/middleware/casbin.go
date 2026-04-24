@@ -3,12 +3,12 @@ package middleware
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"go.uber.org/zap"
 	apiSysManagement "server/internal/api/sysManagement"
 
 	"server/internal/global"
 	"server/internal/model/common"
 	serviceSysManagement "server/internal/service/sysManagement"
+	"log/slog"
 )
 
 var (
@@ -34,11 +34,11 @@ func CasbinHandler() gin.HandlerFunc {
 				subject := fmt.Sprintf("token:%d", tokenID)
 				success, err := casbinService.EnforceSubject(subject, obj, act)
 				if err != nil {
-					global.TD27_LOG.Error("服务令牌权限检查失败",
-						zap.Error(err),
-						zap.String("subject", subject),
-						zap.String("path", obj),
-						zap.String("method", act))
+					slog.Error("服务令牌权限检查失败",
+						"error", err,
+						"subject", subject,
+						"path", obj,
+						"method", act)
 					common.FailWithDetailed(gin.H{}, "权限检查失败", c)
 					c.Abort()
 					return
@@ -46,10 +46,10 @@ func CasbinHandler() gin.HandlerFunc {
 
 				if !success {
 					common.FailWithDetailed(gin.H{}, "接口权限不足", c)
-					global.TD27_LOG.Warn("服务令牌权限不足",
-						zap.String("subject", subject),
-						zap.String("path", obj),
-						zap.String("method", act))
+					slog.Warn("服务令牌权限不足",
+						"subject", subject,
+						"path", obj,
+						"method", act)
 					c.Abort()
 					return
 				}
@@ -64,11 +64,11 @@ func CasbinHandler() gin.HandlerFunc {
 				roleIDs := claims.GetAllRoleIDs()
 				success, err := casbinService.Enforce(roleIDs, obj, act)
 				if err != nil {
-					global.TD27_LOG.Error("权限检查失败",
-						zap.Error(err),
-						zap.Uints("roleIDs", roleIDs),
-						zap.String("path", obj),
-						zap.String("method", act))
+					slog.Error("权限检查失败",
+						"error", err,
+						"roleIDs", roleIDs,
+						"path", obj,
+						"method", act)
 					common.FailWithDetailed(gin.H{}, "权限检查失败", c)
 					c.Abort()
 					return
@@ -76,11 +76,11 @@ func CasbinHandler() gin.HandlerFunc {
 
 				if !success {
 					common.FailWithDetailed(gin.H{}, "接口权限不足", c)
-					global.TD27_LOG.Warn("接口权限不足",
-						zap.Uint("userID", claims.ID),
-						zap.Uints("roleIDs", roleIDs),
-						zap.String("path", obj),
-						zap.String("method", act))
+					slog.Warn("接口权限不足",
+						"userID", claims.ID,
+						"roleIDs", roleIDs,
+						"path", obj,
+						"method", act)
 					c.Abort()
 					return
 				}

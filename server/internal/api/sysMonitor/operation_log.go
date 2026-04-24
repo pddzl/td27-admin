@@ -1,10 +1,10 @@
 package sysMonitor
 
 import (
-	"github.com/gin-gonic/gin"
-	"go.uber.org/zap"
+	"log/slog"
 
-	"server/internal/global"
+	"github.com/gin-gonic/gin"
+
 	"server/internal/model/common"
 	modelMonitor "server/internal/model/sysMonitor"
 	serviceMonitor "server/internal/service/sysMonitor"
@@ -38,7 +38,7 @@ func (a *OperationLogApi) List(c *gin.Context) {
 
 	if list, total, err := a.operationLogService.List(&req); err != nil {
 		common.FailWithMessage("获取失败", c)
-		global.TD27_LOG.Error("获取失败", zap.Error(err))
+		slog.Error("获取失败", "error", err)
 	} else {
 		common.OkWithDetailed(common.Page{
 			List:     list,
@@ -67,7 +67,7 @@ func (a *OperationLogApi) Delete(c *gin.Context) {
 
 	if err := a.operationLogService.Delete(cId.ID); err != nil {
 		common.FailWithMessage("删除失败", c)
-		global.TD27_LOG.Error("删除失败", zap.Error(err))
+		slog.Error("删除失败", "error", err)
 	} else {
 		common.OkWithMessage("删除成功", c)
 	}
@@ -93,7 +93,7 @@ func (a *OperationLogApi) DeleteByIds(c *gin.Context) {
 	// response delete row nums
 	if _, err := a.operationLogService.DeleteByIds(cIds.IDs); err != nil {
 		common.FailWithMessage("删除失败", c)
-		global.TD27_LOG.Error("删除失败", zap.Error(err))
+		slog.Error("删除失败", "error", err)
 	} else {
 		common.OkWithMessage("删除成功", c)
 	}

@@ -1,10 +1,10 @@
 package sysMonitor
 
 import (
-	"github.com/gin-gonic/gin"
-	"go.uber.org/zap"
+	"log/slog"
 
-	"server/internal/global"
+	"github.com/gin-gonic/gin"
+
 	"server/internal/model/common"
 	serviceMonitor "server/internal/service/sysMonitor"
 )
@@ -29,7 +29,7 @@ func NewDashboardApi() *DashboardApi {
 func (a *DashboardApi) GetStatistics(c *gin.Context) {
 	stats, err := a.dashboardService.GetStatistics()
 	if err != nil {
-		global.TD27_LOG.Error("获取仪表盘统计数据失败", zap.Error(err))
+		slog.Error("获取仪表盘统计数据失败", "error", err)
 		common.FailWithMessage("获取统计数据失败", c)
 		return
 	}
@@ -46,7 +46,7 @@ func (a *DashboardApi) GetStatistics(c *gin.Context) {
 func (a *DashboardApi) GetRecentOperations(c *gin.Context) {
 	operations, err := a.dashboardService.GetRecentOperations(10)
 	if err != nil {
-		global.TD27_LOG.Error("获取最近操作记录失败", zap.Error(err))
+		slog.Error("获取最近操作记录失败", "error", err)
 		common.FailWithMessage("获取最近操作记录失败", c)
 		return
 	}

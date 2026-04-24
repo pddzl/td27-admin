@@ -9,11 +9,11 @@ import (
 	"sort"
 	"time"
 
-	"go.uber.org/zap"
 
 	"server/internal/global"
 	"server/internal/model/sysManagement"
 	"server/internal/pkg/cache"
+	"log/slog"
 )
 
 const (
@@ -80,12 +80,12 @@ func (jwtService *JwtService) AddToken(username string, token string, expiration
 	ctx := context.Background()
 	tokenKey := jwtService.generateTokenKey(username, jwtService.getTokenID(token))
 
-	global.TD27_LOG.Debug("添加token",
-		zap.String("username", username),
-		zap.String("tokenKey", tokenKey),
-		zap.Duration("expiration", expiration),
-		zap.Bool("multiLogin", jwtService.isMultiLogin()),
-		zap.Int("limit", jwtService.getMultiLoginLimit()))
+	slog.Debug("添加token",
+		"username", username,
+		"tokenKey", tokenKey,
+		"expiration", expiration,
+		"multiLogin", jwtService.isMultiLogin(),
+		"limit", jwtService.getMultiLoginLimit())
 
 	if jwtService.isMultiLogin() {
 		// 多设备登录模式
@@ -94,7 +94,7 @@ func (jwtService *JwtService) AddToken(username string, token string, expiration
 			// 获取该用户的所有token
 			userTokens, err := jwtService.getUserTokens(ctx, username)
 			if err != nil {
-				global.TD27_LOG.Warn("获取用户token列表失败", zap.String("username", username), zap.Error(err))
+				slog.Warn("获取用户token列表失败", "username", username, "error", err)
 			}
 
 			// 如果已达到限制，删除最旧的token
@@ -108,13 +108,13 @@ func (jwtService *JwtService) AddToken(username string, token string, expiration
 				tokensToRemove := len(userTokens) - limit + 1
 				for i := 0; i < tokensToRemove && i < len(userTokens); i++ {
 					if err = jwtService.cache.Del(ctx, userTokens[i].Key); err != nil {
-						global.TD27_LOG.Warn("删除旧token失败",
-							zap.String("key", userTokens[i].Key),
-							zap.Error(err))
+						slog.Warn("删除旧token失败",
+							"key", userTokens[i].Key,
+							"error", err)
 					} else {
-						global.TD27_LOG.Info("删除旧token",
-							zap.String("username", username),
-							zap.String("key", userTokens[i].Key))
+						slog.Info("删除旧token",
+							"username", username,
+							"key", userTokens[i].Key)
 					}
 				}
 			}
@@ -127,14 +127,14 @@ func (jwtService *JwtService) AddToken(username string, token string, expiration
 	// 存储token，设置过期时间
 	err := jwtService.cache.Set(ctx, username, tokenKey, token, expiration)
 	if err != nil {
-		global.TD27_LOG.Error("存储token失败",
-			zap.String("username", username),
-			zap.String("tokenKey", tokenKey),
-			zap.Error(err))
+		slog.Error("存储token失败",
+			"username", username,
+			"tokenKey", tokenKey,
+			"error", err)
 	} else {
-		global.TD27_LOG.Debug("存储token成功",
-			zap.String("username", username),
-			zap.String("tokenKey", tokenKey))
+		slog.Debug("存储token成功",
+			"username", username,
+			"tokenKey", tokenKey)
 	}
 	return err
 }
@@ -183,10 +183,10 @@ func (jwtService *JwtService) ValidateToken(username string, token string) bool 
 	ctx := context.Background()
 
 	tokenKey := jwtService.generateTokenKey(username, jwtService.getTokenID(token))
-	global.TD27_LOG.Debug("验证token",
-		zap.String("username", username),
-		zap.String("tokenKey", tokenKey),
-		zap.Bool("multiLogin", jwtService.isMultiLogin()))
+	slog.Debug("验证token",
+		"username", username,
+		"tokenKey", tokenKey,
+		"multiLogin", jwtService.isMultiLogin())
 
 	var err error
 	var cachedToken string
@@ -195,9 +195,9 @@ func (jwtService *JwtService) ValidateToken(username string, token string) bool 
 		// 多设备模式：检查特定token
 		cachedToken, err = jwtService.cache.Get(ctx, tokenKey)
 		if err != nil {
-			global.TD27_LOG.Error("Get multi-login cacheToken failed",
-				zap.String("username", username),
-				zap.Error(err))
+			slog.Error("Get multi-login cacheToken failed",
+				"username", username,
+				"error", err)
 			return false
 		}
 	} else {
@@ -205,19 +205,19 @@ func (jwtService *JwtService) ValidateToken(username string, token string) bool 
 		tokenKey = jwtService.generateTokenKey(username, "")
 		cachedToken, err = jwtService.cache.Get(ctx, tokenKey)
 		if err != nil {
-			global.TD27_LOG.Error("Get single-login cacheToken failed",
-				zap.String("username", username),
-				zap.Error(err))
+			slog.Error("Get single-login cacheToken failed",
+				"username", username,
+				"error", err)
 			return false
 		}
 	}
 
 	valid := cachedToken == token
 
-	global.TD27_LOG.Debug("Token验证结果",
-		zap.String("username", username),
-		zap.String("tokenKey", tokenKey),
-		zap.Bool("valid", valid))
+	slog.Debug("Token验证结果",
+		"username", username,
+		"tokenKey", tokenKey,
+		"valid", valid)
 
 	return valid
 }
@@ -262,9 +262,9 @@ func (jwtService *JwtService) RemoveAllTokens(username string) error {
 		return fmt.Errorf("删除用户token失败: %w", err)
 	}
 
-	global.TD27_LOG.Info("移除用户所有token",
-		zap.String("username", username),
-		zap.Int("count", len(keys)))
+	slog.Info("移除用户所有token",
+		"username", username,
+		"count", len(keys))
 
 	return nil
 }

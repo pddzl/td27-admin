@@ -7,9 +7,9 @@ import (
 	"strings"
 	"time"
 
-	"go.uber.org/zap"
 
 	pkgCron "server/internal/pkg/cron"
+	"log/slog"
 )
 
 func init() {
@@ -37,6 +37,6 @@ func (j *ShellJob) Run(ctx context.Context) error {
 	if err != nil {
 		return fmt.Errorf("shell exec failed: %w, output: %s", err, string(out))
 	}
-	zap.L().Info("[CRON] shell done", zap.String("cmd", j.Command), zap.String("output", strings.TrimSpace(string(out))))
+	slog.Info("[CRON] shell done", "cmd", j.Command, "output", strings.TrimSpace(string(out)))
 	return nil
 }

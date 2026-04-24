@@ -7,13 +7,13 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/mojocn/base64Captcha"
-	"go.uber.org/zap"
 
 	"server/internal/global"
 	"server/internal/model/common"
 	modelSysManagement "server/internal/model/sysManagement"
 	jwt2 "server/internal/pkg/jwt"
 	serviceSysManagement "server/internal/service/sysManagement"
+	"log/slog"
 )
 
 var store = base64Captcha.DefaultMemStore
@@ -45,7 +45,7 @@ func (a *LogRegApi) Captcha(c *gin.Context) {
 	cp := base64Captcha.NewCaptcha(driver, store)
 	id, b64s, _, err := cp.Generate()
 	if err != nil {
-		global.TD27_LOG.Error("验证码获取失败!", zap.Error(err))
+		slog.Error("验证码获取失败!", "error", err)
 		common.FailWithMessage("验证码获取失败", c)
 		return
 	}
@@ -77,7 +77,7 @@ func (a *LogRegApi) Login(c *gin.Context) {
 		user, err := a.logRegService.Login(u)
 		if err != nil {
 			common.FailWithMessage(fmt.Sprintf("登录失败: %s", err.Error()), c)
-			global.TD27_LOG.Error("登录失败", zap.Error(err))
+			slog.Error("登录失败", "error", err)
 			return
 		}
 		// 获取 token
@@ -115,14 +115,14 @@ func (a *LogRegApi) tokenNext(c *gin.Context, user *modelSysManagement.UserModel
 	token, err := j.CreateToken(claims)
 	if err != nil {
 		common.FailWithMessage("创建token失败", c)
-		global.TD27_LOG.Error("创建token失败", zap.Error(err))
+		slog.Error("创建token失败", "error", err)
 		return
 	}
 
 	// token写入缓存，支持多设备登录
 	if err = a.jwtService.AddToken(user.Username, token, time.Duration(global.TD27_CONFIG.JWT.ExpiresTime)*time.Second); err != nil {
 		common.FailWithMessage("设置登录状态失败", c)
-		global.TD27_LOG.Error("设置登录状态失败", zap.Error(err))
+		slog.Error("设置登录状态失败", "error", err)
 		return
 	}
 
@@ -147,12 +147,12 @@ func (a *LogRegApi) LogOut(c *gin.Context) {
 	// parseToken 解析token包含的信息
 	claims, err := j.ParseToken(token)
 	if err != nil {
-		global.TD27_LOG.Error("登出解析token失败", zap.Error(err))
+		slog.Error("登出解析token失败", "error", err)
 	} else {
 		jwtService := serviceSysManagement.NewJwtService()
 		err = jwtService.RemoveToken(claims.Username, token)
 		if err != nil {
-			global.TD27_LOG.Error("登出删除token失败", zap.Error(err))
+			slog.Error("登出删除token失败", "error", err)
 		}
 	}
 	common.OkWithMessage("登出失败", c)

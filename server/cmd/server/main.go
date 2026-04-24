@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-
-	"go.uber.org/zap"
+	"log/slog"
+	"os"
 
 	"server/internal/core"
 	"server/internal/global"
@@ -16,12 +16,13 @@ func main() {
 
 	// Setup logger
 	global.TD27_LOG = core.Zap()
-	zap.ReplaceGlobals(global.TD27_LOG)
+	// zap.ReplaceGlobals(global.TD27_LOG)
 
 	// Initialize Database
 	global.TD27_DB = initialize.Gorm()
 	if global.TD27_DB == nil {
-		global.TD27_LOG.Fatal("database connection failed")
+		slog.Error("database connection failed")
+		os.Exit(1)
 	}
 	db, _ := global.TD27_DB.DB()
 	defer db.Close()
