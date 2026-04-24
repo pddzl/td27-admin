@@ -14,31 +14,31 @@ import (
 	"server/internal/pkg"
 )
 
-func Zap() *slog.Logger {
-	dir := global.TD27_CONFIG.Zap.Director
+func Logger() *slog.Logger {
+	dir := global.TD27_CONFIG.Logger.Director
 	if ok, _ := pkg.PathExists(dir); !ok {
 		fmt.Printf("create %v directory\n", dir)
 		_ = os.Mkdir(dir, os.ModePerm)
 	}
 
-	level := parseLevel(global.TD27_CONFIG.Zap.Level)
+	level := parseLevel(global.TD27_CONFIG.Logger.Level)
 
 	opts := &slog.HandlerOptions{
 		Level: level,
 	}
-	if global.TD27_CONFIG.Zap.ShowLine {
+	if global.TD27_CONFIG.Logger.ShowLine {
 		opts.AddSource = true
 	}
 
 	newHandler := func(w io.Writer) slog.Handler {
-		if global.TD27_CONFIG.Zap.Format == "json" {
+		if global.TD27_CONFIG.Logger.Format == "json" {
 			return slog.NewJSONHandler(w, opts)
 		}
 		return slog.NewTextHandler(w, opts)
 	}
 
 	var handlers []slog.Handler
-	if global.TD27_CONFIG.Zap.LogInConsole {
+	if global.TD27_CONFIG.Logger.LogInConsole {
 		handlers = append(handlers, newHandler(os.Stdout))
 	}
 

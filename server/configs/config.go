@@ -2,7 +2,7 @@ package configs
 
 type Server struct {
 	JWT        JWT        `mapstructure:"jwt" json:"jwt" yaml:"jwt"`
-	Zap        Zap        `mapstructure:"zap" json:"zap" yaml:"zap"`
+	Logger     Logger     `mapstructure:"logger" json:"logger" yaml:"logger"`
 	RotateLogs RotateLogs `mapstructure:"rotateLogs" json:"rotateLogs" yaml:"rotateLogs"`
 	System     System     `mapstructure:"system" json:"system" yaml:"system"`
 	File       File       `mapstructure:"file" json:"file" yaml:"file"`

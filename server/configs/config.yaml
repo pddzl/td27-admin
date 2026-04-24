@@ -14,8 +14,8 @@ casbin:
   enable-role-hierarchy: true  # 启用角色继承
   enable-data-permission: true # 启用数据权限
 
-# zap logger configuration
-zap:
+# logger configuration
+logger:
   level: debug
   format: text
   prefix: '[TD27] '
@@ -55,7 +55,7 @@ pgsql:
   max-idle-conns: 10
   max-open-conns: 100
   log-mode: false
-  log-zap: true
+  log: true
 
 # captcha configuration
 captcha:

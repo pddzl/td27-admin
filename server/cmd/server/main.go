@@ -15,8 +15,7 @@ func main() {
 	global.TD27_VP = core.Viper()
 
 	// Setup logger
-	global.TD27_LOG = core.Zap()
-	// zap.ReplaceGlobals(global.TD27_LOG)
+	global.TD27_LOG = core.Logger()
 
 	// Initialize Database
 	global.TD27_DB = initialize.Gorm()

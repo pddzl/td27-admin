@@ -28,8 +28,8 @@ func NewWriter(w logger.Writer) *writer {
 
 // Printf 格式化打印日志
 func (w *writer) Printf(message string, data ...interface{}) {
-	logZap := global.TD27_CONFIG.Pgsql.LogZap
-	if logZap {
+	logging := global.TD27_CONFIG.Pgsql.Log
+	if logging {
 		global.TD27_LOG.Info(fmt.Sprintf(message+"\n", data...))
 	} else {
 		w.Writer.Printf(message, data...)

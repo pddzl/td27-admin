@@ -1,7 +1,7 @@
 package configs
 
-// Zap logger configuration (used by slog initialization)
-type Zap struct {
+// Logger configuration (used by slog initialization)
+type Logger struct {
 	Level         string `mapstructure:"level" json:"level" yaml:"level"`
 	Prefix        string `mapstructure:"prefix" json:"prefix" yaml:"prefix"`
 	Format        string `mapstructure:"format" json:"format" yaml:"format"`

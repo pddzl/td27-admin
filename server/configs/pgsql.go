@@ -10,7 +10,7 @@ type Pgsql struct {
 	MaxIdleConns   int    `mapstructure:"max-idle-conns" json:"max-idle-conns" yaml:"max-idle-conns"` // 空闲中的最大连接数
 	MaxOpenConns   int    `mapstructure:"max-open-conns" json:"max-open-conns" yaml:"max-open-conns"` // 打开到数据库的最大连接数
 	LogMode        string `mapstructure:"log-mode" json:"log-mode" yaml:"log-mode"`                   // 是否开启Gorm全局日志
-	LogZap         bool   `mapstructure:"log-zap" json:"log-zap" yaml:"log-zap"`                      // 是否通过zap写入日志文件
+	Log            bool   `mapstructure:"log" json:"log" yaml:"log"`                                   // 是否通过logger写入日志文件
 }
 
 // Dsn 基于配置文件获取 DSN
