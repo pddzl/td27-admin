@@ -7,9 +7,8 @@ import (
 	"github.com/robfig/cron/v3"
 
 	"server/internal/global"
-	pkgCron "server/internal/pkg/cron"
 	modelSysTool "server/internal/model/sysTool"
-	"log/slog"
+	pkgCron "server/internal/pkg/cron"
 )
 
 // Scheduler 定时任务调度器
@@ -43,7 +42,7 @@ func (s *Scheduler) LoadFromDB() error {
 	}
 	for _, m := range list {
 		if err := s.Schedule(m); err != nil {
-			slog.Error("[CRON] load failed", "name", m.Name, "error", err)
+			global.TD27_LOG.Error("[CRON] load failed", "name", m.Name, "error", err)
 		}
 	}
 	return nil
@@ -75,7 +74,7 @@ func (s *Scheduler) Schedule(m modelSysTool.CronModel) error {
 	// 回写 entryId
 	global.TD27_DB.Model(&m).Update("entryId", entryID)
 
-	slog.Info("[CRON] scheduled", "name", m.Name, "expr", m.Expression)
+	global.TD27_LOG.Info("[CRON] scheduled", "name", m.Name, "expr", m.Expression)
 	return nil
 }
 

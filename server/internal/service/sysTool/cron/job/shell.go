@@ -7,9 +7,8 @@ import (
 	"strings"
 	"time"
 
-
+	"server/internal/global"
 	pkgCron "server/internal/pkg/cron"
-	"log/slog"
 )
 
 func init() {
@@ -37,6 +36,6 @@ func (j *ShellJob) Run(ctx context.Context) error {
 	if err != nil {
 		return fmt.Errorf("shell exec failed: %w, output: %s", err, string(out))
 	}
-	slog.Info("[CRON] shell done", "cmd", j.Command, "output", strings.TrimSpace(string(out)))
+	global.TD27_LOG.Info("[CRON] shell done", "cmd", j.Command, "output", strings.TrimSpace(string(out)))
 	return nil
 }

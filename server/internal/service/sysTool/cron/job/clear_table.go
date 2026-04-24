@@ -5,10 +5,8 @@ import (
 	"fmt"
 	"time"
 
-
 	"server/internal/global"
 	pkgCron "server/internal/pkg/cron"
-	"log/slog"
 )
 
 func init() {
@@ -57,7 +55,7 @@ func (j *ClearTableJob) Run(ctx context.Context) error {
 		if result.Error != nil {
 			return fmt.Errorf("delete from %s: %w", cfg.TableName, result.Error)
 		}
-		slog.Info("[CRON] clearTable", "table", cfg.TableName, "rows", result.RowsAffected)
+		global.TD27_LOG.Info("[CRON] clearTable", "table", cfg.TableName, "rows", result.RowsAffected)
 	}
 	return nil
 }

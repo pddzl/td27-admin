@@ -3,10 +3,10 @@ package sysManagement
 import (
 	"github.com/gin-gonic/gin"
 
+	"server/internal/global"
 	"server/internal/model/common"
 	modelSysManagement "server/internal/model/sysManagement"
 	serviceSysManagement "server/internal/service/sysManagement"
-	"log/slog"
 )
 
 type RoleApi struct {
@@ -35,7 +35,7 @@ func (a *RoleApi) List(c *gin.Context) {
 
 	if list, total, err := a.roleService.List(&req); err != nil {
 		common.FailWithMessage("获取失败", c)
-		slog.Error("get roles failed", "error", err)
+		global.TD27_LOG.Error("get roles failed", "error", err)
 	} else {
 		common.OkWithDetailed(common.Page{
 			Page:     req.Page,
@@ -64,7 +64,7 @@ func (a *RoleApi) Create(c *gin.Context) {
 
 	if instance, err := a.roleService.Create(&req); err != nil {
 		common.FailWithMessage(err.Error(), c)
-		slog.Error("添加角色失败", "error", err)
+		global.TD27_LOG.Error("添加角色失败", "error", err)
 	} else {
 		common.OkWithDetailed(instance, "添加角色成功", c)
 	}
@@ -88,7 +88,7 @@ func (a *RoleApi) Delete(c *gin.Context) {
 
 	if err := a.roleService.Delete(cId.ID); err != nil {
 		common.FailWithMessage(err.Error(), c)
-		slog.Error("删除角色失败", "error", err)
+		global.TD27_LOG.Error("删除角色失败", "error", err)
 	} else {
 		common.Ok(c)
 	}
@@ -112,7 +112,7 @@ func (a *RoleApi) Update(c *gin.Context) {
 
 	if err := a.roleService.Update(&req); err != nil {
 		common.FailWithMessage(err.Error(), c)
-		slog.Error("编辑失败", "error", err)
+		global.TD27_LOG.Error("编辑失败", "error", err)
 	} else {
 		common.Ok(c)
 	}

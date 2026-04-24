@@ -8,7 +8,6 @@ import (
 	"server/internal/global"
 	"server/internal/model/common"
 	serviceSysManagement "server/internal/service/sysManagement"
-	"log/slog"
 )
 
 var (
@@ -34,7 +33,7 @@ func CasbinHandler() gin.HandlerFunc {
 				subject := fmt.Sprintf("token:%d", tokenID)
 				success, err := casbinService.EnforceSubject(subject, obj, act)
 				if err != nil {
-					slog.Error("服务令牌权限检查失败",
+					global.TD27_LOG.Error("服务令牌权限检查失败",
 						"error", err,
 						"subject", subject,
 						"path", obj,
@@ -46,7 +45,7 @@ func CasbinHandler() gin.HandlerFunc {
 
 				if !success {
 					common.FailWithDetailed(gin.H{}, "接口权限不足", c)
-					slog.Warn("服务令牌权限不足",
+					global.TD27_LOG.Warn("服务令牌权限不足",
 						"subject", subject,
 						"path", obj,
 						"method", act)
@@ -64,7 +63,7 @@ func CasbinHandler() gin.HandlerFunc {
 				roleIDs := claims.GetAllRoleIDs()
 				success, err := casbinService.Enforce(roleIDs, obj, act)
 				if err != nil {
-					slog.Error("权限检查失败",
+					global.TD27_LOG.Error("权限检查失败",
 						"error", err,
 						"roleIDs", roleIDs,
 						"path", obj,
@@ -76,7 +75,7 @@ func CasbinHandler() gin.HandlerFunc {
 
 				if !success {
 					common.FailWithDetailed(gin.H{}, "接口权限不足", c)
-					slog.Warn("接口权限不足",
+					global.TD27_LOG.Warn("接口权限不足",
 						"userID", claims.ID,
 						"roleIDs", roleIDs,
 						"path", obj,

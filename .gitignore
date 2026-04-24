@@ -26,4 +26,5 @@ yarn-error.log*
 /server/resource/upload
 
 *.iml
+/server/main
 AGENTS.md

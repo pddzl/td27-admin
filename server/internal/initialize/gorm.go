@@ -15,7 +15,6 @@ import (
 	"server/internal/model/sysManagement"
 	modelMonitor "server/internal/model/sysMonitor"
 	modelSysTool "server/internal/model/sysTool"
-	"log/slog"
 )
 
 type writer struct {
@@ -31,7 +30,7 @@ func NewWriter(w logger.Writer) *writer {
 func (w *writer) Printf(message string, data ...interface{}) {
 	logZap := global.TD27_CONFIG.Pgsql.LogZap
 	if logZap {
-		slog.Info(fmt.Sprintf(message+"\n", data...))
+		global.TD27_LOG.Info(fmt.Sprintf(message+"\n", data...))
 	} else {
 		w.Writer.Printf(message, data...)
 	}
@@ -72,7 +71,7 @@ func Gorm() *gorm.DB {
 	}
 
 	if db, err := gorm.Open(postgres.New(pgConfig), gormConfig()); err != nil {
-		slog.Error("pgsql连接失败", "error", err)
+		global.TD27_LOG.Error("pgsql连接失败", "error", err)
 		return nil
 	} else {
 		sqlDB, _ := db.DB()
@@ -122,17 +121,17 @@ func RegisterTables(db *gorm.DB) {
 		if err != nil {
 			// 忽略"已存在"错误，这是正常的当init.sql已经创建了约束
 			if isAlreadyExistsError(err) {
-				slog.Info("AutoMigrate: some constraints already exist (from init.sql), continuing...")
+				global.TD27_LOG.Info("AutoMigrate: some constraints already exist (from init.sql), continuing...")
 			} else if isNotExistsError(err) {
 				// 忽略"不存在"错误，可能是GORM尝试删除不存在的约束
-				slog.Info("AutoMigrate: constraint does not exist, continuing...")
+				global.TD27_LOG.Info("AutoMigrate: constraint does not exist, continuing...")
 			} else {
-				slog.Error("register table failed", "error", err)
+				global.TD27_LOG.Error("register table failed", "error", err)
 				os.Exit(0)
 			}
 		}
 	}
-	slog.Info("register table success")
+	global.TD27_LOG.Info("register table success")
 }
 
 // isAlreadyExistsError 检查错误是否是"已存在"错误

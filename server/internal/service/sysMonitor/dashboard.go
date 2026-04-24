@@ -39,35 +39,35 @@ type RecentOperation struct {
 
 // SystemInfo 系统信息
 type SystemInfo struct {
-	AppName     string `json:"appName"`
-	Version     string `json:"version"`
-	GoVersion   string `json:"goVersion"`
-	OS          string `json:"os"`
-	Arch        string `json:"arch"`
-	NumCPU      int    `json:"numCpu"`
-	NumGoroutine int   `json:"numGoroutine"`
-	StartTime   string `json:"startTime"`
+	AppName      string `json:"appName"`
+	Version      string `json:"version"`
+	GoVersion    string `json:"goVersion"`
+	OS           string `json:"os"`
+	Arch         string `json:"arch"`
+	NumCPU       int    `json:"numCpu"`
+	NumGoroutine int    `json:"numGoroutine"`
+	StartTime    string `json:"startTime"`
 }
 
 // GetStatistics 获取统计数据
 func (s *DashboardService) GetStatistics() (*DashboardStats, error) {
 	stats := &DashboardStats{}
-	
+
 	// 用户总数
 	if err := global.TD27_DB.Model(&modelManagement.UserModel{}).Count(&stats.UserCount).Error; err != nil {
 		return nil, err
 	}
-	
+
 	// 角色总数
 	if err := global.TD27_DB.Model(&modelManagement.RoleModel{}).Count(&stats.RoleCount).Error; err != nil {
 		return nil, err
 	}
-	
+
 	// 部门总数
 	if err := global.TD27_DB.Model(&modelManagement.DeptModel{}).Count(&stats.DeptCount).Error; err != nil {
 		return nil, err
 	}
-	
+
 	// 今日操作数
 	today := time.Now().Format("2006-01-02")
 	if err := global.TD27_DB.Model(&modelMonitor.OperationLogModel{}).
@@ -75,19 +75,19 @@ func (s *DashboardService) GetStatistics() (*DashboardStats, error) {
 		Count(&stats.OperationCount).Error; err != nil {
 		return nil, err
 	}
-	
+
 	// 定时任务数
 	if err := global.TD27_DB.Model(&modelTool.CronModel{}).Count(&stats.CronCount).Error; err != nil {
 		return nil, err
 	}
-	
+
 	// 活跃定时任务数
 	if err := global.TD27_DB.Model(&modelTool.CronModel{}).
 		Where("open = ?", true).
 		Count(&stats.ActiveCronCount).Error; err != nil {
 		return nil, err
 	}
-	
+
 	return stats, nil
 }
 
@@ -101,7 +101,7 @@ func (s *DashboardService) GetRecentOperations(limit int) ([]RecentOperation, er
 		Find(&logs).Error; err != nil {
 		return nil, err
 	}
-	
+
 	operations := make([]RecentOperation, len(logs))
 	for i, log := range logs {
 		operations[i] = RecentOperation{
@@ -114,7 +114,7 @@ func (s *DashboardService) GetRecentOperations(limit int) ([]RecentOperation, er
 			CreatedAt: log.CreatedAt,
 		}
 	}
-	
+
 	return operations, nil
 }
 

@@ -5,10 +5,8 @@ import (
 	"fmt"
 	"server/internal/pkg"
 
-
 	"server/internal/global"
 	modelSysManagement "server/internal/model/sysManagement"
-	"log/slog"
 )
 
 type ApiService struct {
@@ -72,7 +70,7 @@ func (s *ApiService) ElTree(req *modelSysManagement.ApiTreeReq) ([]*modelSysMana
 	}
 
 	if err != nil {
-		slog.Error("获取角色API权限失败", "error", err)
+		global.TD27_LOG.Error("获取角色API权限失败", "error", err)
 	} else {
 		for _, perm := range permissions {
 			//checkedKey = append(checkedKey, fmt.Sprintf("%s,%s", perm.Resource, perm.Action))
@@ -92,7 +90,7 @@ func (s *ApiService) Delete(id uint) error {
 	}
 
 	if err = s.permissionRepo.DeleteByDomainID(s.ctx, id, modelSysManagement.PermissionDomainAPI); err != nil {
-		slog.Error("删除API权限失败", "error", err)
+		global.TD27_LOG.Error("删除API权限失败", "error", err)
 	}
 
 	if err = s.apiRepo.Delete(s.ctx, id); err != nil {
@@ -101,7 +99,7 @@ func (s *ApiService) Delete(id uint) error {
 
 	action := modelSysManagement.HTTPMethodToAction(api.Method)
 	if err = s.casbinService.RemoveResourcePolicy(api.Path, string(action)); err != nil {
-		slog.Error("从Casbin移除API策略失败", "error", err)
+		global.TD27_LOG.Error("从Casbin移除API策略失败", "error", err)
 	}
 
 	return nil
@@ -119,7 +117,7 @@ func (s *ApiService) DeleteByIds(ids []uint) error {
 
 	for _, id := range ids {
 		if err = s.permissionRepo.DeleteByDomainID(s.ctx, id, modelSysManagement.PermissionDomainAPI); err != nil {
-			slog.Error("批量删除API权限失败", "apiId", id, "error", err)
+			global.TD27_LOG.Error("批量删除API权限失败", "apiId", id, "error", err)
 		}
 	}
 
@@ -130,7 +128,7 @@ func (s *ApiService) DeleteByIds(ids []uint) error {
 	for _, api := range apis {
 		action := modelSysManagement.HTTPMethodToAction(api.Method)
 		if err = s.casbinService.RemoveResourcePolicy(api.Path, string(action)); err != nil {
-			slog.Error("从Casbin批量移除API策略失败", "error", err)
+			global.TD27_LOG.Error("从Casbin批量移除API策略失败", "error", err)
 		}
 	}
 
@@ -162,7 +160,7 @@ func (s *ApiService) Update(req *modelSysManagement.UpdateApiReq) (*modelSysMana
 			DomainID: req.ID,
 		}
 		if createErr := s.permissionRepo.Create(s.ctx, perm); createErr != nil {
-			slog.Error("创建API权限失败", "error", createErr)
+			global.TD27_LOG.Error("创建API权限失败", "error", createErr)
 		}
 	} else {
 		// 更新现有权限
@@ -170,7 +168,7 @@ func (s *ApiService) Update(req *modelSysManagement.UpdateApiReq) (*modelSysMana
 		perm.Resource = req.Path
 		perm.Action = modelSysManagement.HTTPMethodToAction(req.Method)
 		if updateErr := s.permissionRepo.Update(s.ctx, perm); updateErr != nil {
-			slog.Error("更新API权限失败", "error", updateErr)
+			global.TD27_LOG.Error("更新API权限失败", "error", updateErr)
 		}
 	}
 
@@ -179,7 +177,7 @@ func (s *ApiService) Update(req *modelSysManagement.UpdateApiReq) (*modelSysMana
 	newAction := modelSysManagement.HTTPMethodToAction(req.Method)
 	if oldAPI.Path != req.Path || oldAction != newAction {
 		if err = s.casbinService.UpdateResourcePolicies(oldAPI.Path, oldAction.String(), req.Path, newAction.String()); err != nil {
-			slog.Error("更新API Casbin策略失败", "error", err)
+			global.TD27_LOG.Error("更新API Casbin策略失败", "error", err)
 		}
 	}
 

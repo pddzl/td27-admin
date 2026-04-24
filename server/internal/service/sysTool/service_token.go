@@ -15,7 +15,6 @@ import (
 	modelSysManagement "server/internal/model/sysManagement"
 	modelSysTool "server/internal/model/sysTool"
 	serviceSysManagement "server/internal/service/sysManagement"
-	"log/slog"
 )
 
 type ServiceTokenService struct {
@@ -68,7 +67,7 @@ func (s *ServiceTokenService) Create(req *modelSysTool.CreateServiceTokenReq) (*
 		}
 
 		if err = s.syncTokenToCasbin(token.ID, permissionIDs); err != nil {
-			slog.Error("同步令牌到Casbin失败", "error", err)
+			global.TD27_LOG.Error("同步令牌到Casbin失败", "error", err)
 		}
 	}
 
@@ -109,7 +108,7 @@ func (s *ServiceTokenService) Update(req *modelSysTool.UpdateServiceTokenReq) er
 	}
 
 	if err = s.syncTokenToCasbin(token.ID, permissionIDs); err != nil {
-		slog.Error("同步令牌到Casbin失败", "error", err)
+		global.TD27_LOG.Error("同步令牌到Casbin失败", "error", err)
 	}
 
 	return nil
@@ -118,11 +117,11 @@ func (s *ServiceTokenService) Update(req *modelSysTool.UpdateServiceTokenReq) er
 func (s *ServiceTokenService) Delete(id uint) error {
 	subject := fmt.Sprintf("token:%d", id)
 	if err := s.casbinService.RemoveSubjectPolicies(subject); err != nil {
-		slog.Error("从Casbin移除令牌策略失败", "error", err)
+		global.TD27_LOG.Error("从Casbin移除令牌策略失败", "error", err)
 	}
 
 	if err := s.repo.DeleteTokenPermissions(s.ctx, id); err != nil {
-		slog.Error("删除令牌权限关联失败", "error", err)
+		global.TD27_LOG.Error("删除令牌权限关联失败", "error", err)
 	}
 
 	return s.repo.Delete(s.ctx, id)
@@ -238,7 +237,7 @@ func (s *ServiceTokenService) syncTokenToCasbin(tokenID uint, permissionIDs []ui
 		return err
 	}
 
-	slog.Info("syncTokenToCasbin",
+	global.TD27_LOG.Info("syncTokenToCasbin",
 		"tokenID", tokenID,
 		"permissionCount", len(permissions),
 		"permissionIDs", permissionIDs)

@@ -2,7 +2,7 @@ package casbin
 
 import (
 	"fmt"
-	"log/slog"
+	"server/internal/global"
 
 	"github.com/casbin/casbin/v2/model"
 	"github.com/casbin/casbin/v2/persist"
@@ -63,7 +63,7 @@ func (a *PermissionAdapter) LoadPolicy(mod model.Model) error {
 	}
 
 	// Accurate logging
-	slog.Info("Casbin策略加载完成",
+	global.TD27_LOG.Info("Casbin策略加载完成",
 		"policyCount", len(rows),
 	)
 

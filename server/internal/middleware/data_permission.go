@@ -5,7 +5,6 @@ import (
 
 	apiSysManagement "server/internal/api/sysManagement"
 	"server/internal/global"
-	"log/slog"
 )
 
 // DataPermissionHandler 数据权限中间件
@@ -25,7 +24,7 @@ func DataPermissionHandler(resource string) gin.HandlerFunc {
 		// 将数据权限信息存入上下文，供后续使用
 		dataPerm, err := dataPermissionService.GetUserDataPermission(c, claims.ID, resource)
 		if err != nil {
-			slog.Error("获取数据权限失败", "error", err)
+			global.TD27_LOG.Error("获取数据权限失败", "error", err)
 		}
 
 		c.Set("dataPermission", dataPerm)

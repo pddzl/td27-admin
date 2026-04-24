@@ -3,10 +3,10 @@ package sysTool
 import (
 	"github.com/gin-gonic/gin"
 
+	"server/internal/global"
 	"server/internal/model/common"
 	modelSysTool "server/internal/model/sysTool"
 	serviceSysTool "server/internal/service/sysTool"
-	"log/slog"
 )
 
 type CronApi struct {
@@ -37,7 +37,7 @@ func (a *CronApi) List(c *gin.Context) {
 
 	if list, total, err := a.cronService.List(&req); err != nil {
 		common.FailWithMessage("获取失败", c)
-		slog.Error("获取失败", "error", err)
+		global.TD27_LOG.Error("获取失败", "error", err)
 	} else {
 		common.OkWithDetailed(common.Page{
 			List:     list,
@@ -66,7 +66,7 @@ func (a *CronApi) Create(c *gin.Context) {
 
 	if cron, err := a.cronService.Create(&req); err != nil {
 		common.FailWithMessage("创建失败", c)
-		slog.Error("创建失败", "error", err)
+		global.TD27_LOG.Error("创建失败", "error", err)
 	} else {
 		common.OkWithDetailed(cron, "创建成功", c)
 	}
@@ -90,7 +90,7 @@ func (a *CronApi) Delete(c *gin.Context) {
 
 	if err := a.cronService.Delete(req.ID); err != nil {
 		common.FailWithMessage("删除失败", c)
-		slog.Error("删除失败", "error", err)
+		global.TD27_LOG.Error("删除失败", "error", err)
 	} else {
 		common.OkWithMessage("删除成功", c)
 	}
@@ -105,7 +105,7 @@ func (a *CronApi) DeleteByIds(c *gin.Context) {
 
 	if err := a.cronService.DeleteByIds(req.IDs); err != nil {
 		common.FailWithMessage("批量删除失败", c)
-		slog.Error("批量删除失败", "error", err)
+		global.TD27_LOG.Error("批量删除失败", "error", err)
 	} else {
 		common.OkWithMessage("批量删除成功", c)
 	}
@@ -129,7 +129,7 @@ func (a *CronApi) Update(c *gin.Context) {
 
 	if instance, err := a.cronService.Update(&req); err != nil {
 		common.FailWithMessage(err.Error(), c)
-		slog.Error("编辑失败", "error", err)
+		global.TD27_LOG.Error("编辑失败", "error", err)
 	} else {
 		common.OkWithDetailed(instance, "编辑成功", c)
 	}
@@ -153,7 +153,7 @@ func (a *CronApi) SwitchOpen(c *gin.Context) {
 
 	if entryId, err := a.cronService.SwitchOpen(req.ID, req.Open); err != nil {
 		common.FailWithMessage("切换失败", c)
-		slog.Error("切换失败", "error", err)
+		global.TD27_LOG.Error("切换失败", "error", err)
 	} else {
 		common.OkWithDetailed(gin.H{"entryId": entryId}, "切换成功", c)
 	}
@@ -177,7 +177,7 @@ func (a *CronApi) RunOnce(c *gin.Context) {
 
 	if err := a.cronService.RunOnce(req.ID); err != nil {
 		common.FailWithMessage("执行失败", c)
-		slog.Error("执行失败", "error", err)
+		global.TD27_LOG.Error("执行失败", "error", err)
 	} else {
 		common.OkWithMessage("任务已触发", c)
 	}

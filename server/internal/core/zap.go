@@ -3,6 +3,7 @@ package core
 import (
 	"context"
 	"fmt"
+	"io"
 	"log/slog"
 	"os"
 	"path"
@@ -29,29 +30,27 @@ func Zap() *slog.Logger {
 		opts.AddSource = true
 	}
 
-	var handler slog.Handler
-	if global.TD27_CONFIG.Zap.Format == "json" {
-		handler = slog.NewJSONHandler(os.Stdout, opts)
-	} else {
-		handler = slog.NewTextHandler(os.Stdout, opts)
+	newHandler := func(w io.Writer) slog.Handler {
+		if global.TD27_CONFIG.Zap.Format == "json" {
+			return slog.NewJSONHandler(w, opts)
+		}
+		return slog.NewTextHandler(w, opts)
 	}
 
-	fileWriter := &lumberjack.Logger{
+	var handlers []slog.Handler
+	if global.TD27_CONFIG.Zap.LogInConsole {
+		handlers = append(handlers, newHandler(os.Stdout))
+	}
+
+	handlers = append(handlers, newHandler(&lumberjack.Logger{
 		Filename:   path.Join(dir, "app.log"),
 		MaxSize:    global.TD27_CONFIG.RotateLogs.MaxSize,
 		MaxBackups: global.TD27_CONFIG.RotateLogs.MaxBackups,
 		MaxAge:     global.TD27_CONFIG.RotateLogs.MaxAge,
 		Compress:   global.TD27_CONFIG.RotateLogs.Compress,
-	}
+	}))
 
-	var fileHandler slog.Handler
-	if global.TD27_CONFIG.Zap.Format == "json" {
-		fileHandler = slog.NewJSONHandler(fileWriter, opts)
-	} else {
-		fileHandler = slog.NewTextHandler(fileWriter, opts)
-	}
-
-	mh := &multiHandler{handlers: []slog.Handler{handler, fileHandler}}
+	mh := &multiHandler{handlers: handlers}
 	logger := slog.New(mh)
 	slog.SetDefault(logger)
 	return logger

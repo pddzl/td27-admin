@@ -3,10 +3,10 @@ package sysTool
 import (
 	"github.com/gin-gonic/gin"
 
+	"server/internal/global"
 	"server/internal/model/common"
 	modelSysTool "server/internal/model/sysTool"
 	"server/internal/service/sysTool"
-	"log/slog"
 )
 
 type ServiceTokenApi struct {
@@ -35,14 +35,14 @@ func (a *ServiceTokenApi) Create(c *gin.Context) {
 		return
 	}
 
-	slog.Debug("API Create被调用",
+	global.TD27_LOG.Debug("API Create被调用",
 		"name", req.Name,
 		"apiIDs", req.ApiIDs)
 
 	resp, err := a.service.Create(&req)
 	if err != nil {
 		common.FailWithMessage(err.Error(), c)
-		slog.Error("创建服务令牌失败", "error", err)
+		global.TD27_LOG.Error("创建服务令牌失败", "error", err)
 		return
 	}
 
@@ -67,7 +67,7 @@ func (a *ServiceTokenApi) Update(c *gin.Context) {
 
 	if err := a.service.Update(&req); err != nil {
 		common.FailWithMessage(err.Error(), c)
-		slog.Error("更新服务令牌失败", "error", err)
+		global.TD27_LOG.Error("更新服务令牌失败", "error", err)
 		return
 	}
 
@@ -92,7 +92,7 @@ func (a *ServiceTokenApi) Delete(c *gin.Context) {
 
 	if err := a.service.Delete(req.ID); err != nil {
 		common.FailWithMessage(err.Error(), c)
-		slog.Error("删除服务令牌失败", "error", err)
+		global.TD27_LOG.Error("删除服务令牌失败", "error", err)
 		return
 	}
 
@@ -143,7 +143,7 @@ func (a *ServiceTokenApi) List(c *gin.Context) {
 	resp, err := a.service.List(&req)
 	if err != nil {
 		common.FailWithMessage(err.Error(), c)
-		slog.Error("获取服务令牌列表失败", "error", err)
+		global.TD27_LOG.Error("获取服务令牌列表失败", "error", err)
 		return
 	}
 

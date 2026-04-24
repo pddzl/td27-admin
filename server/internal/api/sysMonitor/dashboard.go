@@ -1,7 +1,7 @@
 package sysMonitor
 
 import (
-	"log/slog"
+	"server/internal/global"
 
 	"github.com/gin-gonic/gin"
 
@@ -29,7 +29,7 @@ func NewDashboardApi() *DashboardApi {
 func (a *DashboardApi) GetStatistics(c *gin.Context) {
 	stats, err := a.dashboardService.GetStatistics()
 	if err != nil {
-		slog.Error("获取仪表盘统计数据失败", "error", err)
+		global.TD27_LOG.Error("获取仪表盘统计数据失败", "error", err)
 		common.FailWithMessage("获取统计数据失败", c)
 		return
 	}
@@ -46,7 +46,7 @@ func (a *DashboardApi) GetStatistics(c *gin.Context) {
 func (a *DashboardApi) GetRecentOperations(c *gin.Context) {
 	operations, err := a.dashboardService.GetRecentOperations(10)
 	if err != nil {
-		slog.Error("获取最近操作记录失败", "error", err)
+		global.TD27_LOG.Error("获取最近操作记录失败", "error", err)
 		common.FailWithMessage("获取最近操作记录失败", c)
 		return
 	}

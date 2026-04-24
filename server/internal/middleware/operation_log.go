@@ -67,7 +67,7 @@ func OperationRecord() gin.HandlerFunc {
 
 		// 解析token
 		claims, err := sysManagement.GetClaims(c)
-		
+
 		record := modelSysMonitor.OperationLogModel{
 			Ip:        c.ClientIP(),
 			Method:    c.Request.Method,
@@ -75,7 +75,7 @@ func OperationRecord() gin.HandlerFunc {
 			UserAgent: c.Request.UserAgent(),
 			ReqParam:  string(reqParam),
 		}
-		
+
 		if err == nil && claims != nil {
 			record.UserID = claims.ID
 			record.UserName = claims.Username

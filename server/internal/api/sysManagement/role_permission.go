@@ -3,10 +3,10 @@ package sysManagement
 import (
 	"github.com/gin-gonic/gin"
 
+	"server/internal/global"
 	"server/internal/model/common"
 	modelSysManagement "server/internal/model/sysManagement"
 	serviceSysManagement "server/internal/service/sysManagement"
-	"log/slog"
 )
 
 type RolePermissionApi struct {
@@ -37,7 +37,7 @@ func (a *RolePermissionApi) Rebuild(c *gin.Context) {
 
 	if err := a.rolePermissionService.Rebuild(&req); err != nil {
 		common.FailWithMessage(err.Error(), c)
-		slog.Error("编辑失败", "error", err)
+		global.TD27_LOG.Error("编辑失败", "error", err)
 	} else {
 		common.Ok(c)
 	}

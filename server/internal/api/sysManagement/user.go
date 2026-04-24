@@ -5,10 +5,10 @@ import (
 	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/validator/v10"
 
+	"server/internal/global"
 	"server/internal/model/common"
 	modelSysManagement "server/internal/model/sysManagement"
 	serviceSysManagement "server/internal/service/sysManagement"
-	"log/slog"
 )
 
 type UserApi struct {
@@ -30,12 +30,12 @@ func (a *UserApi) GetUserInfo(c *gin.Context) {
 	userInfo, err := GetUserInfo(c)
 	if err != nil {
 		common.FailWithMessage("获取失败", c)
-		slog.Error(err.Error())
+		global.TD27_LOG.Error(err.Error())
 	}
 
 	if user, err := a.userService.GetUserInfo(userInfo.ID); err != nil {
 		common.FailWithMessage("获取失败", c)
-		slog.Error("获取失败", "error", err)
+		global.TD27_LOG.Error("获取失败", "error", err)
 	} else {
 		common.OkWithDetailed(user, "获取成功", c)
 	}
@@ -66,7 +66,7 @@ func (a *UserApi) List(c *gin.Context) {
 
 	if list, total, err := a.userService.List(&pageInfo, userInfo.ID); err != nil {
 		common.FailWithMessage("获取失败", c)
-		slog.Error("get users failed", "error", err)
+		global.TD27_LOG.Error("get users failed", "error", err)
 	} else {
 		common.OkWithDetailed(common.Page{
 			Page:     pageInfo.Page,
@@ -95,7 +95,7 @@ func (a *UserApi) Delete(c *gin.Context) {
 
 	if err := a.userService.Delete(req.Username); err != nil {
 		common.FailWithMessage(err.Error(), c)
-		slog.Error("删除失败", "error", err)
+		global.TD27_LOG.Error("删除失败", "error", err)
 	} else {
 		common.Ok(c)
 	}
@@ -136,7 +136,7 @@ func (a *UserApi) Create(c *gin.Context) {
 
 	if err = a.userService.Create(&req); err != nil {
 		common.FailWithMessage("添加失败", c)
-		slog.Error("添加失败", "error", err)
+		global.TD27_LOG.Error("添加失败", "error", err)
 	} else {
 		common.Ok(c)
 	}
@@ -177,7 +177,7 @@ func (a *UserApi) Update(c *gin.Context) {
 
 	if instance, err := a.userService.Update(&req); err != nil {
 		common.FailWithMessage(err.Error(), c)
-		slog.Error("编辑失败", "error", err)
+		global.TD27_LOG.Error("编辑失败", "error", err)
 	} else {
 		common.OkWithDetailed(instance, "编辑成功", c)
 	}
@@ -201,7 +201,7 @@ func (a *UserApi) ModifyPasswd(c *gin.Context) {
 
 	if err := a.userService.ModifyPasswd(&req); err != nil {
 		common.FailWithMessage(err.Error(), c)
-		slog.Error("修改失败", "error", err)
+		global.TD27_LOG.Error("修改失败", "error", err)
 	} else {
 		common.Ok(c)
 	}
@@ -225,7 +225,7 @@ func (a *UserApi) SwitchActive(c *gin.Context) {
 
 	if err := a.userService.SwitchActive(&req); err != nil {
 		common.FailWithMessage(err.Error(), c)
-		slog.Error("切换失败", "error", err)
+		global.TD27_LOG.Error("切换失败", "error", err)
 	} else {
 		common.Ok(c)
 	}

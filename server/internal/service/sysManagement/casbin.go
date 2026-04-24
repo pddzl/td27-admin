@@ -13,7 +13,6 @@ import (
 	"server/internal/global"
 	modelSysManagement "server/internal/model/sysManagement"
 	casbinpkg "server/internal/pkg/casbin"
-	"log/slog"
 )
 
 type CasbinService struct{}
@@ -78,14 +77,14 @@ func (cs *CasbinService) Casbin() *casbin.SyncedCachedEnforcer {
 
 		m, err := getCasbinModel()
 		if err != nil {
-			slog.Error("字符串加载模型失败!", "error", err)
+			global.TD27_LOG.Error("字符串加载模型失败!", "error", err)
 			return
 		}
 
 		var initErr error
 		syncedCachedEnforcer, initErr = casbin.NewSyncedCachedEnforcer(m, adapter)
 		if initErr != nil {
-			slog.Error("Casbin enforcer初始化失败!", "error", initErr)
+			global.TD27_LOG.Error("Casbin enforcer初始化失败!", "error", initErr)
 			return
 		}
 
@@ -102,11 +101,11 @@ func (cs *CasbinService) Casbin() *casbin.SyncedCachedEnforcer {
 		}
 
 		if err = syncedCachedEnforcer.LoadPolicy(); err != nil {
-			slog.Error("Casbin策略加载失败!", "error", err)
+			global.TD27_LOG.Error("Casbin策略加载失败!", "error", err)
 			return
 		}
 
-		slog.Info("Casbin enforcer初始化完成，策略已加载",
+		global.TD27_LOG.Info("Casbin enforcer初始化完成，策略已加载",
 			"roleHierarchy", global.TD27_CONFIG.Casbin.EnableRoleHierarchy,
 			"cacheTTL", cacheTTL)
 	})
@@ -121,7 +120,7 @@ func (cs *CasbinService) Enforce(roleIDs []uint, path string, method string) (bo
 	for _, roleID := range roleIDs {
 		sub := strconv.Itoa(int(roleID))
 
-		slog.Info("Enforce debug",
+		global.TD27_LOG.Info("Enforce debug",
 			"sub", sub,
 			"obj", path,
 			"act", string(modelSysManagement.HTTPMethodToAction(method)),
@@ -226,7 +225,7 @@ func (cs *CasbinService) RebuildSubjectPolicies(subject string, policies [][]str
 		return errors.New("casbin enforcer not initialized")
 	}
 
-	slog.Info("RebuildSubjectPolicies",
+	global.TD27_LOG.Info("RebuildSubjectPolicies",
 		"subject", subject,
 		"policyCount", len(policies),
 		"policies", policies)
@@ -243,11 +242,11 @@ func (cs *CasbinService) RebuildSubjectPolicies(subject string, policies [][]str
 		if err != nil {
 			return fmt.Errorf("add subject policies failed: %w", err)
 		}
-		slog.Info("AddPolicies result", "added", added)
+		global.TD27_LOG.Info("AddPolicies result", "added", added)
 
 		// 验证
 		existing, _ := e.GetFilteredPolicy(0, subject)
-		slog.Info("After add", "existingCount", len(existing))
+		global.TD27_LOG.Info("After add", "existingCount", len(existing))
 	}
 
 	return nil
@@ -294,7 +293,7 @@ func (cs *CasbinService) UpdateResourcePolicies(oldResource, oldAction, newResou
 		return fmt.Errorf("get old policies failed: %w", err)
 	}
 
-	slog.Info("UpdateResourcePolicies",
+	global.TD27_LOG.Info("UpdateResourcePolicies",
 		"oldResource", oldResource,
 		"oldAction", oldAction,
 		"newResource", newResource,
@@ -307,7 +306,7 @@ func (cs *CasbinService) UpdateResourcePolicies(oldResource, oldAction, newResou
 		if err != nil {
 			return fmt.Errorf("remove old policies failed: %w", err)
 		}
-		slog.Debug("RemovePolicy result", "removed", removeBool)
+		global.TD27_LOG.Debug("RemovePolicy result", "removed", removeBool)
 	}
 
 	// 构建新策略列表（只更新obj和act，保留sub）
@@ -321,7 +320,7 @@ func (cs *CasbinService) UpdateResourcePolicies(oldResource, oldAction, newResou
 	if err != nil {
 		return fmt.Errorf("add new policies failed: %w", err)
 	}
-	slog.Debug("AddPolicies result", "added", addBool)
+	global.TD27_LOG.Debug("AddPolicies result", "added", addBool)
 
 	return nil
 }

@@ -4,11 +4,9 @@ import (
 	"context"
 	"time"
 
-
 	"server/internal/global"
 	modelSysTool "server/internal/model/sysTool"
 	pkgCron "server/internal/pkg/cron"
-	"log/slog"
 )
 
 func init() {
@@ -29,7 +27,7 @@ func (j *ClearCacheJob) Run(ctx context.Context) error {
 		return result.Error
 	}
 	if result.RowsAffected > 0 {
-		slog.Info("[CRON] clearCache done", "rows", result.RowsAffected)
+		global.TD27_LOG.Info("[CRON] clearCache done", "rows", result.RowsAffected)
 	}
 	return nil
 }

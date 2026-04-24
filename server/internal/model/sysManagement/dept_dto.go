@@ -37,12 +37,12 @@ type DeptResp struct {
 
 // DeptTreeResp 部门树响应
 type DeptTreeResp struct {
-	ID       uint           `json:"id"`
-	DeptName string         `json:"deptName"`
-	ParentID uint           `json:"parentId"`
-	Path     string         `json:"path"`
-	Sort     uint           `json:"sort"`
-	Status   bool           `json:"status"`
+	ID       uint            `json:"id"`
+	DeptName string          `json:"deptName"`
+	ParentID uint            `json:"parentId"`
+	Path     string          `json:"path"`
+	Sort     uint            `json:"sort"`
+	Status   bool            `json:"status"`
 	Children []*DeptTreeResp `json:"children,omitempty"`
 }
 
