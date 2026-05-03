@@ -17,8 +17,9 @@ Gin + Vue3 admin dashboard. Keep this open; refer before acting.
 - Init modules: `server/internal/initialize/gorm.go` (RegisterTables for auto-migration), `server/internal/initialize/router.go`, `server/internal/initialize/cron.go`
 
 ### Conventions
-- Logging uses `log/slog` (set as default, use `slog.Info/Error/Debug` with key-value pairs). Old `global.TD27_LOG` references still exist but `slog` is the active logger.
-- Logger config in `server/configs/config.yaml` under `logger` section (level/format/show-line). The `show-line` flag maps to `slog.HandlerOptions.AddSource`.
+- Logging uses `log/slog` as the underlying implementation. Use `global.TD27_LOG.Info/Error/Debug` with key-value pairs for all logging calls (direct `slog` calls are not recommended).
+- Logger config in `server/configs/config.yaml` under `logger` section (level/format/show-line). The `show-line` flag maps to `slog.HandlerOptions.AddSource`. Supports both text and JSON output formats with consistent cost duration formatting across handlers.
+- Structured logging is implemented for Gorm operations and status-based HTTP access logs.
 - DB auto-migration is `disabled` by default (`disable-auto-migrate: true`). Enable it or run init.sql manually.
 - API response codes: `0` = success, `7` = response error, `4` = request error. Helpers in `internal/model/common/response.go`.
 - JWT token passed via `x-token` header. Multi-login support with configurable device limit.
@@ -52,15 +53,19 @@ Swagger at `http://localhost:8888/swagger/index.html`.
 
 ### Commands (run from `web/`)
 ```bash
-pnpm dev          # dev server on :8080, proxied to backend :8888
-pnpm build        # vue-tsc && vite build
-pnpm test         # vitest (happy-dom), test files: tests/**/*.test.{ts,js}
-pnpm lint         # eslint . --fix
+pnpm dev              # dev server on :8080, proxied to backend :8888
+pnpm build            # vue-tsc && vite build for production
+pnpm build:stage      # build for pre-release environment
+pnpm preview:stage    # preview pre-release environment build
+pnpm preview:prod     # preview production environment build
+pnpm test             # vitest (happy-dom), test files: tests/**/*.test.{ts,js}
+pnpm lint             # eslint . --fix
 ```
 
 ## Testing
 
 - **Backend**: `make test` or `go test ./... -v`. Test utilities in `server/internal/testutil/` (DB helpers).
+- Test coverage includes: Casbin RBAC, pkg utilities, md5 function, and core business logic.
 - Casbin tests in `server/internal/service/sysManagement/casbin_test.go`.
 
 ## Full project structure (tl;dr)
@@ -76,8 +81,12 @@ server/                     # Go backend
 ├── internal/initialize/    # app bootstrap (gorm, router, cron)
 ├── internal/core/          # config (Viper) + logger (slog)
 ├── internal/global/        # global vars (DB, Config, LOG)
-├── internal/pkg/           # shared (cron, casbin, rbac, cache, jwt, async)
-└── configs/config.yaml     # all runtime config
+├── internal/pkg/           # shared (cron, casbin, rbac, cache, jwt, async, utilities)
+├── configs/config.yaml     # all runtime config
+├── log/                    # Application logs
+├── resource/               # Static resources (images, attachments, templates)
+│   └── upload/             # File upload target directory
+└── scripts/                # Shell scripts (build, deploy, maintenance)
 
 web/                        # Vue3 frontend
 ├── src/main.ts             # entry point
@@ -89,13 +98,20 @@ web/                        # Vue3 frontend
 ├── src/layouts/            # layout components
 └── src/http/               # Axios client
 
-docker-compose/             # MySQL + Redis + Nginx
+docker-compose/             # PostgreSQL + Redis + Nginx
 ```
 
 ## Gotchas
 
-- DB defaults to PostgreSQL in config (`pgsql` section). MySQL config exists but is not actively maintained.
+- DB is PostgreSQL (configured under `pgsql` section in config).
 - Casbin enforcement is **skipped in dev mode** (`system.env: dev`). Set to `prod` to test permissions.
 - The `slog` migration removed `go.uber.org/zap`. Logger init is in `server/internal/core/logger.go` (function `Logger()`). Config struct in `server/configs/logger.go`.
 - Pre-commit hook via husky + lint-staged runs `eslint --fix` on all staged files (frontend).
 - Default credentials: `admin / 123456`.
+
+## Skills
+
+Specialized skills are available for common tasks:
+- `git-commit`: Generate clear and conventional commit messages from git diffs
+
+Invoke skills using the `skill` tool when a task matches the skill description.

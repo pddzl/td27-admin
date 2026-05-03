@@ -1,0 +1,3 @@
+Verification: grep -n "MySQL" AGENTS.md
+Result: No matches found — all MySQL references removed.
+Timestamp: 2026-05-03
