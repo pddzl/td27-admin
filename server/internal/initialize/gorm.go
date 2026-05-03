@@ -26,11 +26,11 @@ func NewWriter(w logger.Writer) *writer {
 	return &writer{Writer: w}
 }
 
-// Printf 格式化打印日志
+// Printf 格式化打印日志 (structured slog)
 func (w *writer) Printf(message string, data ...interface{}) {
 	logging := global.TD27_CONFIG.Pgsql.Log
 	if logging {
-		global.TD27_LOG.Info(fmt.Sprintf(message+"\n", data...))
+		global.TD27_LOG.Info("gorm", "sql", fmt.Sprintf(message, data...))
 	} else {
 		w.Writer.Printf(message, data...)
 	}

@@ -29,26 +29,26 @@ func GinRecovery(logger *slog.Logger, stack bool) gin.HandlerFunc {
 				}
 
 				httpRequest, _ := httputil.DumpRequest(c.Request, false)
-				if brokenPipe {
-					logger.Debug(c.Request.URL.Path,
-						"error", err,
-						"request", string(httpRequest))
+			if brokenPipe {
+				logger.Warn(c.Request.URL.Path,
+					"error", err,
+					"request", string(httpRequest))
 					// If the connection is dead, we can't write a status to it.
 					_ = c.Error(err.(error))
 					c.Abort()
 					return
 				}
 
-				if stack {
-					logger.Debug("[Recovery from panic]",
-						"error", err,
-						"request", string(httpRequest),
-						"stack", string(debug.Stack()))
-				} else {
-					logger.Debug("[Recovery from panic]",
-						"error", err,
-						"request", string(httpRequest))
-				}
+			if stack {
+				logger.Error("[Recovery from panic]",
+					"error", err,
+					"request", string(httpRequest),
+					"stack", string(debug.Stack()))
+			} else {
+				logger.Error("[Recovery from panic]",
+					"error", err,
+					"request", string(httpRequest))
+			}
 				c.AbortWithStatus(http.StatusInternalServerError)
 			}
 		}()

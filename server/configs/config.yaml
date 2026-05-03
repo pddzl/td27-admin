@@ -18,11 +18,9 @@ casbin:
 logger:
   level: debug
   format: text
-  prefix: '[TD27] '
-  encode-level: 'LowercaseLevelEncoder'
+  service: td27-admin
   director: log
   show-line: true
-  stacktrace-key: stacktrace
   log-in-console: true
 
 # 日志割接
