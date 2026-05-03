@@ -27,4 +27,3 @@ yarn-error.log*
 
 *.iml
 server/[^/]*      # built binaries (go build creates server, cmd/server/... creates server/server, etc.)
-AGENTS.md
