@@ -27,7 +27,7 @@ func GinLogger(logger *slog.Logger) gin.HandlerFunc {
 			"ip", c.ClientIP(),
 			"user-agent", c.Request.UserAgent(),
 			"errors", c.Errors.ByType(gin.ErrorTypePrivate),
-			"cost", cost,
+			"cost", cost.String(),
 		}
 
 		switch {
