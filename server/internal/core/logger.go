@@ -26,7 +26,9 @@ func Logger() *slog.Logger {
 	consoleOpts := &slog.HandlerOptions{
 		Level: level,
 	}
-	fileOpts := &slog.HandlerOptions{}
+	fileOpts := &slog.HandlerOptions{
+		Level: slog.LevelDebug, // lowest level so the inner handler doesn't reject records before levelFilter
+	}
 	if global.TD27_CONFIG.Logger.ShowLine {
 		consoleOpts.AddSource = true
 		fileOpts.AddSource = true
@@ -75,9 +77,8 @@ func Logger() *slog.Logger {
 	// Build static attrs injected on every log record
 	staticAttrs := buildStaticAttrs()
 
-	mh := &multiHandler{handlers: handlers}
-	sh := &staticAttrHandler{handler: mh, attrs: staticAttrs}
-	logger := slog.New(sh)
+	mh := &multiHandler{handlers: handlers, attrs: staticAttrs}
+	logger := slog.New(mh)
 	slog.SetDefault(logger)
 	return logger
 }
@@ -108,31 +109,6 @@ func parseLevel(lvl string) slog.Level {
 	}
 }
 
-// staticAttrHandler wraps a handler to prepend fixed attributes to every record.
-type staticAttrHandler struct {
-	handler slog.Handler
-	attrs   []slog.Attr
-}
-
-func (h *staticAttrHandler) Enabled(ctx context.Context, level slog.Level) bool {
-	return h.handler.Enabled(ctx, level)
-}
-
-func (h *staticAttrHandler) Handle(ctx context.Context, r slog.Record) error {
-	// Clone to avoid mutating the original; add static attrs before delegating
-	r2 := r.Clone()
-	r2.AddAttrs(h.attrs...)
-	return h.handler.Handle(ctx, r2)
-}
-
-func (h *staticAttrHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
-	return &staticAttrHandler{handler: h.handler.WithAttrs(attrs), attrs: h.attrs}
-}
-
-func (h *staticAttrHandler) WithGroup(name string) slog.Handler {
-	return &staticAttrHandler{handler: h.handler.WithGroup(name), attrs: h.attrs}
-}
-
 type levelFilter struct {
 	handler slog.Handler
 	level   slog.Level
@@ -157,6 +133,7 @@ func (f *levelFilter) WithGroup(name string) slog.Handler {
 // multiHandler fans out log records to multiple handlers (console + file).
 type multiHandler struct {
 	handlers []slog.Handler
+	attrs    []slog.Attr // static attrs injected on every record before dispatch
 }
 
 func (m *multiHandler) Enabled(ctx context.Context, level slog.Level) bool {
@@ -169,6 +146,13 @@ func (m *multiHandler) Enabled(ctx context.Context, level slog.Level) bool {
 }
 
 func (m *multiHandler) Handle(ctx context.Context, r slog.Record) error {
+	// Clone once and inject static attrs before dispatching to children
+	if len(m.attrs) > 0 {
+		r2 := r.Clone()
+		r2.AddAttrs(m.attrs...)
+		r = r2
+	}
+
 	var firstErr error
 	for i, h := range m.handlers {
 		if !h.Enabled(ctx, r.Level) {
@@ -178,13 +162,9 @@ func (m *multiHandler) Handle(ctx context.Context, r slog.Record) error {
 			if firstErr == nil {
 				firstErr = err
 			}
-			// Fallback: log handler failure to stdout handler
+			// Fallback: log handler failure to first (console) handler
 			if i > 0 && len(m.handlers) > 0 {
-				_ = m.handlers[0].Handle(ctx, slog.Record{
-					Time:    r.Time,
-					Level:   slog.LevelError,
-					Message: fmt.Sprintf("log handler %d failed: %v", i, err),
-				})
+				_ = m.handlers[0].Handle(ctx, r)
 			}
 		}
 	}
@@ -196,7 +176,7 @@ func (m *multiHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 	for i, h := range m.handlers {
 		newHandlers[i] = h.WithAttrs(attrs)
 	}
-	return &multiHandler{handlers: newHandlers}
+	return &multiHandler{handlers: newHandlers, attrs: m.attrs}
 }
 
 func (m *multiHandler) WithGroup(name string) slog.Handler {
@@ -204,5 +184,5 @@ func (m *multiHandler) WithGroup(name string) slog.Handler {
 	for i, h := range m.handlers {
 		newHandlers[i] = h.WithGroup(name)
 	}
-	return &multiHandler{handlers: newHandlers}
+	return &multiHandler{handlers: newHandlers, attrs: m.attrs}
 }
