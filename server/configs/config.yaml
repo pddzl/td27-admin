@@ -16,7 +16,7 @@ casbin:
 
 # logger configuration
 logger:
-  level: info
+  level: debug
   format: json # text,json
   service: td27-admin
   director: log
