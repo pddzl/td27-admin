@@ -84,57 +84,59 @@ func Gorm() *gorm.DB {
 }
 
 // RegisterTables 初始化数据库表
-func RegisterTables(db *gorm.DB) {
-	if !global.TD27_CONFIG.System.DisableAutoMigrate {
-		err := db.AutoMigrate(
-			// 权限 - 用户和角色（多对多）
-			sysManagement.UserModel{},
-			sysManagement.RoleModel{},
-			sysManagement.UserRole{},
-			// 菜单模型（数据来自 permission 表 type='menu'）
-			sysManagement.MenuModel{},
-			// API权限
-			sysManagement.ApiModel{},
-			// 统一权限模型
-			sysManagement.PermissionModel{},
-			sysManagement.RolePermissionModel{},
-			// 部门（用于数据权限）
-			sysManagement.DeptModel{},
-			// 监控
-			modelMonitor.OperationLogModel{},
-			// file
-			modelSysTool.FileModel{},
-			// crontab
-			modelSysTool.CronModel{},
-			// 服务令牌
-			modelSysTool.ServiceToken{},
-			modelSysTool.TokenPermission{},
-			// 缓存表
-			modelSysTool.CacheModel{},
-			// 字典
-			sysManagement.DictModel{},
-			sysManagement.DictDetailModel{},
-			// 按钮权限
-			sysManagement.ButtonModel{},
-		)
+func RegisterTables(db *gorm.DB) error {
+	err := db.AutoMigrate(
+		// 权限 - 用户和角色（多对多）
+		sysManagement.UserModel{},
+		sysManagement.RoleModel{},
+		sysManagement.UserRole{},
+		// 菜单模型（数据来自 permission 表 type='menu'）
+		sysManagement.MenuModel{},
+		// API权限
+		sysManagement.ApiModel{},
+		// 统一权限模型
+		sysManagement.PermissionModel{},
+		sysManagement.RolePermissionModel{},
+		// 部门（用于数据权限）
+		sysManagement.DeptModel{},
+		// 监控
+		modelMonitor.OperationLogModel{},
+		// file
+		modelSysTool.FileModel{},
+		// crontab
+		modelSysTool.CronModel{},
+		// 服务令牌
+		modelSysTool.ServiceToken{},
+		modelSysTool.TokenPermission{},
+		// 缓存表
+		modelSysTool.CacheModel{},
+		// 字典
+		sysManagement.DictModel{},
+		sysManagement.DictDetailModel{},
+		// 按钮权限
+		sysManagement.ButtonModel{},
+	)
 
-		if err != nil {
-			// 忽略"已存在"错误，这是正常的当init.sql已经创建了约束
-			if isAlreadyExistsError(err) {
-				global.TD27_LOG.Info("AutoMigrate: some constraints already exist (from init.sql), continuing...")
-			} else if isNotExistsError(err) {
-				// 忽略"不存在"错误，可能是GORM尝试删除不存在的约束
-				global.TD27_LOG.Info("AutoMigrate: constraint does not exist, continuing...")
-			} else {
-				global.TD27_LOG.Error("register table failed", "error", err)
-				os.Exit(0)
-			}
+	if err != nil {
+		// 忽略"已存在"错误，这是正常的当init.sql已经创建了约束
+		if isAlreadyExistsError(err) {
+			global.TD27_LOG.Info("AutoMigrate: some constraints already exist (from init.sql), continuing...")
+		} else if isNotExistsError(err) {
+			// 忽略"不存在"错误，可能是GORM尝试删除不存在的约束
+			global.TD27_LOG.Info("AutoMigrate: constraint does not exist, continuing...")
+		} else {
+			global.TD27_LOG.Error("register table failed", "error", err)
+			return err
 		}
 	}
 	global.TD27_LOG.Info("register table success")
+	
+	return nil
 }
 
-// isAlreadyExistsError 检查错误是否是"已存在"错误
+// isAlreadyExistsError checks if the error indicates a PostgreSQL "already exists" condition
+// (duplicate table, duplicate object, duplicate key). This is needed because GORM's AutoMigrate
+// can encounter these errors when init.sql has already created the constraints.
 func isAlreadyExistsError(err error) bool {
 	if err == nil {
 		return false
@@ -148,7 +150,9 @@ func isAlreadyExistsError(err error) bool {
 		strings.Contains(errStr, "42710") // PostgreSQL: duplicate_object
 }
 
-// isNotExistsError 检查错误是否是"不存在"错误（尝试删除不存在的约束）
+// isNotExistsError checks if the error indicates a PostgreSQL "does not exist" condition
+// (undefined object). This handles edge cases where GORM's AutoMigrate tries to drop a
+// constraint that doesn't exist, which is non-fatal.
 func isNotExistsError(err error) bool {
 	if err == nil {
 		return false
