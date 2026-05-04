@@ -29,6 +29,7 @@ func JWTAuth() gin.HandlerFunc {
 			claims, err := j.ParseToken(token)
 			if err == nil {
 				// 验证token是否有效
+				global.TD27_LOG.Debug("JWTAuth", "path", c.Request.URL.Path, "username", claims.Username)
 				if jwtService.ValidateToken(claims.Username, token) {
 					// Token即将过期，刷新
 					if claims.ExpiresAt.Unix()-time.Now().Unix() < claims.BufferTime {
