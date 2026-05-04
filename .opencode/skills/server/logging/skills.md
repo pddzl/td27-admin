@@ -11,17 +11,22 @@ Provide a standardized logging implementation using Go slog for the TD27 Admin b
 ### Core Setup (server/internal/core/logger.go)
 - Use `log/slog` standard library — no external dependency
 - Global default logger via `slog.SetDefault(logger)`
-- Multi-handler: console (stdout) + rotating file (lumberjack)
-- Static attributes injected via `staticAttrHandler` wrapper:
-  - `service` — from `configs.Logger.Service` (e.g. `td27-admin`)
-  - `env` — from `configs.System.Env` (e.g. `dev`, `prod`)
+- **Console**: stdout with configured minimum level (respects `logger.level` config)
+- **Per-level log files**: output split by exact level into separate lumberjack-rotated files:
+  - `log/debug.log` — only `slog.LevelDebug`
+  - `log/info.log` — only `slog.LevelInfo`
+  - `log/warn.log` — only `slog.LevelWarn`
+  - `log/error.log` — only `slog.LevelError`
+- **levelFilter** handler wrapper: routes records to the correct file by exact level match
+- **Important**: `fileOpts` MUST set `Level: slog.LevelDebug` explicitly. Go 1.25's `slog.HandlerOptions{}` with nil `Level` defaults to `LevelInfo`, which silently drops debug records before `levelFilter` can route them.
+- Static attributes (`service`, `env`) injected directly into `multiHandler.attrs`, added to every record before dispatch (no `staticAttrHandler` wrapper — removed to avoid routing issues with levelFilter)
 - `parseLevel` defaults to `slog.LevelInfo` for unrecognized values (safe production default)
 - `show-line: true` enables `AddSource` for caller file/line in debug builds
 
 ### Log Levels
-- `debug` — verbose internal state (GinLogger normal requests, Gorm trace)
-- `info` — startup, shutdown, successful operations, normal request handled
-- `warn` — 4xx client errors, broken pipe, degraded operations
+- `debug` — verbose internal state (token validation, JWT operations, service token API calls)
+- `info` — startup, shutdown, successful operations, normal request handled, Gorm SQL
+- `warn` — 4xx client errors, broken pipe (connection reset), degraded operations
 - `error` — 5xx server errors, panics, recoverable failures
 
 ### Access Logging (server/internal/middleware/log/access.go)
@@ -77,7 +82,7 @@ logger:
 ## Key Files
 | File | Purpose |
 |------|---------|
-| `server/internal/core/logger.go` | Logger init, `staticAttrHandler`, `multiHandler`, `parseLevel` |
+| `server/internal/core/logger.go` | Logger init, `multiHandler`, `levelFilter`, `parseLevel` |
 | `server/internal/middleware/log/access.go` | `GinLogger` — request access log |
 | `server/internal/middleware/log/error.go` | `GinRecovery` — panic recovery |
 | `server/internal/initialize/gorm.go` | Gorm `writer.Printf` → structured slog |

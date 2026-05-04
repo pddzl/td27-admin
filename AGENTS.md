@@ -18,8 +18,10 @@ Gin + Vue3 admin dashboard. Keep this open; refer before acting.
 
 ### Conventions
 - Logging uses `log/slog` as the underlying implementation. Use `global.TD27_LOG.Info/Error/Debug` with key-value pairs for all logging calls (direct `slog` calls are not recommended).
-- Logger config in `server/configs/config.yaml` under `logger` section (level/format/show-line). The `show-line` flag maps to `slog.HandlerOptions.AddSource`. Supports both text and JSON output formats with consistent cost duration formatting across handlers.
-- Structured logging is implemented for Gorm operations and status-based HTTP access logs.
+- Logger config in `server/configs/config.yaml` under `logger` section (level/format/show-line/service). The `show-line` flag maps to `slog.HandlerOptions.AddSource`. Supports both text and JSON output formats.
+- Log output is split by level: `log/debug.log`, `log/info.log`, `log/warn.log`, `log/error.log`. Each file contains only its exact level — routing via `levelFilter` handler wrapper.
+- Static attributes (`service`, `env`) automatically injected on every log line via `multiHandler.attrs`.
+- Structured logging is implemented for Gorm operations and status-based HTTP access logs (5xx→Error, 4xx→Warn).
 - DB auto-migration is `disabled` by default (`disable-auto-migrate: true`). Enable it or run init.sql manually.
 - API response codes: `0` = success, `7` = response error, `4` = request error. Helpers in `internal/model/common/response.go`.
 - JWT token passed via `x-token` header. Multi-login support with configurable device limit.
@@ -105,7 +107,7 @@ docker-compose/             # PostgreSQL + Redis + Nginx
 
 - DB is PostgreSQL (configured under `pgsql` section in config).
 - Casbin enforcement is **skipped in dev mode** (`system.env: dev`). Set to `prod` to test permissions.
-- The `slog` migration removed `go.uber.org/zap`. Logger init is in `server/internal/core/logger.go` (function `Logger()`). Config struct in `server/configs/logger.go`.
+- Logging uses `log/slog` with per-level log files (`debug.log`, `info.log`, `warn.log`, `error.log`). Logger init in `server/internal/core/logger.go` (function `Logger()`). Config struct in `server/configs/logger.go`. The `fileOpts.Level` must be explicitly set to `slog.LevelDebug` — Go 1.25 defaults to `LevelInfo` when nil.
 - Pre-commit hook via husky + lint-staged runs `eslint --fix` on all staged files (frontend).
 - Default credentials: `admin / 123456`.
 
