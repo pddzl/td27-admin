@@ -46,6 +46,18 @@ func toMenuResp(m *MenuModel) MenuResp {
 	}
 }
 
+// sortMenuTreeRecursive recursively sorts menus by Sort field at all levels.
+func sortMenuTreeRecursive(menus []*MenuResp) {
+	sort.Slice(menus, func(i, j int) bool {
+		return menus[i].Sort < menus[j].Sort
+	})
+	for _, m := range menus {
+		if len(m.Children) > 0 {
+			sortMenuTreeRecursive(m.Children)
+		}
+	}
+}
+
 // buildMenuTree 构建菜单树
 func buildMenuTree(menus []MenuResp) []MenuResp {
 	if len(menus) == 0 {
@@ -72,10 +84,8 @@ func buildMenuTree(menus []MenuResp) []MenuResp {
 		}
 	}
 
-	// Sort root menus
-	sort.Slice(rootMenus, func(i, j int) bool {
-		return rootMenus[i].Sort < rootMenus[j].Sort
-	})
+	// Sort all levels of the tree
+	sortMenuTreeRecursive(rootMenus)
 
 	// Convert back to value slice
 	result := make([]MenuResp, len(rootMenus))
