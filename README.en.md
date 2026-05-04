@@ -15,17 +15,21 @@
 
 - Role Management: Permission entities that map roles to menus and API endpoints.
 
+- Department Management: Enables data access control based on organizational structure, supporting fine-grained authorization and isolation.
+
 - Menu Management: Role-based dynamic routing and menu generation.
 
 - API Management: Role-level access control for backend API routes.
 
-- Operation Logs: Records user operations and request traces for auditing.
+- Dictionary Management: Nested dictionary definitions for unified data mapping and frontend rendering.
 
 - Scheduled Tasks: Supports cron-like task configuration via UI-driven management.
 
 - File Management: Implements backend file storage with upload, retrieval, and deletion APIs.
 
-- Dictionary Management: Nested dictionary definitions for unified data mapping and frontend rendering.
+- Service Tokens: Provides a secure and controlled token mechanism for third-party system integration and authorized API access.
+
+- Operation Logs: Records user operations and request traces for auditing.
 
 ## Run
 
@@ -118,7 +122,7 @@ go build -o server cmd/server/main.go
 ```
 
 **<u>If you deploy manually, you must create a database `td27` and import the initialization data.
-SQL file location: `./docker-compose/mysql/init/init.sql` </u>**
+SQL file location: `./docker-compose/pgsql/init/init.sql` </u>**
 
 ## swagger
 
@@ -158,7 +162,7 @@ TD27 Admin versioning follows the x.y.z format:
 
 <table>
   <tr>
-    <td><img src="./img/p0.png"/></td>
+    <td><img src="./img/dashboard.png"/></td>
     <td><img src="./img/personal.png"/></td>
   </tr>
   <tr>
