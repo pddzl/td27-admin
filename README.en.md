@@ -135,7 +135,7 @@ http://localhost:8888/swagger/index.html
 
 ## One-Click Installation
 
-Docker Compose version must be V2
+Docker Compose version must great than V1
 
 ```bash
 git clone https://github.com/pddzl/td27-admin

@@ -134,7 +134,7 @@ http://localhost:8888/swagger/index.html
 
 ## 一键安装
 
-Docker Compose 版本需要 V2
+Docker Compose 版本需要大于 V1
 
 ```bash
 git clone https://github.com/pddzl/td27-admin
@@ -156,7 +156,7 @@ TD27 Admin 版本号遵循 x.y.z
 
 <table>
   <tr>
-    <td><img src="./img/p0.png"/></td>
+    <td><img src="./img/dashboard.png"/></td>
     <td><img src="./img/personal.png"/></td>
   </tr>
   <tr>
