@@ -1,6 +1,6 @@
 # jwt configuration
 jwt:
-  signing-key: pddzl
+  signing-key: ""  # REQUIRED: Set via JWT_SIGNING_KEY env var
   expires-time: 86400
   buffer-time: 43200
   issuer: pddzl
@@ -49,7 +49,7 @@ pgsql:
   config: 'sslmode=disable TimeZone=Asia/Shanghai'
   db-name: 'td27'
   username: 'postgres'
-  password: 'td27admin'
+  password: ""  # REQUIRED: Set via DB_PASSWORD env var
   max-idle-conns: 10
   max-open-conns: 100
   log-mode: false

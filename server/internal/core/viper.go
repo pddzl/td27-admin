@@ -80,6 +80,9 @@ func validateConfig(cfg *configs.Server) error {
 	if cfg.Pgsql.Username == "" {
 		return fmt.Errorf("PgSQL username is required")
 	}
+	if cfg.Pgsql.Password == "" {
+		return fmt.Errorf("PgSQL password is required")
+	}
 
 	// 验证系统配置
 	if cfg.System.Port <= 0 {
