@@ -49,9 +49,11 @@ func HTTPMethodToAction(method string) Action {
 // PermissionModel 统一权限身份表（仅用于RBAC授权）
 type PermissionModel struct {
 	common.Td27Model
-	Name     string           `json:"name" gorm:"size:100;unique;not null;comment:权限名称"`
-	Domain   PermissionDomain `gorm:"type:varchar(20);not null;check:domain IN ('menu','api','button','data')"`
-	Resource string           `json:"resource" gorm:"size:200;unique;not null;comment:资源标识，如:/api/user"`
+	Name string `json:"name" gorm:"size:100;unique;not null;comment:权限名称"`
+	// Composite uniqueness: the same resource string may exist in different
+	// domains (an API path and a button code may collide).
+	Domain   PermissionDomain `gorm:"type:varchar(20);not null;check:domain IN ('menu','api','button','data');uniqueIndex:uniq_permissions_domain_resource"`
+	Resource string           `json:"resource" gorm:"size:200;not null;comment:资源标识，如:/api/user;uniqueIndex:uniq_permissions_domain_resource"`
 	Action   Action           `json:"action" gorm:"size:20;default:'all';comment:操作:all|view|create|update|delete"`
 	// 关联的领域表ID
 	DomainID uint `json:"domainId" gorm:"index;comment:关联领域表ID(menu/api/button)"`

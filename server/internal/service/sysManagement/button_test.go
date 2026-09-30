@@ -40,6 +40,38 @@ func seedButtonPermission(t *testing.T, resource string, roleID uint) uint {
 	return perm.ID
 }
 
+// Same resource string must be allowed across domains, rejected within one.
+// Backs the composite UNIQUE (domain, resource) constraint on permissions.
+func TestPermissionModel_DomainScopedResourceUniqueness(t *testing.T) {
+	setupButtonTest(t)
+
+	perm := &modelSysManagement.PermissionModel{
+		Name:     "dup-domain-1",
+		Domain:   modelSysManagement.PermissionDomainButton,
+		Resource: "shared:resource",
+		Action:   modelSysManagement.ActionExecute,
+	}
+	require.NoError(t, global.TD27_DB.Create(perm).Error)
+
+	// Same resource, different domain: allowed
+	crossDomain := &modelSysManagement.PermissionModel{
+		Name:     "dup-domain-2",
+		Domain:   modelSysManagement.PermissionDomainAPI,
+		Resource: "shared:resource",
+		Action:   modelSysManagement.ActionRead,
+	}
+	require.NoError(t, global.TD27_DB.Create(crossDomain).Error)
+
+	// Same resource, same domain: rejected
+	duplicate := &modelSysManagement.PermissionModel{
+		Name:     "dup-domain-3",
+		Domain:   modelSysManagement.PermissionDomainButton,
+		Resource: "shared:resource",
+		Action:   modelSysManagement.ActionExecute,
+	}
+	assert.Error(t, global.TD27_DB.Create(duplicate).Error)
+}
+
 func TestButtonService_Create(t *testing.T) {
 	setupButtonTest(t)
 	svc := NewButtonService()

@@ -2210,11 +2210,12 @@ ALTER TABLE ONLY public.sys_management_permission
 
 
 --
--- Name: sys_management_permission uni_sys_management_permission_resource; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: sys_management_permission uniq_permissions_domain_resource; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
+-- Composite uniqueness: the same resource string may exist in different domains
 ALTER TABLE ONLY public.sys_management_permission
-    ADD CONSTRAINT uni_sys_management_permission_resource UNIQUE (resource);
+    ADD CONSTRAINT uniq_permissions_domain_resource UNIQUE (domain, resource);
 
 
 --
