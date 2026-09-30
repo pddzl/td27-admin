@@ -115,18 +115,16 @@ func (cs *CasbinService) Casbin() *casbin.SyncedCachedEnforcer {
 // Enforce 执行权限检查（支持多角色）
 func (cs *CasbinService) Enforce(roleIDs []uint, path string, method string) (bool, error) {
 	e := cs.Casbin()
+	if e == nil {
+		return false, errors.New("casbin enforcer not initialized")
+	}
 
-	// 尝试所有角色，只要有一个通过就允许
+	act := modelSysManagement.HTTPMethodToAction(method).String()
+
+	// SyncedCachedEnforcer does not support BatchEnforce; check roles one by one
+	// with short-circuit return. Each Enforce call is cached internally.
 	for _, roleID := range roleIDs {
-		sub := strconv.Itoa(int(roleID))
-
-		global.TD27_LOG.Info("Enforce debug",
-			"sub", sub,
-			"obj", path,
-			"act", string(modelSysManagement.HTTPMethodToAction(method)),
-		)
-
-		success, err := e.Enforce(sub, path, modelSysManagement.HTTPMethodToAction(method).String())
+		success, err := e.Enforce(strconv.Itoa(int(roleID)), path, act)
 		if err != nil {
 			return false, err
 		}
@@ -215,6 +213,9 @@ func (cs *CasbinService) GetInheritedRoles(roleID uint) ([]string, error) {
 // EnforceSubject 检查单个subject是否有权限（用于服务令牌）
 func (cs *CasbinService) EnforceSubject(subject, path, method string) (bool, error) {
 	e := cs.Casbin()
+	if e == nil {
+		return false, errors.New("casbin enforcer not initialized")
+	}
 	return e.Enforce(subject, path, modelSysManagement.HTTPMethodToAction(method).String())
 }
 

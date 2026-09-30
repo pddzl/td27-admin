@@ -3,10 +3,33 @@ import axios from "axios"
 import { get, merge } from "lodash-es"
 import { useUserStore } from "@/pinia/stores/user_n"
 
-/** 退出登录并强制刷新页面（会重定向到登录页） */
+/** 退出登录并跳转到登录页（携带 redirect 以便登录后回跳） */
 function logout() {
   useUserStore().logout()
-  location.reload()
+  const redirect = encodeURIComponent(`${location.pathname}${location.search}`)
+  location.href = `/login?redirect=${redirect}`
+}
+
+/** In-flight request tracking for cancellation and GET dedupe */
+const pendingControllers = new Set<AbortController>()
+const inflightGets = new Map<string, Promise<unknown>>()
+
+/** Cancel all in-flight requests (called on route change so stale responses never land in the new page) */
+export function cancelPendingRequests() {
+  pendingControllers.forEach(controller => controller.abort())
+  pendingControllers.clear()
+  inflightGets.clear()
+}
+
+/** Throttle identical error toasts within 2s to avoid message flooding */
+let lastErrorMessage = ""
+let lastErrorTime = 0
+function toastError(message: string) {
+  const now = Date.now()
+  if (message === lastErrorMessage && now - lastErrorTime < 2000) return
+  lastErrorMessage = message
+  lastErrorTime = now
+  ElMessage.error(message)
 }
 
 /** 创建请求实例 */
@@ -32,7 +55,7 @@ function createInstance() {
       const code = apiData.code
       // 如果没有 code, 代表这不是项目后端开发的 api
       if (code === undefined) {
-        ElMessage.error("非本系统的接口")
+        toastError("非本系统的接口")
         return Promise.reject(new Error("非本系统的接口"))
       }
       switch (code) {
@@ -46,11 +69,13 @@ function createInstance() {
             useUserStore().logout()
           }
 
-          ElMessage.error(apiData.msg || "Error")
+          toastError(apiData.msg || "Error")
           return Promise.reject(apiData.msg || "Error")
       }
     },
     (error) => {
+      // Cancelled requests (e.g. on route change) fail silently
+      if (axios.isCancel(error)) return new Promise(() => {})
       // status 是 HTTP 状态码
       const status = get(error, "response.status")
       const message = get(error, "response.data.message")
@@ -91,7 +116,7 @@ function createInstance() {
           error.message = "HTTP 版本不受支持"
           break
       }
-      ElMessage.error(error.message)
+      toastError(error.message)
       return Promise.reject(error)
     }
   )
@@ -120,7 +145,27 @@ function createRequest(instance: AxiosInstance) {
     }
     // 将默认配置 defaultConfig 和传入的自定义配置 config 进行合并成为 mergeConfig
     const mergeConfig = merge(defaultConfig, config)
-    return instance(mergeConfig)
+
+    const method = (mergeConfig.method ?? "get").toLowerCase()
+    const key = `${method}:${mergeConfig.url}:${JSON.stringify(mergeConfig.params)}:${JSON.stringify(mergeConfig.data)}`
+
+    // Share identical in-flight GET requests
+    if (method === "get") {
+      const pending = inflightGets.get(key)
+      if (pending) return pending as Promise<T>
+    }
+
+    // Attach an AbortController so route changes can cancel stale requests
+    const controller = new AbortController()
+    if (!mergeConfig.signal) mergeConfig.signal = controller.signal
+    pendingControllers.add(controller)
+
+    const promise = instance(mergeConfig).finally(() => {
+      pendingControllers.delete(controller)
+      if (method === "get") inflightGets.delete(key)
+    }) as Promise<T>
+    if (method === "get") inflightGets.set(key, promise)
+    return promise
   }
 }
 

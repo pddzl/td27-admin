@@ -157,16 +157,24 @@ func (s *ServiceTokenService) List(req *modelSysTool.ListServiceTokenReq) (*mode
 		return nil, err
 	}
 
+	// Single grouped COUNT query instead of one COUNT per token (N+1)
+	tokenIDs := make([]uint, 0, len(tokens))
+	for _, token := range tokens {
+		tokenIDs = append(tokenIDs, token.ID)
+	}
+	apiCounts, err := s.getTokenAPICounts(tokenIDs)
+	if err != nil {
+		return nil, err
+	}
+
 	list := make([]modelSysTool.ServiceTokenResp, 0, len(tokens))
 	for _, token := range tokens {
-		apiCount, _ := s.getTokenAPICount(token.ID)
-
 		list = append(list, modelSysTool.ServiceTokenResp{
 			ID:        token.ID,
 			Name:      token.Name,
 			Status:    token.Status,
 			ExpiresAt: token.ExpiresAt,
-			ApiCount:  apiCount,
+			ApiCount:  apiCounts[token.ID],
 			CreatedAt: token.CreatedAt.Unix(),
 		})
 	}
@@ -219,14 +227,28 @@ func (s *ServiceTokenService) getPermissionIDsByAPIs(apiIDs []uint) ([]uint, err
 	return permissionIDs, nil
 }
 
-func (s *ServiceTokenService) getTokenAPICount(tokenID uint) (int, error) {
-	var count int64
-	if err := global.TD27_DB.Model(&modelSysTool.TokenPermission{}).
-		Where("token_id = ?", tokenID).
-		Count(&count).Error; err != nil {
-		return 0, err
+func (s *ServiceTokenService) getTokenAPICounts(tokenIDs []uint) (map[uint]int, error) {
+	counts := make(map[uint]int, len(tokenIDs))
+	if len(tokenIDs) == 0 {
+		return counts, nil
 	}
-	return int(count), nil
+
+	var rows []struct {
+		TokenID uint
+		Count   int64
+	}
+	if err := global.TD27_DB.Model(&modelSysTool.TokenPermission{}).
+		Select("token_id, COUNT(*) AS count").
+		Where("token_id IN ?", tokenIDs).
+		Group("token_id").
+		Scan(&rows).Error; err != nil {
+		return nil, err
+	}
+
+	for _, r := range rows {
+		counts[r.TokenID] = int(r.Count)
+	}
+	return counts, nil
 }
 
 func (s *ServiceTokenService) syncTokenToCasbin(tokenID uint, permissionIDs []uint) error {

@@ -10,6 +10,7 @@ import (
 
 type OperationLogRepository interface {
 	Create(context.Context, *OperationLogModel) error
+	BatchCreate(context.Context, []*OperationLogModel) error
 	List(context.Context, *OrListReq) ([]*OperationLogModel, int64, error)
 	Delete(context.Context, uint) error
 	DeleteByIds(context.Context, []uint) (int64, error)
@@ -42,6 +43,17 @@ func (e *operationLogRepo) Create(ctx context.Context, req *OperationLogModel) e
 	}
 
 	return nil
+}
+
+// BatchCreate 批量写入操作日志（异步批量落库用）
+func (e *operationLogRepo) BatchCreate(ctx context.Context, logs []*OperationLogModel) error {
+	if len(logs) == 0 {
+		return nil
+	}
+
+	// middleware uses the global variable, so it must use global.TD27_DB instead of e.conn
+	result := global.TD27_DB.WithContext(ctx).Model(&OperationLogModel{}).CreateInBatches(logs, len(logs))
+	return result.Error
 }
 
 func (e *operationLogRepo) List(ctx context.Context, req *OrListReq) ([]*OperationLogModel, int64, error) {

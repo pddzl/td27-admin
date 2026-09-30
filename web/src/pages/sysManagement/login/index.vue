@@ -1,14 +1,16 @@
 <script lang="ts" setup>
+import type { ThemeName } from "@@/composables/useTheme"
 import type { FormInstance, FormRules } from "element-plus"
 import type { LoginRequestData } from "@/api/sysManagement/login"
-import { reactive, ref, onMounted } from "vue"
-import { useRouter } from "vue-router"
+import { useTheme } from "@@/composables/useTheme"
+import { Moon, Sunny } from "@element-plus/icons-vue"
+import { onMounted, reactive, ref } from "vue"
+import { useRoute, useRouter } from "vue-router"
 import { captchaApi } from "@/api/sysManagement/login"
 import { useUserStore } from "@/pinia/stores/user_n"
-import { useTheme, type ThemeName } from "@@/composables/useTheme"
-import { Sunny, Moon } from "@element-plus/icons-vue"
 
 const router = useRouter()
+const route = useRoute()
 const loginFormRef = ref<FormInstance | null>(null)
 
 // Theme
@@ -64,7 +66,12 @@ function handleLogin() {
           captchaId: loginFormData.captchaId
         })
         .then(() => {
-          router.push({ path: "/" })
+          // 回跳登录前页面（仅接受站内路径，防开放重定向）
+          const redirect = route.query.redirect
+          const target = typeof redirect === "string" && redirect.startsWith("/") && !redirect.startsWith("//")
+            ? redirect
+            : "/"
+          router.push(target)
         })
         .catch(() => {
           createCode()
@@ -104,7 +111,7 @@ createCode()
         />
       </el-tooltip>
     </div>
-    
+
     <div class="login-card">
       <p class="p1">
         TD27 ADMIN
@@ -241,20 +248,20 @@ createCode()
   &.bg {
     background: #141414;
   }
-  
+
   .login-card {
     background: #1f1f1f;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-    
+
     .p1 {
       color: rgba(255, 255, 255, 0.85);
     }
-    
+
     .p2 {
       color: rgba(255, 255, 255, 0.45);
     }
   }
-  
+
   .footer span {
     color: rgba(255, 255, 255, 0.45);
   }
@@ -273,7 +280,7 @@ createCode()
   height: 44px;
   font-size: 20px;
   transition: all 0.3s;
-  
+
   &:hover {
     transform: scale(1.1);
   }

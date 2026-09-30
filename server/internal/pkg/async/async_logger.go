@@ -106,11 +106,8 @@ func (a *AsyncOperationLogger) saveBatch(logs []*modelSysMonitor.OperationLogMod
 		return
 	}
 
-	// 逐个保存（如果 repository 支持批量插入，可以优化）
-	for _, log := range logs {
-		if err := a.service.Create(log); err != nil {
-			global.TD27_LOG.Error("async save operation log failed", "error", err)
-		}
+	if err := a.service.BatchCreate(logs); err != nil {
+		global.TD27_LOG.Error("async save operation logs failed", "count", len(logs), "error", err)
 	}
 }
 

@@ -59,38 +59,11 @@ export function roleDeleteApi(data: CId) {
   })
 }
 
-// 更新角色菜单
-export function updateRoleMenuApi(data: { roleId: number, menuIds: number[] }) {
-  return request<ApiResponseData<null>>({
-    url: "/role/updateRoleMenu",
-    method: "post",
-    data
-  })
-}
-
-// 获取角色的菜单
-export function getRoleMenusApi(roleId: number) {
-  return request<ApiResponseData<{ menus: any[], checkedIds: number[] }>>({
-    url: "/role/getRoleMenus",
-    method: "get",
-    params: { roleId }
-  })
-}
-
 // 设置角色继承关系
 export function setRoleInheritanceApi(data: { childRoleId: number, parentRoleId: number }) {
   return request<ApiResponseData<null>>({
-    url: "/role/setInheritance",
+    url: "/role/set-inheritance",
     method: "post",
     data
-  })
-}
-
-// 获取角色的继承链
-export function getRoleInheritanceApi(roleId: number) {
-  return request<ApiResponseData<number[]>>({
-    url: "/role/getInheritance",
-    method: "get",
-    params: { roleId }
   })
 }

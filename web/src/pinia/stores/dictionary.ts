@@ -8,28 +8,43 @@ export const useDictionaryStore = defineStore("dictionary", () => {
   // cache details by dictId
   const detailsMap = ref<Record<number, dictDetailDataModel[]>>({})
 
-  const fetchDictionaries = async () => {
-    if (dictionaries.value.length > 0) return
-    try {
-      const res = await dictListApi({})
-      if (res.code === 0) {
-        dictionaries.value = res.data.list
-      }
-    } finally {
-      //
+  // In-flight promises: caching only results still lets two concurrent
+  // misses fire duplicate requests, so cache the promise itself
+  let dictionariesPromise: Promise<void> | null = null
+  const detailPromises = new Map<number, Promise<void>>()
+
+  const fetchDictionaries = () => {
+    if (dictionaries.value.length > 0) return Promise.resolve()
+    if (!dictionariesPromise) {
+      dictionariesPromise = dictListApi({})
+        .then((res) => {
+          if (res.code === 0) {
+            dictionaries.value = res.data.list
+          }
+        })
+        .finally(() => {
+          dictionariesPromise = null // allow retry after failure
+        })
     }
+    return dictionariesPromise
   }
 
-  const fetchDictionaryDetail = async (dictId: number) => {
-    if (detailsMap.value[dictId]) return // ✅ cached
-    try {
-      const res = await dictDetailFlatApi({ dictId })
-      if (res.code === 0) {
-        detailsMap.value[dictId] = res.data
-      }
-    } finally {
-      //
+  const fetchDictionaryDetail = (dictId: number) => {
+    if (detailsMap.value[dictId]) return Promise.resolve() // ✅ cached
+    let promise = detailPromises.get(dictId)
+    if (!promise) {
+      promise = dictDetailFlatApi({ dictId })
+        .then((res) => {
+          if (res.code === 0) {
+            detailsMap.value[dictId] = res.data
+          }
+        })
+        .finally(() => {
+          detailPromises.delete(dictId) // allow retry after failure
+        })
+      detailPromises.set(dictId, promise)
     }
+    return promise
   }
 
   // ✅ Helper: get options by en_name

@@ -55,23 +55,21 @@ func (c *PGCache) Set(ctx context.Context, username string, key string, value st
 	}
 
 	expiresAt := time.Now().Add(expiration)
+	now := time.Now()
 
-	// 先尝试更新
-	result := db.WithContext(ctx).Exec(`
-		UPDATE sys_tool_cache 
-		SET "username" = ?, "value" = ?, expires_at = ?, updated_at = ?
-		WHERE "key" = ? and "deleted_at" IS NULL
-	`, username, value, expiresAt, time.Now(), key)
-
-	// 如果没有记录被更新，则插入
-	if result.RowsAffected == 0 {
-		return db.WithContext(ctx).Exec(`
-			INSERT INTO sys_tool_cache ("username", "key", "value", expires_at, created_at, updated_at)
-			VALUES (?, ?, ?, ?, ?, ?)
-		`, username, key, value, expiresAt, time.Now(), time.Now()).Error
-	}
-
-	return result.Error
+	// Single-statement upsert on the existing UNIQUE (key) constraint —
+	// replaces the previous UPDATE-then-INSERT two round trips and also
+	// revives soft-deleted rows instead of failing the insert.
+	return db.WithContext(ctx).Exec(`
+		INSERT INTO sys_tool_cache ("username", "key", "value", expires_at, created_at, updated_at)
+		VALUES (?, ?, ?, ?, ?, ?)
+		ON CONFLICT ("key") DO UPDATE
+		SET "username" = EXCLUDED."username",
+		    "value" = EXCLUDED."value",
+		    expires_at = EXCLUDED.expires_at,
+		    updated_at = EXCLUDED.updated_at,
+		    deleted_at = NULL
+	`, username, key, value, expiresAt, now, now).Error
 }
 
 // Del 删除缓存

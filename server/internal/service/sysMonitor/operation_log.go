@@ -23,6 +23,11 @@ func (s *OperationLogService) Create(req *sysMonitor.OperationLogModel) error {
 	return s.repository.Create(s.ctx, req)
 }
 
+// BatchCreate 批量写入操作日志（单条 SQL 多值插入）
+func (s *OperationLogService) BatchCreate(logs []*sysMonitor.OperationLogModel) error {
+	return s.repository.BatchCreate(s.ctx, logs)
+}
+
 func (s *OperationLogService) List(req *sysMonitor.OrListReq) ([]*sysMonitor.OperationLogModel, int64, error) {
 	list, i, err := s.repository.List(s.ctx, req)
 	if err != nil {
