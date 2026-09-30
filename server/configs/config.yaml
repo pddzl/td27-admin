@@ -61,6 +61,14 @@ captcha:
   img-width: 240
   img-height: 80
 
+# rate limiting configuration (per-IP token bucket)
+rate-limit:
+  enabled: true
+  rate: 50            # global requests per second per IP
+  burst: 100          # global max burst per IP
+  login-rate: 0.5     # login/captcha requests per second per IP (brute-force protection)
+  login-burst: 5      # login/captcha max burst per IP
+
 # 跨域配置
 # 需要配合 server/initialize/router.go#L32 使用
 cors:

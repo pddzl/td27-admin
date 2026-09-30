@@ -50,6 +50,16 @@ func Routers() *gin.Engine {
 	privateGroup := r.Group(global.TD27_CONFIG.System.RouterPrefix)
 	privateGroup.Use(middleware.JWTAuth(), middleware.CasbinHandler())
 
+	// Per-IP rate limiting on API groups (health/swagger/metrics stay exempt)
+	if rlCfg := global.TD27_CONFIG.RateLimit; rlCfg.Enabled {
+		limiter := middleware.NewIPRateLimiter(rlCfg.Rate, rlCfg.Burst)
+		publicGroup.Use(limiter.Middleware())
+		privateGroup.Use(limiter.Middleware())
+		global.TD27_LOG.Info("rate limit enabled",
+			"rate", rlCfg.Rate, "burst", rlCfg.Burst,
+			"loginRate", rlCfg.LoginRate, "loginBurst", rlCfg.LoginBurst)
+	}
+
 	// register all router
 	router.RegisterAllModuleRouter()
 

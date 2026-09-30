@@ -26,7 +26,7 @@ Gin + Vue3 admin dashboard. Keep this open; refer before acting.
 - API response codes: `0` = success, `7` = response error, `4` = request error. Helpers in `internal/model/common/response.go`.
 - JWT token passed via `x-token` header. Multi-login support with configurable device limit.
 - Casbin RBAC: policies in `permissions` table, enforced via `CasbinHandler` middleware. Role hierarchy and data permission flags in config.
-- Middleware chain (applied in `router.go`): GinLogger → GinRecovery → JWTAuth → CasbinHandler → OperationLog (+ DataPermissionHandler on specific routes).
+- Middleware chain (applied in `router.go`): GinLogger → GinRecovery → RateLimit (per-IP token bucket, if `rate-limit.enabled`; stricter limiter on login/captcha) → JWTAuth → CasbinHandler → OperationLog (+ DataPermissionHandler on specific routes).
 - Cron jobs register via `init()` with `pkgCron.Register(name, job)`. The `Scheduler` loads enabled jobs from DB at startup.
 - New permissions: use `PermissionDomainAPI`, `PermissionDomainMenu` constants. Subject format for service tokens is `token:{id}`.
 

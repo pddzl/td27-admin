@@ -10,5 +10,6 @@ type Server struct {
 	Casbin     Casbin        `mapstructure:"casbin" json:"casbin" yaml:"casbin"` // Casbin RBAC配置
 	Captcha    Captcha       `mapstructure:"captcha" json:"captcha" yaml:"captcha"`
 	Cors       CORS          `mapstructure:"cors" json:"cors" yaml:"cors"` // 跨域配置
+	RateLimit  RateLimit     `mapstructure:"rate-limit" json:"rate-limit" yaml:"rate-limit"` // 每IP限流配置
 	Observability Observability `mapstructure:"observability" json:"observability" yaml:"observability"` // Observability (metrics/tracing)配置
 }
