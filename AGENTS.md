@@ -17,6 +17,7 @@ Gin + Vue3 admin dashboard. Keep this open; refer before acting.
 - Init modules: `server/internal/initialize/gorm.go` (RegisterTables for auto-migration), `server/internal/initialize/router.go`, `server/internal/initialize/cron.go`
 
 ### Conventions
+- Route URIs use **kebab-case** (`delete-by-ids`, `service-token`, `dict-detail`). Swagger `@Router` annotations must match the actual gin route paths.
 - Logging uses `log/slog` as the underlying implementation. Use `global.TD27_LOG.Info/Error/Debug` with key-value pairs for all logging calls (direct `slog` calls are not recommended).
 - Logger config in `server/configs/config.yaml` under `logger` section (level/format/show-line/service). The `show-line` flag maps to `slog.HandlerOptions.AddSource`. Supports both text and JSON output formats.
 - Log output is split by level: `log/debug.log`, `log/info.log`, `log/warn.log`, `log/error.log`. Each file contains only its exact level — routing via `levelFilter` handler wrapper.
@@ -27,6 +28,7 @@ Gin + Vue3 admin dashboard. Keep this open; refer before acting.
 - JWT token passed via `x-token` header. Multi-login support with configurable device limit.
 - Casbin RBAC: policies in `permissions` table, enforced via `CasbinHandler` middleware. Role hierarchy and data permission flags in config.
 - Middleware chain (applied in `router.go`): GinLogger → GinRecovery → RateLimit (per-IP token bucket, if `rate-limit.enabled`; stricter limiter on login/captcha) → JWTAuth → CasbinHandler → OperationLog (+ DataPermissionHandler on specific routes).
+- Rate limiting: in-memory per-IP token bucket (`internal/middleware/rate_limit.go`), config under `rate-limit` section. `/health`, `/swagger`, and the metrics endpoint are exempt. Limits are per-instance (not shared across replicas).
 - Cron jobs register via `init()` with `pkgCron.Register(name, job)`. The `Scheduler` loads enabled jobs from DB at startup.
 - New permissions: use `PermissionDomainAPI`, `PermissionDomainMenu` constants. Subject format for service tokens is `token:{id}`.
 
@@ -52,6 +54,7 @@ Swagger at `http://localhost:8888/swagger/index.html`.
 - API modules in `web/src/api/{module}/`; page-local APIs go in `@/pages/{page}/apis/`.
 - All page components in `web/src/pages/` (kebab-case dirs).
 - Auto-imports: vue, vue-router, pinia APIs; Element Plus components.
+- HTTP layer (`src/http/axios_n.ts`): every request gets an AbortController; `cancelPendingRequests()` fires on route change; identical in-flight GETs are shared; identical error toasts are throttled to one per 2s; 401 keeps `?redirect=` so login returns the user to the original page.
 
 ### Commands (run from `web/`)
 ```bash
@@ -66,9 +69,10 @@ pnpm lint             # eslint . --fix
 
 ## Testing
 
-- **Backend**: `make test` or `go test ./... -v`. Test utilities in `server/internal/testutil/` (DB helpers).
-- Test coverage includes: Casbin RBAC, pkg utilities, md5 function, and core business logic.
+- **Backend**: `make test` or `go test ./... -v`. Test utilities in `server/internal/testutil/` (in-memory SQLite via `testutil.NewTestDB` — no live DB needed).
+- Test coverage includes: Casbin RBAC, button permissions, service tokens, pg cache, rate limiter, pkg utilities, md5 function, and core business logic.
 - Casbin tests in `server/internal/service/sysManagement/casbin_test.go`.
+- Known pre-existing failures: `TestScheduler_ScheduleAndRemove` and `TestClearCacheJob` (cron) — unrelated to other modules.
 
 ## Full project structure (tl;dr)
 
@@ -106,6 +110,8 @@ docker-compose/             # PostgreSQL + Redis + Nginx
 ## Gotchas
 
 - DB is PostgreSQL (configured under `pgsql` section in config).
+- Raw SQL must run on **both PostgreSQL (runtime) and SQLite (tests)** — the Casbin `PermissionAdapter` is shared. Use `||` for string concatenation, never `CONCAT()`.
+- `make swag` is currently broken with Go 1.27 (swag v1.16.4 can't parse the new stdlib; the Makefile masks the failure with `|| true`). Patch `server/docs/` manually until a compatible swag release.
 - Casbin enforcement is **skipped in dev mode** (`system.env: dev`). Set to `prod` to test permissions.
 - Logging uses `log/slog` with per-level log files (`debug.log`, `info.log`, `warn.log`, `error.log`). Logger init in `server/internal/core/logger.go` (function `Logger()`). Config struct in `server/configs/logger.go`. The `fileOpts.Level` must be explicitly set to `slog.LevelDebug` — Go 1.25 defaults to `LevelInfo` when nil.
 - Pre-commit hook via husky + lint-staged runs `eslint --fix` on all staged files (frontend).
