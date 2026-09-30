@@ -12,7 +12,7 @@ type ServiceTokenRouter struct {
 }
 
 func (r *ServiceTokenRouter) InitServiceTokenRouter(rg *gin.RouterGroup) {
-	base := rg.Group("serviceToken")
+	base := rg.Group("service-token")
 	record := base.Use(middleware.OperationRecord())
 	// record
 	record.POST("create", r.serviceTokenApi.Create)

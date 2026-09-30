@@ -24,7 +24,7 @@ func (d *DeptRouter) InitDeptRouter(rg *gin.RouterGroup) {
 	record.POST("create", d.deptApi.Create)
 	record.POST("delete", d.deptApi.Delete)
 	record.POST("update", d.deptApi.Update)
-	record.POST("getElTreeDepts", d.deptApi.GetElTreeDepts)
+	record.POST("get-el-tree-depts", d.deptApi.GetElTreeDepts)
 	// not record
 	base.POST("list", d.deptApi.List)
 }

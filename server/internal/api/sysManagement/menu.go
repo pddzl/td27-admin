@@ -120,7 +120,7 @@ func (a *MenuApi) Delete(c *gin.Context) {
 // @Produce   application/json
 // @Param     data  body      common.CId true "请求参数"
 // @Success   200   {object}  common.Response{data=modelSysManagement.MenuElTreeResp{list=[]modelSysManagement.MenuResp,menuIds=[]uint},msg=string}
-// @Router    /menu/elTree [post]
+// @Router    /menu/el-tree [post]
 func (a *MenuApi) ElTree(c *gin.Context) {
 	var cId common.CId
 	if err := c.ShouldBindJSON(&cId); err != nil {

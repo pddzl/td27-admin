@@ -118,7 +118,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/deleteByIds": {
+        "/api/delete-by-ids": {
             "post": {
                 "security": [
                     {
@@ -581,7 +581,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/cron/switchOpen": {
+        "/cron/switch-open": {
             "post": {
                 "security": [
                     {
@@ -878,7 +878,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/logReg/captcha": {
+        "/captcha": {
             "post": {
                 "security": [
                     {
@@ -917,7 +917,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/logReg/login": {
+        "/login": {
             "post": {
                 "consumes": [
                     "application/json"
@@ -965,7 +965,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/logReg/logout": {
+        "/logout": {
             "post": {
                 "consumes": [
                     "application/json"
@@ -1315,7 +1315,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/opl/deleteByIds": {
+        "/opl/delete-by-ids": {
             "post": {
                 "security": [
                     {
@@ -1628,7 +1628,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/role/updateRoleMenu": {
+        "/role/update-role-menu": {
             "post": {
                 "security": [
                     {
@@ -1778,7 +1778,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/user/getUserInfo": {
+        "/user/get-user-info": {
             "post": {
                 "security": [
                     {
@@ -1870,7 +1870,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/user/modifyPasswd": {
+        "/user/modify-passwd": {
             "post": {
                 "security": [
                     {
@@ -1920,7 +1920,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/user/switchActive": {
+        "/user/switch-active": {
             "post": {
                 "security": [
                     {

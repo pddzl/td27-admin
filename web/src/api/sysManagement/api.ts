@@ -54,7 +54,7 @@ interface ApiTreeAll {
 // 获取所有api 不分页
 export function apiGetElTreeApi(data: { id: number, from_source: string }) {
   return request<ApiResponseData<ApiTreeAll>>({
-    url: "/api/elTree",
+    url: "/api/el-tree",
     method: "post",
     data
   })
@@ -81,7 +81,7 @@ export function apiDeleteApi(data: CId) {
 // 批量删除api
 export function apiDeleteByIdsApi(data: CIds) {
   return request<ApiResponseData<null>>({
-    url: "/api/deleteByIds",
+    url: "/api/delete-by-ids",
     method: "post",
     data
   })

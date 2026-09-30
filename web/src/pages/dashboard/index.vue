@@ -117,7 +117,7 @@ async function fetchDashboardData() {
 }
 
 function handleViewAllOperations() {
-  router.push("/sysMonitor/operationLog")
+  router.push("/sys-monitor/operation-log")
 }
 
 onMounted(() => {

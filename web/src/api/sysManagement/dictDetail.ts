@@ -22,7 +22,7 @@ interface reqDictDetail extends PageInfo {
 
 export function dictDetailListApi(data: reqDictDetail) {
   return request<ApiResponseData<dictDetailListData>>({
-    url: "/dictDetail/list",
+    url: "/dict-detail/list",
     method: "post",
     data
   })
@@ -30,7 +30,7 @@ export function dictDetailListApi(data: reqDictDetail) {
 
 export function dictDetailFlatApi(data: { dictId: number }) {
   return request<ApiResponseData<dictDetailFlatData>>({
-    url: "/dictDetail/flat",
+    url: "/dict-detail/flat",
     method: "post",
     data
   })
@@ -38,7 +38,7 @@ export function dictDetailFlatApi(data: { dictId: number }) {
 
 export function dictDetailCreateApi(data: dictDetailData) {
   return request<ApiResponseData<dictDetailDataModel>>({
-    url: "/dictDetail/create",
+    url: "/dict-detail/create",
     method: "post",
     data
   })
@@ -46,7 +46,7 @@ export function dictDetailCreateApi(data: dictDetailData) {
 
 export function dictDetailDeleteApi(data: CId) {
   return request<ApiResponseData<dictDetailDataModel>>({
-    url: "/dictDetail/delete",
+    url: "/dict-detail/delete",
     method: "post",
     data
   })
@@ -54,7 +54,7 @@ export function dictDetailDeleteApi(data: CId) {
 
 export function dictDetailUpdateApi(data: dictDetailData & CId) {
   return request<ApiResponseData<dictDetailDataModel>>({
-    url: "/dictDetail/update",
+    url: "/dict-detail/update",
     method: "post",
     data
   })

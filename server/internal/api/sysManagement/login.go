@@ -35,7 +35,7 @@ func NewLogRegApi() *LogRegApi {
 // @Security  ApiKeyAuth
 // @Produce   application/json
 // @Success   200  {object}  common.Response{data=modelSysManagement.CaptchaResponse,msg=string}
-// @Router    /logReg/captcha [post]
+// @Router    /captcha [post]
 func (a *LogRegApi) Captcha(c *gin.Context) {
 	// 字符,公式,验证码配置
 	// 生成默认数字的driver
@@ -62,7 +62,7 @@ func (a *LogRegApi) Captcha(c *gin.Context) {
 // @Produce   application/json
 // @Param    data  body      modelSysManagement.Login true "请求参数"
 // @Success  200   {object}  common.Response{data=modelSysManagement.LoginResponse,msg=string}
-// @Router   /logReg/login [post]
+// @Router   /login [post]
 func (a *LogRegApi) Login(c *gin.Context) {
 	var login modelSysManagement.Login
 	if err := c.ShouldBindJSON(&login); err != nil {
@@ -139,7 +139,7 @@ func (a *LogRegApi) tokenNext(c *gin.Context, user *modelSysManagement.UserModel
 // @accept    application/json
 // @Produce   application/json
 // @Success  200   {object}  common.Response{msg=string}
-// @Router   /logReg/logout [post]
+// @Router   /logout [post]
 func (a *LogRegApi) LogOut(c *gin.Context) {
 	token := c.Request.Header.Get("x-token")
 	j := jwt2.NewJWT()

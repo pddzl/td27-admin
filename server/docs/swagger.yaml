@@ -750,7 +750,7 @@ paths:
       summary: 删除api
       tags:
       - Delete
-  /api/deleteByIds:
+  /api/delete-by-ids:
     post:
       consumes:
       - application/json
@@ -1007,7 +1007,7 @@ paths:
       summary: 分页获取cron
       tags:
       - CronApi
-  /cron/switchOpen:
+  /cron/switch-open:
     post:
       consumes:
       - application/json
@@ -1177,7 +1177,7 @@ paths:
       summary: 上传文件
       tags:
       - FileApi
-  /logReg/captcha:
+  /captcha:
     post:
       produces:
       - application/json
@@ -1198,7 +1198,7 @@ paths:
       summary: 生成验证码
       tags:
       - LogRegApi
-  /logReg/login:
+  /login:
     post:
       consumes:
       - application/json
@@ -1226,7 +1226,7 @@ paths:
       summary: 用户登录
       tags:
       - LogRegApi
-  /logReg/logout:
+  /logout:
     post:
       consumes:
       - application/json
@@ -1421,7 +1421,7 @@ paths:
       summary: 删除操作记录
       tags:
       - OperationLogApi
-  /opl/deleteByIds:
+  /opl/delete-by-ids:
     post:
       consumes:
       - application/json
@@ -1595,7 +1595,7 @@ paths:
       summary: 编辑角色
       tags:
       - RoleApi
-  /role/updateRoleMenu:
+  /role/update-role-menu:
     post:
       consumes:
       - application/json
@@ -1679,7 +1679,7 @@ paths:
       summary: 删除用户
       tags:
       - UserApi
-  /user/getUserInfo:
+  /user/get-user-info:
     post:
       produces:
       - application/json
@@ -1730,7 +1730,7 @@ paths:
       summary: 分页获取用户
       tags:
       - UserApi
-  /user/modifyPasswd:
+  /user/modify-passwd:
     post:
       consumes:
       - application/json
@@ -1758,7 +1758,7 @@ paths:
       summary: 修改用户密码
       tags:
       - UserApi
-  /user/switchActive:
+  /user/switch-active:
     post:
       consumes:
       - application/json

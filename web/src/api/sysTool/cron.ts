@@ -64,7 +64,7 @@ export function cronCreateApi(data: addCronData) {
 // 切换cron
 export function cronSwitchOpenApi(data: { open: boolean } & CId) {
   return request<ApiResponseData<{ entryId: number }>>({
-    url: "/cron/switchOpen",
+    url: "/cron/switch-open",
     method: "post",
     data
   })
@@ -82,7 +82,7 @@ export function cronDeleteApi(data: CId) {
 // 批量删除
 export function cronDeleteByIds(data: CIds) {
   return request<ApiResponseData<null>>({
-    url: "/cron/deleteByIds",
+    url: "/cron/delete-by-ids",
     method: "post",
     data
   })

@@ -25,7 +25,7 @@ func NewUserApi() *UserApi {
 // @Security  ApiKeyAuth
 // @Produce   application/json
 // @Success   200   {object}  common.Response{msg=string}
-// @Router    /user/getUserInfo [post]
+// @Router    /user/get-user-info [post]
 func (a *UserApi) GetUserInfo(c *gin.Context) {
 	userInfo, err := GetUserInfo(c)
 	if err != nil {
@@ -191,7 +191,7 @@ func (a *UserApi) Update(c *gin.Context) {
 // @Produce   application/json
 // @Param     data  body      modelSysManagement.ModifyPasswdReq true "请求参数"
 // @Success   200   {object}  common.Response{msg=string}
-// @Router    /user/modifyPasswd [post]
+// @Router    /user/modify-passwd [post]
 func (a *UserApi) ModifyPasswd(c *gin.Context) {
 	var req modelSysManagement.ModifyPasswdReq
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -215,7 +215,7 @@ func (a *UserApi) ModifyPasswd(c *gin.Context) {
 // @Produce   application/json
 // @Param     data  body      modelSysManagement.SwitchActiveReq true "请求参数"
 // @Success   200   {object}  common.Response{msg=string}
-// @Router    /user/switchActive [post]
+// @Router    /user/switch-active [post]
 func (a *UserApi) SwitchActive(c *gin.Context) {
 	var req modelSysManagement.SwitchActiveReq
 	if err := c.ShouldBindJSON(&req); err != nil {

@@ -26,49 +26,49 @@ const actions: Action[] = [
   {
     name: "用户管理",
     icon: User,
-    route: "/sysManagement/user",
+    route: "/sys-management/user",
     bgColor: "#ecf5ff",
     color: "#409eff"
   },
   {
     name: "角色权限",
     icon: Key,
-    route: "/sysManagement/role",
+    route: "/sys-management/role",
     bgColor: "#f0f9eb",
     color: "#67c23a"
   },
   {
     name: "菜单管理",
     icon: SetUp,
-    route: "/sysManagement/menu",
+    route: "/sys-management/menu",
     bgColor: "#fdf6ec",
     color: "#e6a23c"
   },
   {
     name: "操作日志",
     icon: Document,
-    route: "/sysMonitor/operationLog",
+    route: "/sys-monitor/operation-log",
     bgColor: "#f4f4f5",
     color: "#909399"
   },
   {
     name: "定时任务",
     icon: Calendar,
-    route: "/sysTool/cron",
+    route: "/systool/cron",
     bgColor: "#fef0f0",
     color: "#f56c6c"
   },
   {
     name: "文件管理",
     icon: Folder,
-    route: "/sysTool/file",
+    route: "/systool/file",
     bgColor: "#f5f7fa",
     color: "#606266"
   },
   {
     name: "系统监控",
     icon: Monitor,
-    route: "/sysMonitor/dashboard",
+    route: "/sys-monitor/dashboard",
     bgColor: "#e6f7ff",
     color: "#1890ff"
   },

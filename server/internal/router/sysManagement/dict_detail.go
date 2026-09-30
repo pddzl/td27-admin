@@ -18,7 +18,7 @@ func NewDictDetailRouter() *DictDetailRouter {
 }
 
 func (r *DictDetailRouter) InitDictDetailRouter(rg *gin.RouterGroup) {
-	base := rg.Group("dictDetail")
+	base := rg.Group("dict-detail")
 	record := base.Use(middleware.OperationRecord())
 	// record
 	record.POST("delete", r.dictDetailApi.Delete)

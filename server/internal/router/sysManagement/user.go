@@ -22,9 +22,9 @@ func (r *UserRouter) InitUserRouter(rg *gin.RouterGroup) {
 	record.POST("delete", r.userApi.Delete)
 	record.POST("create", r.userApi.Create)
 	record.POST("update", r.userApi.Update)
-	record.POST("modifyPasswd", r.userApi.ModifyPasswd)
-	record.POST("switchActive", r.userApi.SwitchActive)
+	record.POST("modify-passwd", r.userApi.ModifyPasswd)
+	record.POST("switch-active", r.userApi.SwitchActive)
 	// without record
-	base.GET("getUserInfo", r.userApi.GetUserInfo)
+	base.GET("get-user-info", r.userApi.GetUserInfo)
 	base.POST("list", r.userApi.List)
 }

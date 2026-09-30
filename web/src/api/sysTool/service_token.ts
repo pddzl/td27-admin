@@ -45,7 +45,7 @@ export interface ListServiceTokenReq extends PageInfo {
 // 创建服务令牌
 export function createServiceTokenApi(data: CreateServiceTokenReq) {
   return request<ApiResponseData<CreateServiceTokenResp>>({
-    url: "/serviceToken/create",
+    url: "/service-token/create",
     method: "post",
     data
   })
@@ -54,7 +54,7 @@ export function createServiceTokenApi(data: CreateServiceTokenReq) {
 // 更新服务令牌
 export function updateServiceTokenApi(data: UpdateServiceTokenReq) {
   return request<ApiResponseData<null>>({
-    url: "/serviceToken/update",
+    url: "/service-token/update",
     method: "post",
     data
   })
@@ -63,7 +63,7 @@ export function updateServiceTokenApi(data: UpdateServiceTokenReq) {
 // 删除服务令牌
 export function deleteServiceTokenApi(id: number) {
   return request<ApiResponseData<null>>({
-    url: "/serviceToken/delete",
+    url: "/service-token/delete",
     method: "post",
     data: { id }
   })
@@ -72,7 +72,7 @@ export function deleteServiceTokenApi(id: number) {
 // 获取服务令牌详情
 export function getServiceTokenDetailApi(data: { id: number }) {
   return request<ApiResponseData<ServiceTokenDetail>>({
-    url: "/serviceToken/detail",
+    url: "/service-token/detail",
     method: "post",
     data
   })
@@ -81,7 +81,7 @@ export function getServiceTokenDetailApi(data: { id: number }) {
 // 获取服务令牌列表
 export function listServiceTokenApi(data: ListServiceTokenReq) {
   return request<ApiResponseData<ApiListData<ServiceToken[]>>>({
-    url: "/serviceToken/list",
+    url: "/service-token/list",
     method: "post",
     data
   })

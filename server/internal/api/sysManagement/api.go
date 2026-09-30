@@ -102,7 +102,7 @@ func (a *ApiApi) Delete(c *gin.Context) {
 // @Produce   application/json
 // @Param     data  body      common.CIds true "请求参数"
 // @Success   200   {object}  common.Response{msg=string}
-// @Router    /api/deleteByIds [post]
+// @Router    /api/delete-by-ids [post]
 func (a *ApiApi) DeleteByIds(c *gin.Context) {
 	var req common.CIds
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -151,7 +151,7 @@ func (a *ApiApi) Update(c *gin.Context) {
 // @Produce   application/json
 // @Param     data  body      modelSysManagement.ApiTreeReq true "请求参数"
 // @Success   200   {object}  common.Response{data=modelSysManagement.ApiTreeResp{list=[]modelSysManagement.ApiTreeNode,checkedKey=[]string,checkedIds=[]uint},msg=string}
-// @Router    /api/elTree [post]
+// @Router    /api/el-tree [post]
 func (a *ApiApi) ElTree(c *gin.Context) {
 	var req modelSysManagement.ApiTreeReq
 	if err := c.ShouldBindJSON(&req); err != nil {

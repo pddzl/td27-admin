@@ -122,7 +122,7 @@ func (d *DeptApi) Delete(c *gin.Context) {
 // @accept    application/json
 // @Produce   application/json
 // @Success   200   {object}  common.Response{data=modelSysManagement.DeptTreeResp}
-// @Router    /dept/getElTreeDepts [post]
+// @Router    /dept/get-el-tree-depts [post]
 func (d *DeptApi) GetElTreeDepts(c *gin.Context) {
 	tree, ids, err := d.deptService.GetElTreeDepts()
 	if err != nil {

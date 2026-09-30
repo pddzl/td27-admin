@@ -19,7 +19,7 @@ func (r *ButtonRouter) InitButtonRouter(Router *gin.RouterGroup) {
 		buttonRouter.POST("list", buttonApi.List)
 		buttonRouter.GET("page", buttonApi.GetPageButtons)
 		buttonRouter.POST("check", buttonApi.CheckPermission)
-		buttonRouter.POST("batchCheck", buttonApi.BatchCheckPermission)
+		buttonRouter.POST("batch-check", buttonApi.BatchCheckPermission)
 		buttonRouter.GET("user", buttonApi.GetUserButtons)
 	}
 }

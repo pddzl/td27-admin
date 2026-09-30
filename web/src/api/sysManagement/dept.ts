@@ -75,7 +75,7 @@ export function getElTreeDeptsApi() {
     tree: Dept[]
     ids: number[]
   }>>({
-    url: "/dept/getElTreeDepts",
+    url: "/dept/get-el-tree-depts",
     method: "post"
   })
 }

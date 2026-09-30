@@ -62,7 +62,7 @@ export function checkButtonApi(buttonCode: string) {
 
 export function batchCheckButtonApi(buttonCodes: string[]) {
   return request<ApiResponseData<Record<string, boolean>>>({
-    url: "/button/batchCheck",
+    url: "/button/batch-check",
     method: "post",
     data: { buttonCodes }
   })

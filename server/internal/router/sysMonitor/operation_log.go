@@ -17,6 +17,6 @@ func NewOperationLogRouter() *OperationLogRouter {
 func (r *OperationLogRouter) InitOperationLogRouter(rg *gin.RouterGroup) {
 	base := rg.Group("opl")
 	base.POST("delete", r.operationLogApi.Delete)
-	base.POST("deleteByIds", r.operationLogApi.DeleteByIds)
+	base.POST("delete-by-ids", r.operationLogApi.DeleteByIds)
 	base.POST("list", r.operationLogApi.List)
 }

@@ -44,7 +44,7 @@ export function oplDeleteApi(data: CId) {
 // 批量删除操作记录
 export function oplDeleteByIdsApi(data: CIds) {
   return request<ApiResponseData<null>>({
-    url: "/opl/deleteByIds",
+    url: "/opl/delete-by-ids",
     method: "post",
     data
   })

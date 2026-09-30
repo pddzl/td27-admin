@@ -107,7 +107,7 @@
                 }
             }
         },
-        "/api/deleteByIds": {
+        "/api/delete-by-ids": {
             "post": {
                 "security": [
                     {
@@ -570,7 +570,7 @@
                 }
             }
         },
-        "/cron/switchOpen": {
+        "/cron/switch-open": {
             "post": {
                 "security": [
                     {
@@ -867,7 +867,7 @@
                 }
             }
         },
-        "/logReg/captcha": {
+        "/captcha": {
             "post": {
                 "security": [
                     {
@@ -906,7 +906,7 @@
                 }
             }
         },
-        "/logReg/login": {
+        "/login": {
             "post": {
                 "consumes": [
                     "application/json"
@@ -954,7 +954,7 @@
                 }
             }
         },
-        "/logReg/logout": {
+        "/logout": {
             "post": {
                 "consumes": [
                     "application/json"
@@ -1304,7 +1304,7 @@
                 }
             }
         },
-        "/opl/deleteByIds": {
+        "/opl/delete-by-ids": {
             "post": {
                 "security": [
                     {
@@ -1617,7 +1617,7 @@
                 }
             }
         },
-        "/role/updateRoleMenu": {
+        "/role/update-role-menu": {
             "post": {
                 "security": [
                     {
@@ -1767,7 +1767,7 @@
                 }
             }
         },
-        "/user/getUserInfo": {
+        "/user/get-user-info": {
             "post": {
                 "security": [
                     {
@@ -1859,7 +1859,7 @@
                 }
             }
         },
-        "/user/modifyPasswd": {
+        "/user/modify-passwd": {
             "post": {
                 "security": [
                     {
@@ -1909,7 +1909,7 @@
                 }
             }
         },
-        "/user/switchActive": {
+        "/user/switch-active": {
             "post": {
                 "security": [
                     {

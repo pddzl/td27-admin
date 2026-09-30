@@ -27,7 +27,7 @@ func NewServiceTokenApi() *ServiceTokenApi {
 // @Produce   application/json
 // @Param     data  body      modelSysTool.CreateServiceTokenReq  true  "创建参数"
 // @Success   200   {object}  common.Response{data=modelSysTool.CreateServiceTokenResp}
-// @Router    /serviceToken/create [post]
+// @Router    /service-token/create [post]
 func (a *ServiceTokenApi) Create(c *gin.Context) {
 	var req modelSysTool.CreateServiceTokenReq
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -57,7 +57,7 @@ func (a *ServiceTokenApi) Create(c *gin.Context) {
 // @Produce   application/json
 // @Param     data  body      modelSysTool.UpdateServiceTokenReq  true  "更新参数"
 // @Success   200   {object}  common.Response
-// @Router    /serviceToken/update [post]
+// @Router    /service-token/update [post]
 func (a *ServiceTokenApi) Update(c *gin.Context) {
 	var req modelSysTool.UpdateServiceTokenReq
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -82,7 +82,7 @@ func (a *ServiceTokenApi) Update(c *gin.Context) {
 // @Produce   application/json
 // @Param     data  body      common.CId  true  "ID"
 // @Success   200   {object}  common.Response
-// @Router    /serviceToken/delete [post]
+// @Router    /service-token/delete [post]
 func (a *ServiceTokenApi) Delete(c *gin.Context) {
 	var req common.CId
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -107,7 +107,7 @@ func (a *ServiceTokenApi) Delete(c *gin.Context) {
 // @Produce   application/json
 // @Param     data  query     common.CId  true  "ID"
 // @Success   200   {object}  common.Response{data=modelSysTool.ServiceTokenDetailResp}
-// @Router    /serviceToken/detail [post]
+// @Router    /service-token/detail [post]
 func (a *ServiceTokenApi) GetById(c *gin.Context) {
 	var req common.CId
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -132,7 +132,7 @@ func (a *ServiceTokenApi) GetById(c *gin.Context) {
 // @Produce   application/json
 // @Param     data  query     modelSysTool.ListServiceTokenReq  true  "查询参数"
 // @Success   200   {object}  common.Response{data=modelSysTool.ServiceTokenListResp}
-// @Router    /serviceToken/list [post]
+// @Router    /service-token/list [post]
 func (a *ServiceTokenApi) List(c *gin.Context) {
 	var req modelSysTool.ListServiceTokenReq
 	if err := c.ShouldBindJSON(&req); err != nil {

@@ -21,9 +21,9 @@ func (ur *ApiRouter) InitApiRouter(rg *gin.RouterGroup) {
 	// record
 	record.POST("create", ur.apiApi.Create)
 	record.POST("delete", ur.apiApi.Delete)
-	record.POST("deleteByIds", ur.apiApi.DeleteByIds)
+	record.POST("delete-by-ids", ur.apiApi.DeleteByIds)
 	record.POST("update", ur.apiApi.Update)
-	record.POST("elTree", ur.apiApi.ElTree)
+	record.POST("el-tree", ur.apiApi.ElTree)
 	// without record
 	base.POST("list", ur.apiApi.List)
 }

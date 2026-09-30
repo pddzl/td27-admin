@@ -143,7 +143,7 @@ func (a *CronApi) Update(c *gin.Context) {
 // @Produce   application/json
 // @Param     data  body      modelSysTool.SwitchReq true  "id, open"
 // @Success   200   {object}  common.Response{data=map[string]int, msg=string}
-// @Router    /cron/switchOpen [post]
+// @Router    /cron/switch-open [post]
 func (a *CronApi) SwitchOpen(c *gin.Context) {
 	var req modelSysTool.SwitchReq
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -167,7 +167,7 @@ func (a *CronApi) SwitchOpen(c *gin.Context) {
 // @Produce   application/json
 // @Param     data  body      common.CId true  "id"
 // @Success   200   {object}  common.Response{msg=string}
-// @Router    /cron/runOnce [post]
+// @Router    /cron/run-once [post]
 func (a *CronApi) RunOnce(c *gin.Context) {
 	var req common.CId
 	if err := c.ShouldBindJSON(&req); err != nil {

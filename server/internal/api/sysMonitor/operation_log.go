@@ -81,7 +81,7 @@ func (a *OperationLogApi) Delete(c *gin.Context) {
 // @Produce   application/json
 // @Param     data  body      common.CIds true "请求参数"
 // @Success   200   {object}  common.Response{msg=string}
-// @Router    /opl/deleteByIds [post]
+// @Router    /opl/delete-by-ids [post]
 func (a *OperationLogApi) DeleteByIds(c *gin.Context) {
 	var cIds common.CIds
 	if err := c.ShouldBindJSON(&cIds); err != nil {
