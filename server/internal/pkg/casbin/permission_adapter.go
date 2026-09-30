@@ -31,23 +31,23 @@ func (a *PermissionAdapter) LoadPolicy(mod model.Model) error {
 
 	// Merge role + token into ONE query
 	err := a.db.Raw(`
-		SELECT 
+		SELECT
 			CAST(rp.role_id AS TEXT) AS sub,
 			p.resource,
 			p.action
 		FROM sys_management_role_permissions rp
-		JOIN sys_management_permission p 
+		JOIN sys_management_permission p
 			ON rp.permission_id = p.id
 		WHERE p.domain = 'api'
 
 		UNION ALL
 
-		SELECT 
-			CONCAT('token:', tp.token_id) AS sub,
+		SELECT
+			('token:' || CAST(tp.token_id AS TEXT)) AS sub,
 			p.resource,
 			p.action
 		FROM sys_tool_token_permission tp
-		JOIN sys_management_permission p 
+		JOIN sys_management_permission p
 			ON tp.permission_id = p.id
 		WHERE p.domain = 'api'
 	`).Scan(&rows).Error

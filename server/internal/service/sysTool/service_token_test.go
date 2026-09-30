@@ -1,6 +1,8 @@
 package sysTool
 
 import (
+	"io"
+	"log/slog"
 	"testing"
 	"time"
 
@@ -56,6 +58,8 @@ func TestServiceTokenService_ValidateToken(t *testing.T) {
 		&modelSysManagement.RolePermissionModel{},
 	)
 	global.TD27_CONFIG.Casbin.CacheTTL = 3600
+	// RebuildSubjectPolicies logs via the global logger; keep tests quiet
+	global.TD27_LOG = slog.New(slog.NewTextHandler(io.Discard, nil))
 
 	svc := NewServiceTokenService()
 
